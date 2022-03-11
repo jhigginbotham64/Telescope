@@ -4,10 +4,9 @@
 
 #include <glm/glm.hpp>
 #include <vulkan/vulkan.hpp>
-#include <jlcxx/jlcxx.hpp>
 
 #define VMA_IMPLEMENTATION
-#include "vk_mem_alloc.hpp"
+#include "vma/vk_mem_alloc.hpp"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
@@ -16,7 +15,6 @@
 #include <SDL2/SDL_vulkan.h>
 
 #include <iostream>
-#include <fstream>
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -698,54 +696,4 @@ void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
   {
     std::cerr << "Unable to play sound " << sound_file << std::endl << TS_GetSDLError() << std::endl;
   }
-}
-
-JLCXX_MODULE define_julia_module(jlcxx::Module& mod)
-{
-  mod.method("TS_VkCmdDrawRect", &TS_VkCmdDrawRect);
-  mod.method("TS_VkCmdDrawSprite", &TS_VkCmdDrawSprite);
-  mod.method("TS_VkCmdClearColorImage", &TS_VkCmdClearColorImage);
-  mod.method("TS_VkAcquireNextImage", &TS_VkAcquireNextImage);
-  mod.method("TS_VkResetCommandBuffer", &TS_VkResetCommandBuffer);
-  mod.method("TS_VkBeginCommandBuffer", &TS_VkBeginCommandBuffer);
-  mod.method("TS_VkBeginRenderPass", &TS_VkBeginRenderPass);
-  mod.method("TS_VkEndRenderPass", &TS_VkEndRenderPass);
-  mod.method("TS_VkEndCommandBuffer", &TS_VkEndCommandBuffer);
-  mod.method("TS_VkQueueSubmit", &TS_VkQueueSubmit);
-  mod.method("TS_VkQueuePresent", &TS_VkQueuePresent);
-  mod.method("TS_VkCreateInstance", &TS_VkCreateInstance);
-  mod.method("TS_VkCreateSurface", &TS_VkCreateSurface);
-  mod.method("TS_VkSelectPhysicalDevice", &TS_VkSelectPhysicalDevice);
-  mod.method("TS_VkSelectQueueFamily", &TS_VkSelectQueueFamily);
-  mod.method("TS_VkCreateDevice", &TS_VkCreateDevice);
-  mod.method("TS_VkCreateSwapchain", &TS_VkCreateSwapchain);
-  mod.method("TS_VkCreateImageViews", &TS_VkCreateImageViews);
-  mod.method("TS_VkGetSupportedDepthFormat", &TS_VkGetSupportedDepthFormat);
-  mod.method("TS_VkSetupDepthStencil", &TS_VkSetupDepthStencil);
-  mod.method("TS_VkCreateRenderPass", &TS_VkCreateRenderPass);
-  mod.method("TS_VkCreateTrianglePipeline", &TS_VkCreateTrianglePipeline);
-  mod.method("TS_VkCreateFramebuffers", &TS_VkCreateFramebuffers);
-  mod.method("TS_VkCreateCommandPool", &TS_VkCreateCommandPool);
-  mod.method("TS_VkAllocateCommandBuffers", &TS_VkAllocateCommandBuffers);
-  mod.method("TS_VkCreateSemaphores", &TS_VkCreateSemaphores);
-  mod.method("TS_VkCreateFences", &TS_VkCreateFences);
-  mod.method("TS_VkInit", &TS_VkInit);
-  mod.method("TS_VkDestroyFences", &TS_VkDestroyFences);
-  mod.method("TS_VkDestroySemaphores", &TS_VkDestroySemaphores);
-  mod.method("TS_VkFreeCommandBuffers", &TS_VkFreeCommandBuffers);
-  mod.method("TS_VkDestroyCommandPool", &TS_VkDestroyCommandPool);
-  mod.method("TS_VkDestroyFramebuffers", &TS_VkDestroyFramebuffers);
-  mod.method("TS_VkDestroyTrianglePipeline", &TS_VkDestroyTrianglePipeline);
-  mod.method("TS_VkDestroyRenderPass", &TS_VkDestroyRenderPass);
-  mod.method("TS_VkTeardownDepthStencil", &TS_VkTeardownDepthStencil);
-  mod.method("TS_VkDestroyImageViews", &TS_VkDestroyImageViews);
-  mod.method("TS_VkDestroySwapchain", &TS_VkDestroySwapchain);
-  mod.method("TS_VkDestroyDevice", &TS_VkDestroyDevice);
-  mod.method("TS_VkDestroySurface", &TS_VkDestroySurface);
-  mod.method("TS_VkDestroyInstance", &TS_VkDestroyInstance);
-  mod.method("TS_VkQuit", &TS_VkQuit);
-  mod.method("TS_GetSDLError", &TS_GetSDLError);
-  mod.method("TS_Init", &TS_Init);
-  mod.method("TS_Quit", &TS_Quit);
-  mod.method("TS_PlaySound", &TS_PlaySound);
 }
