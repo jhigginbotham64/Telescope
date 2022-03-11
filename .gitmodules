@@ -1,6 +1,6 @@
 [submodule "shaderc"]
 	path = shaderc
-	url = git@github.com:google/shaderc.git
+	url = https://github.com/google/shaderc.git
 [submodule "vma"]
 	path = vma
-	url = git@github.com:malte-v/VulkanMemoryAllocator-Hpp.git
+	url = https://github.com/malte-v/VulkanMemoryAllocator-Hpp.git
