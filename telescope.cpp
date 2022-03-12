@@ -1,10 +1,12 @@
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
 
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <SDL_image.h>
-#include <SDL_vulkan.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_net.h>
+#include <SDL2/SDL_vulkan.h>
 
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
@@ -644,7 +646,7 @@ extern "C"
     }
 
     int mix_init_flags = MIX_INIT_FLAC | MIX_INIT_MP3 | MIX_INIT_OGG;
-    if (Mix_Init(mix_init_flags) & mix_init_flags != mix_init_flags)
+    if ((Mix_Init(mix_init_flags) & mix_init_flags) != mix_init_flags)
     {
       std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_GetSDLError() << std::endl; 
     }
