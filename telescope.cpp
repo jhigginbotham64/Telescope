@@ -1,20 +1,17 @@
+#include <glm/glm.hpp>
+#include <shaderc/shaderc.hpp>
+
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <SDL_image.h>
+#include <SDL_vulkan.h>
+
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
-
-#include <glm/glm.hpp>
-#include <shaderc/shaderc.hpp>
 #include <vulkan/vulkan.hpp>
-
 #define VMA_IMPLEMENTATION
 #include "vma/vk_mem_alloc.hpp"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_net.h>
-#include <SDL2/SDL_vulkan.h>
 
 #include <iostream>
 #include <algorithm>
@@ -646,8 +643,6 @@ extern "C"
       std::cerr << "Unable to initialize SDL: " << TS_GetSDLError() << std::endl;
     }
 
-    TTF_Init();
-
     int mix_init_flags = MIX_INIT_FLAC | MIX_INIT_MP3 | MIX_INIT_OGG;
     if (Mix_Init(mix_init_flags) & mix_init_flags != mix_init_flags)
     {
@@ -683,7 +678,6 @@ extern "C"
     Mix_HaltChannel(-1);
     Mix_CloseAudio();
 
-    TTF_Quit();
     Mix_Quit();
     SDL_Quit();
   }
