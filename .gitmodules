@@ -4,3 +4,21 @@
 [submodule "vma"]
 	path = vma
 	url = https://github.com/malte-v/VulkanMemoryAllocator-Hpp.git
+[submodule "glm"]
+	path = glm
+	url = https://github.com/g-truc/glm.git
+[submodule "vk"]
+	path = vk
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "SDL2"]
+	path = SDL2
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "SDL2_mixer"]
+	path = SDL2_mixer
+	url = https://github.com/libsdl-org/SDL_mixer.git
+[submodule "SDL2_ttf"]
+	path = SDL2_ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "SDL2_image"]
+	path = SDL2_image
+	url = https://github.com/libsdl-org/SDL_image.git

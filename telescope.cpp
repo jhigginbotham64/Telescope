@@ -3,6 +3,7 @@
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
 
 #include <glm/glm.hpp>
+#include <shaderc/shaderc.hpp>
 #include <vulkan/vulkan.hpp>
 
 #define VMA_IMPLEMENTATION
