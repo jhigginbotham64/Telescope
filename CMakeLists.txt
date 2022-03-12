@@ -10,7 +10,7 @@ add_subdirectory(SDL2_image)
 add_subdirectory(SDL2_mixer)
 add_subdirectory(SDL2_ttf)
 add_subdirectory(glm)
-add_subdirectory(vk)
+add_subdirectory(vulkan)
 add_subdirectory(shaderc)
 
 add_library(telescope SHARED telescope.cpp)
