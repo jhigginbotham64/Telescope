@@ -22,3 +22,9 @@
 [submodule "vulkan"]
 	path = vulkan
 	url = https://github.com/KhronosGroup/Vulkan-Headers.git
+[submodule "Vulkan-Loader"]
+	path = Vulkan-Loader
+	url = https://github.com/KhronosGroup/Vulkan-Loader.git
+[submodule "Vulkan-Headers"]
+	path = Vulkan-Headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers.git
