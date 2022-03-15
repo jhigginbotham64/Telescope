@@ -1,6 +1,3 @@
 [submodule "vma"]
 	path = vma
 	url = https://github.com/malte-v/VulkanMemoryAllocator-Hpp.git
-[submodule "glm"]
-	path = glm
-	url = https://github.com/g-truc/glm.git
