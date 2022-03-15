@@ -10,7 +10,7 @@ include(GNUInstallDirs)
 
 add_library(telescope SHARED telescope.cpp)
 
-target_link_libraries(telescope SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf vulkan shaderc_shared)
+target_link_libraries(telescope PRIVATE SDL2 SDL2_image SDL2_mixer SDL2_net SDL2_ttf shaderc_shared)
 
 install(FILES telescope.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 

@@ -1,19 +1,18 @@
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
 
+#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
+#define VULKAN_HPP_STORAGE_SHARED 1
+#define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
+#include <vulkan/vulkan.hpp>
+VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_vulkan.h>
-
-#define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
-#define VULKAN_HPP_STORAGE_SHARED 1
-#define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
-#include <vulkan/vulkan.hpp>
-
-#include "telescope.h"
 
 #include <iostream>
 #include <algorithm>
@@ -22,7 +21,7 @@
 #include <set>
 #include <cmath>
 
-VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
+#include "telescope.h"
 
 const char *window_name = NULL;
 SDL_Window *win = NULL;
