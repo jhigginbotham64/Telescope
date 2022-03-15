@@ -12,8 +12,6 @@
 #define VULKAN_HPP_STORAGE_SHARED 1
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
 #include <vulkan/vulkan.hpp>
-#define VMA_IMPLEMENTATION
-#include "vma/vk_mem_alloc.hpp"
 
 #include "telescope.h"
 
