@@ -1,16 +1,9 @@
-#include <vulkan/vulkan.hpp>
-
-vk::ImageView TS_VkCreateImageView(vk::Image img, vk::Format fmt, vk::ImageAspectFlagBits flags);
-
-vk::Bool32 TS_VkGetSupportedDepthFormat();
-
-uint32_t TS_VkFindMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlagBits properties);
-
-void TS_VkCreateImage(uint32_t width, uint32_t height, vk::Format fmt, vk::ImageTiling tiling,
-                      vk::ImageUsageFlagBits usage, vk::MemoryPropertyFlagBits properties,
-                      vk::Image& img, vk::DeviceMemory& imageMemory);
-
-extern "C" const char * TS_GetSDLError();
+/*
+  this file contains the C interface used to generate
+  wrappers in other programming languages. not all
+  functions are exposed due to use of C++ arguments
+  and return types.
+*/
 
 extern "C" void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);
 
@@ -40,7 +33,7 @@ extern "C" void TS_VkCreateSurface();
 
 extern "C" void TS_VkSelectPhysicalDevice();
 
-void TS_VkSelectQueueFamily();
+extern "C" void TS_VkSelectQueueFamily();
 
 extern "C" void TS_VkCreateDevice();
 
