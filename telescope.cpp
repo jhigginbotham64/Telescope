@@ -140,22 +140,22 @@ void TS_VkCreateImage(uint32_t width, uint32_t height, vk::Format fmt, vk::Image
   dev.bindImageMemory(img, imageMemory, 0);
 }
 
-extern "C" const char * TS_GetSDLError()
-  {
-    return std::string(SDL_GetError()).c_str();
-  }
+const char * TS_GetSDLError()
+{
+  return SDL_GetError();
+}
 
-extern "C" void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
-  {
-    
-  }
-
-extern "C" void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy)
+void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
 {
   
 }
 
-extern "C" void TS_VkCmdClearColorImage(float r, float g, float b, float a)
+void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy)
+{
+  
+}
+
+void TS_VkCmdClearColorImage(float r, float g, float b, float a)
 {
   vk::ClearColorValue clearColor(std::array<float, 4>({r, g, b, a}));
   vk::ImageSubresourceRange imageRange(vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
@@ -163,7 +163,7 @@ extern "C" void TS_VkCmdClearColorImage(float r, float g, float b, float a)
   cmdbuf.clearColorImage(img, vk::ImageLayout::eGeneral, &clearColor, 1U, &imageRange);
 }
 
-extern "C" void TS_VkAcquireNextImage()
+void TS_VkAcquireNextImage()
 {
   frameIndex = dev.acquireNextImageKHR(swapchain, UINT64_MAX, imageAvailableSemaphore).value;
   dev.waitForFences(1, &fences[frameIndex], VK_FALSE, UINT64_MAX);
@@ -172,17 +172,17 @@ extern "C" void TS_VkAcquireNextImage()
   img = swapchainImages[frameIndex];
 }
 
-extern "C" void TS_VkResetCommandBuffer()
+void TS_VkResetCommandBuffer()
 {
   cmdbuf.reset();
 }
 
-extern "C" void TS_VkBeginCommandBuffer()
+void TS_VkBeginCommandBuffer()
 {
   cmdbuf.begin({vk::CommandBufferUsageFlagBits::eSimultaneousUse});
 }
 
-extern "C" void TS_VkBeginRenderPass(float r, float g, float b, float a)
+void TS_VkBeginRenderPass(float r, float g, float b, float a)
 {
   vk::RenderPassBeginInfo rpi {
     rp, swapchainFramebuffers[frameIndex]
@@ -200,31 +200,31 @@ extern "C" void TS_VkBeginRenderPass(float r, float g, float b, float a)
   cmdbuf.beginRenderPass(rpi, vk::SubpassContents::eInline);
 }
 
-extern "C" void TS_VkEndRenderPass()
+void TS_VkEndRenderPass()
 {
   cmdbuf.endRenderPass();
 }
 
-extern "C" void TS_VkEndCommandBuffer()
+void TS_VkEndCommandBuffer()
 {
   cmdbuf.end();
 }
 
-extern "C" void TS_VkQueueSubmit()
+void TS_VkQueueSubmit()
 {
   vk::PipelineStageFlags waitDestStageMask = vk::PipelineStageFlags(vk::PipelineStageFlagBits::eTransfer);
   vk::SubmitInfo submitInfo(1, &imageAvailableSemaphore, &waitDestStageMask, 1, &cmdbuf, 1, &renderingFinishedSemaphore);
   gq.submit(1, &submitInfo, fences[frameIndex]);
 }
 
-extern "C" void TS_VkQueuePresent()
+void TS_VkQueuePresent()
 {
   vk::PresentInfoKHR pInfo(1, &renderingFinishedSemaphore, 1, &swapchain, &frameIndex);
   pq.presentKHR(pInfo);
   pq.waitIdle();
 }
 
-extern "C" void TS_VkCreateInstance()
+void TS_VkCreateInstance()
 {
   VULKAN_HPP_DEFAULT_DISPATCHER.init((PFN_vkGetInstanceProcAddr)SDL_Vulkan_GetVkGetInstanceProcAddr());
 
@@ -253,12 +253,12 @@ extern "C" void TS_VkCreateInstance()
   VULKAN_HPP_DEFAULT_DISPATCHER.init(inst);
 }
 
-extern "C" void TS_VkCreateSurface()
+void TS_VkCreateSurface()
 {
   SDL_Vulkan_CreateSurface(win, inst, &srf);
 }
 
-extern "C" void TS_VkSelectPhysicalDevice()
+void TS_VkSelectPhysicalDevice()
 {
   pdev = inst.enumeratePhysicalDevices()[0]; // TODO improve selection
 }
@@ -271,8 +271,7 @@ void TS_VkSelectQueueFamily()
   for (const auto& qf : pdev.getQueueFamilyProperties())
   {
     if (qf.queueCount > 0 && qf.queueFlags & vk::QueueFlagBits::eGraphics) graphicIndex = i;
-    vk::Bool32 presentSupport = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(pdev, i, srf, &presentSupport);
+    bool presentSupport = pdev.getSurfaceSupportKHR(i, srf);
     if (qf.queueCount > 0 && presentSupport) presentIndex = i;
     if (graphicIndex != -1 && presentIndex != -1) break;
     ++i;
@@ -281,7 +280,7 @@ void TS_VkSelectQueueFamily()
   presentQueueFamilyIndex = presentIndex;
 }
 
-extern "C" void TS_VkCreateDevice()
+void TS_VkCreateDevice()
 {
   const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
   const float queue_priority[] = { 1.0f };
@@ -322,7 +321,7 @@ extern "C" void TS_VkCreateDevice()
   pq = dev.getQueue(presentQueueFamilyIndex, 0);
 }
 
-extern "C" void TS_VkCreateSwapchain()
+void TS_VkCreateSwapchain()
 {
   surfaceCapabilities = pdev.getSurfaceCapabilitiesKHR(srf);
   std::vector<vk::SurfaceFormatKHR> surfaceFormats = pdev.getSurfaceFormatsKHR(srf);
@@ -367,7 +366,7 @@ extern "C" void TS_VkCreateSwapchain()
   swapchainImageCount = static_cast<uint32_t>(swapchainImages.size());
 }
 
-extern "C" void TS_VkCreateImageViews()
+void TS_VkCreateImageViews()
 {
   for (int i = 0; i < swapchainImages.size(); ++i)
   {
@@ -375,7 +374,7 @@ extern "C" void TS_VkCreateImageViews()
   }
 }
 
-extern "C" void TS_VkSetupDepthStencil()
+void TS_VkSetupDepthStencil()
 {
   TS_VkGetSupportedDepthFormat();
   TS_VkCreateImage(swapchainSize.width, swapchainSize.height,
@@ -385,7 +384,7 @@ extern "C" void TS_VkSetupDepthStencil()
   depthImageView = TS_VkCreateImageView(depthImage, vk::Format::eD32SfloatS8Uint, vk::ImageAspectFlagBits::eDepth);
 }
 
-extern "C" void TS_VkCreateRenderPass()
+void TS_VkCreateRenderPass()
 {
   std::vector<vk::AttachmentDescription> attachments(2);
 
@@ -447,7 +446,7 @@ extern "C" void TS_VkCreateRenderPass()
   rp = dev.createRenderPass(renderPassInfo);
 }
 
-extern "C" void TS_VkCreateTrianglePipeline()
+void TS_VkCreateTrianglePipeline()
 {
   // shaders
   // inline using shaderc
@@ -469,7 +468,7 @@ extern "C" void TS_VkCreateTrianglePipeline()
 
 }
 
-extern "C" void TS_VkCreateFramebuffers()
+void TS_VkCreateFramebuffers()
 {
   for (size_t i = 0; i < swapchainImageViews.size(); ++i)
   {
@@ -487,7 +486,7 @@ extern "C" void TS_VkCreateFramebuffers()
   }
 }
 
-extern "C" void TS_VkCreateCommandPool()
+void TS_VkCreateCommandPool()
 {
   cp = dev.createCommandPool({
     vk::CommandPoolCreateFlagBits::eResetCommandBuffer | vk::CommandPoolCreateFlagBits::eTransient,
@@ -495,18 +494,18 @@ extern "C" void TS_VkCreateCommandPool()
   });
 }
 
-extern "C" void TS_VkAllocateCommandBuffers()
+void TS_VkAllocateCommandBuffers()
 {
   cmdbufs = dev.allocateCommandBuffers({cp, vk::CommandBufferLevel::ePrimary, swapchainImageCount});
 }
 
-extern "C" void TS_VkCreateSemaphores()
+void TS_VkCreateSemaphores()
 {
   imageAvailableSemaphore = dev.createSemaphore({});
   renderingFinishedSemaphore = dev.createSemaphore({});
 }
 
-extern "C" void TS_VkCreateFences()
+void TS_VkCreateFences()
 {
   for (uint32_t i = 0; i < swapchainImageCount; ++i)
   {
@@ -514,7 +513,7 @@ extern "C" void TS_VkCreateFences()
   }
 }
 
-extern "C" void TS_VkInit()
+void TS_VkInit()
 {
   TS_VkCreateInstance();
   TS_VkCreateSurface();
@@ -533,7 +532,7 @@ extern "C" void TS_VkInit()
   TS_VkCreateFences();
 }
 
-extern "C" void TS_VkDestroyFences()
+void TS_VkDestroyFences()
 {
   for (int i = 0; i < swapchainImageCount; ++i)
   {
@@ -542,24 +541,24 @@ extern "C" void TS_VkDestroyFences()
   fences.clear();
 }
 
-extern "C" void TS_VkDestroySemaphores()
+void TS_VkDestroySemaphores()
 {
   dev.destroySemaphore(imageAvailableSemaphore);
   dev.destroySemaphore(renderingFinishedSemaphore);
 }
 
-extern "C" void TS_VkFreeCommandBuffers()
+void TS_VkFreeCommandBuffers()
 {
   dev.freeCommandBuffers(cp, cmdbufs);
   cmdbufs.clear();
 }
 
-extern "C" void TS_VkDestroyCommandPool()
+void TS_VkDestroyCommandPool()
 {
   dev.destroyCommandPool(cp);
 }
 
-extern "C" void TS_VkDestroyFramebuffers()
+void TS_VkDestroyFramebuffers()
 {
   for (int i = 0; i < swapchainFramebuffers.size(); ++i)
   {
@@ -568,25 +567,25 @@ extern "C" void TS_VkDestroyFramebuffers()
   swapchainFramebuffers.clear();
 }
 
-extern "C" void TS_VkDestroyTrianglePipeline()
+void TS_VkDestroyTrianglePipeline()
 {
   dev.destroy(trianglePipeline);
   dev.destroy(trianglePipelineLayout);
 }
 
-extern "C" void TS_VkDestroyRenderPass()
+void TS_VkDestroyRenderPass()
 {
   dev.destroyRenderPass(rp);
 }
 
-extern "C" void TS_VkTeardownDepthStencil()
+void TS_VkTeardownDepthStencil()
 {
   dev.destroyImageView(depthImageView);
   dev.freeMemory(depthImageMemory);
   dev.destroyImage(depthImage);
 }
 
-extern "C" void TS_VkDestroyImageViews()
+void TS_VkDestroyImageViews()
 {
   for (vk::ImageView iv : swapchainImageViews)
   {
@@ -595,29 +594,29 @@ extern "C" void TS_VkDestroyImageViews()
   swapchainImageViews.clear();
 }
 
-extern "C" void TS_VkDestroySwapchain()
+void TS_VkDestroySwapchain()
 {
   dev.destroySwapchainKHR(swapchain);
 }
 
-extern "C" void TS_VkDestroyDevice()
+void TS_VkDestroyDevice()
 {
   graphicsQueueFamilyIndex = -1;
   presentQueueFamilyIndex = -1;
   dev.destroy();
 }
 
-extern "C" void TS_VkDestroySurface()
+void TS_VkDestroySurface()
 {
-  vkDestroySurfaceKHR(inst, srf, nullptr);
+  inst.destroySurfaceKHR(srf);
 }
 
-extern "C" void TS_VkDestroyInstance()
+void TS_VkDestroyInstance()
 {
   inst.destroy();
 }
 
-extern "C" void TS_VkQuit()
+void TS_VkQuit()
 {
   TS_VkDestroyFences();
   TS_VkDestroySemaphores();
@@ -634,7 +633,7 @@ extern "C" void TS_VkQuit()
   TS_VkDestroyInstance();
 }
 
-extern "C" void TS_Init(const char * ttl, int wdth, int hght)
+void TS_Init(const char * ttl, int wdth, int hght)
 { 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
@@ -667,7 +666,7 @@ extern "C" void TS_Init(const char * ttl, int wdth, int hght)
   TS_VkInit();
 }
 
-extern "C" void TS_Quit()
+void TS_Quit()
 {
   TS_VkQuit();
   SDL_DestroyWindow(win);
@@ -680,7 +679,7 @@ extern "C" void TS_Quit()
   SDL_Quit();
 }
 
-extern "C" void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
+void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
 {
   Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);
   if (sample == NULL)

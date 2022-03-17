@@ -5,91 +5,101 @@
   and return types.
 */
 
-extern "C" void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern "C" void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy);
+const char * TS_GetSDLError();
 
-extern "C" void TS_VkCmdClearColorImage(float r, float g, float b, float a);
+void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);
 
-extern "C" void TS_VkAcquireNextImage();
+void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy);
 
-extern "C" void TS_VkResetCommandBuffer();
+void TS_VkCmdClearColorImage(float r, float g, float b, float a);
 
-extern "C" void TS_VkBeginCommandBuffer();
+void TS_VkAcquireNextImage();
 
-extern "C" void TS_VkBeginRenderPass(float r, float g, float b, float a);
+void TS_VkResetCommandBuffer();
 
-extern "C" void TS_VkEndRenderPass();
+void TS_VkBeginCommandBuffer();
 
-extern "C" void TS_VkEndCommandBuffer();
+void TS_VkBeginRenderPass(float r, float g, float b, float a);
 
-extern "C" void TS_VkQueueSubmit();
+void TS_VkEndRenderPass();
 
-extern "C" void TS_VkQueuePresent();
+void TS_VkEndCommandBuffer();
 
-extern "C" void TS_VkCreateInstance();
+void TS_VkQueueSubmit();
 
-extern "C" void TS_VkCreateSurface();
+void TS_VkQueuePresent();
 
-extern "C" void TS_VkSelectPhysicalDevice();
+void TS_VkCreateInstance();
 
-extern "C" void TS_VkSelectQueueFamily();
+void TS_VkCreateSurface();
 
-extern "C" void TS_VkCreateDevice();
+void TS_VkSelectPhysicalDevice();
+
+void TS_VkSelectQueueFamily();
+
+void TS_VkCreateDevice();
 
 #define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
-extern "C" void TS_VkCreateSwapchain();
+void TS_VkCreateSwapchain();
 
-extern "C" void TS_VkCreateImageViews();
+void TS_VkCreateImageViews();
 
-extern "C" void TS_VkSetupDepthStencil();
+void TS_VkSetupDepthStencil();
 
-extern "C" void TS_VkCreateRenderPass();
+void TS_VkCreateRenderPass();
 
-extern "C" void TS_VkCreateTrianglePipeline();
+void TS_VkCreateTrianglePipeline();
 
-extern "C" void TS_VkCreateFramebuffers();
+void TS_VkCreateFramebuffers();
 
-extern "C" void TS_VkCreateCommandPool();
+void TS_VkCreateCommandPool();
 
-extern "C" void TS_VkAllocateCommandBuffers();
+void TS_VkAllocateCommandBuffers();
 
-extern "C" void TS_VkCreateSemaphores();
+void TS_VkCreateSemaphores();
 
-extern "C" void TS_VkCreateFences();
+void TS_VkCreateFences();
 
-extern "C" void TS_VkInit();
+void TS_VkInit();
 
-extern "C" void TS_VkDestroyFences();
+void TS_VkDestroyFences();
 
-extern "C" void TS_VkDestroySemaphores();
+void TS_VkDestroySemaphores();
 
-extern "C" void TS_VkFreeCommandBuffers();
+void TS_VkFreeCommandBuffers();
 
-extern "C" void TS_VkDestroyCommandPool();
+void TS_VkDestroyCommandPool();
 
-extern "C" void TS_VkDestroyFramebuffers();
+void TS_VkDestroyFramebuffers();
 
-extern "C" void TS_VkDestroyTrianglePipeline();
+void TS_VkDestroyTrianglePipeline();
 
-extern "C" void TS_VkDestroyRenderPass();
+void TS_VkDestroyRenderPass();
 
-extern "C" void TS_VkTeardownDepthStencil();
+void TS_VkTeardownDepthStencil();
 
-extern "C" void TS_VkDestroyImageViews();
+void TS_VkDestroyImageViews();
 
-extern "C" void TS_VkDestroySwapchain();
+void TS_VkDestroySwapchain();
 
-extern "C" void TS_VkDestroyDevice();
+void TS_VkDestroyDevice();
 
-extern "C" void TS_VkDestroySurface();
+void TS_VkDestroySurface();
 
-extern "C" void TS_VkDestroyInstance();
+void TS_VkDestroyInstance();
 
-extern "C" void TS_VkQuit();
+void TS_VkQuit();
 
-extern "C" void TS_Init(const char * ttl, int wdth, int hght);
+void TS_Init(const char * ttl, int wdth, int hght);
 
-extern "C" void TS_Quit();
+void TS_Quit();
 
-extern "C" void TS_PlaySound(const char* sound_file, int loops, int ticks);
+void TS_PlaySound(const char* sound_file, int loops, int ticks);
+
+#ifdef __cplusplus
+}
+#endif
