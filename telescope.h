@@ -23,9 +23,9 @@ void TS_VkResetCommandBuffer();
 
 void TS_VkBeginCommandBuffer();
 
-void TS_VkBeginRenderPass(float r, float g, float b, float a);
+void TS_VkBeginDrawPass();
 
-void TS_VkEndRenderPass();
+void TS_VkEndDrawPass(float r, float g, float b, float a);
 
 void TS_VkEndCommandBuffer();
 
