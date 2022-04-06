@@ -31,6 +31,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 const char *window_name = NULL;
 SDL_Window *win = NULL;
+int window_width = 0;
+int window_height = 0;
 const vk::DeviceSize defaultBufferSize = 1024 * 64; // 64 kb
 vk::Instance inst;
 VkSurfaceKHR srf;
@@ -55,7 +57,48 @@ std::pair<vk::Buffer, vma::Allocation> vertexStaging;
 std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
+
+struct Vertex {
+  glm::vec2 pos;
+  glm::vec3 col;
+
+  Vertex(float x, float y, float r, float g, float b)
+  {
+    this->pos = glm::vec2(x, y);
+    this->col = glm::vec3(r, g, b);
+  }
+
+  static vk::VertexInputBindingDescription getBindingDescription()
+  {
+    vk::VertexInputBindingDescription bindingDescription;
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.inputRate = vk::VertexInputRate::eVertex;
+
+    return bindingDescription;
+  }
+
+  static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescriptions()
+  {
+    std::array<vk::VertexInputAttributeDescription, 2> attributeDescriptions;
+
+    attributeDescriptions[0].binding = 0;
+    attributeDescriptions[0].location = 0;
+    attributeDescriptions[0].format = vk::Format::eR32G32Sfloat;
+    attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+    attributeDescriptions[1].binding = 0;
+    attributeDescriptions[1].location = 1;
+    attributeDescriptions[1].format = vk::Format::eR32G32B32Sfloat;
+    attributeDescriptions[1].offset = offsetof(Vertex, col);
+
+    return attributeDescriptions;
+  }
+};
+
+std::vector<Vertex> vertices;
 std::vector<uint32_t> indices;
+uint32_t current_index = 0;
 vk::ImageView depthImageView;
 vk::RenderPass rp;
 std::vector<vk::Framebuffer> swapchainFramebuffers;
@@ -91,38 +134,6 @@ static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
 
   return VK_FALSE;
 }
-
-struct Vertex {
-  glm::vec2 pos;
-  glm::vec3 color;
-
-  static vk::VertexInputBindingDescription getBindingDescription()
-  {
-    vk::VertexInputBindingDescription bindingDescription;
-    bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex);
-    bindingDescription.inputRate = vk::VertexInputRate::eVertex;
-
-    return bindingDescription;
-  }
-
-  static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescriptions()
-  {
-    std::array<vk::VertexInputAttributeDescription, 2> attributeDescriptions;
-
-    attributeDescriptions[0].binding = 0;
-    attributeDescriptions[0].location = 0;
-    attributeDescriptions[0].format = vk::Format::eR32G32Sfloat;
-    attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-    attributeDescriptions[1].binding = 0;
-    attributeDescriptions[1].location = 1;
-    attributeDescriptions[1].format = vk::Format::eR32G32B32Sfloat;
-    attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-    return attributeDescriptions;
-  }
-};
 
 vk::ImageView TS_VkCreateImageView(vk::Image img, vk::Format fmt, vk::ImageAspectFlagBits flags)
 {
@@ -212,9 +223,38 @@ const char * TS_GetSDLError()
   return SDL_GetError();
 }
 
+// normalized device coordinates along the x and y axes
+float ndc_x(int x)
+{
+ return (2.0f / window_width) * x - 1.0f;
+}
+
+float ndc_y(int y)
+{
+  return (2.0f / window_height) * y - 1.0f;
+}
+
 void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
 {
-  
+  // convert from screen space to normalized device coordinates
+  float ndc_x1 = ndc_x(x);
+  float ndc_x2 = ndc_x(x + w);
+  float ndc_y1 = ndc_y(y);
+  float ndc_y2 = ndc_y(y + h);
+
+  // update vertices
+  vertices.push_back(Vertex(ndc_x2, ndc_y2, r, g, b));
+  vertices.push_back(Vertex(ndc_x1, ndc_y2, r, g, b));
+  vertices.push_back(Vertex(ndc_x1, ndc_y1, r, g, b));
+  vertices.push_back(Vertex(ndc_x2, ndc_y1, r, g, b));
+
+  // update indices
+  indices.push_back(current_index);
+  indices.push_back(current_index + 1);
+  indices.push_back(current_index + 2);
+  indices.push_back(current_index + 3);
+  indices.push_back(0xFFFFFFFF); // primitive restart
+  current_index += 4;
 }
 
 void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy)
@@ -249,6 +289,10 @@ void TS_VkBeginCommandBuffer()
 
 void TS_VkDraw(float r, float g, float b, float a)
 {
+  // copy data
+  memcpy(al.getAllocationInfo(vertexStaging.second).pMappedData, (void*)vertices.data(), vertices.size() * sizeof(Vertex));
+  memcpy(al.getAllocationInfo(indexStaging.second).pMappedData, (void*)indices.data(), indices.size() * sizeof(uint32_t));
+
   // copy buffers
   vk::BufferCopy bfcpy;
   bfcpy.srcOffset = 0;
@@ -963,6 +1007,8 @@ void TS_Init(const char * ttl, int wdth, int hght)
   }
 
   window_name = ttl;
+  window_width = wdth;
+  window_height = hght;
   win = SDL_CreateWindow(ttl, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, wdth, hght, SDL_WINDOW_VULKAN|SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_SHOWN);
   if (win == NULL)
   {
@@ -995,12 +1041,16 @@ void TS_VkBeginDrawPass()
   TS_VkResetCommandBuffer();
   TS_VkBeginCommandBuffer();
 
-  // clear all buffers
+  // clear data
+  vertices.clear();
+  indices.clear();
+  current_index = 0;
+
+  // clear buffers
   memset(al.getAllocationInfo(vertexStaging.second).pMappedData, 0, defaultBufferSize);
   memset(al.getAllocationInfo(indexStaging.second).pMappedData, 0, defaultBufferSize);
   cmdbufs[frameIndex].fillBuffer(vertexBuffer.first, 0, VK_WHOLE_SIZE, 0);
   cmdbufs[frameIndex].fillBuffer(indexBuffer.first, 0, VK_WHOLE_SIZE, 0);
-  indices.clear();
 }
 
 void TS_VkEndDrawPass(float r, float g, float b, float a)
