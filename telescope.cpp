@@ -61,11 +61,13 @@ std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 struct Vertex {
   glm::vec2 pos;
   glm::vec3 col;
+  glm::vec2 tex;
 
-  Vertex(float x, float y, float r, float g, float b)
+  Vertex(float x, float y, float r, float g, float b, float u = -1, float v = -1)
   {
     this->pos = glm::vec2(x, y);
     this->col = glm::vec3(r, g, b);
+    this->tex = glm::vec2(u, v);
   }
 
   static vk::VertexInputBindingDescription getBindingDescription()
@@ -78,9 +80,9 @@ struct Vertex {
     return bindingDescription;
   }
 
-  static std::array<vk::VertexInputAttributeDescription, 2> getAttributeDescriptions()
+  static std::array<vk::VertexInputAttributeDescription, 3> getAttributeDescriptions()
   {
-    std::array<vk::VertexInputAttributeDescription, 2> attributeDescriptions;
+    std::array<vk::VertexInputAttributeDescription, 3> attributeDescriptions;
 
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
@@ -91,6 +93,11 @@ struct Vertex {
     attributeDescriptions[1].location = 1;
     attributeDescriptions[1].format = vk::Format::eR32G32B32Sfloat;
     attributeDescriptions[1].offset = offsetof(Vertex, col);
+
+    attributeDescriptions[2].binding = 0;
+    attributeDescriptions[2].location = 2;
+    attributeDescriptions[2].format = vk::Format::eR32G32Sfloat;
+    attributeDescriptions[2].offset = offsetof(Vertex, tex);
 
     return attributeDescriptions;
   }
@@ -679,25 +686,30 @@ void TS_VkCreateTrianglePipeline()
   std::string vertShaderCode = R"""(
     #version 450
 
-    layout(location = 0) in vec2 inPosition;
-    layout(location = 1) in vec3 inColor;
+    layout(location = 0) in vec2 inPos;
+    layout(location = 1) in vec3 inCol;
+    layout(location = 2) in vec2 inTex;
 
-    layout(location = 0) out vec3 fragColor;
+    layout(location = 0) out vec3 fragCol;
+    layout(location = 1) out vec2 fragTex;
 
     void main() {
-        gl_Position = vec4(inPosition, 0.0, 1.0);
-        fragColor = inColor;
+        gl_Position = vec4(inPos, 0.0, 1.0);
+        fragCol = inCol;
+        fragTex = inTex;
     }
   )""";
+
   std::string fragShaderCode = R"""(
     #version 450
 
-    layout(location = 0) in vec3 fragColor;
+    layout(location = 0) in vec3 fragCol;
+    layout(location = 1) in vec2 fragTex;
 
-    layout(location = 0) out vec4 outColor;
+    layout(location = 0) out vec4 outCol;
 
     void main() {
-        outColor = vec4(fragColor, 1.0);
+        outCol = vec4(fragCol, 1.0);
     }
   )""";
 
