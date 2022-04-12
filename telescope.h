@@ -13,7 +13,7 @@ const char * TS_GetSDLError();
 
 void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);
 
-void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy);
+void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, int px, int py, int sx, int sy);
 
 void TS_VkCmdClearColorImage(float r, float g, float b, float a);
 

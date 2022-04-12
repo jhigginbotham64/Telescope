@@ -1,3 +1,22 @@
+/*
+  textures
+
+  on-demand tasks
+  - load new texture
+    - load image from disk with SDL_image
+    - create staging pixel buffer
+    - copy pixels to staging
+    - free pixels with SDL_image
+    - create image for sampling and transfer dst
+    - transition image layout 1
+    - copy staging pixels to image
+    - transition image layout 2
+    - create image view
+    - destroy staging pixel buffer
+    - update descriptor image info array
+    - update descriptor sets
+*/
+
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
 
@@ -19,6 +38,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
+#include <queue>
 #include <utility>
 #include <cmath>
 
@@ -58,16 +79,39 @@ std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 
+struct Texture {
+  std::pair<vk::Image, vma::Allocation> img;
+  vk::ImageView view;
+
+  uint32_t width;
+  uint32_t height;
+
+  std::string fname;
+};
+
+vk::Sampler smp;
+vk::DescriptorPool dscPool;
+vk::DescriptorSet dscSet;
+vk::DescriptorSetLayout dscSetLayout;
+
+#define NUM_SUPPORTED_TEXTURES 80
+std::queue<int> availableInds;
+std::map<std::string, int> txtInds;
+std::array<Texture, NUM_SUPPORTED_TEXTURES> txts;
+std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
+
 struct Vertex {
   glm::vec2 pos;
+  glm::vec2 uv;
   glm::vec3 col;
-  glm::vec2 tex;
+  glm::ivec1 tex;
 
-  Vertex(float x, float y, float r, float g, float b, float u = -1, float v = -1)
+  Vertex(float x, float y, float r, float g, float b, float u = 0, float v = 0, int t = -1)
   {
     this->pos = glm::vec2(x, y);
+    this->uv = glm::vec2(u, v);
     this->col = glm::vec3(r, g, b);
-    this->tex = glm::vec2(u, v);
+    this->tex = glm::vec1(t);
   }
 
   static vk::VertexInputBindingDescription getBindingDescription()
@@ -80,9 +124,9 @@ struct Vertex {
     return bindingDescription;
   }
 
-  static std::array<vk::VertexInputAttributeDescription, 3> getAttributeDescriptions()
+  static std::array<vk::VertexInputAttributeDescription, 4> getAttributeDescriptions()
   {
-    std::array<vk::VertexInputAttributeDescription, 3> attributeDescriptions;
+    std::array<vk::VertexInputAttributeDescription, 4> attributeDescriptions;
 
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
@@ -91,13 +135,18 @@ struct Vertex {
 
     attributeDescriptions[1].binding = 0;
     attributeDescriptions[1].location = 1;
-    attributeDescriptions[1].format = vk::Format::eR32G32B32Sfloat;
-    attributeDescriptions[1].offset = offsetof(Vertex, col);
+    attributeDescriptions[1].format = vk::Format::eR32G32Sfloat;
+    attributeDescriptions[1].offset = offsetof(Vertex, uv);
 
     attributeDescriptions[2].binding = 0;
     attributeDescriptions[2].location = 2;
-    attributeDescriptions[2].format = vk::Format::eR32G32Sfloat;
-    attributeDescriptions[2].offset = offsetof(Vertex, tex);
+    attributeDescriptions[2].format = vk::Format::eR32G32B32Sfloat;
+    attributeDescriptions[2].offset = offsetof(Vertex, col);
+
+    attributeDescriptions[3].binding = 0;
+    attributeDescriptions[3].location = 3;
+    attributeDescriptions[3].format = vk::Format::eR32Sint;
+    attributeDescriptions[3].offset = offsetof(Vertex, tex);
 
     return attributeDescriptions;
   }
@@ -231,31 +280,39 @@ const char * TS_GetSDLError()
 }
 
 // normalized device coordinates along the x and y axes
-float ndc_x(int x)
+float TS_NDCX(int x)
 {
  return (2.0f / window_width) * x - 1.0f;
 }
 
-float ndc_y(int y)
+float TS_NDCY(int y)
 {
   return (2.0f / window_height) * y - 1.0f;
 }
 
-void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
+std::array<float, 4> TS_NDCRect(int x, int y, int w, int h)
 {
-  // convert from screen space to normalized device coordinates
-  float ndc_x1 = ndc_x(x);
-  float ndc_x2 = ndc_x(x + w);
-  float ndc_y1 = ndc_y(y);
-  float ndc_y2 = ndc_y(y + h);
+  return std::array<float, 4>({TS_NDCX(x), TS_NDCX(x + w), TS_NDCY(y), TS_NDCY(y + h)});
+}
 
-  // update vertices
-  vertices.push_back(Vertex(ndc_x2, ndc_y2, r, g, b));
-  vertices.push_back(Vertex(ndc_x1, ndc_y2, r, g, b));
-  vertices.push_back(Vertex(ndc_x1, ndc_y1, r, g, b));
-  vertices.push_back(Vertex(ndc_x2, ndc_y1, r, g, b));
+// normalized texture coordinates along the u and v axes
+float TS_NTCU(int x, int w)
+{
+ return (1.0f / w) * x;
+}
 
-  // update indices
+float TS_NTCV(int y, int h)
+{
+  return (1.0f / h) * y;
+}
+
+std::array<float, 4> TS_NTCRect(int x, int y, int w, int h)
+{
+  return std::array<float, 4>({TS_NTCU(x, w), TS_NTCU(x + w, w), TS_NTCV(y, h), TS_NTCV(y + h, h)});
+}
+
+void TS_Add4Indices()
+{
   indices.push_back(current_index);
   indices.push_back(current_index + 1);
   indices.push_back(current_index + 2);
@@ -264,9 +321,304 @@ void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, i
   current_index += 4;
 }
 
-void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cx, int cy, int ci, int cj, int px, int py, int sx, int sy)
+vk::CommandBuffer TS_VkBeginScratchBuffer()
 {
+  vk::CommandBufferAllocateInfo allocInfo;
+  allocInfo.level = vk::CommandBufferLevel::ePrimary;
+  allocInfo.commandPool = cp;
+  allocInfo.commandBufferCount = 1;
+
+  vk::CommandBuffer tmp = dev.allocateCommandBuffers(allocInfo)[0];
+
+  vk::CommandBufferBeginInfo beginInfo;
+  beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+  tmp.begin(beginInfo);
+
+  return tmp;
+}
+
+void TS_VkSubmitScratchBuffer(vk::CommandBuffer tmp)
+{
+  tmp.end();
+
+  vk::SubmitInfo submitInfo;
+  submitInfo.commandBufferCount = 1;
+  submitInfo.pCommandBuffers = &tmp;
+
+  gq.submit(1, &submitInfo, VK_NULL_HANDLE);
+  gq.waitIdle();
+
+  dev.freeCommandBuffers(cp, 1, &tmp);
+}
+
+void TS_VkTransitionImageLayout(vk::Image img, vk::ImageLayout oldLayout, vk::ImageLayout newLayout)
+{
+  vk::CommandBuffer tmp = TS_VkBeginScratchBuffer();
+
+  vk::ImageMemoryBarrier barrier;
+  barrier.oldLayout = oldLayout;
+  barrier.newLayout = newLayout;
+  barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+  barrier.image = img;
+  barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+  barrier.subresourceRange.baseMipLevel = 0;
+  barrier.subresourceRange.levelCount = 1;
+  barrier.subresourceRange.baseArrayLayer = 0;
+  barrier.subresourceRange.layerCount = 1;
+
+  vk::PipelineStageFlags srcStage;
+  vk::PipelineStageFlags dstStage;
+
+  if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal)
+  {
+    barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+    srcStage = vk::PipelineStageFlagBits::eTopOfPipe;
+    dstStage = vk::PipelineStageFlagBits::eTransfer;
+  }
+  else if (oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal)
+  {
+    barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+    barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+    srcStage = vk::PipelineStageFlagBits::eTransfer;
+    dstStage = vk::PipelineStageFlagBits::eFragmentShader;
+  }
+  else
+  {
+    // unsupported layout transition
+    throw std::runtime_error("Attempting an unsupported image layout transition");
+  }
+
+  tmp.pipelineBarrier(srcStage, dstStage, vk::DependencyFlags(), 0, nullptr, 0, nullptr, 1, &barrier);
+
+  TS_VkSubmitScratchBuffer(tmp);
+}
+
+void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32_t hght)
+{
+  vk::CommandBuffer tmp = TS_VkBeginScratchBuffer();
+
+  vk::BufferImageCopy region;
+  region.bufferOffset = 0;
+  region.bufferRowLength = 0;
+  region.bufferImageHeight = 0;
+
+  region.imageSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+  region.imageSubresource.mipLevel = 0;
+  region.imageSubresource.baseArrayLayer = 0;
+  region.imageSubresource.layerCount = 1;
+
+  region.imageOffset = vk::Offset3D(0,0,0);
+  region.imageExtent = vk::Extent3D(wdth,hght,1);
+
+  tmp.copyBufferToImage(buf, img, vk::ImageLayout::eTransferDstOptimal, 1, &region);
+
+  TS_VkSubmitScratchBuffer(tmp);
+}
+
+int TS_VkLoadTexture(const char * img)
+{
+  // initialize on first access
+  if (txtInds.empty() && availableInds.empty())
+  {
+    for (int i = 0; i < NUM_SUPPORTED_TEXTURES; ++i)
+    {
+      availableInds.push(i);
+    }
+  }
   
+  // max textures allocated
+  if (availableInds.empty())
+  {
+    return -1;
+  }
+  
+  // key not present means texture not loaded yet
+  if (!txtInds.count(std::string(img)))
+  {
+    int txtInd = availableInds.front();
+
+    SDL_Surface *srf = IMG_Load(img);
+    int wdth = srf->w;
+    int hght = srf->h;
+
+    std::vector<uint8_t> pixels;
+    SDL_PixelFormat * fmt = srf->format;
+
+    SDL_LockSurface(srf);
+    for (int i = 0; i < wdth * hght; ++i)
+    {
+      // https://wiki.libsdl.org/SDL_PixelFormat
+      if (fmt->BitsPerPixel != 8)
+      {
+        uint32_t temp, pixel;
+        uint8_t r, g, b, a;
+        pixel = *((uint32_t*)(((char*)srf->pixels) + i * fmt->BytesPerPixel));
+        
+        temp = pixel & fmt->Rmask;
+        temp = temp >> fmt->Rshift;
+        temp = temp << fmt->Rloss;
+        r = (uint8_t)temp;
+
+        temp = pixel & fmt->Gmask;
+        temp = temp >> fmt->Gshift;
+        temp = temp << fmt->Gloss;
+        g = (uint8_t)temp;
+
+        temp = pixel & fmt->Bmask;
+        temp = temp >> fmt->Bshift;
+        temp = temp << fmt->Bloss;
+        b = (uint8_t)temp;
+
+        temp = pixel & fmt->Amask;
+        temp = temp >> fmt->Ashift;
+        temp = temp << fmt->Aloss;
+        a = (uint8_t)temp;
+
+        pixels.push_back(r);
+        pixels.push_back(g);
+        pixels.push_back(b);
+        pixels.push_back(a);
+      }
+      else
+      {
+        SDL_Color col = fmt->palette->colors[*(uint8_t *) (((char*)srf->pixels) + i)];
+        pixels.push_back(col.r);
+        pixels.push_back(col.g);
+        pixels.push_back(col.b);
+        pixels.push_back(col.a);
+      }
+    }
+    SDL_UnlockSurface(srf);
+    SDL_FreeSurface(srf);
+
+    vk::DeviceSize imgSize = wdth * hght * 4;
+
+    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(imgSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    memcpy(al.getAllocationInfo(pixelStaging.second).pMappedData, (void*)pixels.data(), static_cast<size_t>(imgSize));
+    
+    std::pair<vk::Image, vma::Allocation> pixelImg = TS_VmaCreateImage(wdth, hght, vk::Format::eR8G8B8A8Unorm, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
+
+    TS_VkTransitionImageLayout(pixelImg.first, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+    TS_VkCopyBufferToImage(pixelStaging.first, pixelImg.first, wdth, hght);
+    TS_VkTransitionImageLayout(pixelImg.first, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+    vk::ImageView v = TS_VkCreateImageView(pixelImg.first, vk::Format::eR8G8B8A8Unorm, vk::ImageAspectFlagBits::eColor);
+    
+    al.destroyBuffer(pixelStaging.first, pixelStaging.second);
+
+    txts[txtInd] = Texture();
+    txts[txtInd].img = pixelImg;
+    txts[txtInd].fname = std::string(img);
+    txts[txtInd].view = v;
+    txts[txtInd].width = wdth;
+    txts[txtInd].height = hght;
+    
+    dscImgInfos[txtInd] = vk::DescriptorImageInfo();
+    dscImgInfos[txtInd].sampler = nullptr;
+    dscImgInfos[txtInd].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+    dscImgInfos[txtInd].imageView = v;
+
+    txtInds[std::string(img)] = txtInd;
+    availableInds.pop();
+  }
+
+  return txtInds[std::string(img)];
+}
+
+void TS_VkUnloadTexture(const char * img)
+{
+  // retrieve index from map
+  int ind = txtInds[std::string(img)];
+
+  // remove from map
+  txtInds.erase(std::string(img));
+
+  // reset index in txts
+  txts[ind] = Texture();
+
+  // reset index in dscImgInfos
+  dscImgInfos[ind] = vk::DescriptorImageInfo();
+
+  // return index to queue
+  availableInds.push(ind);
+}
+
+void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
+{
+  // convert from screen space to normalized device coordinates
+  std::array<float, 4> ndc = TS_NDCRect(x, y, w, h);
+
+  // update vertices
+  vertices.push_back(Vertex(ndc[1], ndc[3], r, g, b));
+  vertices.push_back(Vertex(ndc[0], ndc[3], r, g, b));
+  vertices.push_back(Vertex(ndc[0], ndc[2], r, g, b));
+  vertices.push_back(Vertex(ndc[1], ndc[2], r, g, b));
+
+  // update indices
+  TS_Add4Indices();
+}
+
+void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, int px, int py, float sx, float sy)
+{
+  int txtInd = TS_VkLoadTexture(img);
+
+  Texture txt = txts[txtInd];
+
+  uint32_t w = txt.width;
+  uint32_t h = txt.height;
+
+  uint32_t srcw, srch, dstw, dsth, srctlx, srctly;
+
+  // using a specific region
+  if (rw != 0 && rh != 0)
+  {
+    srctlx = rx;
+    srctly = ry;
+    srcw = rw;
+    srch = rh;
+    dstw = rw;
+    dsth = rh;
+  }
+  // divide texture into cells and use specific cell
+  else if (cw != 0 && ch != 0)
+  {
+    srctlx = cj * cw;
+    srctly = ci * ch;
+    srcw = cw;
+    srch = ch;
+    dstw = cw;
+    dstw = ch;
+  }
+  // use whole texture
+  else
+  {
+    srctlx = 0;
+    srctly = 0;
+    srcw = w;
+    srch = h;
+    dstw = w;
+    dsth = h;
+  }
+
+  // apply scaling
+  dstw = floor(dstw * sx);
+  dsth = floor(dsth * sy);
+
+  // normalized device coordinates
+  std::array<float, 4> ndc = TS_NDCRect(px, py, dstw, dsth);
+
+  // normalized texture coordinates
+  std::array<float, 4> ntc = TS_NTCRect(srctlx, srctly, srcw, srch);
+
+  // update vertices
+  vertices.push_back(Vertex(ndc[1], ndc[3], 0, 0, 0, ntc[1], ntc[3], txtInd));
+  vertices.push_back(Vertex(ndc[0], ndc[3], 0, 0, 0, ntc[0], ntc[3], txtInd));
+  vertices.push_back(Vertex(ndc[0], ndc[2], 0, 0, 0, ntc[0], ntc[2], txtInd));
+  vertices.push_back(Vertex(ndc[1], ndc[2], 0, 0, 0, ntc[1], ntc[2], txtInd));
+
+  // update indices
+  TS_Add4Indices();
 }
 
 void TS_VkCmdClearColorImage(float r, float g, float b, float a)
@@ -308,6 +660,9 @@ void TS_VkDraw(float r, float g, float b, float a)
   cmdbufs[frameIndex].copyBuffer(vertexStaging.first, vertexBuffer.first, 1, &bfcpy);
   cmdbufs[frameIndex].copyBuffer(indexStaging.first, indexBuffer.first, 1, &bfcpy);
 
+  // bind descriptor sets (sampler and textures)
+  cmdbufs[frameIndex].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, trianglePipelineLayout, 0, 1, &dscSet, 0, 0);
+
   // bind vertex buffer
   vk::Buffer vertexBuffers[] = {vertexBuffer.first};
   vk::DeviceSize offsets[] = {0};
@@ -318,7 +673,6 @@ void TS_VkDraw(float r, float g, float b, float a)
 
   // bind triangle pipeline
   cmdbufs[frameIndex].bindPipeline(vk::PipelineBindPoint::eGraphics, trianglePipeline);
-
 
   // begin render pass
   vk::RenderPassBeginInfo rpi {
@@ -681,35 +1035,111 @@ vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind k
   return dev.createShaderModule(createInfo);
 }
 
+void TS_VkCreateDescriptorSet()
+{
+  vk::SamplerCreateInfo samplerInfo;
+  samplerInfo.magFilter = vk::Filter::eNearest;
+  samplerInfo.minFilter = vk::Filter::eNearest;
+
+  samplerInfo.addressModeU = vk::SamplerAddressMode::eMirroredRepeat;
+  samplerInfo.addressModeV = vk::SamplerAddressMode::eMirroredRepeat;
+  samplerInfo.addressModeW = vk::SamplerAddressMode::eMirroredRepeat;
+
+  samplerInfo.anisotropyEnable = VK_FALSE;
+  samplerInfo.maxAnisotropy = 0.0f;
+  samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
+  samplerInfo.unnormalizedCoordinates = VK_FALSE;
+
+  samplerInfo.compareEnable = VK_FALSE;
+  samplerInfo.compareOp = vk::CompareOp::eAlways;
+
+  samplerInfo.mipmapMode = vk::SamplerMipmapMode::eNearest;
+  samplerInfo.mipLodBias = 0.0f;
+  samplerInfo.minLod = 0.0f;
+  samplerInfo.maxLod = 0.0f;
+
+  smp = dev.createSampler(samplerInfo);
+
+  vk::DescriptorSetLayoutBinding smpBinding;
+  smpBinding.descriptorType = vk::DescriptorType::eSampler;
+  smpBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
+  smpBinding.binding = 0;
+  smpBinding.descriptorCount = 1;
+
+  vk::DescriptorSetLayoutBinding txtsBinding;
+  txtsBinding.descriptorType = vk::DescriptorType::eSampledImage;
+  txtsBinding.stageFlags = vk::ShaderStageFlagBits::eFragment;
+  txtsBinding.binding = 1;
+  txtsBinding.descriptorCount = NUM_SUPPORTED_TEXTURES;
+
+  vk::DescriptorSetLayoutBinding layoutBindings[] = {smpBinding, txtsBinding};
+
+  vk::DescriptorSetLayoutCreateInfo layoutInfo;
+  layoutInfo.bindingCount = 2;
+  layoutInfo.pBindings = layoutBindings;
+  dscSetLayout = dev.createDescriptorSetLayout(layoutInfo);
+
+  vk::DescriptorPoolSize smpPoolSize;
+  smpPoolSize.type = vk::DescriptorType::eSampler;
+  smpPoolSize.descriptorCount = 1;
+  vk::DescriptorPoolSize txtsPoolSize;
+  txtsPoolSize.type = vk::DescriptorType::eSampledImage;
+  txtsPoolSize.descriptorCount = NUM_SUPPORTED_TEXTURES;
+  std::array<vk::DescriptorPoolSize, 2> poolSizes = {smpPoolSize, txtsPoolSize};
+
+  vk::DescriptorPoolCreateInfo poolCreateInfo;
+  poolCreateInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+  poolCreateInfo.pPoolSizes = poolSizes.data();
+  poolCreateInfo.maxSets = 1 + NUM_SUPPORTED_TEXTURES;
+  poolCreateInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+  dscPool = dev.createDescriptorPool(poolCreateInfo);
+
+  vk::DescriptorSetAllocateInfo allocInfo;
+  allocInfo.descriptorPool = dscPool;
+  allocInfo.descriptorSetCount = 1;
+  allocInfo.pSetLayouts = &dscSetLayout;
+  dscSet = dev.allocateDescriptorSets(allocInfo)[0];
+}
+
 void TS_VkCreateTrianglePipeline()
 {
   std::string vertShaderCode = R"""(
     #version 450
 
     layout(location = 0) in vec2 inPos;
-    layout(location = 1) in vec3 inCol;
-    layout(location = 2) in vec2 inTex;
+    layout(location = 1) in vec2 inUv;
+    layout(location = 2) in vec3 inCol;
+    layout(location = 3) in int inTex;
 
     layout(location = 0) out vec3 fragCol;
-    layout(location = 1) out vec2 fragTex;
+    layout(location = 1) out int fragTex;
+    layout(location = 2) out vec2 fragUv;
 
     void main() {
         gl_Position = vec4(inPos, 0.0, 1.0);
         fragCol = inCol;
         fragTex = inTex;
+        fragUv = inUv;
     }
   )""";
 
   std::string fragShaderCode = R"""(
     #version 450
 
+    layout(set = 0, binding = 0) uniform sampler smp;
+    layout(set = 0, binding = 1) uniform texture2D txts[80];
+
     layout(location = 0) in vec3 fragCol;
-    layout(location = 1) in vec2 fragTex;
+    layout(location = 1) flat in int fragTex;
+    layout(location = 2) in vec2 fragUv;
 
     layout(location = 0) out vec4 outCol;
 
     void main() {
-        outCol = vec4(fragCol, 1.0);
+        if (fragTex == -1)
+            outCol = vec4(fragCol, 1.0);
+        else
+            outCol = texture(sampler2D(txts[fragTex], smp), fragUv);
     }
   )""";
 
@@ -786,7 +1216,8 @@ void TS_VkCreateTrianglePipeline()
   colorBlending.blendConstants[3] = 0.0f;
 
   vk::PipelineLayoutCreateInfo pipelineLayoutInfo;
-  pipelineLayoutInfo.setLayoutCount = 0;
+  pipelineLayoutInfo.setLayoutCount = 1;
+  pipelineLayoutInfo.pSetLayouts = &dscSetLayout;
   pipelineLayoutInfo.pushConstantRangeCount = 0;
 
   trianglePipelineLayout = dev.createPipelineLayout(pipelineLayoutInfo);
@@ -808,6 +1239,32 @@ void TS_VkCreateTrianglePipeline()
 
   dev.destroyShaderModule(fragShaderModule);
   dev.destroyShaderModule(vertShaderModule);
+}
+
+void TS_VkWriteDescriptorSet()
+{
+  vk::WriteDescriptorSet setWrites[2];
+
+  vk::DescriptorImageInfo samplerInfo;
+  samplerInfo.sampler = smp;
+
+  setWrites[0].dstBinding = 0;
+  setWrites[0].dstArrayElement = 0;
+	setWrites[0].descriptorType = vk::DescriptorType::eSampler;
+	setWrites[0].descriptorCount = 1;
+	setWrites[0].dstSet = dscSet;
+	setWrites[0].pBufferInfo = 0;
+	setWrites[0].pImageInfo = &samplerInfo;
+
+	setWrites[1].dstBinding = 1;
+	setWrites[1].dstArrayElement = 0;
+	setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
+	setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
+	setWrites[1].pBufferInfo = 0;
+	setWrites[1].dstSet = dscSet;
+	setWrites[1].pImageInfo = dscImgInfos.data();
+
+  dev.updateDescriptorSets(2, setWrites, 0, nullptr);
 }
 
 void TS_VkCreateFramebuffers()
@@ -869,7 +1326,9 @@ void TS_VkInit()
   TS_VkCreateImageViews();
   TS_VkSetupDepthStencil();
   TS_VkCreateRenderPass();
+  TS_VkCreateDescriptorSet();
   TS_VkCreateTrianglePipeline();
+  TS_VkWriteDescriptorSet();
   TS_VkCreateFramebuffers();
   TS_VkCreateCommandPool();
   TS_VkAllocateCommandBuffers();
@@ -916,6 +1375,14 @@ void TS_VkDestroyTrianglePipeline()
 {
   dev.destroy(trianglePipeline);
   dev.destroy(trianglePipelineLayout);
+}
+
+void TS_VkDestroyDescriptorSet()
+{
+  dev.freeDescriptorSets(dscPool, 1, &dscSet);
+  dev.destroy(dscSetLayout);
+  dev.destroy(smp);
+  dev.destroy(dscPool);
 }
 
 void TS_VkDestroyRenderPass()
@@ -987,6 +1454,7 @@ void TS_VkQuit()
   TS_VkDestroyCommandPool();
   TS_VkDestroyFramebuffers();
   TS_VkDestroyTrianglePipeline();
+  TS_VkDestroyDescriptorSet();
   TS_VkDestroyRenderPass();
   TS_VkTeardownDepthStencil();
   TS_VkDestroyImageViews();
@@ -1004,6 +1472,12 @@ void TS_Init(const char * ttl, int wdth, int hght)
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
     std::cerr << "Unable to initialize SDL: " << TS_GetSDLError() << std::endl;
+  }
+
+  int img_init_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+  if ((IMG_Init(img_init_flags) & img_init_flags) != img_init_flags)
+  {
+    std::cerr << "Failed to initialize SDL_image, textures will not load" << std::endl;
   }
 
   int mix_init_flags = MIX_INIT_FLAC | MIX_INIT_MP3 | MIX_INIT_OGG;
@@ -1037,12 +1511,14 @@ void TS_Init(const char * ttl, int wdth, int hght)
 void TS_Quit()
 {
   TS_VkQuit();
+
   SDL_DestroyWindow(win);
 
   Mix_HaltMusic();
   Mix_HaltChannel(-1);
   Mix_CloseAudio();
 
+  IMG_Quit();
   Mix_Quit();
   SDL_Quit();
 }
