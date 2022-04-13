@@ -103,15 +103,15 @@ std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 struct Vertex {
   glm::vec2 pos;
   glm::vec2 uv;
-  glm::vec3 col;
-  glm::ivec1 tex;
+  glm::vec4 col;
+  int tex;
 
-  Vertex(float x, float y, float r, float g, float b, float u = 0, float v = 0, int t = -1)
+  Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
   {
     this->pos = glm::vec2(x, y);
     this->uv = glm::vec2(u, v);
-    this->col = glm::vec3(r, g, b);
-    this->tex = glm::vec1(t);
+    this->col = glm::vec4(r, g, b, a);
+    this->tex = t;
   }
 
   static vk::VertexInputBindingDescription getBindingDescription()
@@ -140,7 +140,7 @@ struct Vertex {
 
     attributeDescriptions[2].binding = 0;
     attributeDescriptions[2].location = 2;
-    attributeDescriptions[2].format = vk::Format::eR32G32B32Sfloat;
+    attributeDescriptions[2].format = vk::Format::eR32G32B32A32Sfloat;
     attributeDescriptions[2].offset = offsetof(Vertex, col);
 
     attributeDescriptions[3].binding = 0;
@@ -306,9 +306,9 @@ float TS_NTCV(int y, int h)
   return (1.0f / h) * y;
 }
 
-std::array<float, 4> TS_NTCRect(int x, int y, int w, int h)
+std::array<float, 4> TS_NTCRect(int x, int y, int w, int h, int w2, int h2)
 {
-  return std::array<float, 4>({TS_NTCU(x, w), TS_NTCU(x + w, w), TS_NTCV(y, h), TS_NTCV(y + h, h)});
+  return std::array<float, 4>({TS_NTCU(x, w2), TS_NTCU(x + w, w2), TS_NTCV(y, h2), TS_NTCV(y + h, h2)});
 }
 
 void TS_Add4Indices()
@@ -338,7 +338,7 @@ vk::CommandBuffer TS_VkBeginScratchBuffer()
   return tmp;
 }
 
-void TS_VkSubmitScratchBuffer(vk::CommandBuffer tmp)
+void TS_VkSubmitScratchBuffer(vk::CommandBuffer &tmp)
 {
   tmp.end();
 
@@ -417,6 +417,32 @@ void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32
   TS_VkSubmitScratchBuffer(tmp);
 }
 
+void TS_VkWriteDescriptorSet()
+{
+  vk::WriteDescriptorSet setWrites[2];
+
+  vk::DescriptorImageInfo samplerInfo;
+  samplerInfo.sampler = smp;
+
+  setWrites[0].dstBinding = 0;
+  setWrites[0].dstArrayElement = 0;
+	setWrites[0].descriptorType = vk::DescriptorType::eSampler;
+	setWrites[0].descriptorCount = 1;
+	setWrites[0].dstSet = dscSet;
+	setWrites[0].pBufferInfo = 0;
+	setWrites[0].pImageInfo = &samplerInfo;
+
+	setWrites[1].dstBinding = 1;
+	setWrites[1].dstArrayElement = 0;
+	setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
+	setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
+	setWrites[1].pBufferInfo = 0;
+	setWrites[1].dstSet = dscSet;
+	setWrites[1].pImageInfo = dscImgInfos.data();
+
+  dev.updateDescriptorSets(2, setWrites, 0, nullptr);
+}
+
 int TS_VkLoadTexture(const char * img)
 {
   // initialize on first access
@@ -479,7 +505,7 @@ int TS_VkLoadTexture(const char * img)
         pixels.push_back(r);
         pixels.push_back(g);
         pixels.push_back(b);
-        pixels.push_back(a);
+        pixels.push_back(255);
       }
       else
       {
@@ -493,18 +519,13 @@ int TS_VkLoadTexture(const char * img)
     SDL_UnlockSurface(srf);
     SDL_FreeSurface(srf);
 
-    vk::DeviceSize imgSize = wdth * hght * 4;
-
-    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(imgSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-    memcpy(al.getAllocationInfo(pixelStaging.second).pMappedData, (void*)pixels.data(), static_cast<size_t>(imgSize));
-    
+    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(pixels.size() * sizeof(uint8_t), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, vma::AllocationCreateFlagBits::eMapped);    
+    memcpy(al.getAllocationInfo(pixelStaging.second).pMappedData, (void*)pixels.data(), pixels.size() * sizeof(uint8_t));
     std::pair<vk::Image, vma::Allocation> pixelImg = TS_VmaCreateImage(wdth, hght, vk::Format::eR8G8B8A8Unorm, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
-
     TS_VkTransitionImageLayout(pixelImg.first, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
     TS_VkCopyBufferToImage(pixelStaging.first, pixelImg.first, wdth, hght);
     TS_VkTransitionImageLayout(pixelImg.first, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
     vk::ImageView v = TS_VkCreateImageView(pixelImg.first, vk::Format::eR8G8B8A8Unorm, vk::ImageAspectFlagBits::eColor);
-    
     al.destroyBuffer(pixelStaging.first, pixelStaging.second);
 
     txts[txtInd] = Texture();
@@ -521,6 +542,8 @@ int TS_VkLoadTexture(const char * img)
 
     txtInds[std::string(img)] = txtInd;
     availableInds.pop();
+
+    TS_VkWriteDescriptorSet();
   }
 
   return txtInds[std::string(img)];
@@ -542,6 +565,9 @@ void TS_VkUnloadTexture(const char * img)
 
   // return index to queue
   availableInds.push(ind);
+
+  // update descriptor set
+  TS_VkWriteDescriptorSet();
 }
 
 void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
@@ -550,16 +576,16 @@ void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, i
   std::array<float, 4> ndc = TS_NDCRect(x, y, w, h);
 
   // update vertices
-  vertices.push_back(Vertex(ndc[1], ndc[3], r, g, b));
-  vertices.push_back(Vertex(ndc[0], ndc[3], r, g, b));
-  vertices.push_back(Vertex(ndc[0], ndc[2], r, g, b));
-  vertices.push_back(Vertex(ndc[1], ndc[2], r, g, b));
+  vertices.push_back(Vertex(ndc[1], ndc[3], r, g, b, a));
+  vertices.push_back(Vertex(ndc[0], ndc[3], r, g, b, a));
+  vertices.push_back(Vertex(ndc[0], ndc[2], r, g, b, a));
+  vertices.push_back(Vertex(ndc[1], ndc[2], r, g, b, a));
 
   // update indices
   TS_Add4Indices();
 }
 
-void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, int px, int py, float sx, float sy)
+void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, int px, int py, float sx, float sy)
 {
   int txtInd = TS_VkLoadTexture(img);
 
@@ -588,7 +614,7 @@ void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int r
     srcw = cw;
     srch = ch;
     dstw = cw;
-    dstw = ch;
+    dsth = ch;
   }
   // use whole texture
   else
@@ -609,13 +635,13 @@ void TS_VkCmdDrawSprite(const char * img, float a, int rx, int ry, int rw, int r
   std::array<float, 4> ndc = TS_NDCRect(px, py, dstw, dsth);
 
   // normalized texture coordinates
-  std::array<float, 4> ntc = TS_NTCRect(srctlx, srctly, srcw, srch);
+  std::array<float, 4> ntc = TS_NTCRect(srctlx, srctly, srcw, srch, w, h);
 
   // update vertices
-  vertices.push_back(Vertex(ndc[1], ndc[3], 0, 0, 0, ntc[1], ntc[3], txtInd));
-  vertices.push_back(Vertex(ndc[0], ndc[3], 0, 0, 0, ntc[0], ntc[3], txtInd));
-  vertices.push_back(Vertex(ndc[0], ndc[2], 0, 0, 0, ntc[0], ntc[2], txtInd));
-  vertices.push_back(Vertex(ndc[1], ndc[2], 0, 0, 0, ntc[1], ntc[2], txtInd));
+  vertices.push_back(Vertex(ndc[1], ndc[3], r, g, b, a, ntc[1], ntc[3], txtInd));
+  vertices.push_back(Vertex(ndc[0], ndc[3], r, g, b, a, ntc[0], ntc[3], txtInd));
+  vertices.push_back(Vertex(ndc[0], ndc[2], r, g, b, a, ntc[0], ntc[2], txtInd));
+  vertices.push_back(Vertex(ndc[1], ndc[2], r, g, b, a, ntc[1], ntc[2], txtInd));
 
   // update indices
   TS_Add4Indices();
@@ -739,10 +765,10 @@ void TS_VkCreateInstance()
   
   vk::ApplicationInfo appInfo {
     window_name, 
-    VK_MAKE_VERSION(0, 1, 0), 
+    VK_MAKE_VERSION(0, 1, 2), 
     "Telescope", 
-    VK_MAKE_VERSION(0, 1, 0),
-    VK_API_VERSION_1_0
+    VK_MAKE_VERSION(0, 1, 2),
+    VK_API_VERSION_1_2
   };
 
   if (enableValidationLayers)
@@ -812,7 +838,7 @@ void TS_VkSelectQueueFamily()
 
 void TS_VkCreateDevice()
 {
-  const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+  const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
   const float queue_priority[] = { 1.0f };
   float queuePriority = queue_priority[0];
   
@@ -840,6 +866,10 @@ void TS_VkCreateDevice()
 
   vk::PhysicalDeviceFeatures deviceFeatures = {};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
+  deviceFeatures.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
+  deviceFeatures.shaderStorageImageArrayDynamicIndexing = VK_TRUE;
+  deviceFeatures.shaderStorageBufferArrayDynamicIndexing = VK_TRUE;
+  deviceFeatures.shaderUniformBufferArrayDynamicIndexing = VK_TRUE;
   vk::DeviceCreateInfo deviceCreateInfo {
     vk::DeviceCreateFlags(),
     static_cast<uint32_t>(queueCreateInfos.size()), queueCreateInfos.data(),
@@ -847,6 +877,15 @@ void TS_VkCreateDevice()
     static_cast<uint32_t>(deviceExtensions.size()), deviceExtensions.data(),
     &deviceFeatures
   };
+
+  vk::PhysicalDeviceRobustness2FeaturesEXT robustnessFeatures;
+  robustnessFeatures.nullDescriptor = VK_TRUE;
+  deviceCreateInfo.pNext = &robustnessFeatures;
+
+  vk::PhysicalDeviceVulkan12Features vulkan12Features;
+  vulkan12Features.descriptorIndexing = VK_TRUE;
+  vulkan12Features.descriptorBindingPartiallyBound = VK_TRUE;
+  robustnessFeatures.pNext = &vulkan12Features;
 
   dev = pdev.createDevice(deviceCreateInfo);
   VULKAN_HPP_DEFAULT_DISPATCHER.init(dev);
@@ -1077,6 +1116,13 @@ void TS_VkCreateDescriptorSet()
   vk::DescriptorSetLayoutCreateInfo layoutInfo;
   layoutInfo.bindingCount = 2;
   layoutInfo.pBindings = layoutBindings;
+
+  vk::DescriptorBindingFlags layoutBindingFlags[] = {vk::DescriptorBindingFlags(), vk::DescriptorBindingFlagBits::ePartiallyBound};
+  vk::DescriptorSetLayoutBindingFlagsCreateInfo layoutFlagsInfo;
+  layoutFlagsInfo.bindingCount = 2;
+  layoutFlagsInfo.pBindingFlags = layoutBindingFlags;
+  layoutInfo.pNext = &layoutFlagsInfo;
+
   dscSetLayout = dev.createDescriptorSetLayout(layoutInfo);
 
   vk::DescriptorPoolSize smpPoolSize;
@@ -1108,10 +1154,10 @@ void TS_VkCreateTrianglePipeline()
 
     layout(location = 0) in vec2 inPos;
     layout(location = 1) in vec2 inUv;
-    layout(location = 2) in vec3 inCol;
+    layout(location = 2) in vec4 inCol;
     layout(location = 3) in int inTex;
 
-    layout(location = 0) out vec3 fragCol;
+    layout(location = 0) out vec4 fragCol;
     layout(location = 1) out int fragTex;
     layout(location = 2) out vec2 fragUv;
 
@@ -1129,7 +1175,7 @@ void TS_VkCreateTrianglePipeline()
     layout(set = 0, binding = 0) uniform sampler smp;
     layout(set = 0, binding = 1) uniform texture2D txts[80];
 
-    layout(location = 0) in vec3 fragCol;
+    layout(location = 0) in vec4 fragCol;
     layout(location = 1) flat in int fragTex;
     layout(location = 2) in vec2 fragUv;
 
@@ -1137,9 +1183,9 @@ void TS_VkCreateTrianglePipeline()
 
     void main() {
         if (fragTex == -1)
-            outCol = vec4(fragCol, 1.0);
+            outCol = fragCol;
         else
-            outCol = texture(sampler2D(txts[fragTex], smp), fragUv);
+            outCol = fragCol * texture(sampler2D(txts[fragTex], smp), fragUv);
     }
   )""";
 
@@ -1202,8 +1248,14 @@ void TS_VkCreateTrianglePipeline()
   multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
 
   vk::PipelineColorBlendAttachmentState colorBlendAttachment;
-  colorBlendAttachment.blendEnable = false;
+  colorBlendAttachment.blendEnable = true;
   colorBlendAttachment.colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA;
+  colorBlendAttachment.srcColorBlendFactor = vk::BlendFactor::eSrcAlpha;
+  colorBlendAttachment.dstColorBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+  colorBlendAttachment.colorBlendOp = vk::BlendOp::eAdd;
+  colorBlendAttachment.srcAlphaBlendFactor = vk::BlendFactor::eSrcAlpha;
+  colorBlendAttachment.dstAlphaBlendFactor = vk::BlendFactor::eOneMinusSrcAlpha;
+  colorBlendAttachment.alphaBlendOp = vk::BlendOp::eAdd;
 
   vk::PipelineColorBlendStateCreateInfo colorBlending;
   colorBlending.logicOpEnable = false;
@@ -1239,32 +1291,6 @@ void TS_VkCreateTrianglePipeline()
 
   dev.destroyShaderModule(fragShaderModule);
   dev.destroyShaderModule(vertShaderModule);
-}
-
-void TS_VkWriteDescriptorSet()
-{
-  vk::WriteDescriptorSet setWrites[2];
-
-  vk::DescriptorImageInfo samplerInfo;
-  samplerInfo.sampler = smp;
-
-  setWrites[0].dstBinding = 0;
-  setWrites[0].dstArrayElement = 0;
-	setWrites[0].descriptorType = vk::DescriptorType::eSampler;
-	setWrites[0].descriptorCount = 1;
-	setWrites[0].dstSet = dscSet;
-	setWrites[0].pBufferInfo = 0;
-	setWrites[0].pImageInfo = &samplerInfo;
-
-	setWrites[1].dstBinding = 1;
-	setWrites[1].dstArrayElement = 0;
-	setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
-	setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
-	setWrites[1].pBufferInfo = 0;
-	setWrites[1].dstSet = dscSet;
-	setWrites[1].pImageInfo = dscImgInfos.data();
-
-  dev.updateDescriptorSets(2, setWrites, 0, nullptr);
 }
 
 void TS_VkCreateFramebuffers()
@@ -1327,8 +1353,8 @@ void TS_VkInit()
   TS_VkSetupDepthStencil();
   TS_VkCreateRenderPass();
   TS_VkCreateDescriptorSet();
-  TS_VkCreateTrianglePipeline();
   TS_VkWriteDescriptorSet();
+  TS_VkCreateTrianglePipeline();
   TS_VkCreateFramebuffers();
   TS_VkCreateCommandPool();
   TS_VkAllocateCommandBuffers();
@@ -1418,6 +1444,20 @@ void TS_VmaDestroyBuffers()
   al.destroyBuffer(indexBuffer.first, indexBuffer.second);
 }
 
+void TS_VkDestroyTextures()
+{
+  for (std::map<std::string, int>::iterator it = txtInds.begin(); it != txtInds.end(); ++it)
+  {
+    al.destroyImage(txts[it->second].img.first, txts[it->second].img.second);
+    dev.destroyImageView(txts[it->second].view);
+    availableInds.push(it->second);
+  }
+
+  txtInds.clear();
+  txts.fill(Texture());
+  dscImgInfos.fill(vk::DescriptorImageInfo());
+}
+
 void TS_VmaDestroyAllocator()
 {
   al.destroy();
@@ -1460,6 +1500,7 @@ void TS_VkQuit()
   TS_VkDestroyImageViews();
   TS_VkDestroySwapchain();
   TS_VmaDestroyBuffers();
+  TS_VkDestroyTextures();
   TS_VmaDestroyAllocator();
   TS_VkDestroyDevice();
   TS_VkDestroySurface();
