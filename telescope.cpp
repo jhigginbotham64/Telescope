@@ -1,6 +1,13 @@
+/*
+  - can't find SDL_mixer.h
+  - can't convert between VulkanHPP and normal Vulkan types
+
+*/
+
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
 
+#define VULKAN_HPP_TYPESAFE_CONVERSION 1
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
@@ -28,9 +35,6 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include "vma/vk_mem_alloc.hpp"
-
-#include "json/single_include/nlohmann/json.hpp"
-using json = nlohmann::json;
 
 #include "telescope.h"
 
@@ -258,26 +262,6 @@ std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(uint32_t width, uint32_t
   };
 
   return al.createImage(imageInfo, allocInfo);
-}
-
-const char * TS_SDLGetEvents()
-{
-  SDL_PumpEvents();
-
-  std::array<SDL_Event, SDL_MAX_QUEUED_EVENTS> evts;
-
-  int nevts = SDL_PeepEvents(evts.data(), SDL_MAX_QUEUED_EVENTS, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
-
-  json evtjson = json::array();
-
-  for (int i = 0; i < nevts; ++i)
-  {
-    // convert evts[i] to json and add to evtjson
-  }
-
-  events = evtjson.dump();
-
-  return events.c_str();
 }
 
 const char * TS_SDLGetError()
@@ -511,7 +495,7 @@ int TS_VkLoadTexture(const char * img)
         pixels.push_back(r);
         pixels.push_back(g);
         pixels.push_back(b);
-        pixels.push_back(255);
+        pixels.push_back(255); // TODO fix this
       }
       else
       {
