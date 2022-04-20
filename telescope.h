@@ -9,7 +9,9 @@
 extern "C" {
 #endif
 
-const char * TS_GetSDLError();
+const char * TS_SDLGetEvents();
+
+const char * TS_SDLGetError();
 
 void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);
 

@@ -38,6 +38,8 @@ const char *window_name = NULL;
 SDL_Window *win = NULL;
 int window_width = 0;
 int window_height = 0;
+#define SDL_MAX_QUEUED_EVENTS 65535
+std::string events;
 const vk::DeviceSize defaultBufferSize = 1024 * 64; // 64 kb
 vk::Instance inst;
 VkSurfaceKHR srf;
@@ -258,7 +260,27 @@ std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(uint32_t width, uint32_t
   return al.createImage(imageInfo, allocInfo);
 }
 
-const char * TS_GetSDLError()
+const char * TS_SDLGetEvents()
+{
+  SDL_PumpEvents();
+
+  std::array<SDL_Event, SDL_MAX_QUEUED_EVENTS> evts;
+
+  int nevts = SDL_PeepEvents(evts.data(), SDL_MAX_QUEUED_EVENTS, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+  json evtjson = json::array();
+
+  for (int i = 0; i < nevts; ++i)
+  {
+    // convert evts[i] to json and add to evtjson
+  }
+
+  events = evtjson.dump();
+
+  return events.c_str();
+}
+
+const char * TS_SDLGetError()
 {
   return SDL_GetError();
 }
@@ -301,7 +323,7 @@ void TS_Add4Indices()
   indices.push_back(current_index + 1);
   indices.push_back(current_index + 2);
   indices.push_back(current_index + 3);
-  indices.push_back(0xFFFFFFFF); // primitive restart
+  indices.push_back(0xffffffff); // primitive restart
   current_index += 4;
 }
 
@@ -1496,7 +1518,7 @@ void TS_Init(const char * ttl, int wdth, int hght)
 { 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
-    std::cerr << "Unable to initialize SDL: " << TS_GetSDLError() << std::endl;
+    std::cerr << "Unable to initialize SDL: " << TS_SDLGetError() << std::endl;
   }
 
   int img_init_flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
@@ -1508,12 +1530,12 @@ void TS_Init(const char * ttl, int wdth, int hght)
   int mix_init_flags = MIX_INIT_FLAC | MIX_INIT_MP3 | MIX_INIT_OGG;
   if ((Mix_Init(mix_init_flags) & mix_init_flags) != mix_init_flags)
   {
-    std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_GetSDLError() << std::endl; 
+    std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_SDLGetError() << std::endl; 
   }
 
   if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) != 0)
   {
-    std::cerr << "No audio device available, sounds and music will not play." << std::endl << TS_GetSDLError() << std::endl;
+    std::cerr << "No audio device available, sounds and music will not play." << std::endl << TS_SDLGetError() << std::endl;
     Mix_CloseAudio();
   }
 
@@ -1523,7 +1545,7 @@ void TS_Init(const char * ttl, int wdth, int hght)
   win = SDL_CreateWindow(ttl, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, wdth, hght, SDL_WINDOW_VULKAN|SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_SHOWN);
   if (win == NULL)
   {
-    std::cerr << "Failed to create window: " << TS_GetSDLError() << std::endl;
+    std::cerr << "Failed to create window: " << TS_SDLGetError() << std::endl;
   }
   else
   {
@@ -1579,11 +1601,11 @@ void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
   Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);
   if (sample == NULL)
   {
-    std::cerr << "Could not load sound file: " << std::string(sound_file) << std::endl << TS_GetSDLError() << std::endl;
+    std::cerr << "Could not load sound file: " << std::string(sound_file) << std::endl << TS_SDLGetError() << std::endl;
     return;
   }
   if (Mix_PlayChannelTimed(-1, sample, loops, ticks) == -1)
   {
-    std::cerr << "Unable to play sound " << sound_file << std::endl << TS_GetSDLError() << std::endl;
+    std::cerr << "Unable to play sound " << sound_file << std::endl << TS_SDLGetError() << std::endl;
   }
 }
