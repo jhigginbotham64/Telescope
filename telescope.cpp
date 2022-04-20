@@ -1,22 +1,3 @@
-/*
-  textures
-
-  on-demand tasks
-  - load new texture
-    - load image from disk with SDL_image
-    - create staging pixel buffer
-    - copy pixels to staging
-    - free pixels with SDL_image
-    - create image for sampling and transfer dst
-    - transition image layout 1
-    - copy staging pixels to image
-    - transition image layout 2
-    - create image view
-    - destroy staging pixel buffer
-    - update descriptor image info array
-    - update descriptor sets
-*/
-
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
 
@@ -47,6 +28,9 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
 #include "vma/vk_mem_alloc.hpp"
+
+#include "json/single_include/nlohmann/json.hpp"
+using json = nlohmann::json;
 
 #include "telescope.h"
 
