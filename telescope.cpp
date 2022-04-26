@@ -2,10 +2,15 @@
   - can't find SDL_mixer.h
   - can't convert between VulkanHPP and normal Vulkan types
 
+  bullet functionality needed for Pong includes:
+  - inititialization and shutdown
+  - adding rigid bodies
+  - removing rigid bodies
+  - trigger volume options
+  - advancing the simulation
+  - retrieving updated transforms
+  - retrieving collision events
 */
-
-#include <glm/glm.hpp>
-#include <shaderc/shaderc.hpp>
 
 #define VULKAN_HPP_TYPESAFE_CONVERSION 1
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
@@ -14,12 +19,23 @@
 #include <vulkan/vulkan.hpp>
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
+#define VMA_IMPLEMENTATION
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
+#include "vma/vk_mem_alloc.hpp"
+
+#include <glm/glm.hpp>
+#include <shaderc/shaderc.hpp>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_vulkan.h>
+
+#include <bullet/btBulletCollisionCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include <iostream>
 #include <algorithm>
@@ -30,11 +46,6 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <queue>
 #include <utility>
 #include <cmath>
-
-#define VMA_IMPLEMENTATION
-#define VMA_STATIC_VULKAN_FUNCTIONS 0
-#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
-#include "vma/vk_mem_alloc.hpp"
 
 #include "telescope.h"
 
@@ -156,6 +167,12 @@ std::vector<vk::Fence> fences;
 uint32_t frameIndex;
 vma::Allocator al;
 vk::DebugUtilsMessengerEXT dbm;
+
+btBroadphaseInterface * btbpi;
+btCollisionConfiguration * btcc;
+btCollisionDispatcher * btcd;
+btConstraintSolver * btcs;
+btDynamicsWorld * btdw;
 
 const std::vector<const char*> validationLayers = {
   "VK_LAYER_KHRONOS_validation"
@@ -1352,6 +1369,15 @@ void TS_VkInit()
   TS_VkCreateFences();
 }
 
+void TS_BtInit()
+{
+  btcc = new btDefaultCollisionConfiguration();
+  btcd = new btCollisionDispatcher(btcc);
+  btbpi = new btDbvtBroadphase();
+  btcs = new btSequentialImpulseConstraintSolver();
+  btdw = new btDiscreteDynamicsWorld(btcd, btbpi, btcs, btcc);
+}
+
 void TS_VkDestroyFences()
 {
   for (int i = 0; i < swapchainImageCount; ++i)
@@ -1498,6 +1524,15 @@ void TS_VkQuit()
   TS_VkDestroyInstance();
 }
 
+void TS_BtQuit()
+{
+  delete btbpi;
+  delete btcc;
+  delete btcd;
+  delete btcs;
+  delete btdw;
+}
+
 void TS_Init(const char * ttl, int wdth, int hght)
 { 
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -1537,6 +1572,8 @@ void TS_Init(const char * ttl, int wdth, int hght)
   }
   
   TS_VkInit();
+
+  TS_BtInit();
 }
 
 void TS_Quit()
@@ -1552,6 +1589,8 @@ void TS_Quit()
   IMG_Quit();
   Mix_Quit();
   SDL_Quit();
+
+  TS_BtQuit();
 }
 
 void TS_VkBeginDrawPass()
