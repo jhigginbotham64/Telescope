@@ -2,15 +2,6 @@
   TODO: "can't find SDL_mixer.h"
   TODO: "can't convert between VulkanHPP and normal Vulkan types"
   TODO: better support for rotation of rectangles, sprites, and collision objects
-
-  bullet functionality needed for Pong includes:
-  - inititialization and shutdown
-  - adding rigid bodies
-  - removing rigid bodies
-  - trigger volume options
-  - advancing the simulation
-  - retrieving updated transforms
-  - retrieving collision events
 */
 
 #define VULKAN_HPP_TYPESAFE_CONVERSION 1
@@ -1535,7 +1526,11 @@ void TS_BtStepSimulation()
 			// from the previous update, it is a new
 			// pair and we must send a collision event
 			if (oldPairs.find(newPair) == oldPairs.end()) {
-				collisions.push(TS_CollisionInfo(idsByPtr[bA], idsByPtr[bB], true));
+        TS_CollisionInfo t = TS_CollisionInfo();
+        t.id1 = idsByPtr[bA];
+        t.id2 = idsByPtr[bB];
+        t.colliding = true;
+				collisions.push(t);
 			}
 		}
   }
@@ -1555,7 +1550,11 @@ void TS_BtStepSimulation()
   // iterate through all of the removed pairs
 	// sending separation events for them
 	for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
-		collisions.push(TS_CollisionInfo(idsByPtr[it->first], idsByPtr[it->second], false));
+		TS_CollisionInfo t = TS_CollisionInfo();
+    t.id1 = idsByPtr[it->first];
+    t.id2 = idsByPtr[it->second];
+    t.colliding = true;
+    collisions.push(t);
 	}
 	
 	// in the next iteration we'll want to
@@ -1566,7 +1565,14 @@ void TS_BtStepSimulation()
 
 TS_CollisionInfo TS_GetNextCollision()
 {
-  if (collisions.empty()) return TS_CollisionInfo();
+  if (collisions.empty())
+  {
+    TS_CollisionInfo t = TS_CollisionInfo();
+    t.id1 = -1;
+    t.id2 = -1;
+    t.colliding = false;
+    return t;
+  }
   else
   {
     TS_CollisionInfo ret = collisions.front();
@@ -1575,10 +1581,14 @@ TS_CollisionInfo TS_GetNextCollision()
   }
 }
 
-TS_BtPosition TS_BtGetPositionById(int id)
+TS_PositionInfo TS_BtGetPositionById(int id)
 {
   btVector3 pos = gameObjectsById[id]->getTransform().getOrigin();
-  return TS_BtPosition(float(pos.x()), float(pos.y()), float(pos.z()));
+  TS_PositionInfo p = TS_PositionInfo();
+  p.x = float(pos.x());
+  p.y = float(pos.y());
+  p.z = float(pos.z());
+  return p;
 }
 
 void TS_BtInit()
