@@ -9,6 +9,38 @@
 extern "C" {
 #endif
 
+struct TS_BtPosition
+{
+  float x;
+  float y;
+  float z;
+  TS_BtPosition(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
+};
+
+struct TS_CollisionInfo
+{
+  int id1;
+  int id2;
+  bool colliding;
+  TS_CollisionInfo(int _id1=-1, int _id2=-1, bool _colliding=false) : id1(_id1), id2(_id2), colliding(_colliding) {}
+};
+
+void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic);
+
+void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz);
+
+void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
+
+void TS_BtRemoveGameObject(int id);
+
+void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz);
+
+void TS_BtStepSimulation();
+
+TS_CollisionInfo TS_GetNextCollision();
+
+TS_BtPosition TS_BtGetPositionById(int id);
+
 const char * TS_SDLGetError();
 
 void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);

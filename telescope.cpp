@@ -1,6 +1,7 @@
 /*
-  - can't find SDL_mixer.h
-  - can't convert between VulkanHPP and normal Vulkan types
+  TODO: "can't find SDL_mixer.h"
+  TODO: "can't convert between VulkanHPP and normal Vulkan types"
+  TODO: better support for rotation of rectangles, sprites, and collision objects
 
   bullet functionality needed for Pong includes:
   - inititialization and shutdown
@@ -80,7 +81,7 @@ std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 
-struct Texture {
+struct TS_Texture {
   std::pair<vk::Image, vma::Allocation> img;
   vk::ImageView view;
 
@@ -98,16 +99,16 @@ vk::DescriptorSetLayout dscSetLayout;
 #define NUM_SUPPORTED_TEXTURES 80
 std::queue<int> availableInds;
 std::map<std::string, int> txtInds;
-std::array<Texture, NUM_SUPPORTED_TEXTURES> txts;
+std::array<TS_Texture, NUM_SUPPORTED_TEXTURES> txts;
 std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 
-struct Vertex {
+struct TS_Vertex {
   glm::vec2 pos;
   glm::vec2 uv;
   glm::vec4 col;
   int tex;
 
-  Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
+  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
   {
     this->pos = glm::vec2(x, y);
     this->uv = glm::vec2(u, v);
@@ -119,7 +120,7 @@ struct Vertex {
   {
     vk::VertexInputBindingDescription bindingDescription;
     bindingDescription.binding = 0;
-    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.stride = sizeof(TS_Vertex);
     bindingDescription.inputRate = vk::VertexInputRate::eVertex;
 
     return bindingDescription;
@@ -132,28 +133,28 @@ struct Vertex {
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
     attributeDescriptions[0].format = vk::Format::eR32G32Sfloat;
-    attributeDescriptions[0].offset = offsetof(Vertex, pos);
+    attributeDescriptions[0].offset = offsetof(TS_Vertex, pos);
 
     attributeDescriptions[1].binding = 0;
     attributeDescriptions[1].location = 1;
     attributeDescriptions[1].format = vk::Format::eR32G32Sfloat;
-    attributeDescriptions[1].offset = offsetof(Vertex, uv);
+    attributeDescriptions[1].offset = offsetof(TS_Vertex, uv);
 
     attributeDescriptions[2].binding = 0;
     attributeDescriptions[2].location = 2;
     attributeDescriptions[2].format = vk::Format::eR32G32B32A32Sfloat;
-    attributeDescriptions[2].offset = offsetof(Vertex, col);
+    attributeDescriptions[2].offset = offsetof(TS_Vertex, col);
 
     attributeDescriptions[3].binding = 0;
     attributeDescriptions[3].location = 3;
     attributeDescriptions[3].format = vk::Format::eR32Sint;
-    attributeDescriptions[3].offset = offsetof(Vertex, tex);
+    attributeDescriptions[3].offset = offsetof(TS_Vertex, tex);
 
     return attributeDescriptions;
   }
 };
 
-std::vector<Vertex> vertices;
+std::vector<TS_Vertex> vertices;
 std::vector<uint32_t> indices;
 uint32_t current_index = 0;
 vk::ImageView depthImageView;
@@ -173,6 +174,98 @@ btCollisionConfiguration * btcc;
 btCollisionDispatcher * btcd;
 btConstraintSolver * btcs;
 btDynamicsWorld * btdw;
+
+
+struct TS_GameObject {
+  btCollisionObject * cobj;
+  btCollisionShape * cshape;
+  btRigidBody * rbody;
+  btDefaultMotionState * dmstate;
+
+  TS_GameObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  {
+    cshape = s;
+
+    btTransform t;
+    t.setIdentity();
+    t.setOrigin(initPos);
+    t.setRotation(initRot);
+
+    if (!isTrigger)
+    {
+      dmstate = new btDefaultMotionState(t);
+
+      btVector3 locInertia(0,0,0);
+
+      if (mass != 0.0f)
+        cshape->calculateLocalInertia(mass, locInertia);
+      
+      btRigidBody::btRigidBodyConstructionInfo cinfo(mass, dmstate, cshape, locInertia);
+
+      rbody = new btRigidBody(cinfo);
+
+      cobj = rbody;
+
+      btdw->addRigidBody(rbody);
+    }
+    else
+    {
+      cobj = new btCollisionObject();
+      cobj->setCollisionShape(s);
+      cobj->setWorldTransform(t);
+      cobj->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+      btdw->addCollisionObject(cobj);
+    }
+
+    if (isKinematic)
+    {
+      if (rbody)
+        rbody->setCollisionFlags(rbody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+      else
+        cobj->setCollisionFlags(cobj->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+    }
+  }
+
+  ~TS_GameObject()
+  {
+    if (rbody)
+    { 
+      btdw->removeRigidBody(rbody);
+      delete rbody;
+    }
+    if (dmstate) delete dmstate;
+    if (cobj) 
+    {
+      btdw->removeCollisionObject(cobj);
+      delete cobj;
+    }
+    if (cshape) delete cshape;
+  }
+
+  btTransform getTransform()
+  {
+    if (dmstate)
+    {
+      btTransform t;
+      dmstate->getWorldTransform(t);
+      return t;
+    }
+    else
+    {
+      return cobj->getWorldTransform();
+    }
+  }
+};
+
+std::map<int, TS_GameObject*> gameObjectsById;
+std::map<const void*, int> idsByPtr;
+
+// convenient typedefs for collision events
+typedef std::pair<const void*, const void*> CollisionPair;
+typedef std::set<CollisionPair> CollisionPairs;
+CollisionPairs oldPairs;
+std::queue<TS_CollisionInfo> collisions;
 
 const std::vector<const char*> validationLayers = {
   "VK_LAYER_KHRONOS_validation"
@@ -535,7 +628,7 @@ int TS_VkLoadTexture(const char * img)
     vk::ImageView v = TS_VkCreateImageView(pixelImg.first, vk::Format::eR8G8B8A8Unorm, vk::ImageAspectFlagBits::eColor);
     al.destroyBuffer(pixelStaging.first, pixelStaging.second);
 
-    txts[txtInd] = Texture();
+    txts[txtInd] = TS_Texture();
     txts[txtInd].img = pixelImg;
     txts[txtInd].fname = std::string(img);
     txts[txtInd].view = v;
@@ -565,7 +658,7 @@ void TS_VkUnloadTexture(const char * img)
   txtInds.erase(std::string(img));
 
   // reset index in txts
-  txts[ind] = Texture();
+  txts[ind] = TS_Texture();
 
   // reset index in dscImgInfos
   dscImgInfos[ind] = vk::DescriptorImageInfo();
@@ -583,10 +676,10 @@ void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, i
   std::array<float, 4> ndc = TS_NDCRect(x, y, w, h);
 
   // update vertices
-  vertices.push_back(Vertex(ndc[1], ndc[3], r, g, b, a));
-  vertices.push_back(Vertex(ndc[0], ndc[3], r, g, b, a));
-  vertices.push_back(Vertex(ndc[0], ndc[2], r, g, b, a));
-  vertices.push_back(Vertex(ndc[1], ndc[2], r, g, b, a));
+  vertices.push_back(TS_Vertex(ndc[1], ndc[3], r, g, b, a));
+  vertices.push_back(TS_Vertex(ndc[0], ndc[3], r, g, b, a));
+  vertices.push_back(TS_Vertex(ndc[0], ndc[2], r, g, b, a));
+  vertices.push_back(TS_Vertex(ndc[1], ndc[2], r, g, b, a));
 
   // update indices
   TS_Add4Indices();
@@ -596,7 +689,7 @@ void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, in
 {
   int txtInd = TS_VkLoadTexture(img);
 
-  Texture txt = txts[txtInd];
+  TS_Texture txt = txts[txtInd];
 
   uint32_t w = txt.width;
   uint32_t h = txt.height;
@@ -645,10 +738,10 @@ void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, in
   std::array<float, 4> ntc = TS_NTCRect(srctlx, srctly, srcw, srch, w, h);
 
   // update vertices
-  vertices.push_back(Vertex(ndc[1], ndc[3], r, g, b, a, ntc[1], ntc[3], txtInd));
-  vertices.push_back(Vertex(ndc[0], ndc[3], r, g, b, a, ntc[0], ntc[3], txtInd));
-  vertices.push_back(Vertex(ndc[0], ndc[2], r, g, b, a, ntc[0], ntc[2], txtInd));
-  vertices.push_back(Vertex(ndc[1], ndc[2], r, g, b, a, ntc[1], ntc[2], txtInd));
+  vertices.push_back(TS_Vertex(ndc[1], ndc[3], r, g, b, a, ntc[1], ntc[3], txtInd));
+  vertices.push_back(TS_Vertex(ndc[0], ndc[3], r, g, b, a, ntc[0], ntc[3], txtInd));
+  vertices.push_back(TS_Vertex(ndc[0], ndc[2], r, g, b, a, ntc[0], ntc[2], txtInd));
+  vertices.push_back(TS_Vertex(ndc[1], ndc[2], r, g, b, a, ntc[1], ntc[2], txtInd));
 
   // update indices
   TS_Add4Indices();
@@ -682,7 +775,7 @@ void TS_VkBeginCommandBuffer()
 void TS_VkDraw(float r, float g, float b, float a)
 {
   // copy data
-  memcpy(al.getAllocationInfo(vertexStaging.second).pMappedData, (void*)vertices.data(), vertices.size() * sizeof(Vertex));
+  memcpy(al.getAllocationInfo(vertexStaging.second).pMappedData, (void*)vertices.data(), vertices.size() * sizeof(TS_Vertex));
   memcpy(al.getAllocationInfo(indexStaging.second).pMappedData, (void*)indices.data(), indices.size() * sizeof(uint32_t));
 
   // copy buffers
@@ -1212,8 +1305,8 @@ void TS_VkCreateTrianglePipeline()
   vk::PipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
   vk::PipelineVertexInputStateCreateInfo vertexInputInfo;
-  auto bindingDescription = Vertex::getBindingDescription();
-  auto attributeDescriptions = Vertex::getAttributeDescriptions();
+  auto bindingDescription = TS_Vertex::getBindingDescription();
+  auto attributeDescriptions = TS_Vertex::getAttributeDescriptions();
   vertexInputInfo.vertexBindingDescriptionCount = 1;
   vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
   vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
@@ -1369,6 +1462,125 @@ void TS_VkInit()
   TS_VkCreateFences();
 }
 
+void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
+{
+  TS_GameObject * g = new TS_GameObject(new btBoxShape(btVector3(hx, hy, hz)), m, isKinematic, false, btVector3(px, py, pz));
+  gameObjectsById[id] = g;
+  idsByPtr[static_cast<void*>(g->rbody)] = id;
+}
+
+void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz)
+{
+  TS_GameObject * g = new TS_GameObject(new btBoxShape(btVector3(hx, hy, hz)), 0.0f, false, false, btVector3(px, py, pz));
+  gameObjectsById[id] = g;
+  idsByPtr[static_cast<void*>(g->rbody)] = id;
+}
+
+void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz)
+{
+  TS_GameObject * g = new TS_GameObject(new btBoxShape(btVector3(hx, hy, hz)), 1.0f, false, true, btVector3(px, py, pz));
+  gameObjectsById[id] = g;
+  idsByPtr[static_cast<void*>(g->cobj)] = id;
+}
+
+void TS_BtRemoveGameObject(int id)
+{
+  TS_GameObject * g = gameObjectsById[id];
+  gameObjectsById.erase(id);
+  if (g->rbody)
+    idsByPtr.erase(static_cast<void *>(g->rbody));
+  else
+    idsByPtr.erase(static_cast<void *>(g->cobj));
+  delete g;
+}
+
+void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz)
+{
+  TS_GameObject * g = gameObjectsById[id];
+  if (g->rbody)
+    g->rbody->setLinearVelocity(btVector3(vx, vy, vz));
+}
+
+void TS_BtStepSimulation()
+{
+  btdw->stepSimulation(1.0f / 60.0f); // same as Starlight's clock
+
+  CollisionPairs newPairs;
+
+  for (int i = 0; i < btcd->getNumManifolds(); ++i)
+  {
+    // get the manifold
+		btPersistentManifold* man = btcd->getManifoldByIndexInternal(i);
+
+    // ignore manifolds that have 
+		// no contact points.
+		if (man->getNumContacts() > 0) {
+			// get the two rigid bodies involved in the collision
+			const void* b0 = static_cast<const void*>(man->getBody0());
+			const void* b1 = static_cast<const void*>(man->getBody1());
+    
+			// always create the pair in a predictable order
+			// (use the pointer value..)
+			bool const swapped = b0 > b1;
+			const void* bA = swapped ? b1 : b0;
+			const void* bB = swapped ? b0 : b1;
+			
+			// create the pair
+			CollisionPair newPair = std::make_pair(bA, bB);
+			
+			// insert the pair into the current list
+			newPairs.insert(newPair);
+
+			// if this pair doesn't exist in the list
+			// from the previous update, it is a new
+			// pair and we must send a collision event
+			if (oldPairs.find(newPair) == oldPairs.end()) {
+				collisions.push(TS_CollisionInfo(idsByPtr[bA], idsByPtr[bB], true));
+			}
+		}
+  }
+
+  // create another list for pairs that
+	// were removed this update
+  CollisionPairs removedPairs;
+
+  // this handy function gets the difference beween
+	// two sets. It takes the difference between
+	// collision pairs from the last update, and this 
+	// update and pushes them into the removed pairs list
+	std::set_difference( oldPairs.begin(), oldPairs.end(),
+	newPairs.begin(), newPairs.end(),
+	std::inserter(removedPairs, removedPairs.begin()));
+	
+  // iterate through all of the removed pairs
+	// sending separation events for them
+	for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
+		collisions.push(TS_CollisionInfo(idsByPtr[it->first], idsByPtr[it->second], false));
+	}
+	
+	// in the next iteration we'll want to
+	// compare against the pairs we found
+	// in this iteration
+	oldPairs = newPairs;
+}
+
+TS_CollisionInfo TS_GetNextCollision()
+{
+  if (collisions.empty()) return TS_CollisionInfo();
+  else
+  {
+    TS_CollisionInfo ret = collisions.front();
+    collisions.pop();
+    return ret;
+  }
+}
+
+TS_BtPosition TS_BtGetPositionById(int id)
+{
+  btVector3 pos = gameObjectsById[id]->getTransform().getOrigin();
+  return TS_BtPosition(float(pos.x()), float(pos.y()), float(pos.z()));
+}
+
 void TS_BtInit()
 {
   btcc = new btDefaultCollisionConfiguration();
@@ -1470,7 +1682,7 @@ void TS_VkDestroyTextures()
   }
 
   txtInds.clear();
-  txts.fill(Texture());
+  txts.fill(TS_Texture());
   dscImgInfos.fill(vk::DescriptorImageInfo());
 }
 
@@ -1526,6 +1738,12 @@ void TS_VkQuit()
 
 void TS_BtQuit()
 {
+  for (auto it = gameObjectsById.begin(); it != gameObjectsById.end(); ++it)
+  {
+    delete (*it).second;
+  }
+  gameObjectsById.clear();
+  idsByPtr.clear(); // no need to delete in a loop here, it only stores copies that have just been invalidated
   delete btbpi;
   delete btcc;
   delete btcd;
