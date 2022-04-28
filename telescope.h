@@ -18,7 +18,7 @@ struct TS_PositionInfo
   float z;
 };
 
-struct TS_CollisionInfo
+struct TS_CollisionEvent
 {
   int id1;
   int id2;
@@ -29,15 +29,15 @@ void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, f
 
 void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz);
 
-void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
+void TS_BtAddStaticTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
 
-void TS_BtRemoveGameObject(int id);
+void TS_BtRemovePhysicsObject(int id);
 
 void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz);
 
 void TS_BtStepSimulation();
 
-struct TS_CollisionInfo TS_GetNextCollision();
+struct TS_CollisionEvent TS_BtGetNextCollision();
 
 struct TS_PositionInfo TS_BtGetPositionById(int id);
 
@@ -49,82 +49,9 @@ void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, in
 
 void TS_VkCmdClearColorImage(float r, float g, float b, float a);
 
-void TS_VkAcquireNextImage();
-
-void TS_VkResetCommandBuffer();
-
-void TS_VkBeginCommandBuffer();
-
 void TS_VkBeginDrawPass();
 
 void TS_VkEndDrawPass(float r, float g, float b, float a);
-
-void TS_VkEndCommandBuffer();
-
-void TS_VkQueueSubmit();
-
-void TS_VkQueuePresent();
-
-void TS_VkCreateInstance();
-
-void TS_VkCreateSurface();
-
-void TS_VkSelectPhysicalDevice();
-
-void TS_VkSelectQueueFamily();
-
-void TS_VkCreateDevice();
-
-#define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
-void TS_VkCreateSwapchain();
-
-void TS_VkCreateImageViews();
-
-void TS_VkSetupDepthStencil();
-
-void TS_VkCreateRenderPass();
-
-void TS_VkCreateTrianglePipeline();
-
-void TS_VkCreateFramebuffers();
-
-void TS_VkCreateCommandPool();
-
-void TS_VkAllocateCommandBuffers();
-
-void TS_VkCreateSemaphores();
-
-void TS_VkCreateFences();
-
-void TS_VkInit();
-
-void TS_VkDestroyFences();
-
-void TS_VkDestroySemaphores();
-
-void TS_VkFreeCommandBuffers();
-
-void TS_VkDestroyCommandPool();
-
-void TS_VkDestroyFramebuffers();
-
-void TS_VkDestroyTrianglePipeline();
-
-void TS_VkDestroyRenderPass();
-
-void TS_VkTeardownDepthStencil();
-
-void TS_VkDestroyImageViews();
-
-void TS_VkDestroySwapchain();
-
-void TS_VkDestroyDevice();
-
-void TS_VkDestroySurface();
-
-void TS_VkDestroyInstance();
-
-void TS_VkQuit();
 
 void TS_Init(const char * ttl, int wdth, int hght);
 

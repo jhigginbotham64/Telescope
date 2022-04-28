@@ -41,6 +41,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 #include "telescope.h"
 
+#define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+
 const char *window_name = NULL;
 SDL_Window *win = NULL;
 int window_width = 0;
@@ -166,14 +168,13 @@ btCollisionDispatcher * btcd;
 btConstraintSolver * btcs;
 btDynamicsWorld * btdw;
 
-
-struct TS_GameObject {
+struct TS_PhysicsObject {
   btCollisionObject * cobj;
   btCollisionShape * cshape;
   btRigidBody * rbody;
   btDefaultMotionState * dmstate;
 
-  TS_GameObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
   {
     cshape = s;
 
@@ -218,7 +219,7 @@ struct TS_GameObject {
     }
   }
 
-  ~TS_GameObject()
+  ~TS_PhysicsObject()
   {
     if (rbody)
     { 
@@ -249,14 +250,14 @@ struct TS_GameObject {
   }
 };
 
-std::map<int, TS_GameObject*> gameObjectsById;
+std::map<int, TS_PhysicsObject*> physicsObjectsById;
 std::map<const void*, int> idsByPtr;
 
 // convenient typedefs for collision events
 typedef std::pair<const void*, const void*> CollisionPair;
 typedef std::set<CollisionPair> CollisionPairs;
 CollisionPairs oldPairs;
-std::queue<TS_CollisionInfo> collisions;
+std::queue<TS_CollisionEvent> collisions;
 
 const std::vector<const char*> validationLayers = {
   "VK_LAYER_KHRONOS_validation"
@@ -1455,29 +1456,29 @@ void TS_VkInit()
 
 void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
 {
-  TS_GameObject * g = new TS_GameObject(new btBoxShape(btVector3(hx, hy, hz)), m, isKinematic, false, btVector3(px, py, pz));
-  gameObjectsById[id] = g;
+  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hx, hy, hz)), m, isKinematic, false, btVector3(px, py, pz));
+  physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->rbody)] = id;
 }
 
 void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz)
 {
-  TS_GameObject * g = new TS_GameObject(new btBoxShape(btVector3(hx, hy, hz)), 0.0f, false, false, btVector3(px, py, pz));
-  gameObjectsById[id] = g;
+  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hx, hy, hz)), 0.0f, false, false, btVector3(px, py, pz));
+  physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->rbody)] = id;
 }
 
-void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz)
+void TS_BtAddStaticTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz)
 {
-  TS_GameObject * g = new TS_GameObject(new btBoxShape(btVector3(hx, hy, hz)), 1.0f, false, true, btVector3(px, py, pz));
-  gameObjectsById[id] = g;
+  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hx, hy, hz)), 0.0f, false, true, btVector3(px, py, pz));
+  physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->cobj)] = id;
 }
 
-void TS_BtRemoveGameObject(int id)
+void TS_BtRemovePhysicsObject(int id)
 {
-  TS_GameObject * g = gameObjectsById[id];
-  gameObjectsById.erase(id);
+  TS_PhysicsObject * g = physicsObjectsById[id];
+  physicsObjectsById.erase(id);
   if (g->rbody)
     idsByPtr.erase(static_cast<void *>(g->rbody));
   else
@@ -1487,7 +1488,7 @@ void TS_BtRemoveGameObject(int id)
 
 void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz)
 {
-  TS_GameObject * g = gameObjectsById[id];
+  TS_PhysicsObject * g = physicsObjectsById[id];
   if (g->rbody)
     g->rbody->setLinearVelocity(btVector3(vx, vy, vz));
 }
@@ -1526,7 +1527,7 @@ void TS_BtStepSimulation()
 			// from the previous update, it is a new
 			// pair and we must send a collision event
 			if (oldPairs.find(newPair) == oldPairs.end()) {
-        TS_CollisionInfo t = TS_CollisionInfo();
+        TS_CollisionEvent t = TS_CollisionEvent();
         t.id1 = idsByPtr[bA];
         t.id2 = idsByPtr[bB];
         t.colliding = true;
@@ -1550,7 +1551,7 @@ void TS_BtStepSimulation()
   // iterate through all of the removed pairs
 	// sending separation events for them
 	for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
-		TS_CollisionInfo t = TS_CollisionInfo();
+		TS_CollisionEvent t = TS_CollisionEvent();
     t.id1 = idsByPtr[it->first];
     t.id2 = idsByPtr[it->second];
     t.colliding = true;
@@ -1563,11 +1564,11 @@ void TS_BtStepSimulation()
 	oldPairs = newPairs;
 }
 
-TS_CollisionInfo TS_GetNextCollision()
+TS_CollisionEvent TS_BtGetNextCollision()
 {
   if (collisions.empty())
   {
-    TS_CollisionInfo t = TS_CollisionInfo();
+    TS_CollisionEvent t = TS_CollisionEvent();
     t.id1 = -1;
     t.id2 = -1;
     t.colliding = false;
@@ -1575,7 +1576,7 @@ TS_CollisionInfo TS_GetNextCollision()
   }
   else
   {
-    TS_CollisionInfo ret = collisions.front();
+    TS_CollisionEvent ret = collisions.front();
     collisions.pop();
     return ret;
   }
@@ -1583,7 +1584,7 @@ TS_CollisionInfo TS_GetNextCollision()
 
 TS_PositionInfo TS_BtGetPositionById(int id)
 {
-  btVector3 pos = gameObjectsById[id]->getTransform().getOrigin();
+  btVector3 pos = physicsObjectsById[id]->getTransform().getOrigin();
   TS_PositionInfo p = TS_PositionInfo();
   p.x = float(pos.x());
   p.y = float(pos.y());
@@ -1748,11 +1749,11 @@ void TS_VkQuit()
 
 void TS_BtQuit()
 {
-  for (auto it = gameObjectsById.begin(); it != gameObjectsById.end(); ++it)
+  for (auto it = physicsObjectsById.begin(); it != physicsObjectsById.end(); ++it)
   {
     delete (*it).second;
   }
-  gameObjectsById.clear();
+  physicsObjectsById.clear();
   idsByPtr.clear(); // no need to delete in a loop here, it only stores copies that have just been invalidated
   delete btbpi;
   delete btcc;
