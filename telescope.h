@@ -18,6 +18,13 @@ struct TS_PositionInfo
   float z;
 };
 
+struct TS_VelocityInfo
+{
+  float x;
+  float y;
+  float z;
+};
+
 struct TS_CollisionEvent
 {
   int id1;
@@ -29,23 +36,29 @@ void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, f
 
 void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz);
 
-void TS_BtAddStaticTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
+void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
 
 void TS_BtRemovePhysicsObject(int id);
 
 void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz);
 
+struct TS_VelocityInfo TS_BtGetLinearVelocity(int id);
+
+void TS_BtSetGravity(float gx, float gy, float gz);
+
+void TS_BtSetCollisionMargin(int id, float margin);
+
 void TS_BtStepSimulation();
 
 struct TS_CollisionEvent TS_BtGetNextCollision();
 
-struct TS_PositionInfo TS_BtGetPositionById(int id);
+struct TS_PositionInfo TS_BtGetPosition(int id);
 
 const char * TS_SDLGetError();
 
-void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h);
+void TS_VkCmdDrawRect(float r, float g, float b, float a, float x, float y, float w, float h);
 
-void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, int px, int py, float sx, float sy);
+void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, float px, float py, float sx, float sy);
 
 void TS_VkCmdClearColorImage(float r, float g, float b, float a);
 

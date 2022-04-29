@@ -176,77 +176,62 @@ struct TS_PhysicsObject {
 
   TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
   {
-    cshape = s;
+    this->cshape = s;
+    this->cobj = nullptr;
+    this->rbody = nullptr;
+    this->dmstate = nullptr;
 
     btTransform t;
     t.setIdentity();
     t.setOrigin(initPos);
     t.setRotation(initRot);
 
-    if (!isTrigger)
+    btVector3 locInertia(0,0,0);
+
+    if (mass != 0.0f)
+      this->cshape->calculateLocalInertia(mass, locInertia);
+
+    this->dmstate = new btDefaultMotionState(t);
+    
+    btRigidBody::btRigidBodyConstructionInfo cinfo(mass, this->dmstate, this->cshape, locInertia);
+
+    this->rbody = new btRigidBody(cinfo);
+
+    this->cobj = this->rbody;
+
+    if (isTrigger)
+      this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+    if (isKinematic || isTrigger)
     {
-      dmstate = new btDefaultMotionState(t);
-
-      btVector3 locInertia(0,0,0);
-
-      if (mass != 0.0f)
-        cshape->calculateLocalInertia(mass, locInertia);
-      
-      btRigidBody::btRigidBodyConstructionInfo cinfo(mass, dmstate, cshape, locInertia);
-
-      rbody = new btRigidBody(cinfo);
-
-      cobj = rbody;
-
-      btdw->addRigidBody(rbody);
-    }
-    else
-    {
-      cobj = new btCollisionObject();
-      cobj->setCollisionShape(s);
-      cobj->setWorldTransform(t);
-      cobj->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
-
-      btdw->addCollisionObject(cobj);
+      // this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+      this->cobj->setActivationState(DISABLE_DEACTIVATION);
     }
 
-    if (isKinematic)
-    {
-      if (rbody)
-        rbody->setCollisionFlags(rbody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-      else
-        cobj->setCollisionFlags(cobj->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-    }
+    btdw->addRigidBody(this->rbody);
   }
 
   ~TS_PhysicsObject()
   {
-    if (rbody)
+    if (this->rbody)
     { 
-      btdw->removeRigidBody(rbody);
-      delete rbody;
+      btdw->removeRigidBody(this->rbody);
+      delete this->rbody;
     }
-    if (dmstate) delete dmstate;
-    if (cobj) 
+    if (this->dmstate) delete this->dmstate;
+    if (this->cobj && this->cobj != this->rbody) 
     {
-      btdw->removeCollisionObject(cobj);
-      delete cobj;
+      btdw->removeCollisionObject(this->cobj);
+      delete this->cobj;
     }
-    if (cshape) delete cshape;
+    if (this->cshape) delete this->cshape;
   }
 
   btTransform getTransform()
   {
-    if (dmstate)
-    {
-      btTransform t;
-      dmstate->getWorldTransform(t);
-      return t;
-    }
-    else
-    {
-      return cobj->getWorldTransform();
-    }
+    btTransform t;
+    this->dmstate->getWorldTransform(t);
+    return t;
   }
 };
 
@@ -372,17 +357,17 @@ const char * TS_SDLGetError()
 }
 
 // normalized device coordinates along the x and y axes
-float TS_NDCX(int x)
+float TS_NDCX(float x)
 {
  return (2.0f / window_width) * x - 1.0f;
 }
 
-float TS_NDCY(int y)
+float TS_NDCY(float y)
 {
   return (2.0f / window_height) * y - 1.0f;
 }
 
-std::array<float, 4> TS_NDCRect(int x, int y, int w, int h)
+std::array<float, 4> TS_NDCRect(float x, float y, float w, float h)
 {
   return std::array<float, 4>({TS_NDCX(x), TS_NDCX(x + w), TS_NDCY(y), TS_NDCY(y + h)});
 }
@@ -662,7 +647,7 @@ void TS_VkUnloadTexture(const char * img)
   TS_VkWriteDescriptorSet();
 }
 
-void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, int h)
+void TS_VkCmdDrawRect(float r, float g, float b, float a, float x, float y, float w, float h)
 {
   // convert from screen space to normalized device coordinates
   std::array<float, 4> ndc = TS_NDCRect(x, y, w, h);
@@ -677,7 +662,7 @@ void TS_VkCmdDrawRect(float r, float g, float b, float a, int x, int y, int w, i
   TS_Add4Indices();
 }
 
-void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, int px, int py, float sx, float sy)
+void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, float px, float py, float sx, float sy)
 {
   int txtInd = TS_VkLoadTexture(img);
 
@@ -1456,21 +1441,21 @@ void TS_VkInit()
 
 void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
 {
-  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hx, hy, hz)), m, isKinematic, false, btVector3(px, py, pz));
+  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), m, isKinematic, false, btVector3(px, py, pz));
   physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->rbody)] = id;
 }
 
 void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz)
 {
-  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hx, hy, hz)), 0.0f, false, false, btVector3(px, py, pz));
+  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), 0.0f, false, false, btVector3(px, py, pz));
   physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->rbody)] = id;
 }
 
-void TS_BtAddStaticTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz)
+void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz)
 {
-  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hx, hy, hz)), 0.0f, false, true, btVector3(px, py, pz));
+  TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), 1.0f, false, true, btVector3(px, py, pz));
   physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->cobj)] = id;
 }
@@ -1490,78 +1475,102 @@ void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz)
 {
   TS_PhysicsObject * g = physicsObjectsById[id];
   if (g->rbody)
+  {
     g->rbody->setLinearVelocity(btVector3(vx, vy, vz));
+    btVector3 vel = g->rbody->getLinearVelocity();
+  }
+}
+
+TS_VelocityInfo TS_BtGetLinearVelocity(int id)
+{
+  TS_PhysicsObject * g = physicsObjectsById[id];
+  TS_VelocityInfo vel;
+  if (g->rbody)
+  {
+    btVector3 _vel = g->rbody->getLinearVelocity();
+    vel.x = _vel.x();
+    vel.y = _vel.y();
+    vel.z = _vel.z();
+    return vel;
+  }
+  else
+  {
+    vel.x = 0;
+    vel.y = 0;
+    vel.z = 0;
+    return vel;
+  }
 }
 
 void TS_BtStepSimulation()
 {
-  btdw->stepSimulation(1.0f / 60.0f); // same as Starlight's clock
+  btdw->stepSimulation(0.01667f); // same as Starlight's clock
 
   CollisionPairs newPairs;
 
   for (int i = 0; i < btcd->getNumManifolds(); ++i)
   {
     // get the manifold
-		btPersistentManifold* man = btcd->getManifoldByIndexInternal(i);
+    btPersistentManifold* man = btcd->getManifoldByIndexInternal(i);
 
     // ignore manifolds that have 
-		// no contact points.
-		if (man->getNumContacts() > 0) {
-			// get the two rigid bodies involved in the collision
-			const void* b0 = static_cast<const void*>(man->getBody0());
-			const void* b1 = static_cast<const void*>(man->getBody1());
+    // no contact points.
+    if (man->getNumContacts() > 0) {
+      // get the two rigid bodies involved in the collision
+      const void* b0 = static_cast<const void*>(man->getBody0());
+      const void* b1 = static_cast<const void*>(man->getBody1());
     
-			// always create the pair in a predictable order
-			// (use the pointer value..)
-			bool const swapped = b0 > b1;
-			const void* bA = swapped ? b1 : b0;
-			const void* bB = swapped ? b0 : b1;
-			
-			// create the pair
-			CollisionPair newPair = std::make_pair(bA, bB);
-			
-			// insert the pair into the current list
-			newPairs.insert(newPair);
+      // always create the pair in a predictable order
+      // (use the pointer value..)
+      bool const swapped = b0 > b1;
+      const void* bA = swapped ? b1 : b0;
+      const void* bB = swapped ? b0 : b1;
+      
+      // create the pair
+      CollisionPair newPair = std::make_pair(bA, bB);
+      
+      // insert the pair into the current list
+      newPairs.insert(newPair);
 
-			// if this pair doesn't exist in the list
-			// from the previous update, it is a new
-			// pair and we must send a collision event
-			if (oldPairs.find(newPair) == oldPairs.end()) {
+      // if this pair doesn't exist in the list
+      // from the previous update, it is a new
+      // pair and we must send a collision event
+      if (oldPairs.find(newPair) == oldPairs.end()) {
         TS_CollisionEvent t = TS_CollisionEvent();
         t.id1 = idsByPtr[bA];
         t.id2 = idsByPtr[bB];
         t.colliding = true;
-				collisions.push(t);
-			}
-		}
+        collisions.push(t);
+      }
+    }
   }
 
   // create another list for pairs that
-	// were removed this update
+  // were removed this update
   CollisionPairs removedPairs;
 
   // this handy function gets the difference beween
-	// two sets. It takes the difference between
-	// collision pairs from the last update, and this 
-	// update and pushes them into the removed pairs list
-	std::set_difference( oldPairs.begin(), oldPairs.end(),
-	newPairs.begin(), newPairs.end(),
-	std::inserter(removedPairs, removedPairs.begin()));
-	
+  // two sets. It takes the difference between
+  // collision pairs from the last update, and this 
+  // update and pushes them into the removed pairs list
+  std::set_difference( oldPairs.begin(), oldPairs.end(),
+  newPairs.begin(), newPairs.end(),
+  std::inserter(removedPairs, removedPairs.begin()));
+  
   // iterate through all of the removed pairs
-	// sending separation events for them
-	for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
-		TS_CollisionEvent t = TS_CollisionEvent();
+  // sending separation events for them
+  for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
+    TS_CollisionEvent t = TS_CollisionEvent();
     t.id1 = idsByPtr[it->first];
     t.id2 = idsByPtr[it->second];
-    t.colliding = true;
+    t.colliding = false;
     collisions.push(t);
-	}
-	
-	// in the next iteration we'll want to
-	// compare against the pairs we found
-	// in this iteration
-	oldPairs = newPairs;
+  }
+  
+  // in the next iteration we'll want to
+  // compare against the pairs we found
+  // in this iteration
+  oldPairs = newPairs;
 }
 
 TS_CollisionEvent TS_BtGetNextCollision()
@@ -1582,7 +1591,7 @@ TS_CollisionEvent TS_BtGetNextCollision()
   }
 }
 
-TS_PositionInfo TS_BtGetPositionById(int id)
+TS_PositionInfo TS_BtGetPosition(int id)
 {
   btVector3 pos = physicsObjectsById[id]->getTransform().getOrigin();
   TS_PositionInfo p = TS_PositionInfo();
@@ -1590,6 +1599,16 @@ TS_PositionInfo TS_BtGetPositionById(int id)
   p.y = float(pos.y());
   p.z = float(pos.z());
   return p;
+}
+
+void TS_BtSetGravity(float gx, float gy, float gz)
+{
+  btdw->setGravity(btVector3(gx, gy, gz));
+}
+
+void TS_BtSetCollisionMargin(int id, float margin)
+{
+  physicsObjectsById[id]->cshape->setMargin(margin);
 }
 
 void TS_BtInit()
