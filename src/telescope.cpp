@@ -14,7 +14,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
-#include "../vma/vk_mem_alloc.hpp"
+#include <include/vk_mem_alloc.hpp>
 
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
@@ -423,7 +423,7 @@ void TS_VkSubmitScratchBuffer(vk::CommandBuffer &tmp)
   submitInfo.commandBufferCount = 1;
   submitInfo.pCommandBuffers = &tmp;
 
-  gq.submit(1, &submitInfo, VK_NULL_HANDLE);
+  gq.submit(1, &submitInfo, vk::Fence());
   gq.waitIdle();
 
   dev.freeCommandBuffers(cp, 1, &tmp);
@@ -1364,7 +1364,7 @@ void TS_VkCreateTrianglePipeline()
   pipelineInfo.renderPass = rp;
   pipelineInfo.subpass = 0;
 
-  trianglePipeline = dev.createGraphicsPipeline(VK_NULL_HANDLE, pipelineInfo).value;
+  trianglePipeline = dev.createGraphicsPipeline(vk::PipelineCache(), pipelineInfo).value;
 
   dev.destroyShaderModule(fragShaderModule);
   dev.destroyShaderModule(vertShaderModule);
