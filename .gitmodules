@@ -1,3 +1,3 @@
-[submodule "vma"]
-	path = vma
-	url = https://github.com/EIP-Pivot/VulkanMemoryAllocator-Hpp.git
+[submodule "VulkanMemoryAllocator-Hpp"]
+	path = VulkanMemoryAllocator-Hpp
+	url = https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
