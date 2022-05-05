@@ -1,4 +1,6 @@
-add_library(telescope SHARED telescope.cpp)
+add_library(telescope SHARED telescope.cpp telescope.h)
+
+target_include_directories(telescope PUBLIC .)
 
 find_package(Bullet REQUIRED)
 
