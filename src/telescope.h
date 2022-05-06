@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <stdbool.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -72,7 +70,7 @@ void TS_VkBeginDrawPass();
 
 void TS_VkEndDrawPass(float r, float g, float b, float a);
 
-void TS_Init(const char * ttl, int wdth, int hght);
+void TS_Init(const char * ttl, int width, int height);
 
 void TS_Quit();
 
