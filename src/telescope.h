@@ -1,9 +1,13 @@
-/*
-  this file contains the C interface used to generate
-  wrappers in other programming languages. not all
-  functions are exposed due to use of C++ arguments
-  and return types.
-*/
+//
+// Copyright 2022, Joshua Higginbotham
+//
+
+//
+//  this file contains the C interface used to generate
+//  wrappers in other programming languages. not all
+//  functions are exposed due to use of C++ arguments
+//  and return types.
+//
 
 #pragma once
 

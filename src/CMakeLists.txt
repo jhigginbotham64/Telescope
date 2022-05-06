@@ -28,7 +28,7 @@ target_link_libraries(telescope PUBLIC
     SDL2_mixer
     SDL2_net
     SDL2_ttf
-    "${BULLET_LIBRARIES}"
+    ${BULLET_LIBRARIES}
     ${shader_c_shared}
 )
 
@@ -38,7 +38,7 @@ option(BUILD_TESTING "build telescope test suite" ON)
 if (BUILD_TESTING)
 
     # \brief: declare a test
-    # \param: test_name, has to be equal to the name of the actual cpp
+    # \param: test_name, has to be equal to the name of the actual .cpp inside ./test
     function(declare_test test_name)
         add_executable(
             "${test_name}"

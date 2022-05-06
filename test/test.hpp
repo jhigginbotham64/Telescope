@@ -1,6 +1,5 @@
-// 
-// Copyright 2022 Clemens Cords
-// Created on 05.05.22 by clem (mail@clemens-cords.com)
+//
+// Copyright 2022, Joshua Higginbotham
 //
 
 #pragma once
@@ -14,7 +13,8 @@
 #include <vector>
 
 ///
-/// \brief test interface, intended to be used with CMakes CTest
+/// \brief test interface, intended to be used with CMakes CTest. c.f. `test/template_test` for usage example
+/// \author Clemapfel
 ///
 namespace Test
 {
@@ -22,8 +22,8 @@ namespace Test
     struct AssertionException : public std::exception
     {
         AssertionException(const std::string& s)
-                    : _message(s)
-            {}
+                : _message(s)
+        {}
 
         virtual const char* what() const noexcept override final
         {
@@ -33,20 +33,22 @@ namespace Test
         std::string _message;
     };
 
-    // test result for each named test
-    static std::map<std::string, bool> _results;    // true = failed, false = passed
-    static std::map<std::string, std::vector<std::string>> _assertion_messages;
-
-    std::mutex _result_lock;
+    // internal state, do not interact
+    namespace detail
+    {
+        static std::map<std::string, bool> _results;  // true = failed, false = passed
+        static std::map<std::string, std::vector<std::string>> _assertion_messages;
+        std::mutex _result_lock;
+    }
 
     ///
     /// \brief initialize the test environment
     ///
     void initialize()
     {
-        _result_lock.lock();
-        _results.clear();
-        _result_lock.unlock();
+        detail::_result_lock.lock();
+        detail::_results.clear();
+        detail::_result_lock.unlock();
     }
 
     ///
@@ -57,10 +59,10 @@ namespace Test
     {
         size_t n = 0;
         size_t n_passed = 0;
-        for (auto& pair : _results)
+        for (auto& pair : detail::_results)
         {
             std::cout << pair.first << ": " << (pair.second ? "FAILED" : "PASSED") << std::endl;
-            for (auto& message : _assertion_messages.at(pair.first))
+            for (auto& message : detail::_assertion_messages.at(pair.first))
             {
                 std::cout << " _________________________________\n";
                 std::cout << "| \n";
@@ -116,12 +118,12 @@ namespace Test
         std::cout.clear();
         std::cerr.clear();
 
-        _result_lock.lock();
+        detail::_result_lock.lock();
 
-        _results.emplace(name, failed);
-        _assertion_messages.emplace(name, assertion_messages);
+        detail::_results.emplace(name, failed);
+        detail::_assertion_messages.emplace(name, assertion_messages);
 
-        _result_lock.unlock();
+        detail::_result_lock.unlock();
     }
 
     ///
@@ -156,3 +158,5 @@ namespace Test
         throw AssertionException("Assertion \"" + name + "\" failed");
     }
 }
+
+#include <test/test_aux.inl>

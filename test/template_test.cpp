@@ -1,3 +1,13 @@
+//
+// Copyright (c) Joshua Higginbotham, 2022
+//
+
+//
+// this file is intended to be a showcase of how to use
+// Telescopes test environment. It is not testing any
+// actual functionality.
+//
+
 #include <test/test.hpp>
 
 int main()

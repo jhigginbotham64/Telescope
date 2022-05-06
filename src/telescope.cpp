@@ -1,8 +1,12 @@
-/*
-  TODO: "can't find SDL_mixer.h"
-  TODO: "can't convert between VulkanHPP and normal Vulkan types"
-  TODO: better support for rotation of rectangles, sprites, and collision objects
-*/
+//
+// Copyright 2022, Joshua Higginbotham
+//
+
+//
+// TODO: "can't find SDL_mixer.h"
+// TODO: "can't convert between VulkanHPP and normal Vulkan types"
+// TODO: better support for rotation of rectangles, sprites, and collision objects
+//
 
 #define VULKAN_HPP_TYPESAFE_CONVERSION 1
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
