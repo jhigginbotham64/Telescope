@@ -82,17 +82,17 @@ if (BUILD_TESTING)
 
     #declare_test(template_test)
 
-    declare_test(ts_common)
-    declare_test(ts_bullet)
-    declare_test(ts_ts)
-    declare_test(ts_vertex)
-    declare_test(ts_vma)
-    declare_test(ts_vk)
+    declare_test(test_common)
+    declare_test(test_bullet)
+    declare_test(test_ts)
+    declare_test(test_vertex)
+    declare_test(test_vma)
+    declare_test(test_vulkan)
 endif()
 
 ### GENERATE DOCS ###
 
-option(BUILD_DOCS "build telescope unit tests" ON) #TODO set to OFF
+option(BUILD_DOCS "build telescope unit tests" ON) #TODO set to OFF for Release
 if (BUILD_DOCS)
 
     # to regenerate the docs, first build the target `pre_build_docs`, then build `build_docs`

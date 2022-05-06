@@ -19,7 +19,7 @@ file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
 # add custom target to build doxygen
 add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
-		DEPENDS ${TELESCOPE_INCLUDE_DIR}
+		#DEPENDS ${TELESCOPE_INCLUDE_DIR}
 		COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
 		MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
         	COMMENT "Generating docs"
@@ -35,7 +35,7 @@ set(SPHINX_INDEX_FILE ${SPHINX_BUILD}/index.html)
 # add custom target to build sphinx from doxygen
 add_custom_command(OUTPUT ${SPHINX_INDEX_FILE}
 	COMMAND
-		${SPHINX_EXECUTABLE} -b html
+		${SPHINX_EXECUTABLE} -Ea -b html
 		-Dbreathe_projects.telescope=${DOXYGEN_OUTPUT_DIR}/xml
 		${SPHINX_SOURCE} ${SPHINX_BUILD}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
