@@ -18,7 +18,7 @@ An Open-Source Toolkit for Interactive Multimedia Applications
 ---
 ### Dependencies
 
-To build telescope from source, the following dependencies need to be met
+To build Telescope from source, the following dependencies need to be met
 + [Bullet](https://github.com/bulletphysics/bullet3) 
   - also available as `libbullet-dev`
 + [Vulkan](https://vulkan.lunarg.com/)
@@ -105,7 +105,7 @@ Now, your compiler should be able to locate `telescope.h` properly.
 
 #### Could not find `shaderc_shared`
 
-During cmake configuration, the following error may occur:
+During CMake configuration, the following error may occur:
 
 ```
 Unable to detect shaderc_shared library.  Make sure it is installed
@@ -120,7 +120,7 @@ CMake Error at cmake/Findshaderc_shared.cmake:30 (find_library):
   libshaderc_shared.so
 ```
 
-This means telescope was unable to detect the `shaderc_shared` library, which is part of the shaderc package. If you are sure shaderc is already installed properly, you can manually specify the path to the shared library using the `SHADERC_LIB_DIR` cmake variable during configuration like so:
+This means Telescope was unable to detect the `shaderc_shared` library, which is part of the shaderc package. If you are sure shaderc is already installed properly, you can manually specify the path to the shared library using the `SHADERC_LIB_DIR` CMake variable during configuration, like so:
 
 ```bash
 # in Telescope/build
