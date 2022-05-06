@@ -35,12 +35,9 @@ set_target_properties(telescope PROPERTIES
 
 target_include_directories(telescope PUBLIC
     "${CMAKE_SOURCE_DIR}/src"
-)
-
-target_include_directories(telescope PRIVATE
     "${BULLET_INCLUDE_DIRS}"
     "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
-    /home/clem/Desktop/shaderc/include
+    "${SHADERC_INCLUDE_DIRS}"
 )
 
 target_link_libraries(telescope PUBLIC
@@ -67,12 +64,28 @@ if (BUILD_TESTING)
             "${PROJECT_SOURCE_DIR}/test/test.hpp"
         )
 
-        target_link_libraries(${test_name} telescope)
-        target_include_directories(${test_name} PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(${test_name} PRIVATE
+            telescope
+            ${shaderc_shared}
+        )
+
+        target_include_directories(${test_name} PRIVATE
+            ${CMAKE_SOURCE_DIR}
+            ${BULLET_INCLUDE_DIRS}
+            ${SHADERC_INCLUDE_DIRS}
+            "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
+        )
+
         add_test(NAME ${test_name} COMMAND ${test_name})
     endfunction()
 
-    declare_test(template_test)
+    #declare_test(template_test)
+    declare_test(ts_common)
+    declare_test(ts_bullet)
+    declare_test(ts_ts)
+    declare_test(ts_vertex)
+    declare_test(ts_vma)
+    declare_test(ts_vk)
 endif()
 
 ### INSTALL ###

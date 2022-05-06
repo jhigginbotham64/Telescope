@@ -29,9 +29,9 @@ if(NOT DEFINED shaderc_shared)
 
     find_library(shaderc_shared REQUIRED
         NAMES "${CMAKE_SHARED_LIBRARY_PREFIX}shaderc_shared${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        PATHS SHADERC_LIB_DIR
+        PATHS ${SHADERC_LIB_DIR}
     )
-
 endif()
-set(SHADERC_INCLUDE_DIRS "${shaderc_shared}/../include")
 
+get_filename_component(SHADERC_DIR ${shaderc_shared} DIRECTORY)
+set(SHADERC_INCLUDE_DIRS "${SHADERC_DIR}/../include")
