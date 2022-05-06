@@ -10,7 +10,22 @@ int main()
 {
     Test::initialize();
 
-    // TODO
+    Test::testset("TS_VkCmdDrawRect", [](){
+
+    });
+
+    Test::testset("TS_VkCmdDrawSprite", [](){
+
+    });
+
+    Test::testset("TS_VkCmdClearColorImage", [](){
+
+    });
+
+    Test::testset("TS_Vk draw pass", [](){
+        // test TS_VkBeginDrawPass
+        // test TS_VkEndDrawPass
+    });
 
     return Test::conclude();
 }
