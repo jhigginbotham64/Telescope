@@ -12,3 +12,6 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 /VulkanMemoryAllocator-Hpp/
+/docs/out/
+/docs/Doxyfile
+/docs/.doxygen

@@ -90,6 +90,16 @@ if (BUILD_TESTING)
     declare_test(ts_vk)
 endif()
 
+### GENERATE DOCS ###
+
+option(BUILD_DOCS "build telescope unit tests" ON) #TODO set to OFF
+if (BUILD_DOCS)
+
+    # to regenerate the docs, first build the target `pre_build_docs`, then build `build_docs`
+    # afterwards, the generated website is available in Telescope/docs/out
+    include("docs/CMakeLists.txt")
+endif()
+
 ### INSTALL ###
 
 install(FILES ${INCLUDE_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
