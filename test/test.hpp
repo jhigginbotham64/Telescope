@@ -158,5 +158,3 @@ namespace Test
         throw AssertionException("Assertion \"" + name + "\" failed");
     }
 }
-
-#include <test/test_aux.inl>

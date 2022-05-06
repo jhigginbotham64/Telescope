@@ -2,8 +2,6 @@
 An Open-Source Toolkit for Interactive Multimedia Applications
 
 ## Dependencies
-To build telescope on your system, you'll need:
-
 + Bullet 
 + Vulkan
 + SDL2
