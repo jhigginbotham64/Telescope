@@ -14,7 +14,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
-#include <include/vk_mem_alloc.hpp>
+#include <vk_mem_alloc.hpp>
 
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
@@ -26,8 +26,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_vulkan.h>
 
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <iostream>
 #include <algorithm>
