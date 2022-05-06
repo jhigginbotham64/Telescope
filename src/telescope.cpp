@@ -12,13 +12,14 @@
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
+
 #include <vulkan/vulkan.hpp>
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
-#include <include/vk_mem_alloc.hpp>
+#include <vk_mem_alloc.hpp>
 
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
@@ -43,9 +44,9 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-#include "telescope.h"
+#include <telescope.h>
 
-#define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
 const char *window_name = NULL;
 SDL_Window *win = NULL;
@@ -78,7 +79,8 @@ std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 
-struct TS_Texture {
+struct TS_Texture
+{
   std::pair<vk::Image, vma::Allocation> img;
   vk::ImageView view;
 
@@ -99,13 +101,17 @@ std::map<std::string, int> txtInds;
 std::array<TS_Texture, NUM_SUPPORTED_TEXTURES> txts;
 std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 
-struct TS_Vertex {
+struct TS_Vertex
+{
   glm::vec2 pos;
   glm::vec2 uv;
   glm::vec4 col;
   int tex;
 
-  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
+  TS_Vertex(
+      float x, float y,
+      float r, float g, float b, float a,
+      float u = 0, float v = 0, int t = -1)
   {
     this->pos = glm::vec2(x, y);
     this->uv = glm::vec2(u, v);
@@ -172,13 +178,20 @@ btCollisionDispatcher * btcd;
 btConstraintSolver * btcs;
 btDynamicsWorld * btdw;
 
-struct TS_PhysicsObject {
+struct TS_PhysicsObject
+{
   btCollisionObject * cobj;
   btCollisionShape * cshape;
   btRigidBody * rbody;
   btDefaultMotionState * dmstate;
 
-  TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  TS_PhysicsObject(
+    btCollisionShape * s,
+    float mass = 0.0f,
+    bool isKinematic = false,
+    bool isTrigger = false,
+    const btVector3 &initPos = btVector3(0,0,0),
+    const btQuaternion &initRot = btQuaternion(0,0,1,1))
   {
     this->cshape = s;
     this->cobj = nullptr;
@@ -222,13 +235,18 @@ struct TS_PhysicsObject {
       btdw->removeRigidBody(this->rbody);
       delete this->rbody;
     }
-    if (this->dmstate) delete this->dmstate;
+
+    if (this->dmstate)
+        delete this->dmstate;
+
     if (this->cobj && this->cobj != this->rbody) 
     {
       btdw->removeCollisionObject(this->cobj);
       delete this->cobj;
     }
-    if (this->cshape) delete this->cshape;
+
+    if (this->cshape)
+        delete this->cshape;
   }
 
   btTransform getTransform()
@@ -265,9 +283,7 @@ static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
     void* pUserData)
 {
   if (messageSeverity >= vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning)
-  {
     std::cerr << "debug callback: " << pCallbackData->pMessage << std::endl;
-  }
 
   return VK_FALSE;
 }
@@ -363,7 +379,7 @@ const char * TS_SDLGetError()
 // normalized device coordinates along the x and y axes
 float TS_NDCX(float x)
 {
- return (2.0f / window_width) * x - 1.0f;
+  return (2.0f / window_width) * x - 1.0f;
 }
 
 float TS_NDCY(float y)
@@ -379,7 +395,7 @@ std::array<float, 4> TS_NDCRect(float x, float y, float w, float h)
 // normalized texture coordinates along the u and v axes
 float TS_NTCU(int x, int w)
 {
- return (1.0f / w) * x;
+  return (1.0f / w) * x;
 }
 
 float TS_NTCV(int y, int h)
@@ -415,7 +431,6 @@ vk::CommandBuffer TS_VkBeginScratchBuffer()
   beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
 
   tmp.begin(beginInfo);
-
   return tmp;
 }
 
@@ -494,7 +509,6 @@ void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32
   region.imageExtent = vk::Extent3D(wdth,hght,1);
 
   tmp.copyBufferToImage(buf, img, vk::ImageLayout::eTransferDstOptimal, 1, &region);
-
   TS_VkSubmitScratchBuffer(tmp);
 }
 
@@ -507,19 +521,19 @@ void TS_VkWriteDescriptorSet()
 
   setWrites[0].dstBinding = 0;
   setWrites[0].dstArrayElement = 0;
-	setWrites[0].descriptorType = vk::DescriptorType::eSampler;
-	setWrites[0].descriptorCount = 1;
-	setWrites[0].dstSet = dscSet;
-	setWrites[0].pBufferInfo = 0;
-	setWrites[0].pImageInfo = &samplerInfo;
+  setWrites[0].descriptorType = vk::DescriptorType::eSampler;
+  setWrites[0].descriptorCount = 1;
+  setWrites[0].dstSet = dscSet;
+  setWrites[0].pBufferInfo = 0;
+  setWrites[0].pImageInfo = &samplerInfo;
 
-	setWrites[1].dstBinding = 1;
-	setWrites[1].dstArrayElement = 0;
-	setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
-	setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
-	setWrites[1].pBufferInfo = 0;
-	setWrites[1].dstSet = dscSet;
-	setWrites[1].pImageInfo = dscImgInfos.data();
+  setWrites[1].dstBinding = 1;
+  setWrites[1].dstArrayElement = 0;
+  setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
+  setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
+  setWrites[1].pBufferInfo = 0;
+  setWrites[1].dstSet = dscSet;
+  setWrites[1].pImageInfo = dscImgInfos.data();
 
   dev.updateDescriptorSets(2, setWrites, 0, nullptr);
 }
@@ -530,17 +544,13 @@ int TS_VkLoadTexture(const char * img)
   if (txtInds.empty() && availableInds.empty())
   {
     for (int i = 0; i < NUM_SUPPORTED_TEXTURES; ++i)
-    {
       availableInds.push(i);
-    }
   }
   
   // max textures allocated
   if (availableInds.empty())
-  {
     return -1;
-  }
-  
+
   // key not present means texture not loaded yet
   if (!txtInds.count(std::string(img)))
   {
@@ -853,9 +863,7 @@ void TS_VkCreateInstance()
   };
 
   if (enableValidationLayers)
-  {
     extensionNames.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-  }
 
   vk::InstanceCreateInfo ici {
     vk::InstanceCreateFlags(),
@@ -882,7 +890,8 @@ void TS_VkCreateInstance()
 
 void TS_VkCreateDebugMessenger()
 {
-  if (!enableValidationLayers) return;
+  if (!enableValidationLayers)
+      return;
 
   vk::DebugUtilsMessengerCreateInfoEXT dbmci;
   TS_VkPopulateDebugMessengerCreateInfo(dbmci);
@@ -941,9 +950,7 @@ void TS_VkCreateDevice()
 
   queueCreateInfos.push_back(gr);
   if (graphicsQueueFamilyIndex != presentQueueFamilyIndex)
-  {
     queueCreateInfos.push_back(pr);
-  }
 
   vk::PhysicalDeviceFeatures deviceFeatures = {};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -993,16 +1000,27 @@ void TS_VmaCreateAllocator()
 
 void TS_VmaCreateBuffers()
 {
-  vertexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc, 
-                                    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
-                                    vma::AllocationCreateFlagBits::eMapped);
-  indexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc, 
-                                    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
-                                    vma::AllocationCreateFlagBits::eMapped);
-  vertexBuffer = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
-                                    vk::MemoryPropertyFlagBits::eDeviceLocal);
-  indexBuffer = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
-                                    vk::MemoryPropertyFlagBits::eDeviceLocal);
+  vertexStaging = TS_VmaCreateBuffer(defaultBufferSize,
+    vk::BufferUsageFlagBits::eTransferSrc,
+    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
+    vma::AllocationCreateFlagBits::eMapped
+  );
+
+  indexStaging = TS_VmaCreateBuffer(defaultBufferSize,
+    vk::BufferUsageFlagBits::eTransferSrc,
+    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
+    vma::AllocationCreateFlagBits::eMapped
+  );
+
+  vertexBuffer = TS_VmaCreateBuffer(defaultBufferSize,
+    vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
+    vk::MemoryPropertyFlagBits::eDeviceLocal
+  );
+
+  indexBuffer = TS_VmaCreateBuffer(defaultBufferSize,
+    vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
+    vk::MemoryPropertyFlagBits::eDeviceLocal
+  );
 }
 
 void TS_VkCreateSwapchain()
@@ -1017,11 +1035,10 @@ void TS_VkCreateSwapchain()
   swapchainSize.width = width;
   swapchainSize.height = height;
   uint32_t imageCount = surfaceCapabilities.minImageCount + 1;
+
   if (surfaceCapabilities.maxImageCount > 0 && imageCount > surfaceCapabilities.maxImageCount)
-  {
     imageCount = surfaceCapabilities.maxImageCount;
-  }
-  
+
   vk::SwapchainCreateInfoKHR createInfo;
   createInfo.surface = srf;
   createInfo.minImageCount = surfaceCapabilities.minImageCount;
@@ -1136,12 +1153,13 @@ vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind k
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
   
-  if (optimize) options.SetOptimizationLevel(shaderc_optimization_level_performance);
+  if (optimize)
+    options.SetOptimizationLevel(shaderc_optimization_level_performance);
   
-  shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
-                                code, kind, "shader_src", options);
+  shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(code, kind, "shader_src", options);
   
-  if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
+  if (module.GetCompilationStatus() != shaderc_compilation_status_success)
+  {
     std::cerr << module.GetErrorMessage();
     return nullptr;
   }
@@ -1414,9 +1432,7 @@ void TS_VkCreateSemaphores()
 void TS_VkCreateFences()
 {
   for (uint32_t i = 0; i < swapchainImageCount; ++i)
-  {
     fences.push_back(dev.createFence({vk::FenceCreateFlagBits::eSignaled}));
-  }
 }
 
 void TS_VkInit()
@@ -1472,6 +1488,7 @@ void TS_BtRemovePhysicsObject(int id)
     idsByPtr.erase(static_cast<void *>(g->rbody));
   else
     idsByPtr.erase(static_cast<void *>(g->cobj));
+
   delete g;
 }
 
@@ -1509,7 +1526,6 @@ TS_VelocityInfo TS_BtGetLinearVelocity(int id)
 void TS_BtStepSimulation()
 {
   btdw->stepSimulation(0.01667f); // same as Starlight's clock
-
   CollisionPairs newPairs;
 
   for (int i = 0; i < btcd->getNumManifolds(); ++i)
@@ -1627,9 +1643,8 @@ void TS_BtInit()
 void TS_VkDestroyFences()
 {
   for (int i = 0; i < swapchainImageCount; ++i)
-  {
     dev.destroyFence(fences[i]);
-  }
+
   fences.clear();
 }
 
@@ -1653,9 +1668,8 @@ void TS_VkDestroyCommandPool()
 void TS_VkDestroyFramebuffers()
 {
   for (int i = 0; i < swapchainFramebuffers.size(); ++i)
-  {
     dev.destroyFramebuffer(swapchainFramebuffers[i]);
-  }
+
   swapchainFramebuffers.clear();
 }
 
@@ -1687,9 +1701,8 @@ void TS_VkTeardownDepthStencil()
 void TS_VkDestroyImageViews()
 {
   for (vk::ImageView iv : swapchainImageViews)
-  {
     dev.destroyImageView(iv);
-  }
+
   swapchainImageViews.clear();
 }
 
@@ -1739,7 +1752,9 @@ void TS_VkDestroySurface()
 
 void TS_VkDestroyDebugMessenger()
 {
-  if (!enableValidationLayers) return;
+  if (!enableValidationLayers)
+      return;
+
   inst.destroy(dbm);
 }
 
@@ -1773,9 +1788,8 @@ void TS_VkQuit()
 void TS_BtQuit()
 {
   for (auto it = physicsObjectsById.begin(); it != physicsObjectsById.end(); ++it)
-  {
     delete (*it).second;
-  }
+
   physicsObjectsById.clear();
   idsByPtr.clear(); // no need to delete in a loop here, it only stores copies that have just been invalidated
   delete btbpi;
@@ -1814,14 +1828,11 @@ void TS_Init(const char * ttl, int wdth, int hght)
   window_width = wdth;
   window_height = hght;
   win = SDL_CreateWindow(ttl, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, wdth, hght, SDL_WINDOW_VULKAN|SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_SHOWN);
+
   if (win == NULL)
-  {
     std::cerr << "Failed to create window: " << TS_SDLGetError() << std::endl;
-  }
   else
-  {
     SDL_SetWindowMinimumSize(win, wdth, hght);
-  }
   
   TS_VkInit();
 
@@ -1877,9 +1888,8 @@ void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
   if (sample == NULL)
   {
     std::cerr << "Could not load sound file: " << std::string(sound_file) << std::endl << TS_SDLGetError() << std::endl;
-    return;
   }
-  if (Mix_PlayChannelTimed(-1, sample, loops, ticks) == -1)
+  else if (Mix_PlayChannelTimed(-1, sample, loops, ticks) == -1)
   {
     std::cerr << "Unable to play sound " << sound_file << std::endl << TS_SDLGetError() << std::endl;
   }
