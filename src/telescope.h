@@ -15,6 +15,16 @@
 extern "C" {
 #endif
 
+/**
+	A fluffy feline
+*/
+struct cat {
+	/**
+		Make this cat look super cute
+	*/
+	void make_cute();
+};
+
 struct TS_PositionInfo
 {
   float x;
@@ -36,6 +46,9 @@ struct TS_CollisionEvent
   bool colliding;
 };
 
+/**
+	A fluffy feline
+*/
 void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic);
 
 void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz);

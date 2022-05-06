@@ -4,11 +4,12 @@ find_package(Doxygen REQUIRED)
 find_package(Sphinx REQUIRED)
 
 # Find all the public headers
-get_target_property(TELESCOPE_INCLUDE_DIR telescope INTERFACE_INCLUDE_DIRECTORIES)
+#get_target_property(TELESCOPE_INCLUDE_DIR telescope INTERFACE_INCLUDE_DIRECTORIES)
+set(TELESCOPE_INCLUDE_DIR "./src")
 file(GLOB_RECURSE TELESCOPE_INCLUDE_DIR ${TELESCOPE_INCLUDE_DIR}/*.h)
 
 # configure doxygen
-set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/docs)
+set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/src)
 set(DOXYGEN_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/docs/.doxygen)
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/docs/.doxygen/xml/index.xml)
 set(DOXYFILE_IN "${PROJECT_SOURCE_DIR}/docs/Doxyfile.in")
