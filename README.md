@@ -46,7 +46,7 @@ cmake .. #-DCMAKE_INSTALL_PREFIX=<install location>
 make install
 ```
 
-Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines what directory the Telescope shared library will be installed into.
+Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
 
 After installation, you can interface with Telescope from Julia using [Starlight.jl](https://github.com/jhigginbotham64/Starlight.jl). 
 
@@ -71,9 +71,6 @@ Then, you can make Telescope available to your library using
 ```
 
 ---
-
-
-
 
 ### Troubleshooting
 
@@ -142,13 +139,13 @@ Where `libshaderc_shared.so` may have a different prefix and/or suffix depending
 
 ---
 
-### 4. License
+### License
 
 The current and all previous versions of Telescope are supplied under MIT License, available [here](https://github.com/jhigginbotham64/Starlight.jl/blob/main/LICENSE).
 
 ---
 
-### 5. Authors
+### Authors
 
 Telescope was created and implemented by [Joshua Higginbotham](https://github.com/jhigginbotham64).
 

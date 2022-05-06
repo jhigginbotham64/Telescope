@@ -27,37 +27,38 @@ add_library(telescope SHARED
 )
 
 set_target_properties(telescope PROPERTIES
-    CXX_STANDARD 11
-    MACOSX_RPATH 1
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    POSITION_INDEPENDENT_CODE ON
+  CXX_STANDARD 11
+  MACOSX_RPATH 1
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  POSITION_INDEPENDENT_CODE ON
 )
 
 target_include_directories(telescope PUBLIC
-    "${CMAKE_SOURCE_DIR}/src"
-    "${BULLET_INCLUDE_DIRS}"
-    "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
-    "${SHADERC_INCLUDE_DIRS}"
+  "${CMAKE_SOURCE_DIR}/src"
+  "${BULLET_INCLUDE_DIRS}"
+  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
+  "${SHADERC_INCLUDE_DIRS}"
 )
 
 target_link_libraries(telescope PUBLIC
-    SDL2
-    SDL2_image
-    SDL2_mixer
-    SDL2_net
-    SDL2_ttf
-    ${BULLET_LIBRARIES}
-    ${shader_c_shared}
+  SDL2
+  SDL2_image
+  SDL2_mixer
+  SDL2_net
+  SDL2_ttf
+  ${BULLET_LIBRARIES}
+  ${shader_c_shared}
 )
 
 ### TESTS ####
 
-option(BUILD_TESTING "build telescope test suite" ON)
+option(BUILD_TESTING "build telescope unit tests" ON)
 if (BUILD_TESTING)
 
     # \brief: declare a test
     # \param: test_name, has to be equal to the name of the actual .cpp inside ./test
     function(declare_test test_name)
+
         add_executable(
             ${test_name}
             "${PROJECT_SOURCE_DIR}/test/${test_name}.cpp"
@@ -80,6 +81,7 @@ if (BUILD_TESTING)
     endfunction()
 
     #declare_test(template_test)
+
     declare_test(ts_common)
     declare_test(ts_bullet)
     declare_test(ts_ts)
