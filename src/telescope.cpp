@@ -162,11 +162,11 @@ uint32_t frameIndex;
 vma::Allocator al;
 vk::DebugUtilsMessengerEXT dbm;
 
-btBroadphaseInterface * btbpi;
-btCollisionConfiguration * btcc;
-btCollisionDispatcher * btcd;
-btConstraintSolver * btcs;
-btDynamicsWorld * btdw;
+btDbvtBroadphase btbpi;
+btDefaultCollisionConfiguration btcc;
+btCollisionDispatcher btcd(&btcc);
+btSequentialImpulseConstraintSolver btcs;
+btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
 
 struct TS_PhysicsObject {
   btCollisionObject * cobj;
@@ -208,20 +208,20 @@ struct TS_PhysicsObject {
       this->cobj->setActivationState(DISABLE_DEACTIVATION);
     }
 
-    btdw->addRigidBody(this->rbody);
+    btdw.addRigidBody(this->rbody);
   }
 
   ~TS_PhysicsObject()
   {
     if (this->rbody)
     { 
-      btdw->removeRigidBody(this->rbody);
+      btdw.removeRigidBody(this->rbody);
       delete this->rbody;
     }
     if (this->dmstate) delete this->dmstate;
     if (this->cobj && this->cobj != this->rbody) 
     {
-      btdw->removeCollisionObject(this->cobj);
+      btdw.removeCollisionObject(this->cobj);
       delete this->cobj;
     }
     if (this->cshape) delete this->cshape;
@@ -1504,14 +1504,14 @@ TS_VelocityInfo TS_BtGetLinearVelocity(int id)
 
 void TS_BtStepSimulation()
 {
-  btdw->stepSimulation(0.01667f); // same as Starlight's clock
+  btdw.stepSimulation(0.01667f); // same as Starlight's clock
 
   CollisionPairs newPairs;
 
-  for (int i = 0; i < btcd->getNumManifolds(); ++i)
+  for (int i = 0; i < btcd.getNumManifolds(); ++i)
   {
     // get the manifold
-    btPersistentManifold* man = btcd->getManifoldByIndexInternal(i);
+    btPersistentManifold* man = btcd.getManifoldByIndexInternal(i);
 
     // ignore manifolds that have 
     // no contact points.
@@ -1603,7 +1603,7 @@ TS_PositionInfo TS_BtGetPosition(int id)
 
 void TS_BtSetGravity(float gx, float gy, float gz)
 {
-  btdw->setGravity(btVector3(gx, gy, gz));
+  btdw.setGravity(btVector3(gx, gy, gz));
 }
 
 void TS_BtSetCollisionMargin(int id, float margin)
@@ -1613,11 +1613,7 @@ void TS_BtSetCollisionMargin(int id, float margin)
 
 void TS_BtInit()
 {
-  btcc = new btDefaultCollisionConfiguration();
-  btcd = new btCollisionDispatcher(btcc);
-  btbpi = new btDbvtBroadphase();
-  btcs = new btSequentialImpulseConstraintSolver();
-  btdw = new btDiscreteDynamicsWorld(btcd, btbpi, btcs, btcc);
+  // can do anything we want here
 }
 
 void TS_VkDestroyFences()
@@ -1774,11 +1770,6 @@ void TS_BtQuit()
   }
   physicsObjectsById.clear();
   idsByPtr.clear(); // no need to delete in a loop here, it only stores copies that have just been invalidated
-  delete btbpi;
-  delete btcc;
-  delete btcd;
-  delete btcs;
-  delete btdw;
 }
 
 void TS_Init(const char * ttl, int wdth, int hght)
