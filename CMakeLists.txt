@@ -1,3 +1,54 @@
+#[=======================================================================[.rst:
+
+Telescope
+-----------
+
+Build the telescope shared library, unit tests, documentation.
+
+Copyright Joshua Higginbotham, 2022
+
+Targets
+^^^^^^^
+
+``telescope``
+    telescope shared C library
+``pre_build_docs``, ``build_docs``
+    targets needed to generate documentation
+``uninstall``
+    uninstall telescope from your machine
+``test_*``
+    various CTest routines
+
+Options
+^^^^^^^
+
+``BUILD_TESTS``
+    build the test suite. On by default
+``BUILD_DOCS``
+    enable the docs build targets. Off by default
+
+Usage: Docs
+^^^^^^^^^^^
+
+To build the documentation, first turn ON the BUILD_DOCS option.
+Then, first build the `pre_build_docs` target. This
+generates files into `docs/.doxygen`. Afterwards, build the `build_docs`
+target, which will use sphinx to generate the documentation as a html
+website, in `docs/out`.
+
+Usage: Tests
+^^^^^^^^^^^^
+
+With BUILD_TESTS turned ON, all test targets become available.
+Build them, then, in the CMake output directory (usually Telescope/cmake-build-debug),
+run:
+
+    make test
+
+This will run all tests, printing their output to the console.
+
+#]=======================================================================]
+
 cmake_minimum_required(VERSION 3.13)
 
 project(telescope VERSION 0.2.0 LANGUAGES CXX)
@@ -52,8 +103,8 @@ target_link_libraries(telescope PUBLIC
 
 ### TESTS ####
 
-option(BUILD_TESTING "build telescope unit tests" ON)
-if (BUILD_TESTING)
+option(BUILD_TESTS "build telescope unit tests" ON)
+if (BUILD_TESTS)
 
     # \brief: declare a test
     # \param: test_name, has to be equal to the name of the actual .cpp inside ./test
@@ -94,9 +145,6 @@ endif()
 
 option(BUILD_DOCS "build telescope unit tests" ON) #TODO set to OFF for Release
 if (BUILD_DOCS)
-
-    # to regenerate the docs, first build the target `pre_build_docs`, then build `build_docs`
-    # afterwards, the generated website is available in Telescope/docs/out
     include("docs/CMakeLists.txt")
 endif()
 
@@ -105,9 +153,9 @@ endif()
 install(FILES ${INCLUDE_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 install(TARGETS telescope
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION lib
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION lib
 )
 
 ### UNINSTALL ###
