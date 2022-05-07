@@ -11,7 +11,8 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
-/VulkanMemoryAllocator-Hpp/
-/docs/out/
-/docs/Doxyfile
-/docs/.doxygen
+VulkanMemoryAllocator-Hpp/
+docs/out/
+docs/Doxyfile
+docs/.doxygen
+.idea/

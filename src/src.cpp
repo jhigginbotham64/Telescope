@@ -14,10 +14,10 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #define VMA_IMPLEMENTATION
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
-#include <vk_mem_alloc.hpp>
 
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
+#include <vk_mem_alloc.hpp>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
@@ -39,9 +39,9 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-#include <telescope.hpp>
+#include "telescope.h"
 
-#define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
 const char *window_name = NULL;
 SDL_Window *win = NULL;
@@ -74,6 +74,16 @@ std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 
+struct TS_Texture {
+  std::pair<vk::Image, vma::Allocation> img;
+  vk::ImageView view;
+
+  uint32_t width;
+  uint32_t height;
+
+  std::string fname;
+};
+
 vk::Sampler smp;
 vk::DescriptorPool dscPool;
 vk::DescriptorSet dscSet;
@@ -85,7 +95,13 @@ std::map<std::string, int> txtInds;
 std::array<TS_Texture, NUM_SUPPORTED_TEXTURES> txts;
 std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 
-  TS_Vertex::TS_Vertex(float x, float y, float r, float g, float b, float a, float u, float v, int t)
+struct TS_Vertex {
+  glm::vec2 pos;
+  glm::vec2 uv;
+  glm::vec4 col;
+  int tex;
+
+  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
   {
     this->pos = glm::vec2(x, y);
     this->uv = glm::vec2(u, v);
@@ -93,7 +109,7 @@ std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
     this->tex = t;
   }
 
-  vk::VertexInputBindingDescription TS_Vertex::getBindingDescription()
+  static vk::VertexInputBindingDescription getBindingDescription()
   {
     vk::VertexInputBindingDescription bindingDescription;
     bindingDescription.binding = 0;
@@ -103,7 +119,7 @@ std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
     return bindingDescription;
   }
 
-  std::array<vk::VertexInputAttributeDescription, 4> TS_Vertex::getAttributeDescriptions()
+  static std::array<vk::VertexInputAttributeDescription, 4> getAttributeDescriptions()
   {
     std::array<vk::VertexInputAttributeDescription, 4> attributeDescriptions;
 
@@ -129,6 +145,7 @@ std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 
     return attributeDescriptions;
   }
+};
 
 std::vector<TS_Vertex> vertices;
 std::vector<uint32_t> indices;
@@ -151,7 +168,13 @@ btCollisionDispatcher btcd(&btcc);
 btSequentialImpulseConstraintSolver btcs;
 btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
 
-  TS_PhysicsObject::TS_PhysicsObject(btCollisionShape * s, float mass, bool isKinematic, bool isTrigger, const btVector3 &initPos, const btQuaternion &initRot)
+struct TS_PhysicsObject {
+  btCollisionObject * cobj;
+  btCollisionShape * cshape;
+  btRigidBody * rbody;
+  btDefaultMotionState * dmstate;
+
+  TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
   {
     this->cshape = s;
     this->cobj = nullptr;
@@ -188,7 +211,7 @@ btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
     btdw.addRigidBody(this->rbody);
   }
 
-  TS_PhysicsObject::~TS_PhysicsObject()
+  ~TS_PhysicsObject()
   {
     if (this->rbody)
     {
@@ -204,12 +227,13 @@ btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
     if (this->cshape) delete this->cshape;
   }
 
-  btTransform TS_PhysicsObject::getTransform()
+  btTransform getTransform()
   {
     btTransform t;
     this->dmstate->getWorldTransform(t);
     return t;
   }
+};
 
 std::map<int, TS_PhysicsObject*> physicsObjectsById;
 std::map<const void*, int> idsByPtr;
@@ -284,7 +308,7 @@ vk::Bool32 TS_VkGetSupportedDepthFormat()
 
 std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage,
                       vk::Flags<vk::MemoryPropertyFlagBits> properties,
-                      vma::AllocationCreateFlags allocFlags)
+                      vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
 {
   vk::BufferCreateInfo bufferInfo;
   bufferInfo.size = size;
@@ -302,7 +326,7 @@ std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, v
 
 std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(uint32_t width, uint32_t height, vk::Format fmt, vk::ImageTiling tiling,
                       vk::Flags<vk::ImageUsageFlagBits> usage, vk::Flags<vk::MemoryPropertyFlagBits> properties,
-                      vma::AllocationCreateFlags allocFlags)
+                      vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
 {
   vk::ImageCreateInfo imageInfo;
   imageInfo.imageType = vk::ImageType::e2D;
@@ -1103,7 +1127,7 @@ void TS_VkCreateRenderPass()
   rp = dev.createRenderPass(renderPassInfo);
 }
 
-vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize)
+vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize = false)
 {
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
@@ -1415,7 +1439,7 @@ void TS_VkInit()
   TS_VkCreateFences();
 }
 
-void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic)
+void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
 {
   TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), m, isKinematic, false, btVector3(px, py, pz));
   physicsObjectsById[id] = g;

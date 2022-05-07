@@ -6,7 +6,8 @@
 //  this file contains the C interface used to generate
 //  wrappers in other programming languages. not all
 //  functions are exposed due to use of C++ arguments
-//  and return types.
+//  and return types. To access all Telescope functionality
+//  use the telescope.hpp header instead
 //
 
 #pragma once

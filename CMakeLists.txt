@@ -51,7 +51,7 @@ This will run all tests, printing their output to the console.
 
 cmake_minimum_required(VERSION 3.13)
 
-project(telescope VERSION 0.2.0 LANGUAGES CXX)
+project(telescope VERSION 0.2.0)
 
 include(GNUInstallDirs)
 
@@ -73,12 +73,17 @@ find_package(shaderc_shared REQUIRED)
 ### TELESCOPE ###
 
 add_library(telescope SHARED
-  src/telescope.cpp
-  src/telescope.h
-  src/telescope.hpp
+
+    include/vulkan_interface.hpp
+    include/bullet_interface.hpp
+    include/common.hpp
+    include/physics_object.hpp
+    include/vertex.hpp
+    src/src.cpp
 )
 
 set_target_properties(telescope PROPERTIES
+  LINKER_LANGUAGE C
   CXX_STANDARD 11
   MACOSX_RPATH 1
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -86,7 +91,7 @@ set_target_properties(telescope PROPERTIES
 )
 
 target_include_directories(telescope PUBLIC
-  "${CMAKE_SOURCE_DIR}/src"
+  "${CMAKE_SOURCE_DIR}"
   "${BULLET_INCLUDE_DIRS}"
   "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
   "${SHADERC_INCLUDE_DIRS}"
@@ -127,6 +132,10 @@ if (BUILD_TESTS)
             ${BULLET_INCLUDE_DIRS}
             ${SHADERC_INCLUDE_DIRS}
             "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
+        )
+
+        set_target_properties(${test_name} PROPERTIES
+            LINKER_LANGUAGE CXX
         )
 
         add_test(NAME ${test_name} COMMAND ${test_name})

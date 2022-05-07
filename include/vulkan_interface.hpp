@@ -5,34 +5,12 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
+
 #include <vk_mem_alloc.hpp>
 
-#include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
+#include <include/link_as_c.hpp>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_net.h>
-#include <SDL2/SDL_vulkan.h>
-
-#include <btBulletCollisionCommon.h>
-#include <btBulletDynamicsCommon.h>
-
-#include <iostream>
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <queue>
-#include <utility>
-#include <cmath>
-
-#include "telescope.h"
-
-/// \brief texture object
 struct TS_Texture {
 
   /// \brief image
@@ -50,78 +28,68 @@ struct TS_Texture {
   std::string fname;
 };
 
-/// \brief vertex object
-struct TS_Vertex {
+BEGIN_C_LINKAGE
 
-  /// \brief position in 2D space
-  glm::vec2 pos;
+/// \brief draw a rectangle
+/// \param r: red component of the color (in RGBA)
+/// \param g: green component of the color (in RGBA)
+/// \param b: blue component of the color (in RGBA)
+/// \param alpha: transparency component of the color (in RGBA)
+/// \param x: x-position of the upper left corner of the rectangle
+/// \param y: y-position of the upper left corner of the rectangle
+/// \param width: size along the x-dimension
+/// \param height: size along the y-dimension
+void TS_VkCmdDrawRect(
+    float r, float g, float b, float alpha,
+    float x, float y,
+    float width, float height
+);
 
-  /// \brief uv coordinate
-  glm::vec2 uv;
+/// \brief draw a sprite
+/// \param image_path: path to image on disk
+/// \param r: red component of the color (in RGBA)
+/// \param g: green component of the color (in RGBA)
+/// \param b: blue component of the color (in RGBA)
+/// \param alpha: transparency component of the color (in RGBA)
+/// \param region_x: x-coordinate of the top left corner of the subregion
+/// \param region_y: y-coordinate of the top left corner of the subregion
+/// \param region_width: size of the subregion along the x-dimension
+/// \param region_height: size of the subregion along the x-dimension
+/// \param cell_w: width of each cell of the grid
+/// \param cell_h: height of each cell of the grid
+/// \param cell_index_i: x-index of the cell
+/// \param cell_index_j: y-index of the cell
+/// \param position_x: x-coordinate of the top left corner of the sprite
+/// \param position_y: y-coordinate of the top left corner of the sprite
+/// \param scale_x: scale along the x-dimension
+/// \param scale_y: scale along the y-dimension
+void TS_VkCmdDrawSprite(
+    const char * image_path,
+    float r, float g, float b, float alpha,
+    int region_x, int region_y, int region_width, int region_height,
+    int cell_w, int cell_h, int cell_index_i, int cell_index_j,
+    float position_x, float position_y,
+    float scale_x, float scale_y
+);
 
-  /// \brief color, in RGBA
-  glm::vec4 col;
+/// \brief clear the render window with a color
+/// \param r: red component of the color (in RGBA)
+/// \param g: green component of the color (in RGBA)
+/// \param b: blue component of the color (in RGBA)
+/// \param alpha: transparency component of the color (in RGBA)
+void TS_VkCmdClearColorImage(float r, float g, float b, float alpha);
 
-  /// \brief texture id
-  int tex;
+/// \brief start the drawing pass
+void TS_VkBeginDrawPass();
 
-  /// \brief ctor
-  /// \param x: x position
-  /// \param y: y position
-  /// \param r: red component
-  /// \param g: green component
-  /// \param b: blue component
-  /// \param a: transparency component
-  /// \param u: u-coordinate
-  /// \param v: v-coordinate
-  /// \param t: texture id
-  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1);
+/// \brief finish the drawing pass by rendering a solid color
+/// \param r: red component of the color (in RGBA)
+/// \param g: green component of the color (in RGBA)
+/// \param b: blue component of the color (in RGBA)
+/// \param alpha: transparency component of the color (in RGBA)
+void TS_VkEndDrawPass(float r, float g, float b, float a);
 
-  /// \brief get vertices vulkan binding description
-  /// \returns description
-  static vk::VertexInputBindingDescription getBindingDescription();
-
-  /// \brief get vertices vulkan attribute description
-  /// \returns 4-array of descriptions
-  static std::array<vk::VertexInputAttributeDescription, 4> getAttributeDescriptions();
-};
-
-/// \brief phyiscs object
-struct TS_PhysicsObject {
-
-  /// \brief internal bullet collision object
-  btCollisionObject * cobj;
-
-  /// \brief collision shape
-  btCollisionShape * cshape;
-
-  /// \brief rigid body
-  btRigidBody * rbody;
-
-  /// \brief default motion state
-  btDefaultMotionState * dmstate;
-
-  /// \brief ctor
-  /// \param s: bullet collision shape
-  /// \param mass: [optional] mass
-  /// \param isKinematic: [optional] is a kinematic object
-  /// \param isTrigger: [optional] is a trigger object
-  /// \param initPos: [optional] initial position in 3d space
-  /// \param initRot: [optional] initial quaternion
-  TS_PhysicsObject(btCollisionShape * s,
-    float mass = 0.0f,
-    bool isKinematic = false,
-    bool isTrigger = false,
-    const btVector3 &initPos = btVector3(0,0,0),
-    const btQuaternion &initRot = btQuaternion(0,0,1,1));
-
-  /// \brief dtor
-  ~TS_PhysicsObject();
-
-  /// \brief access transforms
-  /// \returns btTransform object
-  btTransform getTransform();
-};
+END_C_LINKAGE;
 
 /// \brief trigger debug callback
 /// \param messageSeverity: severity
@@ -174,53 +142,6 @@ std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(
   vk::Flags<vk::ImageUsageFlagBits> usage,
   vk::Flags<vk::MemoryPropertyFlagBits> properties,
   vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags());
-
-/// \brief get sdl error
-/// \returns error message
-const char * TS_SDLGetError();
-
-/// \brief get normalized device coordinates along the x and y axes
-/// \param x: x coordinate
-/// \returns normalized y coordinate
-float TS_NDCX(float x);
-
-/// \brief get normalized device coordinates along the x and y axes
-/// \param y: y coordinate
-/// \returns normalized x coordinate
-float TS_NDCY(float y);
-
-/// \brief normalize rectangle
-/// \param x: x-coordinate of the top left corner
-/// \param y: y-coordinate of the top left corner
-/// \param w: size in x-dimension
-/// \param h: size in y-dimension
-/// \returns rectangle as 4-array of floats
-std::array<float, 4> TS_NDCRect(float x, float y, float w, float h);
-
-/// \brief normalize texture coordinates along the u axis
-/// \param x: x-coordinate
-/// \param w: width
-/// \returns normalized y-coordinate
-float TS_NTCU(int x, int w);
-
-/// \brief normalize texture coordinates along the v axis
-/// \param y: y-coordinate
-/// \param h: height
-/// \returns normalized x-coordinate
-float TS_NTCV(int y, int h);
-
-/// \brief normalize texture coordinate rectangle
-/// \param x: x-coordinate of top left corner
-/// \param y: y-coordinate of top left corner
-/// \param w: width
-/// \param h: height
-/// \param w2: new width
-/// \param h2: new height
-/// \returns rect as 4-array
-std::array<float, 4> TS_NTCRect(int x, int y, int w, int h, int w2, int h2);
-
-/// \brief TODO: idk what this does
-void TS_Add4Indices();
 
 /// \brief begin vulkan scratch buffer
 /// \returns vulkan command buffer
@@ -394,79 +315,6 @@ void TS_VkBeginDrawPass();
 /// \param alpha: transparency component of the color (in RGBA)
 void TS_VkEndDrawPass(float r, float g, float b, float a);
 
-/// \brief add a rigid, axis-aligned collision box to the state
-/// \param id: id of the newly created object
-/// \param size_x: size along the x-dimension
-/// \param size_y: size along the y-dimension
-/// \param size_z: size along the z-dimension
-/// \param mass: mass of the box
-/// \param position_x: x-coordinate of the position of the box
-/// \param position_y: y-coordinate of the position of the box
-/// \param position_z: z-coordinate of the position of the box
-/// \param is_kinematic: should the box be a kinematic object
-void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false);
-
-/// \brief add a static, axis-aligned collision box to the state
-/// \param id: id of the newly created object
-/// \param size_x: size along the x-dimension
-/// \param size_y: size along the y-dimension
-/// \param size_z: size along the z-dimension
-/// \param position_x: x-coordinate of the position of the box
-/// \param position_y: y-coordinate of the position of the box
-/// \param position_z: z-coordinate of the position of the box
-void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz);
-
-/// \brief add a box-shaped trigger to the state
-/// \param id: id of the newly created object
-/// \param size_x: size along the x-dimension
-/// \param size_y: size along the y-dimension
-/// \param size_z: size along the z-dimension
-/// \param position_x: x-coordinate of the position of the box
-/// \param position_y: y-coordinate of the position of the box
-/// \param position_z: z-coordinate of the position of the box
-void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
-
-/// \brief remove a physics object from the state
-/// \param id: id of the object
-void TS_BtRemovePhysicsObject(int id);
-
-/// \brief set the linear velocity of a physics object
-/// \param id: id of the object
-/// \param velocity_x: velocity along the x-dimension
-/// \param velocity_y: velocity along the y-dimension
-/// \param velocity_z: velocity along the z-dimension
-void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz);
-
-/// \brief get the linear velocity of a physics object
-/// \param id: id of the object
-/// \returns TS_VelocityInfo object describing the velocity along each dimension
-TS_VelocityInfo TS_BtGetLinearVelocity(int id);
-
-/// \brief advance the physics simulation by one step
-void TS_BtStepSimulation();
-
-/// \brief query the next collision event
-/// \returns TS_CollisionEvent, contains two ids of colliding objects
-TS_CollisionEvent TS_BtGetNextCollision();
-
-/// \brief get the position of an object
-/// \returns TS_PositionInfo, position in 3d space
-TS_PositionInfo TS_BtGetPosition(int id);
-
-/// \brief set the global gravity
-/// \param gravity_x: acceleration along the x-dimension
-/// \param gravity_y: acceleration along the y-dimension
-/// \param gravity_z: acceleration along the z-dimension
-void TS_BtSetGravity(float gx, float gy, float gz);
-
-/// \brief set the outer margin of a specific collision object
-/// \param id: id of the object
-/// \param margin: distance between the surface and the outer margin of the object
-void TS_BtSetCollisionMargin(int id, float margin);
-
-/// \brief initialize the physics state
-void TS_BtInit();
-
 /// \brief deallocate the vulkan fences
 void TS_VkDestroyFences();
 
@@ -523,18 +371,3 @@ void TS_VkDestroyInstance();
 
 /// \brief quit the vulkan state
 void TS_VkQuit();
-
-/// \brief quit the bullet state
-void TS_BtQuit();
-
-/// \brief initialize the state
-void TS_Init(const char * ttl, int wdth, int hght);
-
-/// \brief quit the state
-void TS_Quit();
-
-/// \brief play a sound
-/// \param path: path to the sound file
-/// \param loops: [optional] number of loops, -1 for infinite
-/// \param ticks: [optional] maximum time to play a sample, in milliseconds, -1 for infinite
-void TS_PlaySound(const char* sound_file, int loops, int ticks);
