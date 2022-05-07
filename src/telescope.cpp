@@ -1882,7 +1882,7 @@ void TS_VkEndDrawPass(float r, float g, float b, float a)
   TS_VkQueuePresent();
 }
 
-void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
+void TS_PlaySound(const char* sound_file, int loops, int ticks)
 {
   Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);
   if (sample == NULL)
