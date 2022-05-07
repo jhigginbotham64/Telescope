@@ -9,8 +9,11 @@
 /// \brief initialize the physics state
 void TS_BtInit();
 
-/// \brief quit the bullet state
+/// \brief safely destroy the physics state
 void TS_BtQuit();
+
+/// \brief advance the physics simulation by one step
+void TS_BtStepSimulation();
 
 /// \brief add a rigid, axis-aligned collision box to the state
 /// \param id: id of the newly created object
@@ -60,9 +63,6 @@ void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz);
 /// \returns TS_VelocityInfo object describing the velocity along each dimension
 TS_VelocityInfo TS_BtGetLinearVelocity(int id);
 
-/// \brief advance the physics simulation by one step
-void TS_BtStepSimulation();
-
 /// \brief query the next collision event
 /// \returns TS_CollisionEvent, contains two ids of colliding objects
 TS_CollisionEvent TS_BtGetNextCollision();
@@ -81,6 +81,3 @@ void TS_BtSetGravity(float gx, float gy, float gz);
 /// \param id: id of the object
 /// \param margin: distance between the surface and the outer margin of the object
 void TS_BtSetCollisionMargin(int id, float margin);
-
-/// \brief quit the bullet state
-void TS_BtQuit();

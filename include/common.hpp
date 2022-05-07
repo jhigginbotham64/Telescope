@@ -12,6 +12,9 @@
 extern "C" {
 
 /// \brief initialize the state
+/// \param ttl: title of the window
+/// \param wdth: window width, in pixels
+/// \param hght: window height, in pixels
 void TS_Init(const char * ttl, int wdth, int hght);
 
 /// \brief quit the state
@@ -26,7 +29,6 @@ void TS_PlaySound(const char* sound_file, int loops, int ticks);
 /// \brief get sdl error
 /// \returns error message
 const char * TS_SDLGetError();
-
 }
 
 /// \brief get normalized device coordinates along the x and y axes

@@ -168,72 +168,71 @@ btCollisionDispatcher btcd(&btcc);
 btSequentialImpulseConstraintSolver btcs;
 btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
 
-struct TS_PhysicsObject {
-  btCollisionObject * cobj;
-  btCollisionShape * cshape;
-  btRigidBody * rbody;
-  btDefaultMotionState * dmstate;
+TS_PhysicsObject::TS_PhysicsObject(btCollisionShape * s, float mass, bool isKinematic, bool isTrigger, const btVector3 &initPos, const btQuaternion &initRot)
+{
+  this->cshape = s;
+  this->cobj = nullptr;
+  this->rbody = nullptr;
+  this->dmstate = nullptr;
 
-  TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  btTransform t;
+  t.setIdentity();
+  t.setOrigin(initPos);
+  t.setRotation(initRot);
+
+  btVector3 locInertia(0,0,0);
+
+  if (mass != 0.0f)
+    this->cshape->calculateLocalInertia(mass, locInertia);
+
+  this->dmstate = new btDefaultMotionState(t);
+
+  btRigidBody::btRigidBodyConstructionInfo cinfo(mass, this->dmstate, this->cshape, locInertia);
+
+  this->rbody = new btRigidBody(cinfo);
+
+  this->cobj = this->rbody;
+
+  if (isTrigger)
+    this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+  if (isKinematic || isTrigger)
   {
-    this->cshape = s;
-    this->cobj = nullptr;
-    this->rbody = nullptr;
-    this->dmstate = nullptr;
-
-    btTransform t;
-    t.setIdentity();
-    t.setOrigin(initPos);
-    t.setRotation(initRot);
-
-    btVector3 locInertia(0,0,0);
-
-    if (mass != 0.0f)
-      this->cshape->calculateLocalInertia(mass, locInertia);
-
-    this->dmstate = new btDefaultMotionState(t);
-
-    btRigidBody::btRigidBodyConstructionInfo cinfo(mass, this->dmstate, this->cshape, locInertia);
-
-    this->rbody = new btRigidBody(cinfo);
-
-    this->cobj = this->rbody;
-
-    if (isTrigger)
-      this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
-
-    if (isKinematic || isTrigger)
-    {
-      // this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-      this->cobj->setActivationState(DISABLE_DEACTIVATION);
-    }
-
-    btdw.addRigidBody(this->rbody);
+    // this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+    this->cobj->setActivationState(DISABLE_DEACTIVATION);
   }
 
-  ~TS_PhysicsObject()
-  {
+  btdw.addRigidBody(this->rbody);
+}
+
+TS_PhysicsObject::~TS_PhysicsObject()
+{
     if (this->rbody)
     {
       btdw.removeRigidBody(this->rbody);
       delete this->rbody;
     }
-    if (this->dmstate) delete this->dmstate;
+
+    if (this->dmstate)
+        delete this->dmstate;
+
     if (this->cobj && this->cobj != this->rbody)
     {
       btdw.removeCollisionObject(this->cobj);
       delete this->cobj;
     }
-    if (this->cshape) delete this->cshape;
-  }
 
-  btTransform getTransform()
-  {
+    if (this->cshape)
+        delete this->cshape;
+}
+
+btTransform TS_PhysicsObject::getTransform()
+{
     btTransform t;
     this->dmstate->getWorldTransform(t);
     return t;
-  }
-};
+}
+
 
 std::map<int, TS_PhysicsObject*> physicsObjectsById;
 std::map<const void*, int> idsByPtr;

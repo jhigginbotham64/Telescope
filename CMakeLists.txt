@@ -80,7 +80,7 @@ add_library(telescope SHARED
     include/physics_object.hpp
     include/vertex.hpp
     src/src.cpp
-)
+        include/collision_event.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C

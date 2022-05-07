@@ -16,44 +16,8 @@
 extern "C" {
 #endif
 
-/// \brief positional information, describes point in 3D space
-struct TS_PositionInfo
-{
-  /// \brief x-coordinate
-  float x;
-
-  /// \brief y-coordinate
-  float y;
-
-  /// \brief z-coodrinate
-  float z;
-};
-
-/// \brief velocity information, describes velocity vector in 3D space
-struct TS_VelocityInfo
-{
-  /// \brief velocity along x-axis
-  float x;
-
-  /// \brief velocity along y-axis
-  float y;
-
-  /// \brief velocity along z-axis
-  float z;
-};
-
-/// \brief event used to check whether two objects are colliding
-struct TS_CollisionEvent
-{
-  /// \brief id of first object
-  int id1;
-
-  /// \brief id of second object
-  int id2;
-
-  /// \brief true if objects collide, false otherwise
-  bool colliding;
-};
+#include <include/physics_object.hpp>
+#include <include/collision_event.hpp>
 
 /// \brief add a rigid, axis-aligned collision box to the state
 /// \param id: id of the newly created object
