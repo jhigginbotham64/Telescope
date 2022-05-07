@@ -39,7 +39,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-#include "telescope.h"
+#include <telescope.hpp>
 
 #define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
@@ -74,24 +74,6 @@ std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 
-/// \brief texture object
-struct TS_Texture {
-
-  /// \brief image
-  std::pair<vk::Image, vma::Allocation> img;
-
-  /// \brief current view
-  vk::ImageView view;
-
-  /// \brief size along x-dimension
-  uint32_t width;
-  /// \brief size along y-dimension
-  uint32_t height;
-
-  /// \brief file name
-  std::string fname;
-};
-
 vk::Sampler smp;
 vk::DescriptorPool dscPool;
 vk::DescriptorSet dscSet;
@@ -103,32 +85,7 @@ std::map<std::string, int> txtInds;
 std::array<TS_Texture, NUM_SUPPORTED_TEXTURES> txts;
 std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 
-/// \brief vertex object
-struct TS_Vertex {
-
-  /// \brief position in 2D space
-  glm::vec2 pos;
-
-  /// \brief TODO
-  glm::vec2 uv;
-
-  /// \brief color, in RGBA
-  glm::vec4 col;
-
-  /// \brief texture id
-  int tex;
-
-  /// \brief ctor
-  /// \param x: x position
-  /// \param y: y position
-  /// \param r: red component
-  /// \param g: green component
-  /// \param b: blue component
-  /// \param a: transparency component
-  /// \param u: TODO
-  /// \param v: TODO
-  /// \param t: texture id
-  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
+  TS_Vertex::TS_Vertex(float x, float y, float r, float g, float b, float a, float u, float v, int t)
   {
     this->pos = glm::vec2(x, y);
     this->uv = glm::vec2(u, v);
@@ -136,9 +93,7 @@ struct TS_Vertex {
     this->tex = t;
   }
 
-  /// \brief get vertices vulkan binding description
-  /// \returns description
-  static vk::VertexInputBindingDescription getBindingDescription()
+  vk::VertexInputBindingDescription TS_Vertex::getBindingDescription()
   {
     vk::VertexInputBindingDescription bindingDescription;
     bindingDescription.binding = 0;
@@ -148,9 +103,7 @@ struct TS_Vertex {
     return bindingDescription;
   }
 
-  /// \brief get vertices vulkan attribute description
-  /// \returns 4-array of descriptions
-  static std::array<vk::VertexInputAttributeDescription, 4> getAttributeDescriptions()
+  std::array<vk::VertexInputAttributeDescription, 4> TS_Vertex::getAttributeDescriptions()
   {
     std::array<vk::VertexInputAttributeDescription, 4> attributeDescriptions;
 
@@ -176,7 +129,6 @@ struct TS_Vertex {
 
     return attributeDescriptions;
   }
-};
 
 std::vector<TS_Vertex> vertices;
 std::vector<uint32_t> indices;
@@ -199,34 +151,7 @@ btCollisionDispatcher btcd(&btcc);
 btSequentialImpulseConstraintSolver btcs;
 btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
 
-/// \brief phyiscs object
-struct TS_PhysicsObject {
-
-  /// \brief internal bullet collision object
-  btCollisionObject * cobj;
-
-  /// \brief collision shape
-  btCollisionShape * cshape;
-
-  /// \brief rigid body
-  btRigidBody * rbody;
-
-  /// \brief default motion state
-  btDefaultMotionState * dmstate;
-
-  /// \brief ctor
-  /// \param s: bullet collision shape
-  /// \param mass: [optional] mass
-  /// \param isKinematic: [optional] is a kinematic object
-  /// \param isTrigger: [optional] is a trigger object
-  /// \param initPos: [optional] initial position in 3d space
-  /// \param initRot: [optional] initial quaternion
-  TS_PhysicsObject(btCollisionShape * s,
-    float mass = 0.0f,
-    bool isKinematic = false,
-    bool isTrigger = false,
-    const btVector3 &initPos = btVector3(0,0,0),
-    const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  TS_PhysicsObject::TS_PhysicsObject(btCollisionShape * s, float mass, bool isKinematic, bool isTrigger, const btVector3 &initPos, const btQuaternion &initRot)
   {
     this->cshape = s;
     this->cobj = nullptr;
@@ -263,8 +188,7 @@ struct TS_PhysicsObject {
     btdw.addRigidBody(this->rbody);
   }
 
-  /// \brief dtor
-  ~TS_PhysicsObject()
+  TS_PhysicsObject::~TS_PhysicsObject()
   {
     if (this->rbody)
     {
@@ -280,15 +204,12 @@ struct TS_PhysicsObject {
     if (this->cshape) delete this->cshape;
   }
 
-  /// \brief access transforms
-  /// \returns btTransform object
-  btTransform getTransform()
+  btTransform TS_PhysicsObject::getTransform()
   {
     btTransform t;
     this->dmstate->getWorldTransform(t);
     return t;
   }
-};
 
 std::map<int, TS_PhysicsObject*> physicsObjectsById;
 std::map<const void*, int> idsByPtr;
@@ -309,17 +230,11 @@ const std::vector<const char*> validationLayers = {
   const bool enableValidationLayers = true;
 #endif
 
-/// \brief trigger debug callback
-/// \param messageSeverity: severity
-/// \param messageType: type of message
-/// \param pCallbackData: vulkan supplied callback data
-/// \param pUserData: user supplied callback data
-/// \returns always false
 static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
-  vk::DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-  vk::DebugUtilsMessageTypeFlagsEXT messageType,
-  const vk::DebugUtilsMessengerCallbackDataEXT* pCallbackData,
-  void* pUserData)
+    vk::DebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    vk::DebugUtilsMessageTypeFlagsEXT messageType,
+    const vk::DebugUtilsMessengerCallbackDataEXT* pCallbackData,
+    void* pUserData)
 {
   if (messageSeverity >= vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning)
   {
@@ -329,11 +244,6 @@ static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
   return VK_FALSE;
 }
 
-/// \brief create vulkan image view
-/// \brief img: vulkan image
-/// \brief fmt: vulkan format
-/// \brief flags: image aspect flags
-/// \returns created image view
 vk::ImageView TS_VkCreateImageView(vk::Image img, vk::Format fmt, vk::ImageAspectFlagBits flags)
 {
   vk::ImageViewCreateInfo viewInfo;
@@ -349,8 +259,6 @@ vk::ImageView TS_VkCreateImageView(vk::Image img, vk::Format fmt, vk::ImageAspec
   return dev.createImageView(viewInfo);
 }
 
-/// \brief get vulkan supported depth format
-/// \returns true if format supported, false otherwise
 vk::Bool32 TS_VkGetSupportedDepthFormat()
 {
   std::vector<vk::Format> depthFormats = {
@@ -374,16 +282,9 @@ vk::Bool32 TS_VkGetSupportedDepthFormat()
   return false;
 }
 
-/// \brief TODO
-/// \param size: vulkan device size
-/// \param usage: vulkan buffer usage flags
-/// \param properties: vulkan memory properties
-/// \param allocFlags: [optional] allocation flags
-/// \returns pair where .first is the vulkan buffer, .second is the vma::Allcation object
-std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(
-    vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage,
-    vk::Flags<vk::MemoryPropertyFlagBits> properties,
-    vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
+std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage,
+                      vk::Flags<vk::MemoryPropertyFlagBits> properties,
+                      vma::AllocationCreateFlags allocFlags)
 {
   vk::BufferCreateInfo bufferInfo;
   bufferInfo.size = size;
@@ -399,23 +300,9 @@ std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(
   return al.createBuffer(bufferInfo, allocInfo);
 }
 
-/// \brief create a vma image
-/// \param width: size along x-dimension
-/// \param height: size along y-dimension
-/// \param fmt: vulkan format
-/// \param tiling: vulkan image tiling
-/// \param usage: vulkan image usage flags
-/// \param properties: vulkan memory properties
-/// \param allocFlags: [optional] vma allocation flags
-/// \returns pair where .first is the vulkan buffer, .second is the vma::Allcation object
-std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(
-  uint32_t width,
-  uint32_t height,
-  vk::Format fmt,
-  vk::ImageTiling tiling,
-  vk::Flags<vk::ImageUsageFlagBits> usage,
-  vk::Flags<vk::MemoryPropertyFlagBits> properties,
-  vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
+std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(uint32_t width, uint32_t height, vk::Format fmt, vk::ImageTiling tiling,
+                      vk::Flags<vk::ImageUsageFlagBits> usage, vk::Flags<vk::MemoryPropertyFlagBits> properties,
+                      vma::AllocationCreateFlags allocFlags)
 {
   vk::ImageCreateInfo imageInfo;
   imageInfo.imageType = vk::ImageType::e2D;
@@ -440,71 +327,43 @@ std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(
   return al.createImage(imageInfo, allocInfo);
 }
 
-/// \brief get sdl error
-/// \returns error message
 const char * TS_SDLGetError()
 {
   return SDL_GetError();
 }
 
-/// \brief get normalized device coordinates along the x and y axes
-/// \param x: x coordinate
-/// \returns normalized y coordinate
+// normalized device coordinates along the x and y axes
 float TS_NDCX(float x)
 {
  return (2.0f / window_width) * x - 1.0f;
 }
 
-/// \brief get normalized device coordinates along the x and y axes
-/// \param y: y coordinate
-/// \returns normalized x coordinate
 float TS_NDCY(float y)
 {
   return (2.0f / window_height) * y - 1.0f;
 }
 
-/// \brief normalize rectangle
-/// \param x: x-coordinate of the top left corner
-/// \param y: y-coordinate of the top left corner
-/// \param w: size in x-dimension
-/// \param h: size in y-dimension
-/// \returns rectangle as 4-array of floats
 std::array<float, 4> TS_NDCRect(float x, float y, float w, float h)
 {
   return std::array<float, 4>({TS_NDCX(x), TS_NDCX(x + w), TS_NDCY(y), TS_NDCY(y + h)});
 }
 
-/// \brief normalize texture coordinates along the u axis
-/// \param x: x-coordinate
-/// \param w: width
-/// \returns TODO
+// normalized texture coordinates along the u and v axes
 float TS_NTCU(int x, int w)
 {
  return (1.0f / w) * x;
 }
 
-/// \brief normalize texture coordinates along the v axis
-/// \param y: y-coordinate
-/// \param h: height
-/// \returns TODO
 float TS_NTCV(int y, int h)
 {
   return (1.0f / h) * y;
 }
 
-/// \brief normalize texture coordinate rectangle
-/// \param x: x-coordinate of top left corner
-/// \param y: y-coordinate of top left corner
-/// \param w: width
-/// \param h: height
-/// \param w2: new width TODO
-/// \param h2: new height TODO
 std::array<float, 4> TS_NTCRect(int x, int y, int w, int h, int w2, int h2)
 {
   return std::array<float, 4>({TS_NTCU(x, w2), TS_NTCU(x + w, w2), TS_NTCV(y, h2), TS_NTCV(y + h, h2)});
 }
 
-/// \brief TODO
 void TS_Add4Indices()
 {
   indices.push_back(current_index);
@@ -515,8 +374,6 @@ void TS_Add4Indices()
   current_index += 4;
 }
 
-/// \brief begin vulkan scratch buffer
-/// \returns vulkan command buffer
 vk::CommandBuffer TS_VkBeginScratchBuffer()
 {
   vk::CommandBufferAllocateInfo allocInfo;
@@ -534,8 +391,6 @@ vk::CommandBuffer TS_VkBeginScratchBuffer()
   return tmp;
 }
 
-/// \brief submit vulkan scratch buffer
-/// \param tmp: command buffer
 void TS_VkSubmitScratchBuffer(vk::CommandBuffer &tmp)
 {
   tmp.end();
@@ -550,10 +405,6 @@ void TS_VkSubmitScratchBuffer(vk::CommandBuffer &tmp)
   dev.freeCommandBuffers(cp, 1, &tmp);
 }
 
-/// \brief transition the layout of an image
-/// \param img: image
-/// \param oldLayout: previous layout
-/// \param newLayout: new layout
 void TS_VkTransitionImageLayout(vk::Image img, vk::ImageLayout oldLayout, vk::ImageLayout newLayout)
 {
   vk::CommandBuffer tmp = TS_VkBeginScratchBuffer();
@@ -597,11 +448,6 @@ void TS_VkTransitionImageLayout(vk::Image img, vk::ImageLayout oldLayout, vk::Im
   TS_VkSubmitScratchBuffer(tmp);
 }
 
-/// \brief copy vulkan buffer to image
-/// \param buf: buffer
-/// \param img: image
-/// \param wdth: width of the TODO: buffer or image?
-/// \param hght: height of the TODO: buffer or image?
 void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32_t hght)
 {
   vk::CommandBuffer tmp = TS_VkBeginScratchBuffer();
@@ -624,7 +470,6 @@ void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32
   TS_VkSubmitScratchBuffer(tmp);
 }
 
-/// \brief TODO
 void TS_VkWriteDescriptorSet()
 {
   vk::WriteDescriptorSet setWrites[2];
@@ -651,9 +496,6 @@ void TS_VkWriteDescriptorSet()
   dev.updateDescriptorSets(2, setWrites, 0, nullptr);
 }
 
-
-/// \brief load texture
-/// \param img: path to image on disk
 int TS_VkLoadTexture(const char * img)
 {
   // initialize on first access
@@ -760,8 +602,6 @@ int TS_VkLoadTexture(const char * img)
   return txtInds[std::string(img)];
 }
 
-/// \brief unload texture
-/// \param img: texture path
 void TS_VkUnloadTexture(const char * img)
 {
   // retrieve index from map
@@ -783,15 +623,6 @@ void TS_VkUnloadTexture(const char * img)
   TS_VkWriteDescriptorSet();
 }
 
-/// \param draw a colored rectangle
-/// \param r: red component of the color
-/// \param g: green component of the color
-/// \param b: blue component of the color
-/// \param a: transparency component of the color
-/// \param x: x-coordinate of the top left corner
-/// \param y: y-coordinate of the top left corner
-/// \param w: width
-/// \param h: height
 void TS_VkCmdDrawRect(float r, float g, float b, float a, float x, float y, float w, float h)
 {
   // convert from screen space to normalized device coordinates
@@ -807,24 +638,6 @@ void TS_VkCmdDrawRect(float r, float g, float b, float a, float x, float y, floa
   TS_Add4Indices();
 }
 
-/// \brief draw a sprite
-/// \param image_path: path to image on disk
-/// \param r: red component of the color (in RGBA)
-/// \param g: green component of the color (in RGBA)
-/// \param b: blue component of the color (in RGBA)
-/// \param alpha: transparency component of the color (in RGBA)
-/// \param region_x: x-coordinate of the top left corner of the subregion
-/// \param region_y: y-coordinate of the top left corner of the subregion
-/// \param region_width: size of the subregion along the x-dimension
-/// \param region_height: size of the subregion along the x-dimension
-/// \param cell_w: width of each cell of the grid
-/// \param cell_h: height of each cell of the grid
-/// \param cell_index_i: x-index of the cell
-/// \param cell_index_j: y-index of the cell
-/// \param position_x: x-coordinate of the top left corner of the sprite
-/// \param position_y: y-coordinate of the top left corner of the sprite
-/// \param scale_x: scale along the x-dimension
-/// \param scale_y: scale along the y-dimension
 void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, float px, float py, float sx, float sy)
 {
   int txtInd = TS_VkLoadTexture(img);
@@ -887,11 +700,6 @@ void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, in
   TS_Add4Indices();
 }
 
-/// \brief clear the render window with a color
-/// \param r: red component of the color (in RGBA)
-/// \param g: green component of the color (in RGBA)
-/// \param b: blue component of the color (in RGBA)
-/// \param alpha: transparency component of the color (in RGBA)
 void TS_VkCmdClearColorImage(float r, float g, float b, float a)
 {
   vk::ClearColorValue clearColor(std::array<float, 4>({r, g, b, a}));
@@ -900,7 +708,6 @@ void TS_VkCmdClearColorImage(float r, float g, float b, float a)
   cmdbufs[frameIndex].clearColorImage(swapchainImages[frameIndex], vk::ImageLayout::eGeneral, &clearColor, 1U, &imageRange);
 }
 
-/// \brief acquire next vulkan image
 void TS_VkAcquireNextImage()
 {
   frameIndex = dev.acquireNextImageKHR(swapchain, UINT64_MAX, imageAvailableSemaphore).value;
@@ -908,23 +715,16 @@ void TS_VkAcquireNextImage()
   dev.resetFences(1, &fences[frameIndex]);
 }
 
-/// \brief reset the vulkan command buffer
 void TS_VkResetCommandBuffer()
 {
   cmdbufs[frameIndex].reset();
 }
 
-/// \brief begin the vulkan command buffer
 void TS_VkBeginCommandBuffer()
 {
   cmdbufs[frameIndex].begin({vk::CommandBufferUsageFlagBits::eSimultaneousUse});
 }
 
-/// \brief fill the render area with a color
-/// \param r: red component of the color
-/// \param g: green component of the color
-/// \param b: blue component of the color
-/// \param a: transparency component of the color
 void TS_VkDraw(float r, float g, float b, float a)
 {
   // copy data
@@ -976,13 +776,11 @@ void TS_VkDraw(float r, float g, float b, float a)
   cmdbufs[frameIndex].endRenderPass();
 }
 
-/// \brief end vulkan command buffer
 void TS_VkEndCommandBuffer()
 {
   cmdbufs[frameIndex].end();
 }
 
-/// \brief queue vulkan submit info
 void TS_VkQueueSubmit()
 {
   vk::PipelineStageFlags waitDestStageMask = vk::PipelineStageFlags(vk::PipelineStageFlagBits::eTransfer);
@@ -990,7 +788,6 @@ void TS_VkQueueSubmit()
   gq.submit(1, &submitInfo, fences[frameIndex]);
 }
 
-/// \brief queue vulkan present
 void TS_VkQueuePresent()
 {
   vk::PresentInfoKHR pInfo(1, &renderingFinishedSemaphore, 1, &swapchain, &frameIndex);
@@ -998,8 +795,6 @@ void TS_VkQueuePresent()
   pq.waitIdle();
 }
 
-/// \brief set the vulkan debug messenger
-/// \param dbmci: debug messenger create info
 void TS_VkPopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& dbmci)
 {
   dbmci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
@@ -1012,7 +807,6 @@ void TS_VkPopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT&
   dbmci.pfnUserCallback = (PFN_vkDebugUtilsMessengerCallbackEXT)debugCallback;
 }
 
-/// \brief create vulkan instance
 void TS_VkCreateInstance()
 {
   VULKAN_HPP_DEFAULT_DISPATCHER.init((PFN_vkGetInstanceProcAddr)SDL_Vulkan_GetVkGetInstanceProcAddr());
@@ -1058,7 +852,6 @@ void TS_VkCreateInstance()
   VULKAN_HPP_DEFAULT_DISPATCHER.init(inst);
 }
 
-/// \brief create vulkan debug messenger
 void TS_VkCreateDebugMessenger()
 {
   if (!enableValidationLayers) return;
@@ -1069,19 +862,16 @@ void TS_VkCreateDebugMessenger()
   dbm = inst.createDebugUtilsMessengerEXT(dbmci);
 }
 
-/// \brief create vulkan surface
 void TS_VkCreateSurface()
 {
   SDL_Vulkan_CreateSurface(win, inst, &srf);
 }
 
-/// \brief select the physical device
 void TS_VkSelectPhysicalDevice()
 {
   pdev = inst.enumeratePhysicalDevices()[0]; // TODO improve selection
 }
 
-/// \brief select vulkan queue family
 void TS_VkSelectQueueFamily()
 {
   int graphicIndex = -1;
@@ -1099,7 +889,6 @@ void TS_VkSelectQueueFamily()
   presentQueueFamilyIndex = presentIndex;
 }
 
-/// \brief created device
 void TS_VkCreateDevice()
 {
   const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
@@ -1157,7 +946,6 @@ void TS_VkCreateDevice()
   pq = dev.getQueue(presentQueueFamilyIndex, 0);
 }
 
-/// \brief create the vma allocator object
 void TS_VmaCreateAllocator()
 {
   vma::VulkanFunctions vf {
@@ -1175,7 +963,6 @@ void TS_VmaCreateAllocator()
   al = vma::createAllocator(aci);
 }
 
-/// \brief create the vma buffers
 void TS_VmaCreateBuffers()
 {
   vertexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
@@ -1190,7 +977,6 @@ void TS_VmaCreateBuffers()
                                     vk::MemoryPropertyFlagBits::eDeviceLocal);
 }
 
-/// \brief create the vulkan swapchain
 void TS_VkCreateSwapchain()
 {
   surfaceCapabilities = pdev.getSurfaceCapabilitiesKHR(srf);
@@ -1236,7 +1022,6 @@ void TS_VkCreateSwapchain()
   swapchainImageCount = static_cast<uint32_t>(swapchainImages.size());
 }
 
-/// \brief create the vulkan image views
 void TS_VkCreateImageViews()
 {
   for (int i = 0; i < swapchainImages.size(); ++i)
@@ -1245,7 +1030,6 @@ void TS_VkCreateImageViews()
   }
 }
 
-/// \brief setup the vulkan depth stencil
 void TS_VkSetupDepthStencil()
 {
   TS_VkGetSupportedDepthFormat();
@@ -1256,7 +1040,6 @@ void TS_VkSetupDepthStencil()
   depthImageView = TS_VkCreateImageView(depthImage.first, vk::Format::eD32SfloatS8Uint, vk::ImageAspectFlagBits::eDepth);
 }
 
-/// \brief create the vulkan render pass
 void TS_VkCreateRenderPass()
 {
   std::vector<vk::AttachmentDescription> attachments(1);
@@ -1320,8 +1103,7 @@ void TS_VkCreateRenderPass()
   rp = dev.createRenderPass(renderPassInfo);
 }
 
-/// \brief initialize the vulkan shader module
-vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize = false)
+vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize)
 {
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
@@ -1345,7 +1127,6 @@ vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind k
   return dev.createShaderModule(createInfo);
 }
 
-/// \brief create the vulkan descriptor set
 void TS_VkCreateDescriptorSet()
 {
   vk::SamplerCreateInfo samplerInfo;
@@ -1419,7 +1200,6 @@ void TS_VkCreateDescriptorSet()
   dscSet = dev.allocateDescriptorSets(allocInfo)[0];
 }
 
-/// \brief create the vulkan triangle pipeline
 void TS_VkCreateTrianglePipeline()
 {
   std::string vertShaderCode = R"""(
@@ -1566,7 +1346,6 @@ void TS_VkCreateTrianglePipeline()
   dev.destroyShaderModule(vertShaderModule);
 }
 
-/// \brief create the vulkan framebuffer
 void TS_VkCreateFramebuffers()
 {
   for (size_t i = 0; i < swapchainImageViews.size(); ++i)
@@ -1585,7 +1364,6 @@ void TS_VkCreateFramebuffers()
   }
 }
 
-/// \brief create the vulkan command pool
 void TS_VkCreateCommandPool()
 {
   cp = dev.createCommandPool({
@@ -1594,20 +1372,17 @@ void TS_VkCreateCommandPool()
   });
 }
 
-/// \brief allocate the vulkan command buffer
 void TS_VkAllocateCommandBuffers()
 {
   cmdbufs = dev.allocateCommandBuffers({cp, vk::CommandBufferLevel::ePrimary, swapchainImageCount});
 }
 
-/// \brief create the vulkan semaphors
 void TS_VkCreateSemaphores()
 {
   imageAvailableSemaphore = dev.createSemaphore({});
   renderingFinishedSemaphore = dev.createSemaphore({});
 }
 
-/// \brief create the vulkan fences
 void TS_VkCreateFences()
 {
   for (uint32_t i = 0; i < swapchainImageCount; ++i)
@@ -1616,7 +1391,6 @@ void TS_VkCreateFences()
   }
 }
 
-/// \brief initialize the state
 void TS_VkInit()
 {
   TS_VkCreateInstance();
@@ -1641,31 +1415,13 @@ void TS_VkInit()
   TS_VkCreateFences();
 }
 
-/// \brief add a rigid, axis-aligned collision box to the state
-/// \param id: id of the newly created object
-/// \param size_x: size along the x-dimension
-/// \param size_y: size along the y-dimension
-/// \param size_z: size along the z-dimension
-/// \param mass: mass of the box
-/// \param position_x: x-coordinate of the position of the box
-/// \param position_y: y-coordinate of the position of the box
-/// \param position_z: z-coordinate of the position of the box
-/// \param is_kinematic: should the box be a kinematic object
-void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
+void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic)
 {
   TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), m, isKinematic, false, btVector3(px, py, pz));
   physicsObjectsById[id] = g;
   idsByPtr[static_cast<void*>(g->rbody)] = id;
 }
 
-/// \brief add a static, axis-aligned collision box to the state
-/// \param id: id of the newly created object
-/// \param size_x: size along the x-dimension
-/// \param size_y: size along the y-dimension
-/// \param size_z: size along the z-dimension
-/// \param position_x: x-coordinate of the position of the box
-/// \param position_y: y-coordinate of the position of the box
-/// \param position_z: z-coordinate of the position of the box
 void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz)
 {
   TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), 0.0f, false, false, btVector3(px, py, pz));
@@ -1673,14 +1429,6 @@ void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py,
   idsByPtr[static_cast<void*>(g->rbody)] = id;
 }
 
-/// \brief add a box-shaped trigger to the state
-/// \param id: id of the newly created object
-/// \param size_x: size along the x-dimension
-/// \param size_y: size along the y-dimension
-/// \param size_z: size along the z-dimension
-/// \param position_x: x-coordinate of the position of the box
-/// \param position_y: y-coordinate of the position of the box
-/// \param position_z: z-coordinate of the position of the box
 void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz)
 {
   TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), 1.0f, false, true, btVector3(px, py, pz));
@@ -1688,8 +1436,6 @@ void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py
   idsByPtr[static_cast<void*>(g->cobj)] = id;
 }
 
-/// \brief remove a physics object from the state
-/// \param id: id of the object
 void TS_BtRemovePhysicsObject(int id)
 {
   TS_PhysicsObject * g = physicsObjectsById[id];
@@ -1701,11 +1447,6 @@ void TS_BtRemovePhysicsObject(int id)
   delete g;
 }
 
-/// \brief set the linear velocity of a physics object
-/// \param id: id of the object
-/// \param velocity_x: velocity along the x-dimension
-/// \param velocity_y: velocity along the y-dimension
-/// \param velocity_z: velocity along the z-dimension
 void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz)
 {
   TS_PhysicsObject * g = physicsObjectsById[id];
@@ -1716,9 +1457,6 @@ void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz)
   }
 }
 
-/// \brief get the linear velocity of a physics object
-/// \param id: id of the object
-/// \returns TS_VelocityInfo object describing the velocity along each dimension
 TS_VelocityInfo TS_BtGetLinearVelocity(int id)
 {
   TS_PhysicsObject * g = physicsObjectsById[id];
@@ -1740,7 +1478,6 @@ TS_VelocityInfo TS_BtGetLinearVelocity(int id)
   }
 }
 
-/// \brief advance the physics simulation by one step
 void TS_BtStepSimulation()
 {
   btdw.stepSimulation(0.01667f); // same as Starlight's clock
@@ -1812,8 +1549,6 @@ void TS_BtStepSimulation()
   oldPairs = newPairs;
 }
 
-/// \brief query the next collision event
-/// \returns TS_CollisionEvent, contains two ids of colliding objects
 TS_CollisionEvent TS_BtGetNextCollision()
 {
   if (collisions.empty())
@@ -1832,8 +1567,6 @@ TS_CollisionEvent TS_BtGetNextCollision()
   }
 }
 
-/// \brief get the position of an object
-/// \returns TS_PositionInfo, position in 3d space
 TS_PositionInfo TS_BtGetPosition(int id)
 {
   btVector3 pos = physicsObjectsById[id]->getTransform().getOrigin();
@@ -1844,18 +1577,11 @@ TS_PositionInfo TS_BtGetPosition(int id)
   return p;
 }
 
-/// \brief set the global gravity
-/// \param gravity_x: acceleration along the x-dimension
-/// \param gravity_y: acceleration along the y-dimension
-/// \param gravity_z: acceleration along the z-dimension
 void TS_BtSetGravity(float gx, float gy, float gz)
 {
   btdw.setGravity(btVector3(gx, gy, gz));
 }
 
-/// \brief set the outer margin of a specific collision object
-/// \param id: id of the object
-/// \param margin: distance between the surface and the outer margin of the object
 void TS_BtSetCollisionMargin(int id, float margin)
 {
   physicsObjectsById[id]->cshape->setMargin(margin);
@@ -1866,7 +1592,6 @@ void TS_BtInit()
   // can do anything we want here
 }
 
-/// \brief deallocate the vulkan fences
 void TS_VkDestroyFences()
 {
   for (int i = 0; i < swapchainImageCount; ++i)
@@ -1876,27 +1601,23 @@ void TS_VkDestroyFences()
   fences.clear();
 }
 
-/// \brief deallocate the vulkan semaphores
 void TS_VkDestroySemaphores()
 {
   dev.destroySemaphore(imageAvailableSemaphore);
   dev.destroySemaphore(renderingFinishedSemaphore);
 }
 
-/// \brief free the vulkan command buffers
 void TS_VkFreeCommandBuffers()
 {
   dev.freeCommandBuffers(cp, cmdbufs);
   cmdbufs.clear();
 }
 
-/// \brief destroy the vulkan command pool
 void TS_VkDestroyCommandPool()
 {
   dev.destroyCommandPool(cp);
 }
 
-/// \brief destroy the vulkan framebuffers
 void TS_VkDestroyFramebuffers()
 {
   for (int i = 0; i < swapchainFramebuffers.size(); ++i)
@@ -1906,14 +1627,12 @@ void TS_VkDestroyFramebuffers()
   swapchainFramebuffers.clear();
 }
 
-/// \brief destroy the vulkan triangle pipeline
 void TS_VkDestroyTrianglePipeline()
 {
   dev.destroy(trianglePipeline);
   dev.destroy(trianglePipelineLayout);
 }
 
-/// \brief destroy the vulkan descriptor set
 void TS_VkDestroyDescriptorSet()
 {
   dev.freeDescriptorSets(dscPool, 1, &dscSet);
@@ -1922,20 +1641,17 @@ void TS_VkDestroyDescriptorSet()
   dev.destroy(dscPool);
 }
 
-/// \brief destroy the vulkan render pass
 void TS_VkDestroyRenderPass()
 {
   dev.destroyRenderPass(rp);
 }
 
-/// \brief destroy the vulkan depth stencil
 void TS_VkTeardownDepthStencil()
 {
   dev.destroyImageView(depthImageView);
   al.destroyImage(depthImage.first, depthImage.second);
 }
 
-/// \brief destroy the vulkan image view
 void TS_VkDestroyImageViews()
 {
   for (vk::ImageView iv : swapchainImageViews)
@@ -1945,13 +1661,11 @@ void TS_VkDestroyImageViews()
   swapchainImageViews.clear();
 }
 
-/// \brief destroy the vulkan swap chain
 void TS_VkDestroySwapchain()
 {
   dev.destroySwapchainKHR(swapchain);
 }
 
-/// \brief destroy the vma buffer
 void TS_VmaDestroyBuffers()
 {
   al.destroyBuffer(vertexStaging.first, vertexStaging.second);
@@ -1960,7 +1674,6 @@ void TS_VmaDestroyBuffers()
   al.destroyBuffer(indexBuffer.first, indexBuffer.second);
 }
 
-/// \brief deallocate all vulkan textures
 void TS_VkDestroyTextures()
 {
   for (std::map<std::string, int>::iterator it = txtInds.begin(); it != txtInds.end(); ++it)
@@ -1975,13 +1688,11 @@ void TS_VkDestroyTextures()
   dscImgInfos.fill(vk::DescriptorImageInfo());
 }
 
-/// \brief destroy the vulkan allocator
 void TS_VmaDestroyAllocator()
 {
   al.destroy();
 }
 
-/// \brief destroy the vulkan device
 void TS_VkDestroyDevice()
 {
   graphicsQueueFamilyIndex = -1;
@@ -1989,26 +1700,22 @@ void TS_VkDestroyDevice()
   dev.destroy();
 }
 
-/// \brief destroy the vulkan surface
 void TS_VkDestroySurface()
 {
   inst.destroySurfaceKHR(srf);
 }
 
-/// \brief destroy the vulkan debug messenger
 void TS_VkDestroyDebugMessenger()
 {
   if (!enableValidationLayers) return;
   inst.destroy(dbm);
 }
 
-/// \brief destroy the vulkan instance
 void TS_VkDestroyInstance()
 {
   inst.destroy();
 }
 
-/// \brief quit the vulkan state
 void TS_VkQuit()
 {
   TS_VkDestroyFences();
@@ -2031,7 +1738,6 @@ void TS_VkQuit()
   TS_VkDestroyInstance();
 }
 
-/// \brief quit the bullet state
 void TS_BtQuit()
 {
   for (auto it = physicsObjectsById.begin(); it != physicsObjectsById.end(); ++it)
@@ -2042,7 +1748,6 @@ void TS_BtQuit()
   idsByPtr.clear(); // no need to delete in a loop here, it only stores copies that have just been invalidated
 }
 
-/// \brief initialize the state
 void TS_Init(const char * ttl, int wdth, int hght)
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -2086,7 +1791,6 @@ void TS_Init(const char * ttl, int wdth, int hght)
   TS_BtInit();
 }
 
-/// \brief quit the state
 void TS_Quit()
 {
   TS_VkQuit();
@@ -2104,7 +1808,6 @@ void TS_Quit()
   TS_BtQuit();
 }
 
-/// \brief being the vulkan draw pass
 void TS_VkBeginDrawPass()
 {
   TS_VkAcquireNextImage();
@@ -2123,11 +1826,6 @@ void TS_VkBeginDrawPass()
   cmdbufs[frameIndex].fillBuffer(indexBuffer.first, 0, VK_WHOLE_SIZE, 0);
 }
 
-/// \brief finish the drawing pass by rendering a solid color
-/// \param r: red component of the color (in RGBA)
-/// \param g: green component of the color (in RGBA)
-/// \param b: blue component of the color (in RGBA)
-/// \param alpha: transparency component of the color (in RGBA)
 void TS_VkEndDrawPass(float r, float g, float b, float a)
 {
   TS_VkDraw(r, g, b, a);
@@ -2136,10 +1834,6 @@ void TS_VkEndDrawPass(float r, float g, float b, float a)
   TS_VkQueuePresent();
 }
 
-/// \brief play a sound
-/// \param path: path to the sound file
-/// \param loops: [optional] number of loops, -1 for infinite
-/// \param ticks: [optional] maximum time to play a sample, in milliseconds, -1 for infinite
 void TS_PlaySound(const char* sound_file, int loops, int ticks)
 {
   Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);

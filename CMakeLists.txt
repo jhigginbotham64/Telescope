@@ -75,6 +75,7 @@ find_package(shaderc_shared REQUIRED)
 add_library(telescope SHARED
   src/telescope.cpp
   src/telescope.h
+  src/telescope.hpp
 )
 
 set_target_properties(telescope PROPERTIES
