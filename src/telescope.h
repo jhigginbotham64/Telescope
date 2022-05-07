@@ -159,6 +159,7 @@ void TS_VkCmdDrawRect(
     float x, float y,
     float width, float height
 );
+
 /// \brief draw a sprite
 /// \param image_path: path to image on disk
 /// \param r: red component of the color (in RGBA)
