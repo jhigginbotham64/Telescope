@@ -1,18 +1,13 @@
-//
-// Copyright 2022, Joshua Higginbotham
-//
-
-//
-// TODO: "can't find SDL_mixer.h"
-// TODO: "can't convert between VulkanHPP and normal Vulkan types"
-// TODO: better support for rotation of rectangles, sprites, and collision objects
-//
+/*
+  TODO: "can't find SDL_mixer.h"
+  TODO: "can't convert between VulkanHPP and normal Vulkan types"
+  TODO: better support for rotation of rectangles, sprites, and collision objects
+*/
 
 #define VULKAN_HPP_TYPESAFE_CONVERSION 1
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
 #define VULKAN_HPP_STORAGE_SHARED_EXPORT 1
-
 #include <vulkan/vulkan.hpp>
 VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
@@ -31,8 +26,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_vulkan.h>
 
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <iostream>
 #include <algorithm>
@@ -44,9 +39,9 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-#include <telescope.h>
+#include "telescope.h"
 
-#define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
 const char *window_name = NULL;
 SDL_Window *win = NULL;
@@ -79,8 +74,7 @@ std::pair<vk::Buffer, vma::Allocation> indexStaging;
 std::pair<vk::Buffer, vma::Allocation> vertexBuffer;
 std::pair<vk::Buffer, vma::Allocation> indexBuffer;
 
-struct TS_Texture
-{
+struct TS_Texture {
   std::pair<vk::Image, vma::Allocation> img;
   vk::ImageView view;
 
@@ -101,17 +95,13 @@ std::map<std::string, int> txtInds;
 std::array<TS_Texture, NUM_SUPPORTED_TEXTURES> txts;
 std::array<vk::DescriptorImageInfo, NUM_SUPPORTED_TEXTURES> dscImgInfos;
 
-struct TS_Vertex
-{
+struct TS_Vertex {
   glm::vec2 pos;
   glm::vec2 uv;
   glm::vec4 col;
   int tex;
 
-  TS_Vertex(
-      float x, float y,
-      float r, float g, float b, float a,
-      float u = 0, float v = 0, int t = -1)
+  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1)
   {
     this->pos = glm::vec2(x, y);
     this->uv = glm::vec2(u, v);
@@ -172,26 +162,19 @@ uint32_t frameIndex;
 vma::Allocator al;
 vk::DebugUtilsMessengerEXT dbm;
 
-btBroadphaseInterface * btbpi;
-btCollisionConfiguration * btcc;
-btCollisionDispatcher * btcd;
-btConstraintSolver * btcs;
-btDynamicsWorld * btdw;
+btDbvtBroadphase btbpi;
+btDefaultCollisionConfiguration btcc;
+btCollisionDispatcher btcd(&btcc);
+btSequentialImpulseConstraintSolver btcs;
+btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
 
-struct TS_PhysicsObject
-{
+struct TS_PhysicsObject {
   btCollisionObject * cobj;
   btCollisionShape * cshape;
   btRigidBody * rbody;
   btDefaultMotionState * dmstate;
 
-  TS_PhysicsObject(
-    btCollisionShape * s,
-    float mass = 0.0f,
-    bool isKinematic = false,
-    bool isTrigger = false,
-    const btVector3 &initPos = btVector3(0,0,0),
-    const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
   {
     this->cshape = s;
     this->cobj = nullptr;
@@ -209,7 +192,7 @@ struct TS_PhysicsObject
       this->cshape->calculateLocalInertia(mass, locInertia);
 
     this->dmstate = new btDefaultMotionState(t);
-    
+
     btRigidBody::btRigidBodyConstructionInfo cinfo(mass, this->dmstate, this->cshape, locInertia);
 
     this->rbody = new btRigidBody(cinfo);
@@ -225,28 +208,23 @@ struct TS_PhysicsObject
       this->cobj->setActivationState(DISABLE_DEACTIVATION);
     }
 
-    btdw->addRigidBody(this->rbody);
+    btdw.addRigidBody(this->rbody);
   }
 
   ~TS_PhysicsObject()
   {
     if (this->rbody)
-    { 
-      btdw->removeRigidBody(this->rbody);
+    {
+      btdw.removeRigidBody(this->rbody);
       delete this->rbody;
     }
-
-    if (this->dmstate)
-        delete this->dmstate;
-
-    if (this->cobj && this->cobj != this->rbody) 
+    if (this->dmstate) delete this->dmstate;
+    if (this->cobj && this->cobj != this->rbody)
     {
-      btdw->removeCollisionObject(this->cobj);
+      btdw.removeCollisionObject(this->cobj);
       delete this->cobj;
     }
-
-    if (this->cshape)
-        delete this->cshape;
+    if (this->cshape) delete this->cshape;
   }
 
   btTransform getTransform()
@@ -283,7 +261,9 @@ static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
     void* pUserData)
 {
   if (messageSeverity >= vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning)
+  {
     std::cerr << "debug callback: " << pCallbackData->pMessage << std::endl;
+  }
 
   return VK_FALSE;
 }
@@ -326,8 +306,8 @@ vk::Bool32 TS_VkGetSupportedDepthFormat()
   return false;
 }
 
-std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage, 
-                      vk::Flags<vk::MemoryPropertyFlagBits> properties, 
+std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage,
+                      vk::Flags<vk::MemoryPropertyFlagBits> properties,
                       vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
 {
   vk::BufferCreateInfo bufferInfo;
@@ -345,7 +325,7 @@ std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, v
 }
 
 std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(uint32_t width, uint32_t height, vk::Format fmt, vk::ImageTiling tiling,
-                      vk::Flags<vk::ImageUsageFlagBits> usage, vk::Flags<vk::MemoryPropertyFlagBits> properties, 
+                      vk::Flags<vk::ImageUsageFlagBits> usage, vk::Flags<vk::MemoryPropertyFlagBits> properties,
                       vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
 {
   vk::ImageCreateInfo imageInfo;
@@ -379,7 +359,7 @@ const char * TS_SDLGetError()
 // normalized device coordinates along the x and y axes
 float TS_NDCX(float x)
 {
-  return (2.0f / window_width) * x - 1.0f;
+ return (2.0f / window_width) * x - 1.0f;
 }
 
 float TS_NDCY(float y)
@@ -395,7 +375,7 @@ std::array<float, 4> TS_NDCRect(float x, float y, float w, float h)
 // normalized texture coordinates along the u and v axes
 float TS_NTCU(int x, int w)
 {
-  return (1.0f / w) * x;
+ return (1.0f / w) * x;
 }
 
 float TS_NTCV(int y, int h)
@@ -431,6 +411,7 @@ vk::CommandBuffer TS_VkBeginScratchBuffer()
   beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
 
   tmp.begin(beginInfo);
+
   return tmp;
 }
 
@@ -509,6 +490,7 @@ void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32
   region.imageExtent = vk::Extent3D(wdth,hght,1);
 
   tmp.copyBufferToImage(buf, img, vk::ImageLayout::eTransferDstOptimal, 1, &region);
+
   TS_VkSubmitScratchBuffer(tmp);
 }
 
@@ -521,19 +503,19 @@ void TS_VkWriteDescriptorSet()
 
   setWrites[0].dstBinding = 0;
   setWrites[0].dstArrayElement = 0;
-  setWrites[0].descriptorType = vk::DescriptorType::eSampler;
-  setWrites[0].descriptorCount = 1;
-  setWrites[0].dstSet = dscSet;
-  setWrites[0].pBufferInfo = 0;
-  setWrites[0].pImageInfo = &samplerInfo;
+	setWrites[0].descriptorType = vk::DescriptorType::eSampler;
+	setWrites[0].descriptorCount = 1;
+	setWrites[0].dstSet = dscSet;
+	setWrites[0].pBufferInfo = 0;
+	setWrites[0].pImageInfo = &samplerInfo;
 
-  setWrites[1].dstBinding = 1;
-  setWrites[1].dstArrayElement = 0;
-  setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
-  setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
-  setWrites[1].pBufferInfo = 0;
-  setWrites[1].dstSet = dscSet;
-  setWrites[1].pImageInfo = dscImgInfos.data();
+	setWrites[1].dstBinding = 1;
+	setWrites[1].dstArrayElement = 0;
+	setWrites[1].descriptorType = vk::DescriptorType::eSampledImage;
+	setWrites[1].descriptorCount = NUM_SUPPORTED_TEXTURES;
+	setWrites[1].pBufferInfo = 0;
+	setWrites[1].dstSet = dscSet;
+	setWrites[1].pImageInfo = dscImgInfos.data();
 
   dev.updateDescriptorSets(2, setWrites, 0, nullptr);
 }
@@ -544,12 +526,16 @@ int TS_VkLoadTexture(const char * img)
   if (txtInds.empty() && availableInds.empty())
   {
     for (int i = 0; i < NUM_SUPPORTED_TEXTURES; ++i)
+    {
       availableInds.push(i);
+    }
   }
-  
+
   // max textures allocated
   if (availableInds.empty())
+  {
     return -1;
+  }
 
   // key not present means texture not loaded yet
   if (!txtInds.count(std::string(img)))
@@ -572,7 +558,7 @@ int TS_VkLoadTexture(const char * img)
         uint32_t temp, pixel;
         uint8_t r, g, b, a;
         pixel = *((uint32_t*)(((char*)srf->pixels) + i * fmt->BytesPerPixel));
-        
+
         temp = pixel & fmt->Rmask;
         temp = temp >> fmt->Rshift;
         temp = temp << fmt->Rloss;
@@ -610,7 +596,7 @@ int TS_VkLoadTexture(const char * img)
     SDL_UnlockSurface(srf);
     SDL_FreeSurface(srf);
 
-    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(pixels.size() * sizeof(uint8_t), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, vma::AllocationCreateFlagBits::eMapped);    
+    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(pixels.size() * sizeof(uint8_t), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, vma::AllocationCreateFlagBits::eMapped);
     memcpy(al.getAllocationInfo(pixelStaging.second).pMappedData, (void*)pixels.data(), pixels.size() * sizeof(uint8_t));
     std::pair<vk::Image, vma::Allocation> pixelImg = TS_VmaCreateImage(wdth, hght, vk::Format::eR8G8B8A8Unorm, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
     TS_VkTransitionImageLayout(pixelImg.first, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
@@ -625,7 +611,7 @@ int TS_VkLoadTexture(const char * img)
     txts[txtInd].view = v;
     txts[txtInd].width = wdth;
     txts[txtInd].height = hght;
-    
+
     dscImgInfos[txtInd] = vk::DescriptorImageInfo();
     dscImgInfos[txtInd].sampler = nullptr;
     dscImgInfos[txtInd].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
@@ -835,9 +821,9 @@ void TS_VkQueuePresent()
 
 void TS_VkPopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& dbmci)
 {
-  dbmci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | 
-                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | 
-                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | 
+  dbmci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
+                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
                             vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
   dbmci.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
                         vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
@@ -853,17 +839,19 @@ void TS_VkCreateInstance()
   SDL_Vulkan_GetInstanceExtensions(win, &extensionCount, nullptr);
   std::vector<const char *> extensionNames(extensionCount);
   SDL_Vulkan_GetInstanceExtensions(win, &extensionCount, extensionNames.data());
-  
+
   vk::ApplicationInfo appInfo {
-    window_name, 
-    VK_MAKE_VERSION(0, 1, 2), 
-    "Telescope", 
+    window_name,
+    VK_MAKE_VERSION(0, 1, 2),
+    "Telescope",
     VK_MAKE_VERSION(0, 1, 2),
     VK_API_VERSION_1_2
   };
 
   if (enableValidationLayers)
+  {
     extensionNames.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+  }
 
   vk::InstanceCreateInfo ici {
     vk::InstanceCreateFlags(),
@@ -879,7 +867,7 @@ void TS_VkCreateInstance()
     ici.ppEnabledLayerNames = validationLayers.data();
 
     TS_VkPopulateDebugMessengerCreateInfo(dbmci);
-    
+
     ici.pNext = &dbmci;
   }
 
@@ -890,8 +878,7 @@ void TS_VkCreateInstance()
 
 void TS_VkCreateDebugMessenger()
 {
-  if (!enableValidationLayers)
-      return;
+  if (!enableValidationLayers) return;
 
   vk::DebugUtilsMessengerCreateInfoEXT dbmci;
   TS_VkPopulateDebugMessengerCreateInfo(dbmci);
@@ -931,26 +918,28 @@ void TS_VkCreateDevice()
   const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
   const float queue_priority[] = { 1.0f };
   float queuePriority = queue_priority[0];
-  
+
   std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
-  
+
   vk::DeviceQueueCreateInfo gr {
     vk::DeviceQueueCreateFlags(),
-    graphicsQueueFamilyIndex, 
-    1, 
+    graphicsQueueFamilyIndex,
+    1,
     &queuePriority
   };
 
   vk::DeviceQueueCreateInfo pr {
     vk::DeviceQueueCreateFlags(),
-    presentQueueFamilyIndex, 
-    1, 
+    presentQueueFamilyIndex,
+    1,
     &queuePriority
   };
 
   queueCreateInfos.push_back(gr);
   if (graphicsQueueFamilyIndex != presentQueueFamilyIndex)
+  {
     queueCreateInfos.push_back(pr);
+  }
 
   vk::PhysicalDeviceFeatures deviceFeatures = {};
   deviceFeatures.samplerAnisotropy = VK_TRUE;
@@ -1000,27 +989,16 @@ void TS_VmaCreateAllocator()
 
 void TS_VmaCreateBuffers()
 {
-  vertexStaging = TS_VmaCreateBuffer(defaultBufferSize,
-    vk::BufferUsageFlagBits::eTransferSrc,
-    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
-    vma::AllocationCreateFlagBits::eMapped
-  );
-
-  indexStaging = TS_VmaCreateBuffer(defaultBufferSize,
-    vk::BufferUsageFlagBits::eTransferSrc,
-    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
-    vma::AllocationCreateFlagBits::eMapped
-  );
-
-  vertexBuffer = TS_VmaCreateBuffer(defaultBufferSize,
-    vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
-    vk::MemoryPropertyFlagBits::eDeviceLocal
-  );
-
-  indexBuffer = TS_VmaCreateBuffer(defaultBufferSize,
-    vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
-    vk::MemoryPropertyFlagBits::eDeviceLocal
-  );
+  vertexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
+                                    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
+                                    vma::AllocationCreateFlagBits::eMapped);
+  indexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
+                                    vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
+                                    vma::AllocationCreateFlagBits::eMapped);
+  vertexBuffer = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
+                                    vk::MemoryPropertyFlagBits::eDeviceLocal);
+  indexBuffer = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer,
+                                    vk::MemoryPropertyFlagBits::eDeviceLocal);
 }
 
 void TS_VkCreateSwapchain()
@@ -1035,9 +1013,10 @@ void TS_VkCreateSwapchain()
   swapchainSize.width = width;
   swapchainSize.height = height;
   uint32_t imageCount = surfaceCapabilities.minImageCount + 1;
-
   if (surfaceCapabilities.maxImageCount > 0 && imageCount > surfaceCapabilities.maxImageCount)
+  {
     imageCount = surfaceCapabilities.maxImageCount;
+  }
 
   vk::SwapchainCreateInfoKHR createInfo;
   createInfo.surface = srf;
@@ -1081,7 +1060,7 @@ void TS_VkSetupDepthStencil()
   depthImage = TS_VmaCreateImage(swapchainSize.width, swapchainSize.height,
                   vk::Format::eD32SfloatS8Uint, vk::ImageTiling::eOptimal,
                   vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal);
-  
+
   depthImageView = TS_VkCreateImageView(depthImage.first, vk::Format::eD32SfloatS8Uint, vk::ImageAspectFlagBits::eDepth);
 }
 
@@ -1152,20 +1131,19 @@ vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind k
 {
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
-  
-  if (optimize)
-    options.SetOptimizationLevel(shaderc_optimization_level_performance);
-  
-  shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(code, kind, "shader_src", options);
-  
-  if (module.GetCompilationStatus() != shaderc_compilation_status_success)
-  {
+
+  if (optimize) options.SetOptimizationLevel(shaderc_optimization_level_performance);
+
+  shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
+                                code, kind, "shader_src", options);
+
+  if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
     std::cerr << module.GetErrorMessage();
     return nullptr;
   }
 
   std::vector<uint32_t> spv = {module.cbegin(), module.cend()};
-  
+
   vk::ShaderModuleCreateInfo createInfo;
   createInfo.codeSize = spv.size() * sizeof(uint32_t);
   createInfo.pCode = reinterpret_cast<const uint32_t*>(spv.data());
@@ -1295,7 +1273,7 @@ void TS_VkCreateTrianglePipeline()
   vertShaderStageInfo.stage = vk::ShaderStageFlagBits::eVertex;
   vertShaderStageInfo.module = vertShaderModule;
   vertShaderStageInfo.pName = "main";
-  
+
   vk::PipelineShaderStageCreateInfo fragShaderStageInfo;
   fragShaderStageInfo.stage = vk::ShaderStageFlagBits::eFragment;
   fragShaderStageInfo.module = fragShaderModule;
@@ -1400,12 +1378,12 @@ void TS_VkCreateFramebuffers()
       swapchainImageViews[i],
       // depthImageView
     };
-    
+
     vk::FramebufferCreateInfo framebufferInfo {
       vk::FramebufferCreateFlags(),
       rp, attachments, swapchainSize.width, swapchainSize.height, 1
     };
-    
+
     swapchainFramebuffers.push_back(dev.createFramebuffer(framebufferInfo));
   }
 }
@@ -1432,7 +1410,9 @@ void TS_VkCreateSemaphores()
 void TS_VkCreateFences()
 {
   for (uint32_t i = 0; i < swapchainImageCount; ++i)
+  {
     fences.push_back(dev.createFence({vk::FenceCreateFlagBits::eSignaled}));
+  }
 }
 
 void TS_VkInit()
@@ -1488,7 +1468,6 @@ void TS_BtRemovePhysicsObject(int id)
     idsByPtr.erase(static_cast<void *>(g->rbody));
   else
     idsByPtr.erase(static_cast<void *>(g->cobj));
-
   delete g;
 }
 
@@ -1525,30 +1504,31 @@ TS_VelocityInfo TS_BtGetLinearVelocity(int id)
 
 void TS_BtStepSimulation()
 {
-  btdw->stepSimulation(0.01667f); // same as Starlight's clock
+  btdw.stepSimulation(0.01667f); // same as Starlight's clock
+
   CollisionPairs newPairs;
 
-  for (int i = 0; i < btcd->getNumManifolds(); ++i)
+  for (int i = 0; i < btcd.getNumManifolds(); ++i)
   {
     // get the manifold
-    btPersistentManifold* man = btcd->getManifoldByIndexInternal(i);
+    btPersistentManifold* man = btcd.getManifoldByIndexInternal(i);
 
-    // ignore manifolds that have 
+    // ignore manifolds that have
     // no contact points.
     if (man->getNumContacts() > 0) {
       // get the two rigid bodies involved in the collision
       const void* b0 = static_cast<const void*>(man->getBody0());
       const void* b1 = static_cast<const void*>(man->getBody1());
-    
+
       // always create the pair in a predictable order
       // (use the pointer value..)
       bool const swapped = b0 > b1;
       const void* bA = swapped ? b1 : b0;
       const void* bB = swapped ? b0 : b1;
-      
+
       // create the pair
       CollisionPair newPair = std::make_pair(bA, bB);
-      
+
       // insert the pair into the current list
       newPairs.insert(newPair);
 
@@ -1571,12 +1551,12 @@ void TS_BtStepSimulation()
 
   // this handy function gets the difference beween
   // two sets. It takes the difference between
-  // collision pairs from the last update, and this 
+  // collision pairs from the last update, and this
   // update and pushes them into the removed pairs list
   std::set_difference( oldPairs.begin(), oldPairs.end(),
   newPairs.begin(), newPairs.end(),
   std::inserter(removedPairs, removedPairs.begin()));
-  
+
   // iterate through all of the removed pairs
   // sending separation events for them
   for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
@@ -1586,7 +1566,7 @@ void TS_BtStepSimulation()
     t.colliding = false;
     collisions.push(t);
   }
-  
+
   // in the next iteration we'll want to
   // compare against the pairs we found
   // in this iteration
@@ -1623,7 +1603,7 @@ TS_PositionInfo TS_BtGetPosition(int id)
 
 void TS_BtSetGravity(float gx, float gy, float gz)
 {
-  btdw->setGravity(btVector3(gx, gy, gz));
+  btdw.setGravity(btVector3(gx, gy, gz));
 }
 
 void TS_BtSetCollisionMargin(int id, float margin)
@@ -1633,18 +1613,15 @@ void TS_BtSetCollisionMargin(int id, float margin)
 
 void TS_BtInit()
 {
-  btcc = new btDefaultCollisionConfiguration();
-  btcd = new btCollisionDispatcher(btcc);
-  btbpi = new btDbvtBroadphase();
-  btcs = new btSequentialImpulseConstraintSolver();
-  btdw = new btDiscreteDynamicsWorld(btcd, btbpi, btcs, btcc);
+  // can do anything we want here
 }
 
 void TS_VkDestroyFences()
 {
   for (int i = 0; i < swapchainImageCount; ++i)
+  {
     dev.destroyFence(fences[i]);
-
+  }
   fences.clear();
 }
 
@@ -1668,8 +1645,9 @@ void TS_VkDestroyCommandPool()
 void TS_VkDestroyFramebuffers()
 {
   for (int i = 0; i < swapchainFramebuffers.size(); ++i)
+  {
     dev.destroyFramebuffer(swapchainFramebuffers[i]);
-
+  }
   swapchainFramebuffers.clear();
 }
 
@@ -1701,8 +1679,9 @@ void TS_VkTeardownDepthStencil()
 void TS_VkDestroyImageViews()
 {
   for (vk::ImageView iv : swapchainImageViews)
+  {
     dev.destroyImageView(iv);
-
+  }
   swapchainImageViews.clear();
 }
 
@@ -1752,9 +1731,7 @@ void TS_VkDestroySurface()
 
 void TS_VkDestroyDebugMessenger()
 {
-  if (!enableValidationLayers)
-      return;
-
+  if (!enableValidationLayers) return;
   inst.destroy(dbm);
 }
 
@@ -1788,19 +1765,15 @@ void TS_VkQuit()
 void TS_BtQuit()
 {
   for (auto it = physicsObjectsById.begin(); it != physicsObjectsById.end(); ++it)
+  {
     delete (*it).second;
-
+  }
   physicsObjectsById.clear();
   idsByPtr.clear(); // no need to delete in a loop here, it only stores copies that have just been invalidated
-  delete btbpi;
-  delete btcc;
-  delete btcd;
-  delete btcs;
-  delete btdw;
 }
 
 void TS_Init(const char * ttl, int wdth, int hght)
-{ 
+{
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
     std::cerr << "Unable to initialize SDL: " << TS_SDLGetError() << std::endl;
@@ -1815,7 +1788,7 @@ void TS_Init(const char * ttl, int wdth, int hght)
   int mix_init_flags = MIX_INIT_FLAC | MIX_INIT_MP3 | MIX_INIT_OGG;
   if ((Mix_Init(mix_init_flags) & mix_init_flags) != mix_init_flags)
   {
-    std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_SDLGetError() << std::endl; 
+    std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_SDLGetError() << std::endl;
   }
 
   if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) != 0)
@@ -1828,12 +1801,15 @@ void TS_Init(const char * ttl, int wdth, int hght)
   window_width = wdth;
   window_height = hght;
   win = SDL_CreateWindow(ttl, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, wdth, hght, SDL_WINDOW_VULKAN|SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_SHOWN);
-
   if (win == NULL)
+  {
     std::cerr << "Failed to create window: " << TS_SDLGetError() << std::endl;
+  }
   else
+  {
     SDL_SetWindowMinimumSize(win, wdth, hght);
-  
+  }
+
   TS_VkInit();
 
   TS_BtInit();
@@ -1882,14 +1858,15 @@ void TS_VkEndDrawPass(float r, float g, float b, float a)
   TS_VkQueuePresent();
 }
 
-void TS_PlaySound(const char* sound_file, int loops, int ticks)
+void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
 {
   Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);
   if (sample == NULL)
   {
     std::cerr << "Could not load sound file: " << std::string(sound_file) << std::endl << TS_SDLGetError() << std::endl;
+    return;
   }
-  else if (Mix_PlayChannelTimed(-1, sample, loops, ticks) == -1)
+  if (Mix_PlayChannelTimed(-1, sample, loops, ticks) == -1)
   {
     std::cerr << "Unable to play sound " << sound_file << std::endl << TS_SDLGetError() << std::endl;
   }
