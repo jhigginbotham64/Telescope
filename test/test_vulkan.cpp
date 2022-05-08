@@ -3,29 +3,14 @@
 //
 
 #include <test/test.hpp>
-#include <telescope.h>
-#include <telescope.cpp> // ew but necessary
+#include <src/src.cpp>
 
 int main()
 {
     Test::initialize();
 
-    Test::testset("TS_VkCmdDrawRect", [](){
-
-    });
-
-    Test::testset("TS_VkCmdDrawSprite", [](){
-
-    });
-
-    Test::testset("TS_VkCmdClearColorImage", [](){
-
-    });
-
-    Test::testset("TS_Vk draw pass", [](){
-        // test TS_VkBeginDrawPass
-        // test TS_VkEndDrawPass
-    });
+    // I don't know how to use vulkan so I'm not
+    // sure how to test it
 
     return Test::conclude();
 }
