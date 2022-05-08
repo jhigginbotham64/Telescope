@@ -9,7 +9,6 @@
 #include <vk_mem_alloc.hpp>
 
 #include <shaderc/shaderc.hpp>
-#include <include/link_as_c.hpp>
 
 struct TS_Texture {
 
@@ -89,7 +88,7 @@ void TS_VkBeginDrawPass();
 /// \param g: green component of the color (in RGBA)
 /// \param b: blue component of the color (in RGBA)
 /// \param alpha: transparency component of the color (in RGBA)
-void TS_VkEndDrawPass(float r, float g, float b, float a);
+void TS_VkEndDrawPass(float r, float g, float b, float alpha);
 
 }
 

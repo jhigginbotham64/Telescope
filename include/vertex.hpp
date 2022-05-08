@@ -8,8 +8,8 @@
 #include <vulkan/vulkan.hpp>
 
 /// \brief vertex object
-struct TS_Vertex {
-
+struct TS_Vertex
+{
   /// \brief position in 2D space
   glm::vec2 pos;
 

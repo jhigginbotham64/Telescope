@@ -25,7 +25,11 @@ void TS_BtStepSimulation();
 /// \param position_y: y-coordinate of the position of the box
 /// \param position_z: z-coordinate of the position of the box
 /// \param is_kinematic: should the box be a kinematic object
-void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false);
+void TS_BtAddRigidBox(int id,
+      float size_x, float size_y, float size_z,
+      float mass,
+      float position_x, float position_y, float position_z,
+      bool is_kinematic = false);
 
 /// \brief add a static, axis-aligned collision box to the state
 /// \param id: id of the newly created object
@@ -35,7 +39,9 @@ void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, f
 /// \param position_x: x-coordinate of the position of the box
 /// \param position_y: y-coordinate of the position of the box
 /// \param position_z: z-coordinate of the position of the box
-void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py, float pz);
+void TS_BtAddStaticBox(int id,
+      float size_x, float size_y, float size_z,
+      float position_x, float position_y, float position_z);
 
 /// \brief add a box-shaped trigger to the state
 /// \param id: id of the newly created object
@@ -45,7 +51,9 @@ void TS_BtAddStaticBox(int id, float hx, float hy, float hz, float px, float py,
 /// \param position_x: x-coordinate of the position of the box
 /// \param position_y: y-coordinate of the position of the box
 /// \param position_z: z-coordinate of the position of the box
-void TS_BtAddTriggerBox(int id, float hx, float hy, float hz, float px, float py, float pz);
+void TS_BtAddTriggerBox(int id,
+      float size_x, float size_y, float size_z,
+      float position_x, float position_y, float position_z);
 
 /// \brief remove a physics object from the state
 /// \param id: id of the object
@@ -56,7 +64,7 @@ void TS_BtRemovePhysicsObject(int id);
 /// \param velocity_x: velocity along the x-dimension
 /// \param velocity_y: velocity along the y-dimension
 /// \param velocity_z: velocity along the z-dimension
-void TS_BtSetLinearVelocity(int id, float vx, float vy, float vz);
+void TS_BtSetLinearVelocity(int id, float velocity_x, float velocity_y, float velocity_z);
 
 /// \brief get the linear velocity of a physics object
 /// \param id: id of the object
@@ -75,7 +83,7 @@ TS_PositionInfo TS_BtGetPosition(int id);
 /// \param gravity_x: acceleration along the x-dimension
 /// \param gravity_y: acceleration along the y-dimension
 /// \param gravity_z: acceleration along the z-dimension
-void TS_BtSetGravity(float gx, float gy, float gz);
+void TS_BtSetGravity(float gravity_x, float gravity_y, float gravity_z);
 
 /// \brief set the outer margin of a specific collision object
 /// \param id: id of the object

@@ -28,7 +28,7 @@
 // All tests need to be located in Telescope/test.
 //
 // Note that the Test:: module aims to follow Julias `@test` and
-// `@testset` syntax closely.
+// `@testset` syntax and functionally closely.
 //
 
 #include <test/test.hpp>

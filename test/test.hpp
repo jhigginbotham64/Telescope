@@ -12,10 +12,9 @@
 #include <sstream>
 #include <vector>
 
-///
+
 /// \brief test interface, intended to be used with CMakes CTest. c.f. `test/template_test` for usage example
 /// \author Clemapfel
-///
 namespace Test
 {
     // exception thrown when a Test::test call fails
@@ -41,9 +40,7 @@ namespace Test
         std::mutex _result_lock;
     }
 
-    ///
     /// \brief initialize the test environment
-    ///
     void initialize()
     {
         detail::_result_lock.lock();
@@ -51,10 +48,8 @@ namespace Test
         detail::_result_lock.unlock();
     }
 
-    ///
     /// \brief conclude the test, use `return = Test::conclude()` at the end of each test main
-    /// \returns 0 if all tests successfull, 1 otherwise
-    ///
+    /// \returns 0 if all tests successful, 1 otherwise
     int conclude()
     {
         size_t n = 0;
@@ -84,12 +79,10 @@ namespace Test
             return 0;
     }
 
-    ///
     /// \brief starts a test set, a collection of individual Test::test calls
     /// \tparam Lambda_t  function type, arbitrary signature
     /// \param name: name of testset
     /// \param lambda: testset body
-    ///
     template<typename Lambda_t>
     void testset(const std::string& name, Lambda_t&& lambda)
     {
@@ -126,23 +119,19 @@ namespace Test
         detail::_result_lock.unlock();
     }
 
-    ///
     /// \brief test if condition evaluates to true
     /// \param condition
     /// \param name (optional)
-    ///
     void test(bool condition, const std::string name = "")
     {
         if (not condition)
             throw AssertionException("Assertion \"" + name + "\" failed");
     }
 
-    ///
     /// \brief test if function throws an exception of any kind
     /// \tparam Lambda_t, arbitrary signature
     /// \param function
     /// \param name (option)
-    ///
     template<typename Lambda_t>
     void test_throws(Lambda_t&& lambda, const std::string name = "")
     {
