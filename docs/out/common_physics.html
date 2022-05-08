@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>General Usage: Physics &mdash; telescope  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Internals: Graphics Interface" href="graphics_interface.html" />
+    <link rel="prev" title="General Usage: Rendering" href="common_render.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> telescope
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_render.html">General Usage: Rendering</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">General Usage: Physics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adding-physics-objects">Adding Physics Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#moving-physics-objects">Moving Physics Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collision-detection">Collision Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#playing-sounds">Playing Sounds</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="graphics_interface.html">Internals: Graphics Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics_interface.html">Internals: Physics Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Internals: Other</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">telescope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>General Usage: Physics</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/common_physics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="general-usage-physics">
+<h1>General Usage: Physics<a class="headerlink" href="#general-usage-physics" title="Permalink to this headline"></a></h1>
+<p>Telescope allows for high level physics simulations by using <a class="reference external" href="https://github.com/bulletphysics/bullet3">Bullet</a>.</p>
+<p>I’m sorry, idk anything about bullet so you will need to do this introduction.</p>
+<hr class="docutils" />
+<div class="section" id="adding-physics-objects">
+<h2>Adding Physics Objects<a class="headerlink" href="#adding-physics-objects" title="Permalink to this headline"></a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416TS_BtAddRigidBoxifffffffb">
+<span id="_CPPv316TS_BtAddRigidBoxifffffffb"></span><span id="_CPPv216TS_BtAddRigidBoxifffffffb"></span><span id="TS_BtAddRigidBox__i.float.float.float.float.float.float.float.b"></span><span class="target" id="bullet__interface_8hpp_1a00dba2c65658aa1644b5d5de8d2ace13"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtAddRigidBox</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_z</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mass</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_z</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_kinematic</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416TS_BtAddRigidBoxifffffffb" title="Permalink to this definition"></a><br /></dt>
+<dd><p>add a rigid, axis-aligned collision box to the state </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – id of the newly created object </p></li>
+<li><p><strong>size_x</strong> – size along the x-dimension </p></li>
+<li><p><strong>size_y</strong> – size along the y-dimension </p></li>
+<li><p><strong>size_z</strong> – size along the z-dimension </p></li>
+<li><p><strong>mass</strong> – mass of the box </p></li>
+<li><p><strong>position_x</strong> – x-coordinate of the position of the box </p></li>
+<li><p><strong>position_y</strong> – y-coordinate of the position of the box </p></li>
+<li><p><strong>position_z</strong> – z-coordinate of the position of the box </p></li>
+<li><p><strong>is_kinematic</strong> – should the box be a kinematic object </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417TS_BtAddStaticBoxiffffff">
+<span id="_CPPv317TS_BtAddStaticBoxiffffff"></span><span id="_CPPv217TS_BtAddStaticBoxiffffff"></span><span id="TS_BtAddStaticBox__i.float.float.float.float.float.float"></span><span class="target" id="bullet__interface_8hpp_1a975248add26497d4e49c3e5c214f5771"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtAddStaticBox</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_z</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_z</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417TS_BtAddStaticBoxiffffff" title="Permalink to this definition"></a><br /></dt>
+<dd><p>add a static, axis-aligned collision box to the state </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – id of the newly created object </p></li>
+<li><p><strong>size_x</strong> – size along the x-dimension </p></li>
+<li><p><strong>size_y</strong> – size along the y-dimension </p></li>
+<li><p><strong>size_z</strong> – size along the z-dimension </p></li>
+<li><p><strong>position_x</strong> – x-coordinate of the position of the box </p></li>
+<li><p><strong>position_y</strong> – y-coordinate of the position of the box </p></li>
+<li><p><strong>position_z</strong> – z-coordinate of the position of the box </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418TS_BtAddTriggerBoxiffffff">
+<span id="_CPPv318TS_BtAddTriggerBoxiffffff"></span><span id="_CPPv218TS_BtAddTriggerBoxiffffff"></span><span id="TS_BtAddTriggerBox__i.float.float.float.float.float.float"></span><span class="target" id="bullet__interface_8hpp_1a99ddb2d71b5f4847577b5c52f42baf24"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtAddTriggerBox</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">size_z</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">position_z</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418TS_BtAddTriggerBoxiffffff" title="Permalink to this definition"></a><br /></dt>
+<dd><p>add a box-shaped trigger to the state </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – id of the newly created object </p></li>
+<li><p><strong>size_x</strong> – size along the x-dimension </p></li>
+<li><p><strong>size_y</strong> – size along the y-dimension </p></li>
+<li><p><strong>size_z</strong> – size along the z-dimension </p></li>
+<li><p><strong>position_x</strong> – x-coordinate of the position of the box </p></li>
+<li><p><strong>position_y</strong> – y-coordinate of the position of the box </p></li>
+<li><p><strong>position_z</strong> – z-coordinate of the position of the box </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Then, we remove any object by calling <cite>TS_BtRemovePhysicsObject</cite>, using the id we stored earlier</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424TS_BtRemovePhysicsObjecti">
+<span id="_CPPv324TS_BtRemovePhysicsObjecti"></span><span id="_CPPv224TS_BtRemovePhysicsObjecti"></span><span id="TS_BtRemovePhysicsObject__i"></span><span class="target" id="bullet__interface_8hpp_1a9572ad6b3b47fe580b9e04cc4c1d3c5b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtRemovePhysicsObject</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424TS_BtRemovePhysicsObjecti" title="Permalink to this definition"></a><br /></dt>
+<dd><p>remove a physics object from the state </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> – id of the object </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="moving-physics-objects">
+<h2>Moving Physics Objects<a class="headerlink" href="#moving-physics-objects" title="Permalink to this headline"></a></h2>
+<p>To move an object, we need to modify it’s velocity. This is the amount it moves in 3D spaces per “step”, which is what the smallest unit of time in the simulation is called.</p>
+<p>To set an objects velocity, we use <cite>TS_BtSetLinearVelocity</cite></p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422TS_BtSetLinearVelocityifff">
+<span id="_CPPv322TS_BtSetLinearVelocityifff"></span><span id="_CPPv222TS_BtSetLinearVelocityifff"></span><span id="TS_BtSetLinearVelocity__i.float.float.float"></span><span class="target" id="bullet__interface_8hpp_1a8660ac347a0779633ea568980b21897b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtSetLinearVelocity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">velocity_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">velocity_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">velocity_z</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422TS_BtSetLinearVelocityifff" title="Permalink to this definition"></a><br /></dt>
+<dd><p>set the linear velocity of a physics object </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – id of the object </p></li>
+<li><p><strong>velocity_x</strong> – velocity along the x-dimension </p></li>
+<li><p><strong>velocity_y</strong> – velocity along the y-dimension </p></li>
+<li><p><strong>velocity_z</strong> – velocity along the z-dimension </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>For the object to actually move, we need to advance the simulation by at least one step. This is accomplished by using <cite>TS_BtStepSimulation</cite>:</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419TS_BtStepSimulationv">
+<span id="_CPPv319TS_BtStepSimulationv"></span><span id="_CPPv219TS_BtStepSimulationv"></span><span id="TS_BtStepSimulation"></span><span class="target" id="bullet__interface_8hpp_1a6298fea19390621d1a952ae245d3ec67"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtStepSimulation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419TS_BtStepSimulationv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>advance the physics simulation by one step </p>
+</dd></dl>
+
+<hr class="docutils" />
+<p>When an object is moving, there is potentially more than one variable that affects it’s position per step: gravity.</p>
+<p>Each object has a mass. We choose it during object creation before. We can then set the global amount of gravity (in any direction, not just towards the ground like in real life) by using <cite>TS_BtSetGravity</cite>:</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415TS_BtSetGravityfff">
+<span id="_CPPv315TS_BtSetGravityfff"></span><span id="_CPPv215TS_BtSetGravityfff"></span><span id="TS_BtSetGravity__float.float.float"></span><span class="target" id="bullet__interface_8hpp_1a00774911c4eee18987f32463d6026272"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtSetGravity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gravity_x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gravity_y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gravity_z</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415TS_BtSetGravityfff" title="Permalink to this definition"></a><br /></dt>
+<dd><p>set the global gravity </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gravity_x</strong> – acceleration along the x-dimension </p></li>
+<li><p><strong>gravity_y</strong> – acceleration along the y-dimension </p></li>
+<li><p><strong>gravity_z</strong> – acceleration along the z-dimension </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="collision-detection">
+<h2>Collision Detection<a class="headerlink" href="#collision-detection" title="Permalink to this headline"></a></h2>
+<p>When we have multiple objects moving in space, eventually, some will collide. Each step, Telescope will queue a number of <cite>TS_CollisionEvent</cite>, one representing each collision between two objects:</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv417TS_CollisionEvent">
+<span id="_CPPv317TS_CollisionEvent"></span><span id="_CPPv217TS_CollisionEvent"></span><span id="TS_CollisionEvent"></span><span class="target" id="struct_t_s___collision_event"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_CollisionEvent</span></span></span><a class="headerlink" href="#_CPPv417TS_CollisionEvent" title="Permalink to this definition"></a><br /></dt>
+<dd><p>event used to check whether two objects are colliding </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17TS_CollisionEvent3id1E">
+<span id="_CPPv3N17TS_CollisionEvent3id1E"></span><span id="_CPPv2N17TS_CollisionEvent3id1E"></span><span id="TS_CollisionEvent::id1__i"></span><span class="target" id="struct_t_s___collision_event_1a15f4785f187f2b90d8001eb2d8f923f9"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id1</span></span></span><a class="headerlink" href="#_CPPv4N17TS_CollisionEvent3id1E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>id of first object </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17TS_CollisionEvent3id2E">
+<span id="_CPPv3N17TS_CollisionEvent3id2E"></span><span id="_CPPv2N17TS_CollisionEvent3id2E"></span><span id="TS_CollisionEvent::id2__i"></span><span class="target" id="struct_t_s___collision_event_1a46f3c61c0aee4eec689cb31362c70d27"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">id2</span></span></span><a class="headerlink" href="#_CPPv4N17TS_CollisionEvent3id2E" title="Permalink to this definition"></a><br /></dt>
+<dd><p>id of second object </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N17TS_CollisionEvent9collidingE">
+<span id="_CPPv3N17TS_CollisionEvent9collidingE"></span><span id="_CPPv2N17TS_CollisionEvent9collidingE"></span><span id="TS_CollisionEvent::colliding__b"></span><span class="target" id="struct_t_s___collision_event_1a2fc27ab4c1e5f23c4a90bff8ab07d58e"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">colliding</span></span></span><a class="headerlink" href="#_CPPv4N17TS_CollisionEvent9collidingE" title="Permalink to this definition"></a><br /></dt>
+<dd><p>true if objects collide, false otherwise </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<p>To access the lates collision event, we use <cite>TS_BtGetNextCollision</cite></p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421TS_BtGetNextCollisionv">
+<span id="_CPPv321TS_BtGetNextCollisionv"></span><span id="_CPPv221TS_BtGetNextCollisionv"></span><span id="TS_BtGetNextCollision"></span><span class="target" id="bullet__interface_8hpp_1a20da485a3db92ff0d4ed92c9b7b85ae8"></span><a class="reference internal" href="#_CPPv417TS_CollisionEvent" title="TS_CollisionEvent"><span class="n"><span class="pre">TS_CollisionEvent</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtGetNextCollision</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421TS_BtGetNextCollisionv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>query the next collision event </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><a class="reference internal" href="physics_interface.html#struct_t_s___collision_event"><span class="std std-ref">TS_CollisionEvent</span></a>, contains two ids of colliding objects </p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>This way, we can keep track of all the objects moving around.</p>
+<hr class="docutils" />
+<p>Each physics objects has a <em>bounding box</em>. This is the space it occupies in all 3 dimensions. During simulation, we sometimes want to increase the minimum amount of space the distance between the surface of two objects can be. This is useful to avoid “clipping”, where two graphics objects collide.</p>
+<p>To do this, we increase an objects margin using <cite>TS_BtSetCollisionMargin</cite></p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423TS_BtSetCollisionMarginif">
+<span id="_CPPv323TS_BtSetCollisionMarginif"></span><span id="_CPPv223TS_BtSetCollisionMarginif"></span><span id="TS_BtSetCollisionMargin__i.float"></span><span class="target" id="bullet__interface_8hpp_1a8b711607ecec00b5536912231088ace9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_BtSetCollisionMargin</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">margin</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423TS_BtSetCollisionMarginif" title="Permalink to this definition"></a><br /></dt>
+<dd><p>set the outer margin of a specific collision object </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – id of the object </p></li>
+<li><p><strong>margin</strong> – distance between the surface and the outer margin of the object </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<hr class="docutils" />
+<div class="section" id="playing-sounds">
+<h2>Playing Sounds<a class="headerlink" href="#playing-sounds" title="Permalink to this headline"></a></h2>
+<p>Telescope does not only allow for graphics but also sound. To play a sound, we simply call <cite>TS_PlaySound</cite>:</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412TS_PlaySoundPKcii">
+<span id="_CPPv312TS_PlaySoundPKcii"></span><span id="_CPPv212TS_PlaySoundPKcii"></span><span id="TS_PlaySound__cCP.i.i"></span><span class="target" id="common_8hpp_1af50f04527807e7276a957c0c1a206345"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_PlaySound</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">loops</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ticks</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412TS_PlaySoundPKcii" title="Permalink to this definition"></a><br /></dt>
+<dd><p>play a sound </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – path to the sound file </p></li>
+<li><p><strong>loops</strong> – [optional] number of loops, -1 for infinite </p></li>
+<li><p><strong>ticks</strong> – [optional] maximum time to play a sample, in milliseconds, -1 for infinite </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="common_render.html" class="btn btn-neutral float-left" title="General Usage: Rendering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graphics_interface.html" class="btn btn-neutral float-right" title="Internals: Graphics Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joshua Higgenbotham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

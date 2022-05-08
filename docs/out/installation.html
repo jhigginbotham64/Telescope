@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; telescope  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="General Usage: Rendering" href="common_render.html" />
+    <link rel="prev" title="Telescope Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> telescope
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building">Building</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#telescope-h-no-such-file-or-directory">telescope.h: No such file or directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#could-not-find-shaderc-shared">Could not find shaderc_shared</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="common_render.html">General Usage: Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_physics.html">General Usage: Physics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics_interface.html">Internals: Graphics Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics_interface.html">Internals: Physics Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="other.html">Internals: Other</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">telescope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Installation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
+<p>To build Telescope from source, the following dependencies need to be met:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/bulletphysics/bullet3">Bullet</a>
+- also available as <code class="code docutils literal notranslate"><span class="pre">libbullet-dev</span></code></p></li>
+<li><p><a class="reference external" href="https://vulkan.lunarg.com/">Vulkan</a>
+- also available as <code class="code docutils literal notranslate"><span class="pre">libvulkan-dev</span></code></p></li>
+<li><p><a class="reference external" href="https://www.libsdl.org/download-2.0.php">SDL2</a>
+- also available as <code class="code docutils literal notranslate"><span class="pre">libsdl2-dev</span></code>
+- additionally, <code class="code docutils literal notranslate"><span class="pre">libsdl2-image</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-mixer</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-ttf</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-net</span></code> may need to be installed separately</p></li>
+<li><p><a class="reference external" href="https://github.com/g-truc/glm">glm</a>
+- also available as <code class="code docutils literal notranslate"><span class="pre">libglm-dev</span></code></p></li>
+<li><p><a class="reference external" href="https://github.com/google/shaderc#downloads">shaderc</a></p></li>
+</ul>
+<p>Clicking on the links above will lead you to the correct download pages for each dependency. Alternatively, they can be installed through your package manager, potentially under the names supplied above.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="building">
+<h2>Building<a class="headerlink" href="#building" title="Permalink to this headline"></a></h2>
+<p>To install Telescope, execute, in any public directory</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/jhigginbotham64/Telescope</span>
+<span class="go">cd Telescope</span>
+<span class="go">mkdir build</span>
+<span class="go">cd build</span>
+<span class="go">cmake .. #-DCMAKE_INSTALL_PREFIX=&lt;install location&gt;</span>
+<span class="go">make install</span>
+</pre></div>
+</div>
+<p>Where <code class="code docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX=&lt;install</span> <span class="pre">location&gt;</span></code> is an optional argument that determines, what directory the Telescope shared library will be installed into.</p>
+<p>After installation, you can interface with Telescope from Julia using [Starlight.jl](<a class="reference external" href="https://github.com/jhigginbotham64/Starlight.jl">https://github.com/jhigginbotham64/Starlight.jl</a>).</p>
+<hr class="docutils" />
+<p>If you wish to use telescope for your C / C++ application, in your own CMakeLists.txt, add the following lines:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">find_library(telescope REQUIRED</span>
+<span class="go">    NAMES telescope</span>
+<span class="gp">    #</span>PATHS &lt;install location&gt;
+<span class="go">)</span>
+<span class="go">target_link_libraries(&lt;your_target&gt; PRIVATE telescope)</span>
+</pre></div>
+</div>
+<p>Where
++ <cite>&lt;your_target&gt;</cite> is the name of your CMake library or executable
++ <cite>&lt;install location&gt;</cite> is the location specified during CMake configuration [earlier](#installation)</p>
+<p>Then you can make Telescope available to your library using</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;telescope.h&gt;</span><span class="cp"></span>
+</pre></div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline"></a></h1>
+<div class="section" id="telescope-h-no-such-file-or-directory">
+<h2>telescope.h: No such file or directory<a class="headerlink" href="#telescope-h-no-such-file-or-directory" title="Permalink to this headline"></a></h2>
+<p>When compiling your own C / C++ target that uses telescope, the following compiler error may occur:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/home/.../main.cpp: fatal error: telescope.h: No such file or directory</span>
+<span class="go">   11 | #include &lt;telescope.h&gt;</span>
+<span class="go">      |          ^~~~~~~~~~~~~</span>
+</pre></div>
+</div>
+<p>This happens if the telescope install directory was not added to your CMake targets include directories. To address this, in your own CMakeLists.txt, add the following lines:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">find_library(telescope REQUIRED</span>
+<span class="go">    NAMES telescope</span>
+<span class="go">    PATHS &lt;install location&gt;</span>
+<span class="go">)</span>
+<span class="go">target_include_directories(&lt;your_target&gt; PRIVATE &lt;install location&gt;)</span>
+<span class="go">target_link_libraries(&lt;your_target&gt; PRIVATE telescope)</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Where</dt><dd><ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;your_target&gt;</span></code> is the name of your CMake executable or library</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;install</span> <span class="pre">location&gt;</span></code> is the directory specified as <code class="code docutils literal notranslate"><span class="pre">CMAKE_INSTALL_PREFIX</span></code> during [CMake configuration](#installation)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Now, your compiler should be able to locate <code class="code docutils literal notranslate"><span class="pre">telescope.h</span></code> properly.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="could-not-find-shaderc-shared">
+<h2>Could not find shaderc_shared<a class="headerlink" href="#could-not-find-shaderc-shared" title="Permalink to this headline"></a></h2>
+<p>During CMake configuration, the following error may occur:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Unable to detect shaderc_shared library.  Make sure it is installed</span>
+<span class="go">correctly.  You can manually specify the path using:</span>
+
+<span class="go">   -DSHADERC_LIB_DIR=/path/to/shaderc/lib</span>
+
+<span class="go"> during cmake configuration.</span>
+
+<span class="go">CMake Error at cmake/Findshaderc_shared.cmake:30 (find_library):</span>
+<span class="go">  Could not find shaderc_shared using the following names:</span>
+<span class="go">  libshaderc_shared.so</span>
+</pre></div>
+</div>
+<p>This means Telescope was unable to detect the <code class="code docutils literal notranslate"><span class="pre">shaderc_shared</span></code> library, which is part of the shaderc package. If you are sure shaderc is already installed properly, you can manually specify the path to the shared library using the <code class="code docutils literal notranslate"><span class="pre">SHADERC_LIB_DIR</span></code> CMake variable during configuration, like so:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span> in Telescope/build
+<span class="go">cmake .. -DSHADERC_LIB_DIR=/path/to/shaderc/lib</span>
+</pre></div>
+</div>
+<p>Where <code class="code docutils literal notranslate"><span class="pre">/path/to/shaderc/lib</span></code> should point to a directory that has the following layout:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">shaderc/</span>
+<span class="go">  bin/</span>
+<span class="go">  include/</span>
+<span class="go">  lib/</span>
+<span class="go">    libshaderc_shared.so</span>
+<span class="go">    (...)</span>
+<span class="go">  share/</span>
+</pre></div>
+</div>
+<p>Where <code class="code docutils literal notranslate"><span class="pre">libshaderc_shared.so</span></code> may have a different prefix and/or suffix depending on your system, for example <code class="code docutils literal notranslate"><span class="pre">shaderc_shared.dll</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Telescope Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="common_render.html" class="btn btn-neutral float-right" title="General Usage: Rendering" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joshua Higgenbotham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internals: Other &mdash; telescope  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Internals: Physics Interface" href="physics_interface.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> telescope
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html#troubleshooting">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_render.html">General Usage: Rendering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_physics.html">General Usage: Physics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics_interface.html">Internals: Graphics Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="physics_interface.html">Internals: Physics Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Internals: Other</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">telescope</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Internals: Other</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/other.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="internals-other">
+<h1>Internals: Other<a class="headerlink" href="#internals-other" title="Permalink to this headline"></a></h1>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47TS_NDCXf">
+<span id="_CPPv37TS_NDCXf"></span><span id="_CPPv27TS_NDCXf"></span><span id="TS_NDCX__float"></span><span class="target" id="common_8hpp_1a4185e1b25ec44533bf39bde2e939cd2a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_NDCX</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47TS_NDCXf" title="Permalink to this definition"></a><br /></dt>
+<dd><p>get normalized device coordinates along the x and y axes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – x coordinate </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized y coordinate </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47TS_NDCYf">
+<span id="_CPPv37TS_NDCYf"></span><span id="_CPPv27TS_NDCYf"></span><span id="TS_NDCY__float"></span><span class="target" id="common_8hpp_1ae6c09bf75fc1da523cdaa90c8bf40acb"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_NDCY</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47TS_NDCYf" title="Permalink to this definition"></a><br /></dt>
+<dd><p>get normalized device coordinates along the x and y axes </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>y</strong> – y coordinate </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized x coordinate </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410TS_NDCRectffff">
+<span id="_CPPv310TS_NDCRectffff"></span><span id="_CPPv210TS_NDCRectffff"></span><span id="TS_NDCRect__float.float.float.float"></span><span class="target" id="common_8hpp_1aba62bb9da6230a79d6a50214f04323b7"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_NDCRect</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410TS_NDCRectffff" title="Permalink to this definition"></a><br /></dt>
+<dd><p>normalize rectangle </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – x-coordinate of the top left corner </p></li>
+<li><p><strong>y</strong> – y-coordinate of the top left corner </p></li>
+<li><p><strong>w</strong> – size in x-dimension </p></li>
+<li><p><strong>h</strong> – size in y-dimension </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rectangle as 4-array of floats </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47TS_NTCUii">
+<span id="_CPPv37TS_NTCUii"></span><span id="_CPPv27TS_NTCUii"></span><span id="TS_NTCU__i.i"></span><span class="target" id="common_8hpp_1a8c4ed5ad16081cfd3f807e32b0e83cef"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_NTCU</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47TS_NTCUii" title="Permalink to this definition"></a><br /></dt>
+<dd><p>normalize texture coordinates along the u axis </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – x-coordinate </p></li>
+<li><p><strong>w</strong> – width </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized y-coordinate </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47TS_NTCVii">
+<span id="_CPPv37TS_NTCVii"></span><span id="_CPPv27TS_NTCVii"></span><span id="TS_NTCV__i.i"></span><span class="target" id="common_8hpp_1a8805bc2b68429db4ad41a7d8ee481cc0"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_NTCV</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47TS_NTCVii" title="Permalink to this definition"></a><br /></dt>
+<dd><p>normalize texture coordinates along the v axis </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> – y-coordinate </p></li>
+<li><p><strong>h</strong> – height </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized x-coordinate </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410TS_NTCRectiiiiii">
+<span id="_CPPv310TS_NTCRectiiiiii"></span><span id="_CPPv210TS_NTCRectiiiiii"></span><span id="TS_NTCRect__i.i.i.i.i.i"></span><span class="target" id="common_8hpp_1a3e7b46edf276432cc7c87429cfce9eaa"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_NTCRect</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">w2</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h2</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410TS_NTCRectiiiiii" title="Permalink to this definition"></a><br /></dt>
+<dd><p>normalize texture coordinate rectangle </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – x-coordinate of top left corner </p></li>
+<li><p><strong>y</strong> – y-coordinate of top left corner </p></li>
+<li><p><strong>w</strong> – width </p></li>
+<li><p><strong>h</strong> – height </p></li>
+<li><p><strong>w2</strong> – new width </p></li>
+<li><p><strong>h2</strong> – new height </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>rect as 4-array </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414TS_Add4Indicesv">
+<span id="_CPPv314TS_Add4Indicesv"></span><span id="_CPPv214TS_Add4Indicesv"></span><span id="TS_Add4Indices"></span><span class="target" id="common_8hpp_1a2bd639d0799cf464ead9df125fb2430e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_Add4Indices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414TS_Add4Indicesv" title="Permalink to this definition"></a><br /></dt>
+<dd><p>TODO: idk what this does. </p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="physics_interface.html" class="btn btn-neutral float-left" title="Internals: Physics Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Joshua Higgenbotham.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
