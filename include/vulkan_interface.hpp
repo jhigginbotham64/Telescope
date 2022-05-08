@@ -105,9 +105,9 @@ static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(
   void* pUserData);
 
 /// \brief create vulkan image view
-/// \brief img: vulkan image
-/// \brief fmt: vulkan format
-/// \brief flags: image aspect flags
+/// \param img: vulkan image
+/// \param fmt: vulkan format
+/// \param flags: image aspect flags
 /// \returns created image view
 vk::ImageView TS_VkCreateImageView(vk::Image img, vk::Format fmt, vk::ImageAspectFlagBits flags);
 
@@ -196,8 +196,8 @@ void TS_VkBeginCommandBuffer();
 /// \param r: red component of the color
 /// \param g: green component of the color
 /// \param b: blue component of the color
-/// \param a: transparency component of the color
-void TS_VkDraw(float r, float g, float b, float a);
+/// \param alpha: transparency component of the color
+void TS_VkDraw(float r, float g, float b, float alpha);
 
 /// \brief end vulkan command buffer
 void TS_VkEndCommandBuffer();
@@ -274,9 +274,6 @@ void TS_VkCreateFences();
 
 /// \brief initialize the vulkan state
 void TS_VkInit();
-
-/// \brief being the vulkan draw pass
-void TS_VkBeginDrawPass();
 
 /// \brief finish the drawing pass by rendering a solid color
 /// \param r: red component of the color (in RGBA)

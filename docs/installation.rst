@@ -71,11 +71,11 @@ telescope.h: No such file or directory
 
 When compiling your own C / C++ target that uses telescope, the following compiler error may occur:
 
-.. code-block:: cpp
+.. code-block:: console
 
-/home/.../main.cpp: fatal error: telescope.h: No such file or directory
-   11 | #include <telescope.h>
-      |          ^~~~~~~~~~~~~
+	/home/.../main.cpp: fatal error: telescope.h: No such file or directory
+	   11 | #include <telescope.h>
+	      |          ^~~~~~~~~~~~~
 
 This happens if the telescope install directory was not added to your CMake targets include directories. To address this, in your own CMakeLists.txt, add the following lines:
 
@@ -89,10 +89,10 @@ This happens if the telescope install directory was not added to your CMake targ
 	target_link_libraries(<your_target> PRIVATE telescope)
 
 Where
-  + `<your_target>` is the name of your CMake executable or library
-  + `<install loaction>` is the directory specified as `CMAKE_INSTALL_PREFIX` during [CMake configuration](#installation)
+  + :code:`<your_target>` is the name of your CMake executable or library
+  + :code:`<install location>` is the directory specified as :code:`CMAKE_INSTALL_PREFIX` during [CMake configuration](#installation)
 
-Now, your compiler should be able to locate `telescope.h` properly.
+Now, your compiler should be able to locate :code:`telescope.h` properly.
 
 ------------------------
 
@@ -114,14 +114,14 @@ During CMake configuration, the following error may occur:
 	  Could not find shaderc_shared using the following names:
 	  libshaderc_shared.so
 
-This means Telescope was unable to detect the `shaderc_shared` library, which is part of the shaderc package. If you are sure shaderc is already installed properly, you can manually specify the path to the shared library using the `SHADERC_LIB_DIR` CMake variable during configuration, like so:
+This means Telescope was unable to detect the :code:`shaderc_shared` library, which is part of the shaderc package. If you are sure shaderc is already installed properly, you can manually specify the path to the shared library using the :code:`SHADERC_LIB_DIR` CMake variable during configuration, like so:
 
 .. code-block:: console
 
 	# in Telescope/build
 	cmake .. -DSHADERC_LIB_DIR=/path/to/shaderc/lib
 
-Where `/path/to/shaderc/lib` should point to a directory that has the following layout:
+Where :code:`/path/to/shaderc/lib` should point to a directory that has the following layout:
 
 .. code-block:: console
 
@@ -133,7 +133,7 @@ Where `/path/to/shaderc/lib` should point to a directory that has the following 
 	    (...)
 	  share/
 
-Where `libshaderc_shared.so` may have a different prefix and/or suffix depending on your system, for example `shaderc_shared.dll`.
+Where :code:`libshaderc_shared.so` may have a different prefix and/or suffix depending on your system, for example :code:`shaderc_shared.dll`.
 
 
 

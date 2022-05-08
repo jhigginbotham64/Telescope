@@ -66,6 +66,7 @@ Shutting down the State
 ***********************
 
 To shut down the render state, use:
+
 .. doxygenfunction:: TS_VkQuit
 
 which internally calls the following functions:
@@ -107,13 +108,16 @@ Check Supported Depth Format
 
 ------------------
 
-Scratch- & Command- Buffer
-**************************
+Scratch Buffer
+**************
 
 .. doxygenfunction:: TS_VkBeginScratchBuffer
 .. doxygenfunction:: TS_VkSubmitScratchBuffer
 
 ------------------
+
+Scratch Buffer
+**************
 
 .. doxygenfunction:: TS_VkResetCommandBuffer
 .. doxygenfunction:: TS_VkBeginCommandBuffer

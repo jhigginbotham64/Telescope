@@ -21,7 +21,7 @@ ${SPHINX_EXECUTABLE} -Ea -b html
 
 where `SPHINX_EXECUTABLE` is deduced to `sphinx-build` at configuration. 
 
-`-Ea` is supposed to always rebuild but it doesn't work for some reason. I think it has to do with how the cmake cache works.
+`-Ea` is supposed to always rebuild, but it doesn't work for some reason. I think it has to do with how the cmake cache works.
 
 Sphinx will throw a bunch of ` WARNING: Duplicate C++ declaration` warnings. These are intended, I figured it would be nice to have all internal functions for each header both in the internal index (`graphics_interface.rst`, `physics_interface.rst`, `other.rst`) *and* in the public guide. Feel free to delete them from the internal index.
 
@@ -32,7 +32,7 @@ The following gaps need to be filled in by you, it's mostly me not understanding
 + `include/vulkan_interface.hpp` line 119
 + `include/vulkan_interface.hpp` line 169
 
-+ `include/common.hpp` line 74
++ `include/common.hpp` line 73
 
 + `docs/index.rst` 
  - may need an introduction paragraph, idk what how you would like me to describe it so I left it up to you
@@ -47,7 +47,7 @@ The following gaps need to be filled in by you, it's mostly me not understanding
 + `docs/common_physics.rst` line 7
 + `docs/common_physics.rst`
     - check everything else for correctness and style
-    
+     
 ## Set CMake to Release
     
 + `Telescope/CMakeLists.txt` line 156
