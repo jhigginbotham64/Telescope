@@ -26,8 +26,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_vulkan.h>
 
-#include <btBulletCollisionCommon.h>
-#include <btBulletDynamicsCommon.h>
+#include <bullet/btBulletCollisionCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include <iostream>
 #include <algorithm>

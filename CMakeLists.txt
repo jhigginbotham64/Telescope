@@ -10,16 +10,6 @@ set(BUILD_SHARED_LIBS ON)
 
 include(GNUInstallDirs)
 
-# bullet
-set(USE_DOUBLE_PRECISION OFF)
-set(BUILD_PYBULLET OFF)
-set(BUILD_UNIT_TESTS OFF)
-set(BUILD_CPU_DEMOS OFF)
-set(BUILD_OPENGL3_DEMOS OFF)
-set(BUILD_BULLET2_DEMOS OFF)
-set(BUILD_EXTRAS OFF)
-add_subdirectory(bullet3)
-
 # telescope
 add_subdirectory(src)
 

@@ -1,6 +1,3 @@
 [submodule "VulkanMemoryAllocator-Hpp"]
 	path = VulkanMemoryAllocator-Hpp
 	url = https://github.com/YaaZ/VulkanMemoryAllocator-Hpp.git
-[submodule "bullet3"]
-	path = bullet3
-	url = https://github.com/bulletphysics/bullet3.git
