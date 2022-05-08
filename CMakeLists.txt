@@ -153,7 +153,7 @@ endif()
 
 ### GENERATE DOCS ###
 
-option(BUILD_DOCS "build telescope unit tests" ON) #TODO set to OFF for Release
+option(BUILD_DOCS "build telescope documentation" OFF)
 if (BUILD_DOCS)
     include("docs/CMakeLists.txt")
 endif()
