@@ -30,3 +30,25 @@ jobs:
         cmake .
         make clean
         make
+    - name: 🆙 Upload compiled source
+      uses: actions/upload-artifact@v3
+      with:
+        name: libtelescope-pretest
+        path: lib/libtelescope.so
+        if-no-files-found: error
+  test:
+    name: Test the build
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🏁 Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: 'true'
+    - name: 🆒 Download dists
+      uses: actions/download-artifact@v3
+      with:
+        name: libtelescope-pretest
+        path: lib
+    - name: Test the build
+      run: echo TODO
