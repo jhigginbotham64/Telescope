@@ -1,4 +1,4 @@
-# Telescope (v0.3.0)
+# Telescope (v0.2.0)
 
 An Open-Source Toolkit for Interactive Multimedia Applications
 
