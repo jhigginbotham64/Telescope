@@ -5,7 +5,6 @@
 #pragma once
 
 #include <array>
-#include <include/link_as_c.hpp>
 
 #define CLAMP(x, lo, hi)  ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
@@ -24,7 +23,7 @@ void TS_Quit();
 /// \param path: path to the sound file
 /// \param loops: [optional] number of loops, -1 for infinite
 /// \param ticks: [optional] maximum time to play a sample, in milliseconds, -1 for infinite
-void TS_PlaySound(const char* sound_file, int loops, int ticks);
+void TS_PlaySound(const char* path, int loops, int ticks);
 
 /// \brief get sdl error
 /// \returns error message
