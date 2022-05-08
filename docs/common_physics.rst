@@ -1,6 +1,9 @@
 General Usage: Physics
 ======================
 
+Telescope allows for high level physics simulations by using `Bullet
+<https://github.com/bulletphysics/bullet3>`_.
+
 I'm sorry, idk anything about bullet so you will need to do this introduction.
 
 -----------------

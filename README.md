@@ -18,7 +18,7 @@ An Open-Source Toolkit for Interactive Multimedia Applications
 ---
 ### Dependencies
 
-To build Telescope from source, the following dependencies need to be met
+To build Telescope from source, the following dependencies need to be met:
 + [Bullet](https://github.com/bulletphysics/bullet3) 
   - also available as `libbullet-dev`
 + [Vulkan](https://vulkan.lunarg.com/)

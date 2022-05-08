@@ -127,5 +127,3 @@ Vulkan Queues
 .. doxygenfunction:: TS_VkQueuePresent
 .. doxygenfunction:: TS_VkSelectQueueFamily
 
-------------------
-
