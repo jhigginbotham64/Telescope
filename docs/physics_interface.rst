@@ -1,5 +1,5 @@
-Physics Interface
-=================
+Internals: Physics Interface
+============================
 
 Telescope allows for high level physics simulations by using `Bullet
 <https://github.com/bulletphysics/bullet3>`_.

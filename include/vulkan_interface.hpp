@@ -28,7 +28,9 @@ struct TS_Texture {
   std::string fname;
 };
 
-BEGIN_C_LINKAGE
+#ifdef __cplusplus
+    extern "C" {
+#endif
 
 /// \brief draw a rectangle
 /// \param r: red component of the color (in RGBA)
@@ -89,7 +91,7 @@ void TS_VkBeginDrawPass();
 /// \param alpha: transparency component of the color (in RGBA)
 void TS_VkEndDrawPass(float r, float g, float b, float a);
 
-END_C_LINKAGE;
+}
 
 /// \brief trigger debug callback
 /// \param messageSeverity: severity
@@ -175,38 +177,7 @@ int TS_VkLoadTexture(const char * img);
 /// \param img: texture path
 void TS_VkUnloadTexture(const char * img);
 
-/// \param draw a colored rectangle
-/// \param r: red component of the color
-/// \param g: green component of the color
-/// \param b: blue component of the color
-/// \param a: transparency component of the color
-/// \param x: x-coordinate of the top left corner
-/// \param y: y-coordinate of the top left corner
-/// \param w: width
-/// \param h: height
-void TS_VkCmdDrawRect(float r, float g, float b, float a, float x, float y, float w, float h);
-
-/// \brief draw a sprite
-/// \param image_path: path to image on disk
-/// \param r: red component of the color (in RGBA)
-/// \param g: green component of the color (in RGBA)
-/// \param b: blue component of the color (in RGBA)
-/// \param alpha: transparency component of the color (in RGBA)
-/// \param region_x: x-coordinate of the top left corner of the subregion
-/// \param region_y: y-coordinate of the top left corner of the subregion
-/// \param region_width: size of the subregion along the x-dimension
-/// \param region_height: size of the subregion along the x-dimension
-/// \param cell_w: width of each cell of the grid
-/// \param cell_h: height of each cell of the grid
-/// \param cell_index_i: x-index of the cell
-/// \param cell_index_j: y-index of the cell
-/// \param position_x: x-coordinate of the top left corner of the sprite
-/// \param position_y: y-coordinate of the top left corner of the sprite
-/// \param scale_x: scale along the x-dimension
-/// \param scale_y: scale along the y-dimension
-void TS_VkCmdDrawSprite(const char * img, float r, float g, float b, float a, int rx, int ry, int rw, int rh, int cw, int ch, int ci, int cj, float px, float py, float sx, float sy);
-
-/// \brief clear the render window with a color
+/// \brief clear an image with a color
 /// \param r: red component of the color (in RGBA)
 /// \param g: green component of the color (in RGBA)
 /// \param b: blue component of the color (in RGBA)

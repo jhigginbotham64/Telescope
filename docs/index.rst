@@ -7,6 +7,8 @@ Contents
 .. toctree::
 
 	installation
-	common
+	common_render
+	common_physics
 	graphics_interface
 	physics_interface
+	other
