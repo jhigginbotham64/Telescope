@@ -4,7 +4,6 @@ find_package(Doxygen REQUIRED)
 find_package(Sphinx 4.0.0 REQUIRED)
 
 # Find all the public headers
-#get_target_property(TELESCOPE_INCLUDE_DIR telescope INTERFACE_INCLUDE_DIRECTORIES)
 set(TELESCOPE_INCLUDE_DIR "./src")
 file(GLOB_RECURSE TELESCOPE_INCLUDE_DIR ${TELESCOPE_INCLUDE_DIR}/*)
 

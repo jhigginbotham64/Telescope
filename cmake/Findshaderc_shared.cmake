@@ -1,4 +1,3 @@
-
 # if already available, don't override
 if(NOT DEFINED shaderc_shared)
 
