@@ -971,10 +971,10 @@ void TS_VkCreateDevice()
 
 void TS_VmaCreateAllocator()
 {
-  vma::VulkanFunctions vf {
+  vma::VulkanFunctions vf = vma::VulkanFunctions(
     VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr,
     VULKAN_HPP_DEFAULT_DISPATCHER.vkGetDeviceProcAddr
-  };
+  );
 
   vma::AllocatorCreateInfo aci = {};
   aci.vulkanApiVersion = VK_API_VERSION_1_0;
@@ -1126,7 +1126,7 @@ void TS_VkCreateRenderPass()
   rp = dev.createRenderPass(renderPassInfo);
 }
 
-vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize = false)
+vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize)
 {
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
@@ -1438,7 +1438,7 @@ void TS_VkInit()
   TS_VkCreateFences();
 }
 
-void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
+void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic)
 {
   TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), m, isKinematic, false, btVector3(px, py, pz));
   physicsObjectsById[id] = g;
