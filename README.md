@@ -17,5 +17,7 @@ To build telescope on your system, you'll need several SDKs:
     * `apt install libglm-dev`
 * [shaderc](https://github.com/google/shaderc)
     * `apt install shaderc`
+
+You'll also need to `git submodule init` and `git submodule update` from within `VulkanMemoryAllocator-Hpp`, but shouldn't need any more depth than that.
 ## Build
 `cmake . && make clean && make`
