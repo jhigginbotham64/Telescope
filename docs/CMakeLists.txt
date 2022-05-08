@@ -1,7 +1,7 @@
 # reference used: https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/
 
 find_package(Doxygen REQUIRED)
-find_package(Sphinx REQUIRED)
+find_package(Sphinx 4.0.0 REQUIRED)
 
 # Find all the public headers
 #get_target_property(TELESCOPE_INCLUDE_DIR telescope INTERFACE_INCLUDE_DIRECTORIES)
