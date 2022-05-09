@@ -84,7 +84,7 @@ add_library(telescope SHARED
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
-  CXX_STANDARD 11
+  CXX_STANDARD 14
   MACOSX_RPATH 1
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   POSITION_INDEPENDENT_CODE ON
@@ -93,7 +93,7 @@ set_target_properties(telescope PROPERTIES
 target_include_directories(telescope PUBLIC
   "${CMAKE_SOURCE_DIR}"
   "${BULLET_INCLUDE_DIRS}"
-  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
+  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/include"
   "${SHADERC_INCLUDE_DIRS}"
 )
 
@@ -131,7 +131,7 @@ if (BUILD_TESTS)
             ${CMAKE_SOURCE_DIR}
             ${BULLET_INCLUDE_DIRS}
             ${SHADERC_INCLUDE_DIRS}
-            "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
+            "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/include"
         )
 
         set_target_properties(${test_name} PROPERTIES
