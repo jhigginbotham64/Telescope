@@ -88,9 +88,12 @@
 - also available as <code class="code docutils literal notranslate"><span class="pre">libbullet-dev</span></code></p></li>
 <li><p><a class="reference external" href="https://vulkan.lunarg.com/">Vulkan</a>
 - also available as <code class="code docutils literal notranslate"><span class="pre">libvulkan-dev</span></code></p></li>
-<li><p><a class="reference external" href="https://www.libsdl.org/download-2.0.php">SDL2</a>
-- also available as <code class="code docutils literal notranslate"><span class="pre">libsdl2-dev</span></code>
-- additionally, <code class="code docutils literal notranslate"><span class="pre">libsdl2-image</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-mixer</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-ttf</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-net</span></code> may need to be installed separately</p></li>
+<li><p><a class="reference external" href="https://www.libsdl.org/download-2.0.php">SDL2</a></p>
+<ul>
+<li><p>also available as <code class="code docutils literal notranslate"><span class="pre">libsdl2-dev</span></code></p></li>
+<li><p>additionally, <code class="code docutils literal notranslate"><span class="pre">libsdl2-image</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-mixer</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-ttf</span></code>, <code class="code docutils literal notranslate"><span class="pre">libsdl2-net</span></code> may need to be installed separately</p></li>
+</ul>
+</li>
 <li><p><a class="reference external" href="https://github.com/g-truc/glm">glm</a>
 - also available as <code class="code docutils literal notranslate"><span class="pre">libglm-dev</span></code></p></li>
 <li><p><a class="reference external" href="https://github.com/google/shaderc#downloads">shaderc</a></p></li>
@@ -110,7 +113,7 @@
 </pre></div>
 </div>
 <p>Where <code class="code docutils literal notranslate"><span class="pre">-DCMAKE_INSTALL_PREFIX=&lt;install</span> <span class="pre">location&gt;</span></code> is an optional argument that determines, what directory the Telescope shared library will be installed into.</p>
-<p>After installation, you can interface with Telescope from Julia using [Starlight.jl](<a class="reference external" href="https://github.com/jhigginbotham64/Starlight.jl">https://github.com/jhigginbotham64/Starlight.jl</a>).</p>
+<p>After installation, you can interface with Telescope from Julia using <a class="reference external" href="https://github.com/jhigginbotham64/Starlight.jl">Starlight.jl</a>.</p>
 <hr class="docutils" />
 <p>If you wish to use telescope for your C / C++ application, in your own CMakeLists.txt, add the following lines:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">find_library(telescope REQUIRED</span>
@@ -120,9 +123,11 @@
 <span class="go">target_link_libraries(&lt;your_target&gt; PRIVATE telescope)</span>
 </pre></div>
 </div>
-<p>Where
-+ <cite>&lt;your_target&gt;</cite> is the name of your CMake library or executable
-+ <cite>&lt;install location&gt;</cite> is the location specified during CMake configuration [earlier](#installation)</p>
+<p>Where</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;your_target&gt;</span></code> is the name of your CMake library or executable</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">&lt;install</span> <span class="pre">location&gt;</span></code> is the location specified during CMake configuration <a class="reference external" href="#installation">earlier</a></p></li>
+</ul>
 <p>Then you can make Telescope available to your library using</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;telescope.h&gt;</span><span class="cp"></span>
 </pre></div>

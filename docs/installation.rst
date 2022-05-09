@@ -11,6 +11,7 @@ To build Telescope from source, the following dependencies need to be met:
 + `Vulkan <https://vulkan.lunarg.com/>`_
   - also available as :code:`libvulkan-dev`
 + `SDL2 <https://www.libsdl.org/download-2.0.php>`_
+
   - also available as :code:`libsdl2-dev`
   - additionally, :code:`libsdl2-image`, :code:`libsdl2-mixer`, :code:`libsdl2-ttf`, :code:`libsdl2-net` may need to be installed separately
 + `glm <https://github.com/g-truc/glm>`_
@@ -37,7 +38,7 @@ To install Telescope, execute, in any public directory
 
 Where :code:`-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
 
-After installation, you can interface with Telescope from Julia using [Starlight.jl](https://github.com/jhigginbotham64/Starlight.jl).
+After installation, you can interface with Telescope from Julia using `Starlight.jl <https://github.com/jhigginbotham64/Starlight.jl>`_.
 
 ------------------------
 
@@ -52,8 +53,9 @@ If you wish to use telescope for your C / C++ application, in your own CMakeList
 	target_link_libraries(<your_target> PRIVATE telescope)
 
 Where
-+ `<your_target>` is the name of your CMake library or executable
-+ `<install location>` is the location specified during CMake configuration [earlier](#installation)
+
++ :code:`<your_target>` is the name of your CMake library or executable
++ :code:`<install location>` is the location specified during CMake configuration `earlier <#installation>`_
 
 Then you can make Telescope available to your library using
 
