@@ -11,6 +11,7 @@ To build Telescope from source, the following dependencies need to be met:
 + `Vulkan <https://vulkan.lunarg.com/>`_
   - also available as :code:`libvulkan-dev`
 + `SDL2 <https://www.libsdl.org/download-2.0.php>`_
+
   - also available as :code:`libsdl2-dev`
   - additionally, :code:`libsdl2-image`, :code:`libsdl2-mixer`, :code:`libsdl2-ttf`, :code:`libsdl2-net` may need to be installed separately
 + `glm <https://github.com/g-truc/glm>`_
