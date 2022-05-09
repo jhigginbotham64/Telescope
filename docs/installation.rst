@@ -55,7 +55,7 @@ If you wish to use telescope for your C / C++ application, in your own CMakeList
 Where
 
 + :code:`<your_target>` is the name of your CMake library or executable
-+ :code:`<install location>` is the location specified during CMake configuration `earlier <installation>`_
++ :code:`<install location>` is the location specified during CMake configuration `earlier <#installation>`_
 
 Then you can make Telescope available to your library using
 
