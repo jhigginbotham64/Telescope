@@ -82,3 +82,6 @@ html_static_path = ['_static']
 
 # Breathe Configuration
 breathe_default_project = "telescope"
+
+# disable "show source" in html output
+html_show_sourcelink = False

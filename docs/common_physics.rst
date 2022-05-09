@@ -66,14 +66,5 @@ To do this, we increase an objects margin using `TS_BtSetCollisionMargin`
 
 .. doxygenfunction:: TS_BtSetCollisionMargin
 
-------------------
-
-Playing Sounds
-**************
-
-Telescope does not only allow for graphics but also sound. To play a sound, we simply call `TS_PlaySound`:
-
-.. doxygenfunction:: TS_PlaySound
-
 
 
