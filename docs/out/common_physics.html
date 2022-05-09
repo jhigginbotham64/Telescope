@@ -17,7 +17,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Internals: Graphics Interface" href="graphics_interface.html" />
+    <link rel="next" title="General Usage: Sound" href="common_sound.html" />
     <link rel="prev" title="General Usage: Rendering" href="common_render.html" /> 
 </head>
 
@@ -44,9 +44,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#adding-physics-objects">Adding Physics Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#moving-physics-objects">Moving Physics Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collision-detection">Collision Detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#playing-sounds">Playing Sounds</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="common_sound.html">General Usage: Sound</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graphics_interface.html">Internals: Graphics Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="physics_interface.html">Internals: Physics Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="other.html">Internals: Other</a></li>
@@ -264,26 +264,6 @@
 </dd></dl>
 
 </div>
-<hr class="docutils" />
-<div class="section" id="playing-sounds">
-<h2>Playing Sounds<a class="headerlink" href="#playing-sounds" title="Permalink to this headline"></a></h2>
-<p>Telescope does not only allow for graphics but also sound. To play a sound, we simply call <cite>TS_PlaySound</cite>:</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv412TS_PlaySoundPKcii">
-<span id="_CPPv312TS_PlaySoundPKcii"></span><span id="_CPPv212TS_PlaySoundPKcii"></span><span id="TS_PlaySound__cCP.i.i"></span><span class="target" id="common_8hpp_1af50f04527807e7276a957c0c1a206345"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TS_PlaySound</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">path</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">loops</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ticks</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412TS_PlaySoundPKcii" title="Permalink to this definition"></a><br /></dt>
-<dd><p>play a sound </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – path to the sound file </p></li>
-<li><p><strong>loops</strong> – [optional] number of loops, -1 for infinite </p></li>
-<li><p><strong>ticks</strong> – [optional] maximum time to play a sample, in milliseconds, -1 for infinite </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 </div>
 
 
@@ -291,7 +271,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="common_render.html" class="btn btn-neutral float-left" title="General Usage: Rendering" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="graphics_interface.html" class="btn btn-neutral float-right" title="Internals: Graphics Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="common_sound.html" class="btn btn-neutral float-right" title="General Usage: Sound" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

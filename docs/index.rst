@@ -14,6 +14,7 @@ Contents
 	installation
 	common_render
 	common_physics
+	common_sound
 	graphics_interface
 	physics_interface
 	other
