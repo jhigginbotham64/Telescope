@@ -18,6 +18,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 #include <glm/glm.hpp>
 #include <shaderc/shaderc.hpp>
+#include <vk_mem_alloc.hpp>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
@@ -26,8 +27,8 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <SDL2/SDL_net.h>
 #include <SDL2/SDL_vulkan.h>
 
-#include <bullet/btBulletCollisionCommon.h>
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <iostream>
 #include <algorithm>
@@ -41,7 +42,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 #include "telescope.h"
 
-#define CLAMP(x, lo, hi)    ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+#define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
 const char *window_name = NULL;
 SDL_Window *win = NULL;
@@ -168,13 +169,35 @@ btCollisionDispatcher btcd(&btcc);
 btSequentialImpulseConstraintSolver btcs;
 btDiscreteDynamicsWorld btdw(&btcd, &btbpi, &btcs, &btcc);
 
-struct TS_PhysicsObject {
-  btCollisionObject * cobj;
-  btCollisionShape * cshape;
-  btRigidBody * rbody;
-  btDefaultMotionState * dmstate;
+TS_PhysicsObject::TS_PhysicsObject(btCollisionShape * s, float mass, bool isKinematic, bool isTrigger, const btVector3 &initPos, const btQuaternion &initRot)
+{
+  this->cshape = s;
+  this->cobj = nullptr;
+  this->rbody = nullptr;
+  this->dmstate = nullptr;
 
-  TS_PhysicsObject(btCollisionShape * s, float mass = 0.0f, bool isKinematic = false, bool isTrigger = false, const btVector3 &initPos = btVector3(0,0,0), const btQuaternion &initRot = btQuaternion(0,0,1,1))
+  btTransform t;
+  t.setIdentity();
+  t.setOrigin(initPos);
+  t.setRotation(initRot);
+
+  btVector3 locInertia(0,0,0);
+
+  if (mass != 0.0f)
+    this->cshape->calculateLocalInertia(mass, locInertia);
+
+  this->dmstate = new btDefaultMotionState(t);
+
+  btRigidBody::btRigidBodyConstructionInfo cinfo(mass, this->dmstate, this->cshape, locInertia);
+
+  this->rbody = new btRigidBody(cinfo);
+
+  this->cobj = this->rbody;
+
+  if (isTrigger)
+    this->cobj->setCollisionFlags(this->cobj->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+  if (isKinematic || isTrigger)
   {
     this->cshape = s;
     this->cobj = nullptr;
@@ -211,29 +234,37 @@ struct TS_PhysicsObject {
     btdw.addRigidBody(this->rbody);
   }
 
-  ~TS_PhysicsObject()
-  {
+  btdw.addRigidBody(this->rbody);
+}
+
+TS_PhysicsObject::~TS_PhysicsObject()
+{
     if (this->rbody)
     { 
       btdw.removeRigidBody(this->rbody);
       delete this->rbody;
     }
-    if (this->dmstate) delete this->dmstate;
-    if (this->cobj && this->cobj != this->rbody) 
+
+    if (this->dmstate)
+        delete this->dmstate;
+
+    if (this->cobj && this->cobj != this->rbody)
     {
       btdw.removeCollisionObject(this->cobj);
       delete this->cobj;
     }
-    if (this->cshape) delete this->cshape;
-  }
 
-  btTransform getTransform()
-  {
+    if (this->cshape)
+        delete this->cshape;
+}
+
+btTransform TS_PhysicsObject::getTransform()
+{
     btTransform t;
     this->dmstate->getWorldTransform(t);
     return t;
-  }
-};
+}
+
 
 std::map<int, TS_PhysicsObject*> physicsObjectsById;
 std::map<const void*, int> idsByPtr;
@@ -306,8 +337,8 @@ vk::Bool32 TS_VkGetSupportedDepthFormat()
   return false;
 }
 
-std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage, 
-                      vk::Flags<vk::MemoryPropertyFlagBits> properties, 
+std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, vk::Flags<vk::BufferUsageFlagBits> usage,
+                      vk::Flags<vk::MemoryPropertyFlagBits> properties,
                       vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
 {
   vk::BufferCreateInfo bufferInfo;
@@ -325,7 +356,7 @@ std::pair<vk::Buffer, vma::Allocation> TS_VmaCreateBuffer(vk::DeviceSize size, v
 }
 
 std::pair<vk::Image, vma::Allocation> TS_VmaCreateImage(uint32_t width, uint32_t height, vk::Format fmt, vk::ImageTiling tiling,
-                      vk::Flags<vk::ImageUsageFlagBits> usage, vk::Flags<vk::MemoryPropertyFlagBits> properties, 
+                      vk::Flags<vk::ImageUsageFlagBits> usage, vk::Flags<vk::MemoryPropertyFlagBits> properties,
                       vma::AllocationCreateFlags allocFlags = vma::AllocationCreateFlags())
 {
   vk::ImageCreateInfo imageInfo;
@@ -530,13 +561,13 @@ int TS_VkLoadTexture(const char * img)
       availableInds.push(i);
     }
   }
-  
+
   // max textures allocated
   if (availableInds.empty())
   {
     return -1;
   }
-  
+
   // key not present means texture not loaded yet
   if (!txtInds.count(std::string(img)))
   {
@@ -558,7 +589,7 @@ int TS_VkLoadTexture(const char * img)
         uint32_t temp, pixel;
         uint8_t r, g, b, a;
         pixel = *((uint32_t*)(((char*)srf->pixels) + i * fmt->BytesPerPixel));
-        
+
         temp = pixel & fmt->Rmask;
         temp = temp >> fmt->Rshift;
         temp = temp << fmt->Rloss;
@@ -596,7 +627,7 @@ int TS_VkLoadTexture(const char * img)
     SDL_UnlockSurface(srf);
     SDL_FreeSurface(srf);
 
-    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(pixels.size() * sizeof(uint8_t), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, vma::AllocationCreateFlagBits::eMapped);    
+    std::pair<vk::Buffer, vma::Allocation> pixelStaging = TS_VmaCreateBuffer(pixels.size() * sizeof(uint8_t), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent, vma::AllocationCreateFlagBits::eMapped);
     memcpy(al.getAllocationInfo(pixelStaging.second).pMappedData, (void*)pixels.data(), pixels.size() * sizeof(uint8_t));
     std::pair<vk::Image, vma::Allocation> pixelImg = TS_VmaCreateImage(wdth, hght, vk::Format::eR8G8B8A8Unorm, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
     TS_VkTransitionImageLayout(pixelImg.first, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
@@ -611,7 +642,7 @@ int TS_VkLoadTexture(const char * img)
     txts[txtInd].view = v;
     txts[txtInd].width = wdth;
     txts[txtInd].height = hght;
-    
+
     dscImgInfos[txtInd] = vk::DescriptorImageInfo();
     dscImgInfos[txtInd].sampler = nullptr;
     dscImgInfos[txtInd].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
@@ -821,9 +852,9 @@ void TS_VkQueuePresent()
 
 void TS_VkPopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& dbmci)
 {
-  dbmci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | 
-                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | 
-                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | 
+  dbmci.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
+                            vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
                             vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
   dbmci.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
                         vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance |
@@ -839,11 +870,11 @@ void TS_VkCreateInstance()
   SDL_Vulkan_GetInstanceExtensions(win, &extensionCount, nullptr);
   std::vector<const char *> extensionNames(extensionCount);
   SDL_Vulkan_GetInstanceExtensions(win, &extensionCount, extensionNames.data());
-  
+
   vk::ApplicationInfo appInfo {
-    window_name, 
-    VK_MAKE_VERSION(0, 1, 2), 
-    "Telescope", 
+    window_name,
+    VK_MAKE_VERSION(0, 1, 2),
+    "Telescope",
     VK_MAKE_VERSION(0, 1, 2),
     VK_API_VERSION_1_2
   };
@@ -867,7 +898,7 @@ void TS_VkCreateInstance()
     ici.ppEnabledLayerNames = validationLayers.data();
 
     TS_VkPopulateDebugMessengerCreateInfo(dbmci);
-    
+
     ici.pNext = &dbmci;
   }
 
@@ -918,20 +949,20 @@ void TS_VkCreateDevice()
   const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_EXT_ROBUSTNESS_2_EXTENSION_NAME, VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME};
   const float queue_priority[] = { 1.0f };
   float queuePriority = queue_priority[0];
-  
+
   std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
-  
+
   vk::DeviceQueueCreateInfo gr {
     vk::DeviceQueueCreateFlags(),
-    graphicsQueueFamilyIndex, 
-    1, 
+    graphicsQueueFamilyIndex,
+    1,
     &queuePriority
   };
 
   vk::DeviceQueueCreateInfo pr {
     vk::DeviceQueueCreateFlags(),
-    presentQueueFamilyIndex, 
-    1, 
+    presentQueueFamilyIndex,
+    1,
     &queuePriority
   };
 
@@ -972,10 +1003,10 @@ void TS_VkCreateDevice()
 
 void TS_VmaCreateAllocator()
 {
-  vma::VulkanFunctions vf {
+  vma::VulkanFunctions vf = vma::VulkanFunctions(
     VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr,
     VULKAN_HPP_DEFAULT_DISPATCHER.vkGetDeviceProcAddr
-  };
+  );
 
   vma::AllocatorCreateInfo aci = {};
   aci.vulkanApiVersion = VK_API_VERSION_1_0;
@@ -989,10 +1020,10 @@ void TS_VmaCreateAllocator()
 
 void TS_VmaCreateBuffers()
 {
-  vertexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc, 
+  vertexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
                                     vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
                                     vma::AllocationCreateFlagBits::eMapped);
-  indexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc, 
+  indexStaging = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferSrc,
                                     vk::MemoryPropertyFlagBits::eHostCoherent | vk::MemoryPropertyFlagBits::eHostVisible,
                                     vma::AllocationCreateFlagBits::eMapped);
   vertexBuffer = TS_VmaCreateBuffer(defaultBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
@@ -1017,7 +1048,7 @@ void TS_VkCreateSwapchain()
   {
     imageCount = surfaceCapabilities.maxImageCount;
   }
-  
+
   vk::SwapchainCreateInfoKHR createInfo;
   createInfo.surface = srf;
   createInfo.minImageCount = surfaceCapabilities.minImageCount;
@@ -1060,7 +1091,7 @@ void TS_VkSetupDepthStencil()
   depthImage = TS_VmaCreateImage(swapchainSize.width, swapchainSize.height,
                   vk::Format::eD32SfloatS8Uint, vk::ImageTiling::eOptimal,
                   vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal);
-  
+
   depthImageView = TS_VkCreateImageView(depthImage.first, vk::Format::eD32SfloatS8Uint, vk::ImageAspectFlagBits::eDepth);
 }
 
@@ -1127,23 +1158,23 @@ void TS_VkCreateRenderPass()
   rp = dev.createRenderPass(renderPassInfo);
 }
 
-vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize = false)
+vk::ShaderModule TS_VkCreateShaderModule(std::string code, shaderc_shader_kind kind, bool optimize)
 {
   shaderc::Compiler compiler;
   shaderc::CompileOptions options;
-  
+
   if (optimize) options.SetOptimizationLevel(shaderc_optimization_level_performance);
-  
+
   shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
                                 code, kind, "shader_src", options);
-  
+
   if (module.GetCompilationStatus() != shaderc_compilation_status_success) {
     std::cerr << module.GetErrorMessage();
     return nullptr;
   }
 
   std::vector<uint32_t> spv = {module.cbegin(), module.cend()};
-  
+
   vk::ShaderModuleCreateInfo createInfo;
   createInfo.codeSize = spv.size() * sizeof(uint32_t);
   createInfo.pCode = reinterpret_cast<const uint32_t*>(spv.data());
@@ -1273,7 +1304,7 @@ void TS_VkCreateTrianglePipeline()
   vertShaderStageInfo.stage = vk::ShaderStageFlagBits::eVertex;
   vertShaderStageInfo.module = vertShaderModule;
   vertShaderStageInfo.pName = "main";
-  
+
   vk::PipelineShaderStageCreateInfo fragShaderStageInfo;
   fragShaderStageInfo.stage = vk::ShaderStageFlagBits::eFragment;
   fragShaderStageInfo.module = fragShaderModule;
@@ -1378,12 +1409,12 @@ void TS_VkCreateFramebuffers()
       swapchainImageViews[i],
       // depthImageView
     };
-    
+
     vk::FramebufferCreateInfo framebufferInfo {
       vk::FramebufferCreateFlags(),
       rp, attachments, swapchainSize.width, swapchainSize.height, 1
     };
-    
+
     swapchainFramebuffers.push_back(dev.createFramebuffer(framebufferInfo));
   }
 }
@@ -1439,7 +1470,7 @@ void TS_VkInit()
   TS_VkCreateFences();
 }
 
-void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic = false)
+void TS_BtAddRigidBox(int id, float hx, float hy, float hz, float m, float px, float py, float pz, bool isKinematic)
 {
   TS_PhysicsObject * g = new TS_PhysicsObject(new btBoxShape(btVector3(hy, hx, hz)), m, isKinematic, false, btVector3(px, py, pz));
   physicsObjectsById[id] = g;
@@ -1513,22 +1544,22 @@ void TS_BtStepSimulation()
     // get the manifold
     btPersistentManifold* man = btcd.getManifoldByIndexInternal(i);
 
-    // ignore manifolds that have 
+    // ignore manifolds that have
     // no contact points.
     if (man->getNumContacts() > 0) {
       // get the two rigid bodies involved in the collision
       const void* b0 = static_cast<const void*>(man->getBody0());
       const void* b1 = static_cast<const void*>(man->getBody1());
-    
+
       // always create the pair in a predictable order
       // (use the pointer value..)
       bool const swapped = b0 > b1;
       const void* bA = swapped ? b1 : b0;
       const void* bB = swapped ? b0 : b1;
-      
+
       // create the pair
       CollisionPair newPair = std::make_pair(bA, bB);
-      
+
       // insert the pair into the current list
       newPairs.insert(newPair);
 
@@ -1551,12 +1582,12 @@ void TS_BtStepSimulation()
 
   // this handy function gets the difference beween
   // two sets. It takes the difference between
-  // collision pairs from the last update, and this 
+  // collision pairs from the last update, and this
   // update and pushes them into the removed pairs list
   std::set_difference( oldPairs.begin(), oldPairs.end(),
   newPairs.begin(), newPairs.end(),
   std::inserter(removedPairs, removedPairs.begin()));
-  
+
   // iterate through all of the removed pairs
   // sending separation events for them
   for (CollisionPairs::const_iterator it = removedPairs.begin(); it != removedPairs.end(); ++it) {
@@ -1566,7 +1597,7 @@ void TS_BtStepSimulation()
     t.colliding = false;
     collisions.push(t);
   }
-  
+
   // in the next iteration we'll want to
   // compare against the pairs we found
   // in this iteration
@@ -1773,7 +1804,7 @@ void TS_BtQuit()
 }
 
 void TS_Init(const char * ttl, int wdth, int hght)
-{ 
+{
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
   {
     std::cerr << "Unable to initialize SDL: " << TS_SDLGetError() << std::endl;
@@ -1788,7 +1819,7 @@ void TS_Init(const char * ttl, int wdth, int hght)
   int mix_init_flags = MIX_INIT_FLAC | MIX_INIT_MP3 | MIX_INIT_OGG;
   if ((Mix_Init(mix_init_flags) & mix_init_flags) != mix_init_flags)
   {
-    std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_SDLGetError() << std::endl; 
+    std::cerr << "Failed to initialise audio mixer properly. All sounds may not play correctly." << std::endl << TS_SDLGetError() << std::endl;
   }
 
   if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024) != 0)
@@ -1809,7 +1840,7 @@ void TS_Init(const char * ttl, int wdth, int hght)
   {
     SDL_SetWindowMinimumSize(win, wdth, hght);
   }
-  
+
   TS_VkInit();
 
   TS_BtInit();
@@ -1858,7 +1889,7 @@ void TS_VkEndDrawPass(float r, float g, float b, float a)
   TS_VkQueuePresent();
 }
 
-void TS_PlaySound(const char* sound_file, int loops=0, int ticks=-1)
+void TS_PlaySound(const char* sound_file, int loops, int ticks)
 {
   Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);
   if (sample == NULL)
