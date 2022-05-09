@@ -12,12 +12,12 @@
 
 #pragma once
 
+#include <include/physics_object.hpp>
+#include <include/collision_event.hpp>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <include/physics_object.hpp>
-#include <include/collision_event.hpp>
 
 /// \brief add a rigid, axis-aligned collision box to the state
 /// \param id: id of the newly created object

@@ -32,7 +32,7 @@
 //
 
 #include <test/test.hpp>
-#include <telescope.h>
+#include <telescope.hpp>
 
 // each individual test should be its own main, this is required by CMakes CTest
 int main()

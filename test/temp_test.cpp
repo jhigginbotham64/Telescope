@@ -3,7 +3,7 @@
 // Created on 09.05.22 by clem (mail@clemens-cords.com)
 //
 
-#include <src/src.cpp>
+#include <telescope.hpp>
 
 int main()
 {}

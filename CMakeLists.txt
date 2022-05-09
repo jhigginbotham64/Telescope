@@ -84,7 +84,7 @@ add_library(telescope SHARED
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
-  CXX_STANDARD 14
+  CXX_STANDARD 20
   MACOSX_RPATH 1
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   POSITION_INDEPENDENT_CODE ON
@@ -109,7 +109,7 @@ target_link_libraries(telescope PUBLIC
 
 ### TESTS ####
 
-option(BUILD_TESTS  "build telescope unit tests" ON)
+option(BUILD_TESTS "build telescope unit tests" ON)
 if (BUILD_TESTS)
 
     # \brief: declare a test
@@ -142,9 +142,6 @@ if (BUILD_TESTS)
     endfunction()
 
     #declare_test(template_test)
-
-    # TODO
-    declare_test(temp_test)
 
     declare_test(test_common)
     declare_test(test_bullet)

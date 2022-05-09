@@ -3,7 +3,7 @@
 //
 
 #include <test/test.hpp>
-#include <src/src.cpp>
+#include <telescope.hpp>
 
 int main()
 {
