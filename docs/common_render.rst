@@ -8,17 +8,16 @@ Most of the time, we will interface with Telescope through its public C shared l
 
    #include <telescope.h>
 
-   // TODO: I have no idea how to use telescope, please edit this
    int main()
    {
        TS_Init("<window title>", 500, 500);
 
        while (something)
        {
-           TS_VkBeginDrawPass
-           TS_VkCmdClearColorImage
-           // draw sprites here using TS_VkCmdDrawRect / TS_VkCmdDrawSprite
-           TS_VkEndDrawPass
+           TS_VkBeginDrawPass();
+           // draw sprites here using TS_VkCmdDraw* commands
+           // manipulate physics using TS_Bt* commands
+           TS_VkEndDrawPass(0, 0, 0, 1);
        }
 
        TS_Quit();
@@ -49,15 +48,7 @@ This always begins with :code:`TS_VkBeginDrawPass`, and ends with :code:`TS_VkEn
 
 ---------------------
 
-We can clear the entire screen with a solid color, which we need to do at the start of each frame. Otherwise, things rendered last frame will still be displayed. To clear the screen, we use:
-
-.. doxygenfunction:: TS_VkCmdClearColorImage
-
----------------------
-
-Of course, we don't just want to draw a solid color. <explain how to create sprites and textures here>.
-
-Then, we can render them using:
+Of course, we don't just want to draw a solid color. You can draw things on the screen using the :code:`TS_VkCmdDraw*` functions.
 
 .. doxygenfunction:: TS_VkCmdDrawRect
 .. doxygenfunction:: TS_VkCmdDrawSprite

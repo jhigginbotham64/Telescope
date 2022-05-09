@@ -115,7 +115,7 @@ vk::ImageView TS_VkCreateImageView(vk::Image img, vk::Format fmt, vk::ImageAspec
 /// \returns true if format supported, false otherwise
 vk::Bool32 TS_VkGetSupportedDepthFormat();
 
-/// \brief TODO: idk what this does
+/// \brief create a vma buffer
 /// \param size: vulkan device size
 /// \param usage: vulkan buffer usage flags
 /// \param properties: vulkan memory properties
@@ -165,7 +165,7 @@ void TS_VkTransitionImageLayout(vk::Image img, vk::ImageLayout oldLayout, vk::Im
 /// \param hght: height of the TODO: buffer or image?
 void TS_VkCopyBufferToImage(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32_t hght);
 
-/// \brief TODO idk what this does
+/// \brief write updated descriptor set info to device
 void TS_VkWriteDescriptorSet();
 
 /// \brief load texture

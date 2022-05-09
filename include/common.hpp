@@ -70,6 +70,6 @@ float TS_NTCV(int y, int h);
 /// \returns rect as 4-array
 std::array<float, 4> TS_NTCRect(int x, int y, int w, int h, int w2, int h2);
 
-/// \brief TODO: idk what this does
+/// \brief add the next 4 indices to the index buffer, followed by a primitive restart (0xffffffff)
 void TS_Add4Indices();
 
