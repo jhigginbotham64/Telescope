@@ -43,7 +43,7 @@ if read_the_docs_build:
 
 # -- Project information -----------------------------------------------------
 
-project = 'telescope'
+project = 'src'
 copyright = '2022, Joshua Higginbotham'
 author = 'Simon Brand, Modified by Clemapfel'
 
