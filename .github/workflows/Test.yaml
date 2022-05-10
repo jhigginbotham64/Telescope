@@ -43,22 +43,22 @@ jobs:
         name: libtelescope-pretest
         path: lib/libtelescope.so
         if-no-files-found: error
-  test:
-    name: Test the built shared library
-    needs: [build]
-    if: >- 
-      ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: 🏁 Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: 'true'
-    - name: 🆒 Download dists
-      uses: actions/download-artifact@v3
-      with:
-        name: libtelescope-pretest
-        path: lib
-    - name: Integration tests
-      run: echo TODO
+  # test-built-dist:
+  #   name: Test the built shared library
+  #   needs: [build]
+  #   if: >- 
+  #     ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
+  #     (github.event_name == 'push' && github.event.ref == 'refs/heads/main') }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: 🏁 Checkout
+  #     uses: actions/checkout@v3
+  #     with:
+  #       submodules: 'true'
+  #   - name: 🆒 Download dists
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: libtelescope-pretest
+  #       path: lib
+  #   - name: Integration tests
+  #     run: echo TODO
