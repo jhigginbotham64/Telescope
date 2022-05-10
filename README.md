@@ -23,7 +23,7 @@ To build Telescope from source, the following dependencies need to be met:
   - also available as `libbullet-dev`
 + [Vulkan](https://www.vulkan.org/tools#download-these-essential-development-tools) via [LunarG](https://vulkan.lunarg.com/sdk/home)
   - also available as [`libvulkan-dev`](https://github.com/KhronosGroup/Vulkan-Loader) recommended for non Ubuntu development.
-  - Or as the `vulkan-sdk` on Ubuntu
+  - Or as the `vulkan-sdk` on e.g. Ubuntu 20.04
     ```
     wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
     sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
