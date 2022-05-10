@@ -18,7 +18,7 @@
 
 import subprocess, os
 
-def configureDoxyfile(input_dir, output_dir):
+bdef configureDoxyfile(input_dir, output_dir):
 
 	with open('Doxyfile.in', 'r') as file :
 		filedata = file.read()
