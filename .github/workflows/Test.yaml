@@ -32,7 +32,7 @@ jobs:
         cmake .. -DSHADERC_LIB_DIR=/usr/lib/x86_64-linux-gnu -DCMAKE_INSTALL_PREFIX=..
         make clean && make install
     - name: Unit tests
-      run: ctest -N && ctest -V
+      run: cd build && ctest -N && ctest -V
     # Only upload the build and use it in the subsequent job if this is a PR, push to _Main_ or a dispatch
     - name: 🆙 Upload compiled source
       if: >- 
