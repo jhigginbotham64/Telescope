@@ -18,27 +18,12 @@
 
 import subprocess, os
 
-bdef configureDoxyfile(input_dir, output_dir):
-
-	with open('Doxyfile.in', 'r') as file :
-		filedata = file.read()
-
-	filedata = filedata.replace('@DOXYGEN_INPUT_DIR@', input_dir)
-	filedata = filedata.replace('@DOXYGEN_OUTPUT_DIR@', output_dir)
-	
-	with open('Doxyfile', 'w') as file:
-		file.write(filedata)
-
-# Check if we're running on Read the Docs' servers
-read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
-
+# read the docs
 breathe_projects = {}
-if read_the_docs_build:
-	input_dir = '../src'
-	output_dir = '.'
-	configureDoxyfile(input_dir, output_dir)
-	subprocess.call('doxygen', shell=True)
-	breathe_projects['telescope'] = output_dir + '/xml'
+if os.environ.get('READTHEDOCS', None) == 'True':
+	output_dir = '.doxygen'
+	subprocess.call('cd docs; doxygen; cd ..', shell=True)
+	breathe_projects['telescope'] = '.doxygen/xml'
 
 
 # -- Project information -----------------------------------------------------
