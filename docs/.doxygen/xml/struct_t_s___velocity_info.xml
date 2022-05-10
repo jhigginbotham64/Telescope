@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="struct_t_s___velocity_info" kind="struct" language="C++" prot="public">
+    <compoundname>TS_VelocityInfo</compoundname>
+    <includes refid="physics__object_8hpp" local="no">physics_object.hpp</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_t_s___velocity_info_1a93f34d203aa3a3923eacec24f210c8de" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float TS_VelocityInfo::x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <briefdescription>
+<para>velocity along x-axis </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="29" column="11" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___velocity_info_1a032bfef1a2af2dd57f6ea95f748d5fbd" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float TS_VelocityInfo::y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <briefdescription>
+<para>velocity along y-axis </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="32" column="11" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___velocity_info_1aed15085e23345b02db123f15cf03a7c0" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float TS_VelocityInfo::z</definition>
+        <argsstring></argsstring>
+        <name>z</name>
+        <briefdescription>
+<para>velocity along z-axis </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="35" column="11" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>velocity information, describes velocity vector in 3D space </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="26" column="1" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="27" bodyend="36"/>
+    <listofallmembers>
+      <member refid="struct_t_s___velocity_info_1a93f34d203aa3a3923eacec24f210c8de" prot="public" virt="non-virtual"><scope>TS_VelocityInfo</scope><name>x</name></member>
+      <member refid="struct_t_s___velocity_info_1a032bfef1a2af2dd57f6ea95f748d5fbd" prot="public" virt="non-virtual"><scope>TS_VelocityInfo</scope><name>y</name></member>
+      <member refid="struct_t_s___velocity_info_1aed15085e23345b02db123f15cf03a7c0" prot="public" virt="non-virtual"><scope>TS_VelocityInfo</scope><name>z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

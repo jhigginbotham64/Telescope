@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="struct_t_s___physics_object" kind="struct" language="C++" prot="public">
+    <compoundname>TS_PhysicsObject</compoundname>
+    <includes refid="physics__object_8hpp" local="no">physics_object.hpp</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_t_s___physics_object_1a05cfd3ecc8037543672d87b489652ce3" prot="public" static="no" mutable="no">
+        <type>btCollisionObject *</type>
+        <definition>btCollisionObject* TS_PhysicsObject::cobj</definition>
+        <argsstring></argsstring>
+        <name>cobj</name>
+        <briefdescription>
+<para>internal bullet collision object </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="43" column="23" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___physics_object_1a8438c9ab8390f9beb73de30b7e676a76" prot="public" static="no" mutable="no">
+        <type>btCollisionShape *</type>
+        <definition>btCollisionShape* TS_PhysicsObject::cshape</definition>
+        <argsstring></argsstring>
+        <name>cshape</name>
+        <briefdescription>
+<para>collision shape </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="46" column="22" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___physics_object_1ac4872f391cafc1b9b7c4fd6a15fbc04d" prot="public" static="no" mutable="no">
+        <type>btRigidBody *</type>
+        <definition>btRigidBody* TS_PhysicsObject::rbody</definition>
+        <argsstring></argsstring>
+        <name>rbody</name>
+        <briefdescription>
+<para>rigid body </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="49" column="17" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___physics_object_1ace399a7649e242c3bb080092b3b42e89" prot="public" static="no" mutable="no">
+        <type>btDefaultMotionState *</type>
+        <definition>btDefaultMotionState* TS_PhysicsObject::dmstate</definition>
+        <argsstring></argsstring>
+        <name>dmstate</name>
+        <briefdescription>
+<para>default motion state </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="52" column="26" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="struct_t_s___physics_object_1ae9b64a60548f1aa9b2580ea2cb4ddfd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TS_PhysicsObject::TS_PhysicsObject</definition>
+        <argsstring>(btCollisionShape *s, float mass=0.0f, bool isKinematic=false, bool isTrigger=false, const btVector3 &amp;initPos=btVector3(0, 0, 0), const btQuaternion &amp;initRot=btQuaternion(0, 0, 1, 1))</argsstring>
+        <name>TS_PhysicsObject</name>
+        <param>
+          <type>btCollisionShape *</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>mass</declname>
+          <defval>0.0f</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>isKinematic</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>isTrigger</declname>
+          <defval>false</defval>
+        </param>
+        <param>
+          <type>const btVector3 &amp;</type>
+          <declname>initPos</declname>
+          <defval>btVector3(0, 0, 0)</defval>
+        </param>
+        <param>
+          <type>const btQuaternion &amp;</type>
+          <declname>initRot</declname>
+          <defval>btQuaternion(0, 0, 1, 1)</defval>
+        </param>
+        <briefdescription>
+<para>construct the object </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>bullet collision shape </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mass</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] mass </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>isKinematic</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] is a kinematic object </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>isTrigger</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] is a trigger object </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initPos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] initial position in 3d space </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>initRot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] initial quaternion </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="61" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="struct_t_s___physics_object_1ac6ffc8aa393072764b894e29a7e54ffb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>TS_PhysicsObject::~TS_PhysicsObject</definition>
+        <argsstring>()</argsstring>
+        <name>~TS_PhysicsObject</name>
+        <briefdescription>
+<para>destructor </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="69" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="struct_t_s___physics_object_1a3c44d00c9a6f848cb22983ae2fe7b627" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>btTransform</type>
+        <definition>btTransform TS_PhysicsObject::getTransform</definition>
+        <argsstring>()</argsstring>
+        <name>getTransform</name>
+        <briefdescription>
+<para>access transforms </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>btTransform object </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="73" column="17"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>proxy representing a bullet physics-enabled object </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/clem/Workspace/Telescope/include/physics_object.hpp" line="39" column="1" bodyfile="/home/clem/Workspace/Telescope/include/physics_object.hpp" bodystart="40" bodyend="74"/>
+    <listofallmembers>
+      <member refid="struct_t_s___physics_object_1a05cfd3ecc8037543672d87b489652ce3" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>cobj</name></member>
+      <member refid="struct_t_s___physics_object_1a8438c9ab8390f9beb73de30b7e676a76" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>cshape</name></member>
+      <member refid="struct_t_s___physics_object_1ace399a7649e242c3bb080092b3b42e89" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>dmstate</name></member>
+      <member refid="struct_t_s___physics_object_1a3c44d00c9a6f848cb22983ae2fe7b627" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>getTransform</name></member>
+      <member refid="struct_t_s___physics_object_1ac4872f391cafc1b9b7c4fd6a15fbc04d" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>rbody</name></member>
+      <member refid="struct_t_s___physics_object_1ae9b64a60548f1aa9b2580ea2cb4ddfd8" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>TS_PhysicsObject</name></member>
+      <member refid="struct_t_s___physics_object_1ac6ffc8aa393072764b894e29a7e54ffb" prot="public" virt="non-virtual"><scope>TS_PhysicsObject</scope><name>~TS_PhysicsObject</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

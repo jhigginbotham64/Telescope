@@ -1,0 +1,109 @@
+\hypertarget{struct_t_s___vertex}{}\doxysection{TS\+\_\+\+Vertex Struct Reference}
+\label{struct_t_s___vertex}\index{TS\_Vertex@{TS\_Vertex}}
+
+
+vertex object  
+
+
+
+
+{\ttfamily \#include $<$vertex.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{struct_t_s___vertex_a4418588b062557d2ff329c3a3275ecc5}{TS\+\_\+\+Vertex}} (float x, float y, float r, float g, float b, float a, float u=0, float v=0, int t=-\/1)
+\begin{DoxyCompactList}\small\item\em ctor \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static vk\+::\+Vertex\+Input\+Binding\+Description \mbox{\hyperlink{struct_t_s___vertex_a50e481066ae92784a5d6a84085be916f}{get\+Binding\+Description}} ()
+\begin{DoxyCompactList}\small\item\em get vertices vulkan binding description \end{DoxyCompactList}\item 
+static std\+::array$<$ vk\+::\+Vertex\+Input\+Attribute\+Description, 4 $>$ \mbox{\hyperlink{struct_t_s___vertex_a7f2016502f0e68fcf76627691ea74ef3}{get\+Attribute\+Descriptions}} ()
+\begin{DoxyCompactList}\small\item\em get vertices vulkan attribute description \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_t_s___vertex_ab0ecfc0eb8a8b4a4b2be6f74e3088669}\label{struct_t_s___vertex_ab0ecfc0eb8a8b4a4b2be6f74e3088669}} 
+glm\+::vec2 \mbox{\hyperlink{struct_t_s___vertex_ab0ecfc0eb8a8b4a4b2be6f74e3088669}{pos}}
+\begin{DoxyCompactList}\small\item\em position in 2D space \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{struct_t_s___vertex_a5aa262092a3d69215597906fddf0d852}\label{struct_t_s___vertex_a5aa262092a3d69215597906fddf0d852}} 
+glm\+::vec2 \mbox{\hyperlink{struct_t_s___vertex_a5aa262092a3d69215597906fddf0d852}{uv}}
+\begin{DoxyCompactList}\small\item\em uv coordinate \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{struct_t_s___vertex_a8e85d362487672018a59641de8ec6ad6}\label{struct_t_s___vertex_a8e85d362487672018a59641de8ec6ad6}} 
+glm\+::vec4 \mbox{\hyperlink{struct_t_s___vertex_a8e85d362487672018a59641de8ec6ad6}{col}}
+\begin{DoxyCompactList}\small\item\em color, in RGBA \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{struct_t_s___vertex_a70beb5dad3538075d1a5868f0a158fee}\label{struct_t_s___vertex_a70beb5dad3538075d1a5868f0a158fee}} 
+int \mbox{\hyperlink{struct_t_s___vertex_a70beb5dad3538075d1a5868f0a158fee}{tex}}
+\begin{DoxyCompactList}\small\item\em texture id \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+vertex object 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{struct_t_s___vertex_a4418588b062557d2ff329c3a3275ecc5}\label{struct_t_s___vertex_a4418588b062557d2ff329c3a3275ecc5}} 
+\index{TS\_Vertex@{TS\_Vertex}!TS\_Vertex@{TS\_Vertex}}
+\index{TS\_Vertex@{TS\_Vertex}!TS\_Vertex@{TS\_Vertex}}
+\doxysubsubsection{\texorpdfstring{TS\_Vertex()}{TS\_Vertex()}}
+{\footnotesize\ttfamily TS\+\_\+\+Vertex\+::\+TS\+\_\+\+Vertex (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{float}]{r,  }\item[{float}]{g,  }\item[{float}]{b,  }\item[{float}]{a,  }\item[{float}]{u = {\ttfamily 0},  }\item[{float}]{v = {\ttfamily 0},  }\item[{int}]{t = {\ttfamily -\/1} }\end{DoxyParamCaption})}
+
+
+
+ctor 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & x position \\
+\hline
+{\em y} & y position \\
+\hline
+{\em r} & red component \\
+\hline
+{\em g} & green component \\
+\hline
+{\em b} & blue component \\
+\hline
+{\em a} & transparency component \\
+\hline
+{\em u} & u-\/coordinate \\
+\hline
+{\em v} & v-\/coordinate \\
+\hline
+{\em t} & texture id \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{struct_t_s___vertex_a7f2016502f0e68fcf76627691ea74ef3}\label{struct_t_s___vertex_a7f2016502f0e68fcf76627691ea74ef3}} 
+\index{TS\_Vertex@{TS\_Vertex}!getAttributeDescriptions@{getAttributeDescriptions}}
+\index{getAttributeDescriptions@{getAttributeDescriptions}!TS\_Vertex@{TS\_Vertex}}
+\doxysubsubsection{\texorpdfstring{getAttributeDescriptions()}{getAttributeDescriptions()}}
+{\footnotesize\ttfamily static std\+::array$<$vk\+::\+Vertex\+Input\+Attribute\+Description, 4$>$ TS\+\_\+\+Vertex\+::get\+Attribute\+Descriptions (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+get vertices vulkan attribute description 
+
+\begin{DoxyReturn}{Returns}
+4-\/array of descriptions 
+\end{DoxyReturn}
+\mbox{\Hypertarget{struct_t_s___vertex_a50e481066ae92784a5d6a84085be916f}\label{struct_t_s___vertex_a50e481066ae92784a5d6a84085be916f}} 
+\index{TS\_Vertex@{TS\_Vertex}!getBindingDescription@{getBindingDescription}}
+\index{getBindingDescription@{getBindingDescription}!TS\_Vertex@{TS\_Vertex}}
+\doxysubsubsection{\texorpdfstring{getBindingDescription()}{getBindingDescription()}}
+{\footnotesize\ttfamily static vk\+::\+Vertex\+Input\+Binding\+Description TS\+\_\+\+Vertex\+::get\+Binding\+Description (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+get vertices vulkan binding description 
+
+\begin{DoxyReturn}{Returns}
+description 
+\end{DoxyReturn}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/clem/\+Workspace/\+Telescope/include/vertex.\+hpp\end{DoxyCompactItemize}

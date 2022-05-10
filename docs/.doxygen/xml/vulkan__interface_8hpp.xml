@@ -1,0 +1,1992 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="vulkan__interface_8hpp" kind="file" language="C++">
+    <compoundname>vulkan_interface.hpp</compoundname>
+    <includes local="no">vulkan/vulkan.hpp</includes>
+    <includes local="no">vk_mem_alloc.hpp</includes>
+    <includes local="no">shaderc/shaderc.hpp</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>shaderc/shaderc.hpp</label>
+      </node>
+      <node id="3">
+        <label>vk_mem_alloc.hpp</label>
+      </node>
+      <node id="1">
+        <label>/home/clem/Workspace/Telescope/include/vulkan_interface.hpp</label>
+        <link refid="vulkan__interface_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>vulkan/vulkan.hpp</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="struct_t_s___texture" prot="public">TS_Texture</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a19d31cb98fb220a77dff2fafcca367d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCmdDrawRect</definition>
+        <argsstring>(float r, float g, float b, float alpha, float x, float y, float width, float height)</argsstring>
+        <name>TS_VkCmdDrawRect</name>
+        <param>
+          <type>float</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>alpha</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+<para>draw a rectangle </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>red component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>g</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>green component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>blue component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alpha</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>transparency component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>x-position of the upper left corner of the rectangle </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>y-position of the upper left corner of the rectangle </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size along the x-dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size along the y-dimension </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="43" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="43" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a5fb5882fa35ff43214441a3717c0b0e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCmdDrawSprite</definition>
+        <argsstring>(const char *image_path, float r, float g, float b, float alpha, int region_x, int region_y, int region_width, int region_height, int cell_w, int cell_h, int cell_index_i, int cell_index_j, float position_x, float position_y, float scale_x, float scale_y)</argsstring>
+        <name>TS_VkCmdDrawSprite</name>
+        <param>
+          <type>const char *</type>
+          <declname>image_path</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>alpha</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>region_x</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>region_y</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>region_width</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>region_height</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_w</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_h</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_index_i</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>cell_index_j</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>position_x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>position_y</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>scale_x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>scale_y</declname>
+        </param>
+        <briefdescription>
+<para>draw a sprite </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>image_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>path to image on disk </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>red component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>g</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>green component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>blue component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alpha</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>transparency component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>region_x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>x-coordinate of the top left corner of the subregion </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>region_y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>y-coordinate of the top left corner of the subregion </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>region_width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of the subregion along the x-dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>region_height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size of the subregion along the x-dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cell_w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>width of each cell of the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cell_h</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>height of each cell of the grid </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cell_index_i</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>x-index of the cell </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>cell_index_j</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>y-index of the cell </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>position_x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>x-coordinate of the top left corner of the sprite </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>position_y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>y-coordinate of the top left corner of the sprite </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>scale_x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>scale along the x-dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>scale_y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>scale along the y-dimension </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="67" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="67" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ad1a67ad6048f881ebda512b372d5be21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCmdClearColorImage</definition>
+        <argsstring>(float r, float g, float b, float alpha)</argsstring>
+        <name>TS_VkCmdClearColorImage</name>
+        <param>
+          <type>float</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>alpha</declname>
+          <defname>a</defname>
+        </param>
+        <briefdescription>
+<para>clear the render window with a color </para>
+        </briefdescription>
+        <detaileddescription>
+<para>clear an image with a color</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>red component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>g</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>green component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>blue component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alpha</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>transparency component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="81" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="81" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a1c5b01aa94e9d7eb50ce4f5d51828d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkBeginDrawPass</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkBeginDrawPass</name>
+        <briefdescription>
+<para>start the drawing pass </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="84" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="84" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a173400b76136b9f67b37b03538ee8f33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkEndDrawPass</definition>
+        <argsstring>(float r, float g, float b, float alpha)</argsstring>
+        <name>TS_VkEndDrawPass</name>
+        <param>
+          <type>float</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>alpha</declname>
+          <defname>a</defname>
+        </param>
+        <briefdescription>
+<para>finish the drawing pass by rendering a solid color </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>red component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>g</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>green component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>blue component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alpha</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>transparency component of the color (in RGBA) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="91" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="91" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a7a413ee7ac3e18f004827766f144d1ac" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>VKAPI_ATTR vk::Bool32 VKAPI_CALL</type>
+        <definition>static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback</definition>
+        <argsstring>(vk::DebugUtilsMessageSeverityFlagBitsEXT messageSeverity, vk::DebugUtilsMessageTypeFlagsEXT messageType, const vk::DebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)</argsstring>
+        <name>debugCallback</name>
+        <param>
+          <type>vk::DebugUtilsMessageSeverityFlagBitsEXT</type>
+          <declname>messageSeverity</declname>
+        </param>
+        <param>
+          <type>vk::DebugUtilsMessageTypeFlagsEXT</type>
+          <declname>messageType</declname>
+        </param>
+        <param>
+          <type>const vk::DebugUtilsMessengerCallbackDataEXT *</type>
+          <declname>pCallbackData</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>pUserData</declname>
+        </param>
+        <briefdescription>
+<para>trigger debug callback </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>messageSeverity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>severity </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>messageType</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>type of message </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pCallbackData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan supplied callback data </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>pUserData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>user supplied callback data </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>always false </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="101" column="41" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="101" declcolumn="41"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a516f85dd5aed2429352db0b0ecc71d3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vk::ImageView</type>
+        <definition>vk::ImageView TS_VkCreateImageView</definition>
+        <argsstring>(vk::Image img, vk::Format fmt, vk::ImageAspectFlagBits flags)</argsstring>
+        <name>TS_VkCreateImageView</name>
+        <param>
+          <type>vk::Image</type>
+          <declname>img</declname>
+        </param>
+        <param>
+          <type>vk::Format</type>
+          <declname>fmt</declname>
+        </param>
+        <param>
+          <type>vk::ImageAspectFlagBits</type>
+          <declname>flags</declname>
+        </param>
+        <briefdescription>
+<para>create vulkan image view </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>img</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan image </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan format </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>flags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>image aspect flags </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>created image view </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="112" column="15" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="112" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a7008ee7f6f80e1ac4b1d219dafd353d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vk::Bool32</type>
+        <definition>vk::Bool32 TS_VkGetSupportedDepthFormat</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkGetSupportedDepthFormat</name>
+        <briefdescription>
+<para>get vulkan supported depth format </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if format supported, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="116" column="12" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="116" declcolumn="12"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a4ee2a7e26019a7478cd073f10cd5b20b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::pair&lt; vk::Buffer, vma::Allocation &gt;</type>
+        <definition>std::pair&lt;vk::Buffer, vma::Allocation&gt; TS_VmaCreateBuffer</definition>
+        <argsstring>(vk::DeviceSize size, vk::Flags&lt; vk::BufferUsageFlagBits &gt; usage, vk::Flags&lt; vk::MemoryPropertyFlagBits &gt; properties, vma::AllocationCreateFlags allocFlags=vma::AllocationCreateFlags())</argsstring>
+        <name>TS_VmaCreateBuffer</name>
+        <param>
+          <type>vk::DeviceSize</type>
+          <declname>size</declname>
+        </param>
+        <param>
+          <type>vk::Flags&lt; vk::BufferUsageFlagBits &gt;</type>
+          <declname>usage</declname>
+        </param>
+        <param>
+          <type>vk::Flags&lt; vk::MemoryPropertyFlagBits &gt;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>vma::AllocationCreateFlags</type>
+          <declname>allocFlags</declname>
+          <defval>vma::AllocationCreateFlags()</defval>
+        </param>
+        <briefdescription>
+<para>create a vma buffer </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan device size </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>usage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan buffer usage flags </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan memory properties </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>allocFlags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] allocation flags </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>pair where .first is the vulkan buffer, .second is the vma::Allcation object </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="124" column="11" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="124" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ad409cec023a22d743d9b04b5ca2df983" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::pair&lt; vk::Image, vma::Allocation &gt;</type>
+        <definition>std::pair&lt;vk::Image, vma::Allocation&gt; TS_VmaCreateImage</definition>
+        <argsstring>(uint32_t width, uint32_t height, vk::Format fmt, vk::ImageTiling tiling, vk::Flags&lt; vk::ImageUsageFlagBits &gt; usage, vk::Flags&lt; vk::MemoryPropertyFlagBits &gt; properties, vma::AllocationCreateFlags allocFlags=vma::AllocationCreateFlags())</argsstring>
+        <name>TS_VmaCreateImage</name>
+        <param>
+          <type>uint32_t</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>height</declname>
+        </param>
+        <param>
+          <type>vk::Format</type>
+          <declname>fmt</declname>
+        </param>
+        <param>
+          <type>vk::ImageTiling</type>
+          <declname>tiling</declname>
+        </param>
+        <param>
+          <type>vk::Flags&lt; vk::ImageUsageFlagBits &gt;</type>
+          <declname>usage</declname>
+        </param>
+        <param>
+          <type>vk::Flags&lt; vk::MemoryPropertyFlagBits &gt;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>vma::AllocationCreateFlags</type>
+          <declname>allocFlags</declname>
+          <defval>vma::AllocationCreateFlags()</defval>
+        </param>
+        <briefdescription>
+<para>create a vma image </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size along x-dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>size along y-dimension </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fmt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan format </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tiling</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan image tiling </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>usage</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan image usage flags </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>vulkan memory properties </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>allocFlags</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[optional] vma allocation flags </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>pair where .first is the vulkan buffer, .second is the vma::Allcation object </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="138" column="11" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="138" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a07d0bd6d5337eb3ee9fd52aaa674adef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vk::CommandBuffer</type>
+        <definition>vk::CommandBuffer TS_VkBeginScratchBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkBeginScratchBuffer</name>
+        <briefdescription>
+<para>begin vulkan scratch buffer </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>vulkan command buffer </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="149" column="19" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="149" declcolumn="19"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1afc993fb3509c4fc0ca784f8f6e8a8908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkSubmitScratchBuffer</definition>
+        <argsstring>(vk::CommandBuffer &amp;tmp)</argsstring>
+        <name>TS_VkSubmitScratchBuffer</name>
+        <param>
+          <type>vk::CommandBuffer &amp;</type>
+          <declname>tmp</declname>
+        </param>
+        <briefdescription>
+<para>submit vulkan scratch buffer </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>tmp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>command buffer </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="153" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="153" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a0ac4b5cf74c059cc57247901479737a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkTransitionImageLayout</definition>
+        <argsstring>(vk::Image img, vk::ImageLayout oldLayout, vk::ImageLayout newLayout)</argsstring>
+        <name>TS_VkTransitionImageLayout</name>
+        <param>
+          <type>vk::Image</type>
+          <declname>img</declname>
+        </param>
+        <param>
+          <type>vk::ImageLayout</type>
+          <declname>oldLayout</declname>
+        </param>
+        <param>
+          <type>vk::ImageLayout</type>
+          <declname>newLayout</declname>
+        </param>
+        <briefdescription>
+<para>transition the layout of an image </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>img</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>image </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>oldLayout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>previous layout </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>newLayout</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>new layout </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="159" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="159" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1abb6031d07003ca9e905fa125731a8b8d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCopyBufferToImage</definition>
+        <argsstring>(vk::Buffer buf, vk::Image img, uint32_t wdth, uint32_t hght)</argsstring>
+        <name>TS_VkCopyBufferToImage</name>
+        <param>
+          <type>vk::Buffer</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>vk::Image</type>
+          <declname>img</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>wdth</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>hght</declname>
+        </param>
+        <briefdescription>
+<para>copy vulkan buffer to image </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>img</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>image </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>wdth</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>width of the TODO: buffer or image? </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>hght</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>height of the TODO: buffer or image? </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="166" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="166" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a32f35c913314592c4a82e304cf45ab6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkWriteDescriptorSet</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkWriteDescriptorSet</name>
+        <briefdescription>
+<para>write updated descriptor set info to device </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="169" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="169" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a0da9896bc8f4e3adb412c233d91a5b29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int TS_VkLoadTexture</definition>
+        <argsstring>(const char *img)</argsstring>
+        <name>TS_VkLoadTexture</name>
+        <param>
+          <type>const char *</type>
+          <declname>img</declname>
+        </param>
+        <briefdescription>
+<para>load texture </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>img</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>path to image on disk </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="173" column="5" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="173" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ad737846bbe75bf3e7ebebbcd6ec0e003" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkUnloadTexture</definition>
+        <argsstring>(const char *img)</argsstring>
+        <name>TS_VkUnloadTexture</name>
+        <param>
+          <type>const char *</type>
+          <declname>img</declname>
+        </param>
+        <briefdescription>
+<para>unload texture </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>img</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>texture path </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="177" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="177" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1aaa98af2ed1be85725b81080113c81d73" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkAcquireNextImage</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkAcquireNextImage</name>
+        <briefdescription>
+<para>acquire next vulkan image </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="187" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="187" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a1685595d7a722bf58ee7315dff976358" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkResetCommandBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkResetCommandBuffer</name>
+        <briefdescription>
+<para>reset the vulkan command buffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="190" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="190" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a97c3fd25588da37797545c66812306ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkBeginCommandBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkBeginCommandBuffer</name>
+        <briefdescription>
+<para>begin the vulkan command buffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="193" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="193" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a511707a60c7bcbf28d526a1e0a53eaa9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDraw</definition>
+        <argsstring>(float r, float g, float b, float alpha)</argsstring>
+        <name>TS_VkDraw</name>
+        <param>
+          <type>float</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>alpha</declname>
+        </param>
+        <briefdescription>
+<para>fill the render area with a color </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>r</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>red component of the color </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>g</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>green component of the color </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>blue component of the color </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alpha</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>transparency component of the color </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="200" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="200" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a41bc96246794e6806af2c8802186febc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkEndCommandBuffer</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkEndCommandBuffer</name>
+        <briefdescription>
+<para>end vulkan command buffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="203" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="203" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1adb52a1c589728450de9f4fc4af6cdfaf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkQueueSubmit</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkQueueSubmit</name>
+        <briefdescription>
+<para>queue vulkan submit info </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="206" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="206" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1aaf43ad8f820ade3f8315823dd358f84c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkQueuePresent</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkQueuePresent</name>
+        <briefdescription>
+<para>queue vulkan present </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="209" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="209" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a55ef089acceb59a4a378a6a2c079e70f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkPopulateDebugMessengerCreateInfo</definition>
+        <argsstring>(vk::DebugUtilsMessengerCreateInfoEXT &amp;dbmci)</argsstring>
+        <name>TS_VkPopulateDebugMessengerCreateInfo</name>
+        <param>
+          <type>vk::DebugUtilsMessengerCreateInfoEXT &amp;</type>
+          <declname>dbmci</declname>
+        </param>
+        <briefdescription>
+<para>set the vulkan debug messenger </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dbmci</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>debug messenger create info </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="213" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="213" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a1fc223e671bb464ddd717db0712d57aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateInstance</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateInstance</name>
+        <briefdescription>
+<para>create vulkan instance </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="216" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="216" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1afaa775d96684db8424092a6687eb2892" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateDebugMessenger</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateDebugMessenger</name>
+        <briefdescription>
+<para>create vulkan debug messenger </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="219" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="219" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a2c8ee04e90e0831058c4d1837e4e932f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateSurface</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateSurface</name>
+        <briefdescription>
+<para>create vulkan surface </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="222" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="222" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1af61416c77c96a3259316bb3b3b1cb425" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkSelectPhysicalDevice</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkSelectPhysicalDevice</name>
+        <briefdescription>
+<para>select the physical device </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="225" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="225" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1aa3028f8c2a766740d0ac430d12044be9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkSelectQueueFamily</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkSelectQueueFamily</name>
+        <briefdescription>
+<para>select vulkan queue family </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="228" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="228" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a06ca5d88242a32dd7b392e76eb42cd7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateDevice</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateDevice</name>
+        <briefdescription>
+<para>created device </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="231" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="231" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a56f61b8a5daba3ebf4ba18cba5b2ec52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VmaCreateAllocator</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VmaCreateAllocator</name>
+        <briefdescription>
+<para>create the vma allocator object </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="234" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="234" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a819b130f2325c59ea73f7c4d367dbb4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VmaCreateBuffers</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VmaCreateBuffers</name>
+        <briefdescription>
+<para>create the vma buffers </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="237" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="237" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a5b3d4231de0a9f9504076006c91860a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateSwapchain</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateSwapchain</name>
+        <briefdescription>
+<para>create the vulkan swapchain </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="240" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="240" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a13a39655b6f017eb4623838b956bcc41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateImageViews</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateImageViews</name>
+        <briefdescription>
+<para>create the vulkan image views </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="243" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="243" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1aee4f1bcc5530bc541c084cacdc3fd666" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkSetupDepthStencil</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkSetupDepthStencil</name>
+        <briefdescription>
+<para>setup the vulkan depth stencil </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="246" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="246" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a246a420c0fe45f7128c8585abf13114e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateRenderPass</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateRenderPass</name>
+        <briefdescription>
+<para>create the vulkan render pass </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="249" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="249" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a5333733294d07b5da76656f74603687c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vk::ShaderModule</type>
+        <definition>vk::ShaderModule TS_VkCreateShaderModule</definition>
+        <argsstring>(std::string code, shaderc_shader_kind kind, bool optimize=false)</argsstring>
+        <name>TS_VkCreateShaderModule</name>
+        <param>
+          <type>std::string</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>shaderc_shader_kind</type>
+          <declname>kind</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>optimize</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>initialize the vulkan shader module </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="252" column="18" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="252" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a5d68da40bbbba80fed091efd34300a87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateDescriptorSet</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateDescriptorSet</name>
+        <briefdescription>
+<para>create the vulkan descriptor set </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="255" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="255" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1aa926ad99fe3eb9b76e0c636e06e4cce5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateTrianglePipeline</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateTrianglePipeline</name>
+        <briefdescription>
+<para>create the vulkan triangle pipeline </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="258" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="258" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a03e446b063ea1bdb1530c9578e784937" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateFramebuffers</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateFramebuffers</name>
+        <briefdescription>
+<para>create the vulkan framebuffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="261" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="261" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ab494013f1bba14acc0b6d3961b203ea9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateCommandPool</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateCommandPool</name>
+        <briefdescription>
+<para>create the vulkan command pool </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="264" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="264" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1abb3de0f1e4d397ead38942a4c2f73ca5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkAllocateCommandBuffers</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkAllocateCommandBuffers</name>
+        <briefdescription>
+<para>allocate the vulkan command buffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="267" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="267" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a3954c835a10240724814e5565891fc6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateSemaphores</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateSemaphores</name>
+        <briefdescription>
+<para>create the vulkan semaphores </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="270" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="270" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ad6defe40e154cd002401255767713a81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkCreateFences</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkCreateFences</name>
+        <briefdescription>
+<para>create the vulkan fences </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="273" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="273" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a7aecba26d78ed0e5675f3547d5318350" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkInit</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkInit</name>
+        <briefdescription>
+<para>initialize the vulkan state </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="276" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="276" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a1839d483d844ce5449099d00bd3c3f24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyFences</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyFences</name>
+        <briefdescription>
+<para>deallocate the vulkan fences </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="286" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="286" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1af6234f98b563b425d4f2b9dc90a189c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroySemaphores</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroySemaphores</name>
+        <briefdescription>
+<para>deallocate the vulkan semaphores </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="289" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="289" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a2b497bcd58888e9f5c744bc0f8978b7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkFreeCommandBuffers</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkFreeCommandBuffers</name>
+        <briefdescription>
+<para>free the vulkan command buffers </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="292" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="292" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1adba6fbbaf2b43833d98c9168f4cf62dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyCommandPool</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyCommandPool</name>
+        <briefdescription>
+<para>destroy the vulkan command pool </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="295" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="295" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ab7f1eaff8b97a230d6a0578adaf881e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyFramebuffers</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyFramebuffers</name>
+        <briefdescription>
+<para>destroy the vulkan framebuffers </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="298" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="298" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ab0f296f64e51fe2ea22e8204d8938c3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyTrianglePipeline</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyTrianglePipeline</name>
+        <briefdescription>
+<para>destroy the vulkan triangle pipeline </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="301" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="301" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a28e4330d1d8d90efbb1f2aa7b1087fa3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyDescriptorSet</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyDescriptorSet</name>
+        <briefdescription>
+<para>destroy the vulkan descriptor set </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="304" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="304" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a58ecf25c7e0230d9d109ede58f74ce24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyRenderPass</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyRenderPass</name>
+        <briefdescription>
+<para>destroy the vulkan render pass </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="307" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="307" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a3ddd2f25ea98e7c3c58edfef2a762c5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkTeardownDepthStencil</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkTeardownDepthStencil</name>
+        <briefdescription>
+<para>destroy the vulkan depth stencil </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="310" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="310" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a2e4212793352ca7a87f5a4618a4c2b72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyImageViews</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyImageViews</name>
+        <briefdescription>
+<para>destroy the vulkan image view </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="313" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="313" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a74974e3f0c25442a63b2bbd9eb194d1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroySwapchain</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroySwapchain</name>
+        <briefdescription>
+<para>destroy the vulkan swap chain </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="316" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="316" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1afe90b2bed0ac22141dc3a9153e69f139" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VmaDestroyBuffers</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VmaDestroyBuffers</name>
+        <briefdescription>
+<para>destroy the vma buffer </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="319" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="319" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a05ad23e5deac5b51a48b3849074df09d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyTextures</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyTextures</name>
+        <briefdescription>
+<para>deallocate all vulkan textures </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="322" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="322" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ad7edb5d06a4f3e42f58381471bea66bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VmaDestroyAllocator</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VmaDestroyAllocator</name>
+        <briefdescription>
+<para>destroy the vulkan allocator </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="325" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="325" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a3e19a66b50c6c22e7ddb30e1517e9470" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyDevice</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyDevice</name>
+        <briefdescription>
+<para>destroy the vulkan device </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="328" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="328" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a905f1be6cc514f1b457eb3d1ef0dfefb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroySurface</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroySurface</name>
+        <briefdescription>
+<para>destroy the vulkan surface </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="331" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="331" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1a0056898872e33755470cbc311740656c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyDebugMessenger</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyDebugMessenger</name>
+        <briefdescription>
+<para>destroy the vulkan debug messenger </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="334" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="334" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1aad9a9dc883dbf1a7a8daf3b930a644f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkDestroyInstance</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkDestroyInstance</name>
+        <briefdescription>
+<para>destroy the vulkan instance </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="337" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="337" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="vulkan__interface_8hpp_1ab1f5b5c8be8a9a85cb62822c7035129d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void TS_VkQuit</definition>
+        <argsstring>()</argsstring>
+        <name>TS_VkQuit</name>
+        <briefdescription>
+<para>quit the vulkan state </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="340" column="6" declfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" declline="340" declcolumn="6"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2022,<sp/>Joshua<sp/>Higginbotham</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vulkan/vulkan.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vk_mem_alloc.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;shaderc/shaderc.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13" refid="struct_t_s___texture" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="struct_t_s___texture" kindref="compound">TS_Texture</ref><sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="struct_t_s___texture_1a0e009ddd3c8b26c8fca542b16c968ba6" refkind="member"><highlight class="normal"><sp/><sp/>std::pair&lt;vk::Image,<sp/>vma::Allocation&gt;<sp/><ref refid="struct_t_s___texture_1a0e009ddd3c8b26c8fca542b16c968ba6" kindref="member">img</ref>;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19" refid="struct_t_s___texture_1a4600df0617e311b73b289670626e08c0" refkind="member"><highlight class="normal"><sp/><sp/>vk::ImageView<sp/><ref refid="struct_t_s___texture_1a4600df0617e311b73b289670626e08c0" kindref="member">view</ref>;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="struct_t_s___texture_1a97bdddda6356cddf9101d477b250fa96" refkind="member"><highlight class="normal"><sp/><sp/>uint32_t<sp/><ref refid="struct_t_s___texture_1a97bdddda6356cddf9101d477b250fa96" kindref="member">width</ref>;</highlight></codeline>
+<codeline lineno="24" refid="struct_t_s___texture_1a277c3626dd8e714236ba77ffef550b17" refkind="member"><highlight class="normal"><sp/><sp/>uint32_t<sp/><ref refid="struct_t_s___texture_1a277c3626dd8e714236ba77ffef550b17" kindref="member">height</ref>;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27" refid="struct_t_s___texture_1aa3e834b34ec3d784dea6e3a13641de8c" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="struct_t_s___texture_1aa3e834b34ec3d784dea6e3a13641de8c" kindref="member">fname</ref>;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCmdDrawRect(</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>y,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>width,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>height</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCmdDrawSprite(</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/>image_path,</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha,</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>region_x,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>region_y,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>region_width,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>region_height,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cell_w,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cell_h,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cell_index_i,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>cell_index_j,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>position_x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>position_y,</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>scale_x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>scale_y</highlight></codeline>
+<codeline lineno="74"><highlight class="normal">);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCmdClearColorImage(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkBeginDrawPass();</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkEndDrawPass(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="keyword">static</highlight><highlight class="normal"><sp/>VKAPI_ATTR<sp/>vk::Bool32<sp/>VKAPI_CALL<sp/>debugCallback(</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>vk::DebugUtilsMessageSeverityFlagBitsEXT<sp/>messageSeverity,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>vk::DebugUtilsMessageTypeFlagsEXT<sp/>messageType,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vk::DebugUtilsMessengerCallbackDataEXT*<sp/>pCallbackData,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal">*<sp/>pUserData);</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal">vk::ImageView<sp/>TS_VkCreateImageView(vk::Image<sp/>img,<sp/>vk::Format<sp/>fmt,<sp/>vk::ImageAspectFlagBits<sp/>flags);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal">vk::Bool32<sp/>TS_VkGetSupportedDepthFormat();</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal">std::pair&lt;vk::Buffer,<sp/>vma::Allocation&gt;<sp/>TS_VmaCreateBuffer(</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>vk::DeviceSize<sp/>size,<sp/>vk::Flags&lt;vk::BufferUsageFlagBits&gt;<sp/>usage,</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>vk::Flags&lt;vk::MemoryPropertyFlagBits&gt;<sp/>properties,</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/>vma::AllocationCreateFlags<sp/>allocFlags<sp/>=<sp/>vma::AllocationCreateFlags());</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal">std::pair&lt;vk::Image,<sp/>vma::Allocation&gt;<sp/>TS_VmaCreateImage(</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>uint32_t<sp/>width,</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/>uint32_t<sp/>height,</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/>vk::Format<sp/>fmt,</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>vk::ImageTiling<sp/>tiling,</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>vk::Flags&lt;vk::ImageUsageFlagBits&gt;<sp/>usage,</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>vk::Flags&lt;vk::MemoryPropertyFlagBits&gt;<sp/>properties,</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>vma::AllocationCreateFlags<sp/>allocFlags<sp/>=<sp/>vma::AllocationCreateFlags());</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal">vk::CommandBuffer<sp/>TS_VkBeginScratchBuffer();</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkSubmitScratchBuffer(vk::CommandBuffer<sp/>&amp;tmp);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkTransitionImageLayout(vk::Image<sp/>img,<sp/>vk::ImageLayout<sp/>oldLayout,<sp/>vk::ImageLayout<sp/>newLayout);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCopyBufferToImage(vk::Buffer<sp/>buf,<sp/>vk::Image<sp/>img,<sp/>uint32_t<sp/>wdth,<sp/>uint32_t<sp/>hght);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkWriteDescriptorSet();</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>TS_VkLoadTexture(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/>img);</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkUnloadTexture(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<sp/>img);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCmdClearColorImage(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>a);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkAcquireNextImage();</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkResetCommandBuffer();</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkBeginCommandBuffer();</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDraw(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>alpha);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkEndCommandBuffer();</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkQueueSubmit();</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkQueuePresent();</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkPopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT&amp;<sp/>dbmci);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="216"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateInstance();</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateDebugMessenger();</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateSurface();</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkSelectPhysicalDevice();</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkSelectQueueFamily();</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateDevice();</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VmaCreateAllocator();</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VmaCreateBuffers();</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateSwapchain();</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateImageViews();</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="246"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkSetupDepthStencil();</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateRenderPass();</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252"><highlight class="normal">vk::ShaderModule<sp/>TS_VkCreateShaderModule(std::string<sp/>code,<sp/>shaderc_shader_kind<sp/>kind,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optimize<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateDescriptorSet();</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight></codeline>
+<codeline lineno="258"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateTrianglePipeline();</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="261"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateFramebuffers();</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"></highlight></codeline>
+<codeline lineno="264"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateCommandPool();</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkAllocateCommandBuffers();</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="270"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateSemaphores();</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="273"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkCreateFences();</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"></highlight></codeline>
+<codeline lineno="276"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkInit();</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkEndDrawPass(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>a);</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"></highlight></codeline>
+<codeline lineno="286"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyFences();</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroySemaphores();</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight></codeline>
+<codeline lineno="292"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkFreeCommandBuffers();</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyCommandPool();</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyFramebuffers();</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyTrianglePipeline();</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight></codeline>
+<codeline lineno="304"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyDescriptorSet();</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyRenderPass();</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight></codeline>
+<codeline lineno="310"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkTeardownDepthStencil();</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"></highlight></codeline>
+<codeline lineno="313"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyImageViews();</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"></highlight></codeline>
+<codeline lineno="316"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroySwapchain();</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"></highlight></codeline>
+<codeline lineno="319"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VmaDestroyBuffers();</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyTextures();</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"></highlight></codeline>
+<codeline lineno="325"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VmaDestroyAllocator();</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"></highlight></codeline>
+<codeline lineno="328"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyDevice();</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="331"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroySurface();</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"></highlight></codeline>
+<codeline lineno="334"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyDebugMessenger();</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"></highlight></codeline>
+<codeline lineno="337"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkDestroyInstance();</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"></highlight></codeline>
+<codeline lineno="340"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TS_VkQuit();</highlight></codeline>
+    </programlisting>
+    <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp"/>
+  </compounddef>
+</doxygen>

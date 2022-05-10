@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="struct_t_s___collision_event" kind="struct" language="C++" prot="public">
+    <compoundname>TS_CollisionEvent</compoundname>
+    <includes refid="collision__event_8hpp" local="no">collision_event.hpp</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_t_s___collision_event_1a15f4785f187f2b90d8001eb2d8f923f9" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int TS_CollisionEvent::id1</definition>
+        <argsstring></argsstring>
+        <name>id1</name>
+        <briefdescription>
+<para>id of first object </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/collision_event.hpp" line="14" column="11" bodyfile="/home/clem/Workspace/Telescope/include/collision_event.hpp" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___collision_event_1a46f3c61c0aee4eec689cb31362c70d27" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int TS_CollisionEvent::id2</definition>
+        <argsstring></argsstring>
+        <name>id2</name>
+        <briefdescription>
+<para>id of second object </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/collision_event.hpp" line="17" column="11" bodyfile="/home/clem/Workspace/Telescope/include/collision_event.hpp" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___collision_event_1a2fc27ab4c1e5f23c4a90bff8ab07d58e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool TS_CollisionEvent::colliding</definition>
+        <argsstring></argsstring>
+        <name>colliding</name>
+        <briefdescription>
+<para>true if objects collide, false otherwise </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/collision_event.hpp" line="20" column="12" bodyfile="/home/clem/Workspace/Telescope/include/collision_event.hpp" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>event used to check whether two objects are colliding </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/clem/Workspace/Telescope/include/collision_event.hpp" line="11" column="5" bodyfile="/home/clem/Workspace/Telescope/include/collision_event.hpp" bodystart="12" bodyend="21"/>
+    <listofallmembers>
+      <member refid="struct_t_s___collision_event_1a2fc27ab4c1e5f23c4a90bff8ab07d58e" prot="public" virt="non-virtual"><scope>TS_CollisionEvent</scope><name>colliding</name></member>
+      <member refid="struct_t_s___collision_event_1a15f4785f187f2b90d8001eb2d8f923f9" prot="public" virt="non-virtual"><scope>TS_CollisionEvent</scope><name>id1</name></member>
+      <member refid="struct_t_s___collision_event_1a46f3c61c0aee4eec689cb31362c70d27" prot="public" virt="non-virtual"><scope>TS_CollisionEvent</scope><name>id2</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

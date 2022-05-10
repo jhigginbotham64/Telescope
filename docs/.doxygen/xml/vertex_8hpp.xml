@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="vertex_8hpp" kind="file" language="C++">
+    <compoundname>vertex.hpp</compoundname>
+    <includes local="no">glm/glm.hpp</includes>
+    <includes local="no">vulkan/vulkan.hpp</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/clem/Workspace/Telescope/include/vertex.hpp</label>
+        <link refid="vertex_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>vulkan/vulkan.hpp</label>
+      </node>
+      <node id="2">
+        <label>glm/glm.hpp</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="struct_t_s___vertex" prot="public">TS_Vertex</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Copyright<sp/>2022,<sp/>Joshua<sp/>Higginbotham</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;glm/glm.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vulkan/vulkan.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="struct_t_s___vertex" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="struct_t_s___vertex" kindref="compound">TS_Vertex</ref></highlight></codeline>
+<codeline lineno="12"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="14" refid="struct_t_s___vertex_1ab0ecfc0eb8a8b4a4b2be6f74e3088669" refkind="member"><highlight class="normal"><sp/><sp/>glm::vec2<sp/><ref refid="struct_t_s___vertex_1ab0ecfc0eb8a8b4a4b2be6f74e3088669" kindref="member">pos</ref>;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="struct_t_s___vertex_1a5aa262092a3d69215597906fddf0d852" refkind="member"><highlight class="normal"><sp/><sp/>glm::vec2<sp/><ref refid="struct_t_s___vertex_1a5aa262092a3d69215597906fddf0d852" kindref="member">uv</ref>;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20" refid="struct_t_s___vertex_1a8e85d362487672018a59641de8ec6ad6" refkind="member"><highlight class="normal"><sp/><sp/>glm::vec4<sp/><ref refid="struct_t_s___vertex_1a8e85d362487672018a59641de8ec6ad6" kindref="member">col</ref>;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23" refid="struct_t_s___vertex_1a70beb5dad3538075d1a5868f0a158fee" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="struct_t_s___vertex_1a70beb5dad3538075d1a5868f0a158fee" kindref="member">tex</ref>;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="struct_t_s___vertex_1a4418588b062557d2ff329c3a3275ecc5" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="struct_t_s___vertex_1a4418588b062557d2ff329c3a3275ecc5" kindref="member">TS_Vertex</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>x,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>y,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>g,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>b,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>a,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>u<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>v<sp/>=<sp/>0,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>t<sp/>=<sp/>-1);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="struct_t_s___vertex_1a50e481066ae92784a5d6a84085be916f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>vk::VertexInputBindingDescription<sp/><ref refid="struct_t_s___vertex_1a50e481066ae92784a5d6a84085be916f" kindref="member">getBindingDescription</ref>();</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="struct_t_s___vertex_1a7f2016502f0e68fcf76627691ea74ef3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::array&lt;vk::VertexInputAttributeDescription,<sp/>4&gt;<sp/><ref refid="struct_t_s___vertex_1a7f2016502f0e68fcf76627691ea74ef3" kindref="member">getAttributeDescriptions</ref>();</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">};</highlight></codeline>
+    </programlisting>
+    <location file="/home/clem/Workspace/Telescope/include/vertex.hpp"/>
+  </compounddef>
+</doxygen>

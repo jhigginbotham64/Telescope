@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="struct_t_s___texture" kind="struct" language="C++" prot="public">
+    <compoundname>TS_Texture</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_t_s___texture_1a0e009ddd3c8b26c8fca542b16c968ba6" prot="public" static="no" mutable="no">
+        <type>std::pair&lt; vk::Image, vma::Allocation &gt;</type>
+        <definition>std::pair&lt;vk::Image, vma::Allocation&gt; TS_Texture::img</definition>
+        <argsstring></argsstring>
+        <name>img</name>
+        <briefdescription>
+<para>image </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="16" column="13" bodyfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___texture_1a4600df0617e311b73b289670626e08c0" prot="public" static="no" mutable="no">
+        <type>vk::ImageView</type>
+        <definition>vk::ImageView TS_Texture::view</definition>
+        <argsstring></argsstring>
+        <name>view</name>
+        <briefdescription>
+<para>current view </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="19" column="17" bodyfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___texture_1a97bdddda6356cddf9101d477b250fa96" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t TS_Texture::width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <briefdescription>
+<para>size along x-dimension </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="22" column="12" bodyfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___texture_1a277c3626dd8e714236ba77ffef550b17" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t TS_Texture::height</definition>
+        <argsstring></argsstring>
+        <name>height</name>
+        <briefdescription>
+<para>size along y-dimension </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="24" column="12" bodyfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_t_s___texture_1aa3e834b34ec3d784dea6e3a13641de8c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string TS_Texture::fname</definition>
+        <argsstring></argsstring>
+        <name>fname</name>
+        <briefdescription>
+<para>file name </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="27" column="15" bodyfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" line="13" column="1" bodyfile="/home/clem/Workspace/Telescope/include/vulkan_interface.hpp" bodystart="13" bodyend="28"/>
+    <listofallmembers>
+      <member refid="struct_t_s___texture_1aa3e834b34ec3d784dea6e3a13641de8c" prot="public" virt="non-virtual"><scope>TS_Texture</scope><name>fname</name></member>
+      <member refid="struct_t_s___texture_1a277c3626dd8e714236ba77ffef550b17" prot="public" virt="non-virtual"><scope>TS_Texture</scope><name>height</name></member>
+      <member refid="struct_t_s___texture_1a0e009ddd3c8b26c8fca542b16c968ba6" prot="public" virt="non-virtual"><scope>TS_Texture</scope><name>img</name></member>
+      <member refid="struct_t_s___texture_1a4600df0617e311b73b289670626e08c0" prot="public" virt="non-virtual"><scope>TS_Texture</scope><name>view</name></member>
+      <member refid="struct_t_s___texture_1a97bdddda6356cddf9101d477b250fa96" prot="public" virt="non-virtual"><scope>TS_Texture</scope><name>width</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
