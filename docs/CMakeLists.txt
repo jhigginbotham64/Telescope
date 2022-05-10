@@ -11,10 +11,10 @@ file(GLOB_RECURSE TELESCOPE_INCLUDE_DIR ${TELESCOPE_INCLUDE_DIR}/*)
 set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR}/include)
 set(DOXYGEN_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/docs/.doxygen)
 set(DOXYGEN_INDEX_FILE ${DOXYGEN_OUTPUT_DIR}/docs/.doxygen/xml/index.xml)
-set(DOXYFILE_IN "${PROJECT_SOURCE_DIR}/docs/Doxyfile.in")
+set(DOXYFILE_IN "${PROJECT_SOURCE_DIR}/docs/Doxyfile") # TODO: properly restructure this entire file instead of this quick fix
 set(DOXYFILE_OUT "${PROJECT_SOURCE_DIR}/docs/Doxyfile")
 
-configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+#configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
 # add custom target to build doxygen

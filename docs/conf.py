@@ -18,7 +18,6 @@
 
 import subprocess, os
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'telescope'
