@@ -18,8 +18,7 @@ _deps
 
 build
 docs/out/
-docs/Doxyfile
-docs/.doxygen
+docs/.doxygen/
 
 # C++ # Compiled Dynamic libraries
 *.so

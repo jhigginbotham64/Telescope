@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# clean out folder, rebuild docs
+# clean out folder, rebuild docs without cmake
 #
 # usage: cd Telescope/docs; bash rebuild_docs.sh
 #
 rm -r ./out
-cmake --build ../build --target pre_build_docs
-cmake --build ../build --target build_docs
+doxygen
+sphinx-build -Ea -b html -Dbreathe_projects.telescope=.doxygen/xml . ./out

@@ -18,34 +18,18 @@
 
 import subprocess, os
 
-def configureDoxyfile(input_dir, output_dir):
-
-	with open('Doxyfile.in', 'r') as file :
-		filedata = file.read()
-
-	filedata = filedata.replace('@DOXYGEN_INPUT_DIR@', input_dir)
-	filedata = filedata.replace('@DOXYGEN_OUTPUT_DIR@', output_dir)
-	
-	with open('Doxyfile', 'w') as file:
-		file.write(filedata)
-
-# Check if we're running on Read the Docs' servers
-read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
-
-breathe_projects = {}
-if read_the_docs_build:
-	input_dir = '../src'
-	output_dir = '.'
-	configureDoxyfile(input_dir, output_dir)
-	subprocess.call('doxygen', shell=True)
-	breathe_projects['telescope'] = output_dir + '/xml'
-
-
 # -- Project information -----------------------------------------------------
 
 project = 'telescope'
 copyright = '2022, Joshua Higginbotham'
 author = 'Simon Brand, Modified by Clemapfel'
+
+# -- Read the Docs Config ----------------------------------------------------
+
+breathe_projects = {}
+if os.environ.get('READTHEDOCS', None) == 'True':
+    subprocess.call('doxygen', shell=True)
+    breathe_projects['telescope'] = '.doxygen/xml'
 
 
 # -- General configuration ---------------------------------------------------
@@ -56,6 +40,7 @@ author = 'Simon Brand, Modified by Clemapfel'
 #...
 
 extensions = ["breathe"]
+breathe_default_project = "telescope"
 
 #...
 
@@ -66,7 +51,6 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -79,9 +63,6 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
-# Breathe Configuration
-breathe_default_project = "telescope"
 
 # disable "show source" in html output
 html_show_sourcelink = False
