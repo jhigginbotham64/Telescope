@@ -54,7 +54,7 @@ mkdir build
 cd build
 cmake .. #-DCMAKE_INSTALL_PREFIX=<install location>
 make clean
-make install # will likely require sudo
+make install # may require sudo depending <install location>
 ```
 
 Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
