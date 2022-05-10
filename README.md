@@ -48,15 +48,13 @@ To install Telescope, execute, in any public directory:
 
 ```bash
 git clone https://github.com/jhigginbotham64/Telescope
-cd Telescope/VulkanMemoryAllocator-Hpp
-git submodule init
-git submodule update
-cd ..
+cd Telescope
+git submodule update --init --recursive
 mkdir build
 cd build
 cmake .. #-DCMAKE_INSTALL_PREFIX=<install location>
 make clean
-make install
+make install # will likely require sudo
 ```
 
 Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
