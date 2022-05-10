@@ -18,20 +18,21 @@
 
 import subprocess, os
 
-# read the docs
-breathe_projects = {}
-if os.environ.get('READTHEDOCS', None) == 'True':
-	output_dir = '.doxygen'
-	subprocess.call('cd docs', shell=True)
-	subprocess.call('doxygen', shell=True)
-	breathe_projects['Telescope'] = '.doxygen/xml'
-
 
 # -- Project information -----------------------------------------------------
 
-project = 'Telescope'
+project = 'telescope'
 copyright = '2022, Joshua Higginbotham'
 author = 'Simon Brand, Modified by Clemapfel'
+
+# -- Read the Docs Config ----------------------------------------------------
+
+breathe_projects = {}
+if os.environ.get('READTHEDOCS', None) == 'True':
+	output_dir = '.doxygen'
+	subprocess.call('cd docs; mkdir .doxygen', shell=True).wait()
+	subprocess.call('doxygen', shell=True).wait()
+	breathe_projects['telescope'] = '.doxygen/xml'
 
 
 # -- General configuration ---------------------------------------------------
