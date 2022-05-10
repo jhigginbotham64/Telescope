@@ -29,7 +29,6 @@ author = 'Simon Brand, Modified by Clemapfel'
 breathe_projects = {}
 if os.environ.get('READTHEDOCS', None) == 'True':
     subprocess.call('doxygen', shell=True)
-    subprocess.call('echo $(man doxygen)', shell=True)
     breathe_projects['telescope'] = '.doxygen/xml'
 
 
