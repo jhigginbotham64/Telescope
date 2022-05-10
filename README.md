@@ -36,7 +36,8 @@ To build Telescope from source, the following dependencies need to be met:
 + [glm](https://github.com/g-truc/glm)
   - also available as `libglm-dev`
 + [shaderc](https://github.com/google/shaderc#downloads)
-  - also available as `shaderc`
+  - also available as `shaderc` if the `vulkan-sdk` is installed
+    - `dpkg -L shaderc | grep libshaderc_shared.so` should then show the path to supply to `-DSHADERC_LIB_DIR=/path/to/shaderc/lib` discussed in the `shaderc_shared` section below.
 
 Clicking on the links above will lead you to the correct download pages for each dependency. Alternatively, they can be installed through your package manager, potentially under the names supplied above.
 

@@ -27,11 +27,12 @@ jobs:
         sudo apt install --upgrade libbullet-dev libglm-dev shaderc
     - name: 🦏 Build
       run: |
-        cmake .
-        make clean
-        make
+        mkdir build && cd build
+        dpkg -L shaderc | grep libshaderc_shared.so
+        cmake .. -DSHADERC_LIB_DIR=/usr/lib/x86_64-linux-gnu -DCMAKE_INSTALL_PREFIX=..
+        make clean && make install
     - name: Unit tests
-      run: echo TODO
+      run: ctest -N && ctest -V
     # Only upload the build and use it in the subsequent job if this is a PR, push to _Main_ or a dispatch
     - name: 🆙 Upload compiled source
       if: >- 
@@ -43,7 +44,7 @@ jobs:
         path: lib/libtelescope.so
         if-no-files-found: error
   test:
-    name: Test the build
+    name: Test the built shared library
     needs: [build]
     if: >- 
       ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
