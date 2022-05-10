@@ -35,7 +35,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 breathe_projects = {}
 if read_the_docs_build:
 	input_dir = '../src'
-	output_dir = 'build'
+	output_dir = 'docs'
 	configureDoxyfile(input_dir, output_dir)
 	subprocess.call('doxygen', shell=True)
 	breathe_projects['telescope'] = output_dir + '/xml'
