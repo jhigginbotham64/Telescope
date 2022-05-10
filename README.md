@@ -82,7 +82,15 @@ Then, you can make Telescope available to your library using
 ```
 
 ---
+### Unit Tests
 
+After following the steps in [Installation](#installation), you can run Telescope's unit tests from your build directory using
+
+```
+make test
+```
+
+---
 ### Troubleshooting
 
 #### `telescope.h`: No such file or directory
