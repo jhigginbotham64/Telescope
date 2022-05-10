@@ -28,11 +28,11 @@ author = 'Simon Brand, Modified by Clemapfel'
 # -- Read the Docs Config ----------------------------------------------------
 
 breathe_projects = {}
-if os.environ.get('READTHEDOCS', None) == 'True':
-	subprocess.call('cd docs; mkdir .doxygen', shell=True)
-	subprocess.call('doxygen', shell=True)
-	subprocess.call('echo $(man doxygen)', shell=True)
-	breathe_projects['telescope'] = '.doxygen/xml'
+#if os.environ.get('READTHEDOCS', None) == 'True':
+
+subprocess.call('doxygen', shell=True)
+subprocess.call('echo $(man doxygen)', shell=True)
+breathe_projects['telescope'] = '.doxygen/xml'
 
 
 # -- General configuration ---------------------------------------------------
