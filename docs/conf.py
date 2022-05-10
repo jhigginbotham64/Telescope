@@ -29,7 +29,7 @@ if os.environ.get('READTHEDOCS', None) == 'True':
 
 # -- Project information -----------------------------------------------------
 
-project = 'telescope'
+project = 'Telescope'
 copyright = '2022, Joshua Higginbotham'
 author = 'Simon Brand, Modified by Clemapfel'
 
