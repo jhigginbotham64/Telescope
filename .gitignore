@@ -1,5 +1,8 @@
-.vscode
-build
+# IDEs
+.vscode/
+.idea/
+
+# https://raw.githubusercontent.com/github/gitignore/main/CMake.gitignore
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
@@ -7,11 +10,16 @@ CMakeScripts
 Testing
 Makefile
 cmake_install.cmake
+cmake_uninstall.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+
+build
 docs/out/
 docs/Doxyfile
 docs/.doxygen
-.idea/
+
+# C++ # Compiled Dynamic libraries
+*.so

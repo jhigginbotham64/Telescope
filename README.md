@@ -5,11 +5,11 @@ An Open-Source Toolkit for Interactive Multimedia Applications
 ---
 ### Table of Contents
   1. [Dependencies](#dependencies) <br>
-  1.1 [Bullet](https://github.com/bulletphysics/bullet3) <br>
-  1.2 [Vulkan](https://vulkan.lunarg.com/) <br>
-  1.3 [SDL2](https://www.libsdl.org/download-2.0.php) <br>
-  1.4 [glm](https://github.com/g-truc/glm) <br>
-  1.5 [shaderc](https://github.com/google/shaderc#downloads) <br>
+  1.1. [Bullet](https://github.com/bulletphysics/bullet3) <br>
+  1.2. [Vulkan](https://vulkan.lunarg.com/) <br>
+  1.3. [SDL2](https://www.libsdl.org/download-2.0.php) <br>
+  1.4. [glm](https://github.com/g-truc/glm) <br>
+  1.5. [shaderc](https://github.com/google/shaderc#downloads) <br>
   2. [Installation](#installation)<br>
   3. [Troubleshooting](#troubleshooting)<br>
   4. [License](#license)<br>
@@ -21,14 +21,23 @@ An Open-Source Toolkit for Interactive Multimedia Applications
 To build Telescope from source, the following dependencies need to be met:
 + [Bullet](https://github.com/bulletphysics/bullet3) 
   - also available as `libbullet-dev`
-+ [Vulkan](https://vulkan.lunarg.com/)
-  - also available as `libvulkan-dev`
++ [Vulkan](https://www.vulkan.org/tools#download-these-essential-development-tools) via [LunarG](https://vulkan.lunarg.com/sdk/home)
+  - also available as [`libvulkan-dev`](https://github.com/KhronosGroup/Vulkan-Loader) recommended for non Ubuntu development.
+  - Or as the `vulkan-sdk` on e.g. Ubuntu 20.04
+    ```
+    wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+    sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
+    sudo apt update
+    sudo apt install vulkan-sdk
+    ```
 + [SDL2](https://www.libsdl.org/download-2.0.php)
   - also available as `libsdl2-dev`
-  - additionally, `libsdl2-image`, `libsdl2-mixer`, `libsdl2-ttf`, `libsdl2-net` may need to be installed separately
+  - additionally, `libsdl2-image-dev`, `libsdl2-mixer-dev`, `libsdl2-ttf-dev`, `libsdl2-net-dev` may need to be installed separately
 + [glm](https://github.com/g-truc/glm)
   - also available as `libglm-dev`
 + [shaderc](https://github.com/google/shaderc#downloads)
+  - also available as `shaderc` if the `vulkan-sdk` is installed
+    - `dpkg -L shaderc | grep libshaderc_shared.so` should then show the path to supply to `-DSHADERC_LIB_DIR=/path/to/shaderc/lib` discussed in the `shaderc_shared` section below.
 
 Clicking on the links above will lead you to the correct download pages for each dependency. Alternatively, they can be installed through your package manager, potentially under the names supplied above.
 
@@ -40,10 +49,12 @@ To install Telescope, execute, in any public directory:
 ```bash
 git clone https://github.com/jhigginbotham64/Telescope
 cd Telescope
+git submodule update --init --recursive
 mkdir build
 cd build
 cmake .. #-DCMAKE_INSTALL_PREFIX=<install location>
-make install
+make clean
+make install # may require sudo depending <install location>
 ```
 
 Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
