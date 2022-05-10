@@ -30,8 +30,8 @@ author = 'Simon Brand, Modified by Clemapfel'
 breathe_projects = {}
 if os.environ.get('READTHEDOCS', None) == 'True':
 	output_dir = '.doxygen'
-	subprocess.call('cd docs; mkdir .doxygen', shell=True).wait()
-	subprocess.call('doxygen', shell=True).wait()
+	subprocess.call('cd docs; mkdir .doxygen', shell=True)
+	subprocess.call('doxygen', shell=True)
 	breathe_projects['telescope'] = '.doxygen/xml'
 
 
