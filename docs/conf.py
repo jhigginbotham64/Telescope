@@ -19,7 +19,7 @@
 import subprocess, os
 
 def configureDoxyfile(input_dir, output_dir):
-	print("configureDoxyfile in", os.getcwd())
+
 	with open('Doxyfile.in', 'r') as file :
 		filedata = file.read()
 
@@ -34,12 +34,11 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 
 breathe_projects = {}
 if read_the_docs_build:
-	print("read_the_docs_build in", os.getcwd())
 	input_dir = '../src'
-	output_dir = 'build'
+	output_dir = 'docs'
 	configureDoxyfile(input_dir, output_dir)
 	subprocess.call('doxygen', shell=True)
-	breathe_projects['telescope'] = output_dir + '/xml'
+	breathe_projects['telescope'] = output_dir + '/.doxygen/xml'
 
 
 # -- Project information -----------------------------------------------------
