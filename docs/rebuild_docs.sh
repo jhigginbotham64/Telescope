@@ -2,8 +2,11 @@
 #
 # clean out folder, rebuild docs
 #
-# usage: cd Telescope/docs; bash rebuild_docs.sh
+# usage: cd Telescope/docs; bash rebuild_docs.sh <build_dir>
+#
+# where <build_dir> is the output dir specified at cmake configuration
 #
 rm -r ./out
-cmake --build ../build --target pre_build_docs
-cmake --build ../build --target build_docs
+mkdir $1
+cmake --build "../$1" --target pre_build_docs
+cmake --build "../$1" --target build_docs
