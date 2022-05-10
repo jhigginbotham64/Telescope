@@ -22,8 +22,9 @@ import subprocess, os
 breathe_projects = {}
 if os.environ.get('READTHEDOCS', None) == 'True':
 	output_dir = '.doxygen'
-	subprocess.call('cd docs; doxygen; cd ..', shell=True)
-	breathe_projects['telescope'] = '.doxygen/xml'
+	subprocess.call('cd docs', shell=True)
+	subprocess.call('doxygen', shell=True)
+	breathe_projects['Telescope'] = '.doxygen/xml'
 
 
 # -- Project information -----------------------------------------------------
