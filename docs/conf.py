@@ -38,12 +38,12 @@ if read_the_docs_build:
 	output_dir = 'build'
 	configureDoxyfile(input_dir, output_dir)
 	subprocess.call('doxygen', shell=True)
-	breathe_projects['src'] = output_dir + '/xml'
+	breathe_projects['telescope'] = output_dir + '/xml'
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'src'
+project = 'telescope'
 copyright = '2022, Joshua Higginbotham'
 author = 'Simon Brand, Modified by Clemapfel'
 
@@ -81,7 +81,7 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # Breathe Configuration
-breathe_default_project = "src"
+breathe_default_project = "telescope"
 
 # disable "show source" in html output
 html_show_sourcelink = False
