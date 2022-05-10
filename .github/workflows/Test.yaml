@@ -1,4 +1,4 @@
-name: Build and test
+name: Build and Test
 on:
   push:
   pull_request:
@@ -10,7 +10,7 @@ defaults:
     shell: bash
 jobs:
   build:
-    name: Build telescope
+    name: Build Telescope 🔭
     runs-on: ubuntu-latest
     steps:
     - name: 🏁 Checkout
@@ -31,7 +31,7 @@ jobs:
         dpkg -L shaderc | grep libshaderc_shared.so
         cmake .. -DSHADERC_LIB_DIR=/usr/lib/x86_64-linux-gnu -DCMAKE_INSTALL_PREFIX=..
         make clean && make install
-    - name: Unit tests
+    - name: 🧪 Unit tests
       run: cd build && ctest -N && ctest -V
     # Only upload the build and use it in the subsequent job if this is a PR, push to _Main_ or a dispatch
     - name: 🆙 Upload compiled source
@@ -44,7 +44,7 @@ jobs:
         path: lib/libtelescope.so
         if-no-files-found: error
   # test-built-dist:
-  #   name: Test the built shared library
+  #   name: Test the built Telescope 🔭 *.so
   #   needs: [build]
   #   if: >- 
   #     ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' ||
@@ -60,5 +60,5 @@ jobs:
   #     with:
   #       name: libtelescope-pretest
   #       path: lib
-  #   - name: Integration tests
+  #   - name: 🧪 Integration tests
   #     run: echo TODO
