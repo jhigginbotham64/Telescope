@@ -22,40 +22,40 @@ namespace ts
             _cv.wait(_cv_lock, [locked_ptr = &_locked]{return locked_ptr;});
     }
 
-    bool InputHandler::is_key_down_aux(KeyboardKey key)
+    bool InputHandler::is_down_aux(KeyOrButton key)
     {
         return _this_frame_state.find(key_to_sdl_key(key)) == _this_frame_state.end();
     }
 
-    bool InputHandler::has_state_changed_aux(KeyboardKey key)
+    bool InputHandler::has_state_changed_aux(KeyOrButton key)
     {
         bool this_frame = _this_frame_state.find(key_to_sdl_key(key)) == _this_frame_state.end();
         bool last_frame = _last_frame_state.find(key_to_sdl_key(key)) == _last_frame_state.end();
         return this_frame != last_frame;
     }
 
-    bool InputHandler::is_key_down(KeyboardKey key)
+    bool InputHandler::is_down(KeyOrButton key)
     {
         wait_if_locked();
-        return is_key_down(key);
+        return is_down_aux(key);
     }
 
-    bool InputHandler::has_state_changed(KeyboardKey key)
+    bool InputHandler::has_state_changed(KeyOrButton key)
     {
         wait_if_locked();
         return has_state_changed_aux(key);
     }
 
-    bool InputHandler::was_key_pressed(KeyboardKey key)
+    bool InputHandler::was_pressed(KeyOrButton key)
     {
         wait_if_locked();
-        return is_key_down(key) and has_state_changed(key);
+        return is_down_aux(key) and has_state_changed_aux(key);
     }
 
-    bool InputHandler::was_key_released(KeyboardKey key)
+    bool InputHandler::was_released(KeyOrButton key)
     {
         wait_if_locked();
-        return not is_key_down(key) and has_state_changed(key);
+        return not is_down_aux(key) and has_state_changed_aux(key);
     }
 }
 

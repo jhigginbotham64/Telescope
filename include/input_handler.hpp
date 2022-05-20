@@ -52,10 +52,10 @@ namespace ts
 
         protected:
             //
-            void initialize();
+            static void initialize();
 
             //
-            void update();
+            static void update();
 
         private:
             static std::atomic<bool> _locked;
@@ -67,10 +67,10 @@ namespace ts
             static std::set<SDL_KeyCode> _this_frame_state;
 
             // non-thread-safe access:
-            static bool is_key_down_aux(KeyboardKey key);
-            static bool has_state_changed_aux(KeyboardKey key);
+            static bool is_down_aux(KeyOrButton key);
+            static bool has_state_changed_aux(KeyOrButton key);
 
-            static SDL_KeyCode key_to_sdl_key(KeyboardKey key);
+            static SDL_KeyCode key_to_sdl_key(KeyOrButton key);
             static void wait_if_locked();
     };
 }
