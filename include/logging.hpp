@@ -14,9 +14,11 @@ namespace ts
     class Log
     {
         public:
+            //
             template<typename... Args_t>
             static void print(Args_t... args);
 
+            //
             template<typename... Args_t>
             static void warning(Args_t... args);
 
