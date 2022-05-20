@@ -12,8 +12,9 @@ An Open-Source Toolkit for Interactive Multimedia Applications
   1.5. [shaderc](https://github.com/google/shaderc#downloads) <br>
   2. [Installation](#installation)<br>
   3. [Troubleshooting](#troubleshooting)<br>
-  4. [License](#license)<br>
-  5. [Authors](#authors)
+  4. [[Documentation](https://telescope.readthedocs.io/en/latest/)](#documentation)<br>
+  5. [License](#license)<br>
+  6. [Authors](#authors)
   
 ---
 ### Dependencies
@@ -155,6 +156,13 @@ shaderc/
   share/ 
 ```
 Where `libshaderc_shared.so` may have a different prefix and/or suffix depending on your system, for example `shaderc_shared.dll`.
+
+---
+
+### Documentation
+
+Documentation is available online [here](https://telescope.readthedocs.io/en/latest/). Alternatively, 
+
 
 ---
 
