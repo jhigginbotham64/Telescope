@@ -84,8 +84,6 @@ namespace ts
         BACKSPACE = SDLK_BACKSPACE,
         TAB = SDLK_TAB,
         SPACE = SDLK_SPACE,
-        SDLK_EXCLAIM,
-        SDLK_QUOTEDBL,
 
         HASH = SDLK_HASH,
         PERCENT = SDLK_PERCENT,
