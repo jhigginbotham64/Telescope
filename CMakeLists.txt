@@ -80,10 +80,14 @@ add_library(telescope SHARED
     include/physics_object.hpp
     include/vertex.hpp
     src/src.cpp
-        include/collision_event.hpp)
+    include/collision_event.hpp
+
+    include/logging.hpp
+    src/logging.inl
+)
 
 set_target_properties(telescope PROPERTIES
-  LINKER_LANGUAGE C
+  LINKER_LANGUAGE CXX
   CXX_STANDARD 20
   MACOSX_RPATH 1
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -93,7 +97,7 @@ set_target_properties(telescope PROPERTIES
 target_include_directories(telescope PUBLIC
   "${CMAKE_SOURCE_DIR}"
   "${BULLET_INCLUDE_DIRS}"
-  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/include"
+  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
   "${SHADERC_INCLUDE_DIRS}"
 )
 
@@ -106,6 +110,14 @@ target_link_libraries(telescope PUBLIC
   ${BULLET_LIBRARIES}
   ${shader_c_shared}
 )
+
+# TODO: REMOVE THIS
+add_executable(debug_main main.cpp)
+target_link_libraries(debug_main PRIVATE telescope)
+set_target_properties(telescope PROPERTIES
+  CXX_STANDARD 20
+)
+# TODO REMOVE THIS
 
 ### TESTS ####
 
@@ -142,7 +154,6 @@ if (BUILD_TESTS)
     endfunction()
 
     #declare_test(template_test)
-
     declare_test(test_common)
     declare_test(test_bullet)
     declare_test(test_ts)
