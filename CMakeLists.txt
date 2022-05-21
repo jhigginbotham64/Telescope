@@ -84,7 +84,7 @@ add_library(telescope SHARED
 
     include/logging.hpp
     src/logging.inl
-        include/exceptions.hpp src/exceptions.cpp include/input_handler.hpp src/input_handler.cpp include/vector.hpp include/key_or_button.hpp)
+        include/exceptions.hpp src/exceptions.cpp include/input_handler.hpp src/input_handler.cpp include/vector.hpp include/key_or_button.hpp include/time.hpp src/time.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX
@@ -154,12 +154,7 @@ if (BUILD_TESTS)
     endfunction()
 
     #declare_test(template_test)
-    declare_test(test_common)
-    declare_test(test_bullet)
-    declare_test(test_ts)
-    declare_test(test_vertex)
-    declare_test(test_vma)
-    declare_test(test_vulkan)
+    declare_test(time)
 endif()
 
 ### GENERATE DOCS ###
