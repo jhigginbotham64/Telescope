@@ -12,7 +12,8 @@ namespace ts
 {
     namespace detail
     {
-        constexpr int64_t CONTROLLER_OFFSET = 65536;
+        constexpr int64_t MOUSE_OFFSET = 1024;
+        constexpr int64_t CONTROLLER_OFFSET = 2*1024;
     }
 
     //
@@ -138,6 +139,15 @@ namespace ts
         PRINTSCREEN = SDLK_PRINTSCREEN,
         DELETE = SDLK_DELETE,
 
+        // mouse
+
+        MOUSE_LEFT = SDL_BUTTON_LEFT + detail::MOUSE_OFFSET,
+        MOUSE_RIGHT = SDL_BUTTON_RIGHT + detail::MOUSE_OFFSET,
+        MOUSE_MIDDLE = SDL_BUTTON_MIDDLE + detail::MOUSE_OFFSET,
+
+        MOUSE_X1 = SDL_BUTTON_X1 + detail::MOUSE_OFFSET,
+        MOUSE_X2 = SDL_BUTTON_X2 + detail::MOUSE_OFFSET,
+
         // controller buttons
 
         CONTROLLER_BUTTON_UNKNOWN = SDL_CONTROLLER_BUTTON_INVALID + detail::CONTROLLER_OFFSET,
@@ -172,6 +182,6 @@ namespace ts
         CONTROLLER_PADDLE_03 = SDL_CONTROLLER_BUTTON_PADDLE3 + detail::CONTROLLER_OFFSET,
         CONTROLLER_PADDLE_04 = SDL_CONTROLLER_BUTTON_PADDLE4 + detail::CONTROLLER_OFFSET,
 
-        CONTROLLER_PS5_TOUCHPAD = SDL_CONTROLLER_BUTTON_TOUCHPAD + detail::CONTROLLER_OFFSET,
+        CONTROLLER_PS5_TOUCHPAD = SDL_CONTROLLER_BUTTON_TOUCHPAD + detail::CONTROLLER_OFFSET
     };
 }

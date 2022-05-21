@@ -7,10 +7,12 @@
 
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_joystick.h>
+#include <SDL2/SDL_events.h>
 
 #include <mutex>
 #include <condition_variable>
 #include <set>
+#include <vector>
 
 #include <include/vector.hpp>
 #include <include/key_or_button.hpp>
@@ -55,7 +57,7 @@ namespace ts
             static void initialize();
 
             //
-            static void update();
+            static void update(std::vector<SDL_Event> events);
 
         private:
             static std::atomic<bool> _locked;

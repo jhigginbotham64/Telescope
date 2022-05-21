@@ -11,15 +11,7 @@
 #include <iostream>
 #include <thread>
 
-#include <include/logging.hpp>
-
-class InputHandler
-{
-    public:
-        bool is_key_down();
-        bool has_state_changed();
-
-};
+//https://lazyfoo.net/tutorials/SDL/36_multiple_windows/index.php
 
 int main()
 {
@@ -38,6 +30,7 @@ int main()
     {
         while (SDL_PollEvent(&event))
         {
+            event.
             auto sym = event.key.keysym.sym;
 
             if (sym == SDLK_ESCAPE)

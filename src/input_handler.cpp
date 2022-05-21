@@ -10,10 +10,20 @@ namespace ts
     void initialize()
     {
         _init_lock.lock();
-
-
-
         _init_lock.unlock();
+    }
+
+    void InputHandler::update()
+    {
+        _init_lock.lock();
+        _locked = true;
+
+
+
+
+
+        _locked = false;
+        _cv.notify_all();
     }
 
     void InputHandler::wait_if_locked()
