@@ -60,13 +60,13 @@ namespace ts
             static void update(std::vector<SDL_Event> events);
 
         private:
-            static std::atomic<bool> _locked;
+            static inline std::atomic<bool> _locked = false;
             static inline std::unique_lock<std::mutex> _cv_lock;
             static inline std::condition_variable _cv;
 
-            static std::mutex _init_lock;
-            static std::set<SDL_KeyCode> _last_frame_state;
-            static std::set<SDL_KeyCode> _this_frame_state;
+            static inline std::mutex _init_lock;
+            static inline std::set<SDL_KeyCode> _last_frame_state = {};
+            static inline std::set<SDL_KeyCode> _this_frame_state = {};
 
             // non-thread-safe access:
             static bool is_down_aux(KeyOrButton key);

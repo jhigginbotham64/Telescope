@@ -7,12 +7,18 @@
 
 namespace ts
 {
-    void initialize()
+    SDL_KeyCode InputHandler::key_to_sdl_key(KeyOrButton key)
     {
-        _init_lock.lock();
-        _init_lock.unlock();
+        return SDLK_a;
     }
 
+    void initialize()
+    {
+        //_init_lock.lock();
+        //_init_lock.unlock();
+    }
+
+    /*
     void InputHandler::update()
     {
         _init_lock.lock();
@@ -25,6 +31,7 @@ namespace ts
         _locked = false;
         _cv.notify_all();
     }
+     */
 
     void InputHandler::wait_if_locked()
     {

@@ -10,7 +10,7 @@ namespace ts
     SDLErrorException::SDLErrorException(const char* sdl_error_message)
     {
         std::stringstream str;
-        str << "[SDL_ERROR] " << sdl_error_type << ": " << sdl_error_message << std::endl;
+        str << "[SDL_ERROR] " << sdl_error_message << std::endl;
         _message = str.str();
     }
 

@@ -31,7 +31,7 @@ namespace ts
     {
         //
         T x, y, z, u;
-    }
+    };
 
     // typedefs:
 
