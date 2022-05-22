@@ -4,3 +4,9 @@ tests:
 lambdas:
     only use auto if necessary
     always specify trailing return type
+
+only use uint64_t, int32_t, int8_t, etc. not char, long, unsigned 
+
+if objects are plural, variable names should have plural s
+
+if a block of code is executed exactly twice or more times, it should be replaced with a function of the same behavior, potentially a lambda to avoid name pollution.
