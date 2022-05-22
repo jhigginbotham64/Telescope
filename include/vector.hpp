@@ -13,6 +13,15 @@ namespace ts
     template<typename T>
     struct Vector2
     {
+        Vector2()
+            : x(0), y(0)
+        {}
+
+        template<typename U>
+        Vector2(U x_in, U y_in)
+            : x(static_cast<T>(x_in)), y(static_cast<T>(y_in))
+        {}
+
         //
         T x, y;
     };
@@ -21,6 +30,10 @@ namespace ts
     template<typename T>
     struct Vector3
     {
+        Vector3()
+            : x(0), y(0), z(0)
+        {}
+
         //
         T x, y, z;
     };
@@ -29,6 +42,10 @@ namespace ts
     template<typename T>
     struct Vector4
     {
+        Vector4()
+            : x(0), y(0), z(0), u(0)
+        {}
+
         //
         T x, y, z, u;
     };
@@ -37,6 +54,10 @@ namespace ts
     template<typename T>
     struct Vector5
     {
+        Vector5()
+            : x(0), y(0), z(0), u(0), v(0)
+        {}
+
         //
         T x, y, z, u, v;
     };
