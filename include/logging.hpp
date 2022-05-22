@@ -22,13 +22,20 @@ namespace ts
             template<typename... Args_t>
             static void warning(Args_t... args);
 
+            //
+            template<typename... Args_t>
+            static void debug(Args_t... args);
+
         private:
             Log() = delete;
 
             static inline constexpr const char* LOG_PREFIX = "[LOG]";
             static inline constexpr const char* WARNING_PREFIX = "[WARNING]";
+            static inline constexpr const char* DEBUG_PREFIX = "[DEBUG]";
             static inline constexpr const char* GLOBAL_PREFIX = "";//"[C++]";
             static inline std::mutex _lock;
+
+            static inline bool _debug_enabled = true; //TODO: false for release
     };
 }
 

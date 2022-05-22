@@ -36,4 +36,22 @@ namespace ts
         std::cerr << std::endl;
         _lock.unlock();
     }
+
+    template<typename... Args_t>
+    void Log::debug(Args_t... args)
+    {
+        if (not _debug_enabled)
+            return;
+
+        _lock.lock();
+        std::cerr << GLOBAL_PREFIX << DEBUG_PREFIX << " ";
+
+        static auto add = [](auto in) -> void {
+            std::cerr << in;
+        };
+
+        (add(args), ...);
+        std::cerr << std::endl;
+        _lock.unlock();
+    }
 }
