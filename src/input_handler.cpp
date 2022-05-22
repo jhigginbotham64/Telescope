@@ -120,27 +120,15 @@ namespace ts
                 }
                 else if (event.window.event == SDL_WINDOWEVENT_SHOWN)
                 {
-                    for (auto* w : windows)
-                    {
-                        if (w->get_id() == event.window.windowID)
-                            w->set_hidden(false);
-                    }
+                    // noop
                 }
                 else if (event.window.event == SDL_WINDOWEVENT_HIDDEN)
                 {
-                    for (auto* w : windows)
-                    {
-                        if (w->get_id() == event.window.windowID)
-                            w->set_hidden(true);
-                    }
+                    // noop
                 }
                 else if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                 {
-                    for (auto* w : windows)
-                    {
-                        if (w->get_id() == event.window.windowID)
-                            w->resize(event.window.data1, event.window.data2);
-                    }
+                    // noop, resized by OS
                 }
                 else if (event.window.event == SDL_WINDOWEVENT_MINIMIZED)
                 {

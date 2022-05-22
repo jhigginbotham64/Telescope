@@ -7,54 +7,104 @@
 
 #include <SDL2/SDL_render.h>
 
+#include <string>
+
 #include <include/vector.hpp>
 
 namespace ts
 {
-    enum WindowOptions
+    enum WindowOptions : uint32_t
     {
-        FULLSCREEN = SDL_WINDOW_FULLSCREEN,
-        BORDERLESS = SDL_WINDOW_BORDERLESS,
-        RESIZABLE = SDL_WINDOW_RESIZABLE
+        DEFAULT = 0,
+        FULLSCREEN = 1 << 1,
+        BORDERLESS = 1 << 2,
+        RESIZABLE  = 1 << 3
     };
+
+    using WindowID = int32_t;
 
     class Window
     {
         friend class InputHandler;
 
         public:
+            //
             Window();
 
-            void create(size_t width, size_t height, WindowOptions options);
+            //
+            ~Window();
+
+            //
+            void create(size_t width, size_t height, uint32_t options = DEFAULT);
+
+            //
+            void create(std::string title, size_t width, size_t height, uint32_t options = DEFAULT);
+
+            //
             void close();
 
+            //
+            bool is_open() const;
+
+            //
+            Vector2ui get_size() const;
+
+            //
+            void set_size(size_t width, size_t height);
+
+            //
+            void set_position(int32_t x, int32_t y);
+
+            //
+            Vector2i get_position() const;
+
+            //
             void set_hidden(bool);
+
+            //
             bool is_hidden() const;
 
+            //
             void minimize();
+
+            //
             bool is_minimized() const;
 
+            //
             void maximize();
+
+            //
             bool is_maximized() const;
 
-            void has_focus() const;
-            void has_mouse_focus() const;
+            //
+            bool has_focus() const;
 
-            void resize(size_t width, size_t height);
+            //
+            bool has_mouse_focus() const;
 
-            size_t get_id() const;
+            //
+            WindowID get_id() const;
+
+            //
+            void clear();
+
+            //
+            void flush();
+
+            //
+            SDL_Window* native_window();
 
         private:
-            SDL_Window* _window;
-
-            size_t _id;
-            Vector2ui _size;
+            SDL_Window* _window = nullptr;
+            SDL_Renderer* _renderer = nullptr;
+            bool _is_open = false;
 
             bool _is_borderless;
             bool _is_resizable;
 
             bool _is_minimized;
             bool _is_maximized;
+            bool _is_fullscreen;
             bool _is_hidden;
 
             // updated by InputHandler:
