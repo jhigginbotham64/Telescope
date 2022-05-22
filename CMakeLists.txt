@@ -155,6 +155,7 @@ if (BUILD_TESTS)
 
     #declare_test(template_test)
     declare_test(time)
+    declare_test(input_handler)
 endif()
 
 ### GENERATE DOCS ###
