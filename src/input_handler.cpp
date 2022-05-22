@@ -8,12 +8,12 @@
 
 namespace ts
 {
-    void InputHandler::update(SDL_Window* window)
+    void InputHandler::update(ts::Window* window)
     {
-        update({window});
+        update(std::vector<ts::Window*>{window});
     }
 
-    void InputHandler::update(std::vector<SDL_Window*> windows)
+    void InputHandler::update(std::vector<ts::Window*> windows)
     {
         _init_lock.lock();
         _locked = true;
@@ -108,43 +108,88 @@ namespace ts
                     }
                 }
             }
-            else if (event.type == SDL_WINDOWEVENT_CLOSE)
+            if (event.type == SDL_WINDOWEVENT)
             {
-                for (auto* window : windows)
+                if (event.window.event == SDL_WINDOWEVENT_CLOSE)
                 {
-                    if (SDL_GetWindowID(window) == event.window.windowID)
+                    for (auto* w : windows)
                     {
-                        Log::print("Closing window ", event.window.windowID);
-                        SDL_DestroyWindow(window);
-                        break;
+                        if (w->get_id() == event.window.windowID)
+                            w->close();
                     }
                 }
-            }
-            else if (event.type == SDL_WINDOWEVENT_MAXIMIZED)
-            {
-                for (auto* window : windows)
+                else if (event.window.event == SDL_WINDOWEVENT_SHOWN)
                 {
-                    if (SDL_GetWindowID(window) == event.window.windowID)
+                    for (auto* w : windows)
                     {
-                        SDL_MaximizeWindow(window);
-                        break;
+                        if (w->get_id() == event.window.windowID)
+                            w->set_hidden(false);
                     }
                 }
-            }
-            else if (event.type == SDL_WINDOWEVENT_MINIMIZED)
-            {
-                for (auto* window : windows)
+                else if (event.window.event == SDL_WINDOWEVENT_HIDDEN)
                 {
-                    if (SDL_GetWindowID(window) == event.window.windowID)
+                    for (auto* w : windows)
                     {
-                        SDL_MinimizeWindow(window);
-                        break;
+                        if (w->get_id() == event.window.windowID)
+                            w->set_hidden(true);
                     }
                 }
-            }
-            else if (event.type == SDL_WINDOWEVENT_RESIZED)
-            {
-                // noop, handled by OS if SDL_SetWindowResizable was set to true
+                else if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->resize(event.window.data1, event.window.data2);
+                    }
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_MINIMIZED)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->minimize();
+                    }
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_MINIMIZED)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->maximize();
+                    }
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_ENTER)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->_has_mouse_focus = true;
+                    }
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_LEAVE)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->_has_mouse_focus = false;
+                    }
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->_has_focus = true;
+                    }
+                }
+                else if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                {
+                    for (auto* w : windows)
+                    {
+                        if (w->get_id() == event.window.windowID)
+                            w->_has_focus = false;
+                    }
+                }
             }
             else
                 Log::debug("In InputHandler.update: unhandled event of type ", event.type);

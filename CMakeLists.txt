@@ -84,7 +84,7 @@ add_library(telescope SHARED
 
     include/logging.hpp
     src/logging.inl
-        include/exceptions.hpp src/exceptions.cpp include/input_handler.hpp src/input_handler.cpp include/vector.hpp include/key_or_button.hpp include/time.hpp src/time.cpp)
+        include/exceptions.hpp src/exceptions.cpp include/input_handler.hpp src/input_handler.cpp include/vector.hpp include/key_or_button.hpp include/time.hpp src/time.cpp include/window.hpp src/window.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX

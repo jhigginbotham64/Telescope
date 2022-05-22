@@ -14,9 +14,11 @@
 #include <set>
 #include <vector>
 #include <map>
+#include <atomic>
 
 #include <include/vector.hpp>
 #include <include/key_or_button.hpp>
+#include <include/window.hpp>
 
 namespace ts
 {
@@ -63,7 +65,7 @@ namespace ts
             //
             static bool was_released(ControllerButton controller_button, ControllerID id = 0);
 
-            // relative to window top left, may be negative, absolute value in pixels
+            // relative to focused window top left, may be negative, absolute value in pixels
             static Vector2i get_cursor_position();
 
             // offset, 0 if no change
@@ -83,9 +85,8 @@ namespace ts
             static float get_controller_trigger_right(ControllerID = 0);
 
         //protected:
-            //
-            static void update(SDL_Window*);
-            static void update(std::vector<SDL_Window*> = {});
+            static void update(ts::Window*);
+            static void update(std::vector<ts::Window*>);
 
         private:
             static inline std::atomic<bool> _locked = false;
@@ -103,7 +104,7 @@ namespace ts
             {
                 std::set<MouseButton> pressed;
 
-                Vector2i position;
+                Vector2i position; // always to window in focus
                 Vector2f scroll_delta;
             };
             

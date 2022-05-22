@@ -27,14 +27,19 @@ int main()
     else
         ts::Log::print("SDL initialized");
 
-    SDL_Window* window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, 0);
+    SDL_Window* window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+    ts::WINDOW_OPEN = true;
+
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
 
-    while (window != nullptr)
+    while (ts::WINDOW_OPEN)
     {
         clock.restart();
         ts::InputHandler::update(window);
+
+        if (ts::InputHandler::was_pressed(ts::KeyboardKey::ESCAPE))
+            SDL_DestroyWindow(window);
 
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
         std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));

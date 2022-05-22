@@ -4,6 +4,8 @@
   TODO: better support for rotation of rectangles, sprites, and collision objects
 */
 
+/*
+
 #define VULKAN_HPP_TYPESAFE_CONVERSION 1
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
@@ -1902,3 +1904,4 @@ void TS_PlaySound(const char* sound_file, int loops, int ticks)
     std::cerr << "Unable to play sound " << sound_file << std::endl << TS_SDLGetError() << std::endl;
   }
 }
+ */
