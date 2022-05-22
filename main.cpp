@@ -11,6 +11,10 @@
 #include <iostream>
 #include <thread>
 
+#include <include/logging.hpp>
+#include <include/time.hpp>
+#include <include/input_handler.hpp>
+
 //https://lazyfoo.net/tutorials/SDL/36_multiple_windows/index.php
 
 int main()
@@ -23,23 +27,17 @@ int main()
     else
         ts::Log::print("SDL initialized");
 
-    SDL_Window* win = SDL_CreateWindow("GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, 0);
-    auto event = SDL_Event();
+    SDL_Window* window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, 0);
+    auto clock = ts::Clock();
+    auto target_frame_duration = ts::seconds(1 / 60.f);
 
-    while (true)
+    while (window != nullptr)
     {
-        while (SDL_PollEvent(&event))
-        {
-            event.
-            auto sym = event.key.keysym.sym;
+        clock.restart();
+        ts::InputHandler::update(window);
 
-            if (sym == SDLK_ESCAPE)
-                exit(0);
-
-            std::cout << (char) event.key.keysym.sym << std::endl;
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds (1/60 * 1000));
+        auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
+        std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));
     }
 }
 

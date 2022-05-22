@@ -12,7 +12,6 @@
 #include <sstream>
 #include <vector>
 
-
 /// \brief test interface, intended to be used with CMakes CTest. c.f. `test/template_test` for usage example
 /// \author Clemapfel
 namespace Test
