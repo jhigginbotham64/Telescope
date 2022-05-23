@@ -16,6 +16,8 @@
 #include <include/logging.hpp>
 #include <include/time.hpp>
 #include <include/input_handler.hpp>
+#include <include/music.hpp>
+#include <include/music_handler.hpp>
 
 //https://lazyfoo.net/tutorials/SDL/36_multiple_windows/index.php
 
@@ -25,23 +27,28 @@ void initialize()
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_AudioInit(SDL_GetAudioDriver(0));
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
-    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024)
+    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
 }
 
 int main()
 {
+    initialize();
+
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
 
-    Mix_Music* music;
+    std::function<void()> test = [](){
+        std::cout << "test" << std::endl;
+    };
 
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
-    music = Mix_LoadMUS("/home/clem/Music/otherworldly_foe.mp3");
-    assert(music != nullptr);
-    Mix_PlayMusic(music, -1);
+    ts::detail::MusicFunctionHook::function = []() -> void {
+        std::cout << "test" << std::endl;
+    };
 
-
-    bool current = false;
+    auto okedesuka = ts::Music("/home/clem/Music/ok_desu_ka.mp3");
+    auto music = ts::Music("/home/clem/Music/otherworldly_foe.mp3");
+    ts::MusicHandler::play(music, false);
+    ts::MusicHandler::play_next(okedesuka, false);
 
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
@@ -51,6 +58,9 @@ int main()
         clock.restart();
         ts::InputHandler::update(&window);
         window.clear();
+
+        if (ts::InputHandler::was_pressed(ts::KeyboardKey::SPACE))
+            ts::MusicHandler::next();
 
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
         std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));

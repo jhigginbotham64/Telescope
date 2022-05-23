@@ -15,6 +15,7 @@ namespace ts
     //
     class Music
     {
+        friend class MusicHandler;
         public:
             //
             Music();
@@ -31,35 +32,8 @@ namespace ts
             // call destroy, useful for memory management
             void unload();
 
-            //
-            bool is_looping() const;
-
-            // always restarts
-            void play(Time fade_in_delay = milliseconds(0)) const;
-
-            //
-            void stop(Time fade_out_delay = milliseconds(0)) const;
-
-            // set position
-            void skip_to(Time timestamp) const;
-
-            // stop and skip all effects;
-            void force_stop() const;
-
-            //
-            void pause() const;
-
-            //
-            void unpause() const;
-
-            //
-            bool is_playing() const;
-
-            //
-            bool is_paused() const;
-
-
         private:
+            size_t _id;
             bool _is_looping = true;
             Mix_Music* _music;
     };

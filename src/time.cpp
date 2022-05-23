@@ -14,6 +14,11 @@ namespace ts
         : _ns(std::chrono::nanoseconds(n_nanoseconds))
     {}
 
+    Time minutes(double n)
+    {
+        return Time(int64_t(ceil(n * 1e+9) * 60));
+    }
+
     Time seconds(double n)
     {
         return Time(int64_t(ceil(n * 1e+9)));
@@ -32,6 +37,11 @@ namespace ts
     Time nanoseconds(size_t n)
     {
         return Time(n);
+    }
+
+    double Time::as_minutes() const
+    {
+        return as_seconds() / 60;
     }
 
     double Time::as_seconds() const

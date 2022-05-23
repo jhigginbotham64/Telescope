@@ -17,6 +17,9 @@ namespace ts
             Time(int64_t n_nanoseconds);
 
             //
+            double as_minutes() const;
+
+            //
             double as_seconds() const;
 
             //
@@ -31,6 +34,9 @@ namespace ts
         private:
             std::chrono::duration<int64_t, std::nano> _ns; // in nanoseconds
     };
+
+    //
+    Time minutes(double);
 
     //
     Time seconds(double);

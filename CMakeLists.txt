@@ -105,7 +105,7 @@ add_library(telescope SHARED
 
     include/music.hpp
     src/music.cpp
-)
+        include/music_handler.hpp src/music_handler.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX
