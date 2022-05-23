@@ -19,25 +19,23 @@
 
 //https://lazyfoo.net/tutorials/SDL/36_multiple_windows/index.php
 
+void initialize()
+{
+    // TODO: log & exceptions
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_AudioInit(SDL_GetAudioDriver(0));
+    Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
+    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024)
+}
+
 int main()
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-    {
-        ts::Log::warning("SDL initialization failed");
-        printf("error initializing SDL: %s\n", SDL_GetError());
-    }
-    else
-        ts::Log::print("SDL initialized");
-
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
-    SDL_AudioInit(SDL_GetAudioDriver(0));
-
-    Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
 
     Mix_Music* music;
 
-    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
     music = Mix_LoadMUS("/home/clem/Music/otherworldly_foe.mp3");
     assert(music != nullptr);
     Mix_PlayMusic(music, -1);
