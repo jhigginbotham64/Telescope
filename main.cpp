@@ -7,9 +7,11 @@
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_joystick.h>
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_mixer.h>
 
 #include <iostream>
 #include <thread>
+#include <cassert>
 
 #include <include/logging.hpp>
 #include <include/time.hpp>
@@ -28,7 +30,18 @@ int main()
         ts::Log::print("SDL initialized");
 
     auto window = ts::Window();
-    window.create("window", 800, 600, ts::BORDERLESS);
+    window.create("window", 800, 600, ts::DEFAULT);
+    SDL_AudioInit(SDL_GetAudioDriver(0));
+
+    Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
+
+    Mix_Music* music;
+
+    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+    music = Mix_LoadMUS("/home/clem/Music/otherworldly_foe.mp3");
+    assert(music != nullptr);
+    Mix_PlayMusic(music, -1);
+
 
     bool current = false;
 
