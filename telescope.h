@@ -7,6 +7,8 @@
 
 #include <unordered_map>
 
+#include <include/window.hpp>
+
 #include <include/input_handler.hpp>
 
 #include <include/music.hpp>
@@ -17,22 +19,128 @@
 
 extern "C"
 {
-// ### VECTOR2 #################################################
 
-struct Vector2f
+// ### WINDOW ##################################################
+
+namespace detail
 {
-    float x, y;
-};
+    static inline size_t _window_id = 0;
+    static inline std::unordered_map<size_t, ts::Window> _windows = {};
+}
 
-struct Vector2ui
+size_t ts_window_create(
+    size_t width,
+    size_t height,
+    const char* title = "",
+    bool fullscreen = false,
+    bool borderless = false,
+    bool resizable = false)
 {
+    auto id = _window_id++;
+    detail::_windows.emplace(id, ts::Window());
 
-};
+    uint32_t options = ts::WindowOptions::DEFAULT;
 
+    if (fullscreen)
+        option |= ts::FULLSCREEN;
+
+    if (borderless)
+        option |= ts::BORDERLESS;
+
+    if (resizable)
+        option |= ts::RESIZABLE;
+
+    detail::_windows[id].create(title, width, height, options);
+    return id;
+}
+
+void ts_window_destroy(size_t id)
+{
+    detail::_windows[id].close();
+    detail::_windows.erase(id);
+}
+
+void ts_window_close(size_t id)
+{
+    detail::_windows[id].close();
+}
+
+bool ts_window_is_open(size_t id)
+{
+    return detail::_windows[id].is_open();
+}
+
+size_t ts_window_get_size_x(size_t id)
+{
+    return detail::_windows[id].get_size().x;
+}
+
+size_t ts_window_get_size_y(size_t id)
+{
+    return detail::_windows[id].get_size().y;
+}
+
+size_t ts_window_get_position_x(size_t id)
+{
+    return detail::_windows[id].get_position().x;
+}
+
+size_t ts_window_get_position_y(size_t id)
+{
+    return detail::_windows[id].get_position().y;
+}
+
+void ts_window_set_hidden(size_t id, bool hidden)
+{
+    detail::_windows[id].set_hidden(hidden);
+}
+
+bool ts_window_is_hidden(size_t id)
+{
+    return detail::_windows[id].is_hidden();
+}
+
+bool ts_window_minimize(size_t id)
+{
+    detail::_windows[id].minimize();
+}
+
+bool ts_window_is_minimized(size_t id)
+{
+    return detail::_windows[id].is_minimized();
+}
+
+bool ts_window_maximize(size_t id)
+{
+    detail::_windows[id].maximize();
+}
+
+bool ts_window_is_maximized(size_t id)
+{
+    return detail::_windows[id].is_maximized();
+}
+
+bool ts_window_has_focus(size_t id)
+{
+    return detail::_windows[id].has_focus();
+}
+
+bool ts_window_has_mouse_focus(size_t id)
+{
+    return detail::_windows[id].has_mouse_focus();
+}
+
+void ts_window_clear(size_t id)
+{
+    detail::_windows[id].clear();
+}
+
+void ts_window_flush(size_t id)
+{
+    detail::_windows[id].flush();
+}
 
 // ### INPUT ###################################################
-
-// void ts_input_update(size_t window_id);
 
 bool ts_keyboard_is_down(int64_t key)
 {
