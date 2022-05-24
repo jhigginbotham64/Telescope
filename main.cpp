@@ -25,9 +25,9 @@ void initialize()
 {
     // TODO: log & exceptions
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_AudioInit(SDL_GetAudioDriver(0));
+    SDL_AudioInit(SDL_GetAudioDriver(1));
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
-    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
 }
 
 int main()
@@ -37,18 +37,11 @@ int main()
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
 
-    std::function<void()> test = [](){
-        std::cout << "test" << std::endl;
-    };
-
-    ts::detail::MusicFunctionHook::function = []() -> void {
-        std::cout << "test" << std::endl;
-    };
-
     auto okedesuka = ts::Music("/home/clem/Music/ok_desu_ka.mp3");
     auto music = ts::Music("/home/clem/Music/otherworldly_foe.mp3");
-    ts::MusicHandler::play(music, false);
-    ts::MusicHandler::play_next(okedesuka, false);
+    Mix_FadeInMusic(music.get_native(), -1, 23);
+    //ts::MusicHandler::play(music, false, ts::milliseconds(2));
+    //ts::MusicHandler::play_next(okedesuka, false);
 
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);

@@ -12,10 +12,12 @@
 
 namespace ts
 {
+    namespace detail { union MusicFunctionHook; }
+
     /// \brief manage music playback. Unlike sounds, only one music track can be active at the same time
     class MusicHandler
     {
-        friend class MusicFunctionHook;
+        static inline constexpr size_t sample_rate = 44100; // in Hz
 
         public:
             /// \brief instantly play new music, clears any scheduled music
@@ -40,6 +42,10 @@ namespace ts
 
             /// \brief undo the last scheduling done by play_next
             static void clear_next();
+
+            /// \brief get scheduled music or nullptr
+            /// \returns pointer to music, or nullptr if no music is scheduled
+            static Music* get_next();
 
             /// \brief stop any music and effects
             static void force_stop();
@@ -72,32 +78,35 @@ namespace ts
             static void set_volume(double zero_to_one);
 
             /// \brief get the current volume level
-            /// \returns double in [0, 1], where 0 is no sound, 1 is maxium volume
+            /// \returns double in [0, 1], where 0 is no sound, 1 is maximum volume
             static double get_volume();
 
         private:
+            friend union detail::MusicFunctionHook;
+
             static inline double _volume = 1;
             static inline Music* _active = nullptr;
-
-            static inline std::deque<Music*> _queue;
+            static inline Music* _next = nullptr;
 
             static inline std::mutex _lock = std::mutex();
     };
 
     namespace detail
     {
-        // singleton wrapper to allow lambdas to be called a C-style function pointer
+        // singleton wrapper to allow lambdas to be called as C-style function pointers
         union MusicFunctionHook
         {
             static inline std::function<void()> function = [](){};
 
-            static void invoke() {
-                function();
+            static void clear()
+            {
+                function = [](){};
             }
 
-            static void invoke_once() {
+            static void invoke_once()
+            {
                 function();
-                function = [](){};
+                clear();
             }
         };
     }

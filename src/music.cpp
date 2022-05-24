@@ -40,5 +40,15 @@ namespace ts
     {
         unload();
     }
+
+    size_t Music::get_id()
+    {
+        return _id;
+    }
+
+    Mix_Music * Music::get_native()
+    {
+        return _music;
+    }
 }
 

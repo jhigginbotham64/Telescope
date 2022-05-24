@@ -15,7 +15,6 @@ namespace ts
     //
     class Music
     {
-        friend class MusicHandler;
         public:
             //
             Music();
@@ -32,7 +31,15 @@ namespace ts
             // call destroy, useful for memory management
             void unload();
 
+            //
+            size_t get_id();
+
+            //
+            Mix_Music* get_native();
+
         private:
+            friend class MusicHandler;
+
             size_t _id;
             bool _is_looping = true;
             Mix_Music* _music;

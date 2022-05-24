@@ -12,15 +12,13 @@ namespace ts
     {
         auto guard = std::lock_guard(_lock);
 
-        std::cout << "play: " << &music << std::endl;
-
         if (music._music == nullptr)
         {
             Log::warning("In MusicHandler.play: trying to play music even though it is uninitialized");
             return;
         }
 
-        if (fade_in_delay.as_milliseconds() < 1)
+        if (fade_in_delay.as_milliseconds() < sample_rate / 1000)
             Mix_PlayMusic(music._music, (should_loop ? -1 : 1));
         else
             Mix_FadeInMusic(music._music, (should_loop ? -1 : 1), (int32_t) fade_in_delay.as_milliseconds());
@@ -32,8 +30,11 @@ namespace ts
     {
         auto guard = std::lock_guard(_lock);
 
-        Mix_FadeOutMusic(ceil(fade_out_delay.as_milliseconds()));
-        // ceil prevents popping by always doing a minimal fade-out
+        if (fade_out_delay.as_milliseconds() < sample_rate / 1000)
+            Mix_HaltMusic();
+        else
+            Mix_FadeOutMusic(fade_out_delay.as_milliseconds());
+
         _active = nullptr;
     }
 
@@ -42,7 +43,7 @@ namespace ts
         auto guard = std::lock_guard(_lock);
 
         Mix_PauseMusic();
-        // keep _active set
+        // keeps _active set
     }
 
     void MusicHandler::play_next(Music& music, bool should_loop, Time fade_in)
@@ -51,15 +52,18 @@ namespace ts
 
         detail::MusicFunctionHook::function = [music_ptr = &music, should_loop, fade_in]() -> void
         {
+            MusicHandler::_next = nullptr;
             MusicHandler::play((*music_ptr), should_loop, fade_in);
         };
         Mix_HookMusicFinished(&detail::MusicFunctionHook::invoke_once);
+        _next = &music;
     }
 
     void MusicHandler::clear_next()
     {
         Mix_HookMusicFinished(nullptr);
-        detail::MusicFunctionHook::function = [](){};
+        detail::MusicFunctionHook::clear();
+        _next = nullptr;
     }
 
     void MusicHandler::next(Time fade_out_duration)
@@ -68,12 +72,18 @@ namespace ts
         detail::MusicFunctionHook::invoke_once();
     }
 
+    Music * MusicHandler::get_next()
+    {
+        return _next;
+    }
+
     void MusicHandler::force_stop()
     {
         auto guard = std::lock_guard(_lock);
         clear_next();
         Mix_HaltMusic();
         _active = nullptr;
+        _next = nullptr;
     }
 
     void MusicHandler::unpause()
