@@ -180,7 +180,9 @@ namespace ts
                 }
             }
             else
-                Log::debug("In InputHandler.update: unhandled event of type ", event.type);
+            {
+                // noop
+            }
         }
 
         _locked = false;
