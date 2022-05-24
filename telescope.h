@@ -7,6 +7,8 @@
 
 #include <unordered_map>
 
+#include <include/input_handler.hpp>
+
 #include <include/music.hpp>
 #include <include/music_handler.hpp>
 
@@ -15,6 +17,132 @@
 
 extern "C"
 {
+// ### VECTOR2 #################################################
+
+struct Vector2f
+{
+    float x, y;
+};
+
+struct Vector2ui
+{
+
+};
+
+
+// ### INPUT ###################################################
+
+// void ts_input_update(size_t window_id);
+
+bool ts_keyboard_is_down(int64_t key)
+{
+    return ts::InputHandler::is_down((ts::KeyboardKey) key);
+}
+
+bool ts_keyboard_has_state_changed(int64_t key)
+{
+    return ts::InputHandler::has_state_changed((ts::KeyboardKey) key);
+}
+
+bool ts_keyboard_was_pressed(int64_t key)
+{
+    return ts::InputHandler::was_pressed((ts::KeyboardKey) key);
+}
+
+bool ts_keyboard_was_released(int64_t key)
+{
+    return ts::InputHandler::was_released((ts::KeyboardKey) key);
+}
+
+bool ts_mouse_is_down(int64_t button)
+{
+    return ts::InputHandler::is_down((ts::MouseButton) button);
+}
+
+bool ts_mouse_has_state_changed(int64_t button)
+{
+    return ts::InputHandler::has_state_changed((ts::MouseButton) button);
+}
+
+bool ts_mouse_was_pressed(int64_t button)
+{
+    return ts::InputHandler::was_pressed((ts::MouseButton) button);
+}
+
+bool ts_mouse_was_released(int64_t button)
+{
+    return ts::InputHandler::was_released((ts::MouseButton) button);
+}
+
+float ts_mouse_cursor_position_x()
+{
+    return ts::InputHandler::get_cursor_position().x;
+}
+
+float ts_mouse_cursor_position_y()
+{
+    return ts::InputHandler::get_cursor_position().y;
+}
+
+float ts_mouse_scrollwheel_x()
+{
+    return ts::InputHandler::get_scrollwheel().x;
+}
+
+float ts_mouse_scrollwheel_y()
+{
+    return ts::InputHandler::get_scrollwheel().y;
+}
+
+bool ts_controller_is_down(int64_t button, size_t controller_id)
+{
+    return ts::InputHandler::is_down((ts::ControllerButton) button, controller_id);
+}
+
+bool ts_controller_has_state_changed(int64_t button, size_t controller_id)
+{
+    return ts::InputHandler::has_state_changed((ts::ControllerButton) button, controller_id);
+}
+
+bool ts_controller_was_pressed(int64_t button, size_t controller_id)
+{
+    return ts::InputHandler::was_pressed((ts::ControllerButton) button, controller_id);
+}
+
+bool ts_controller_was_released(int64_t button, size_t controller_id)
+{
+    return ts::InputHandler::was_released((ts::ControllerButton) button, controller_id);
+}
+
+float ts_controller_axis_left_x(size_t controller_id = 0)
+{
+    return ts::InputHandler::get_controller_axis_left(controller_id).x
+}
+
+float ts_controller_axis_left_y(size_t controller_id = 0)
+{
+    return ts::InputHandler::get_controller_axis_left(controller_id).y
+}
+
+float ts_controller_axis_right_x(size_t controller_id = 0)
+{
+    return ts::InputHandler::get_controller_axis_right(controller_id).x
+}
+
+float ts_controller_axis_right_y(size_t controller_id = 0)
+{
+    return ts::InputHandler::get_controller_axis_right(controller_id).y
+}
+
+float ts_controller_trigger_left(size_t controller_id = 0)
+{
+    return ts::InputHandler::get_controller_trigger_left(controller_id);
+}
+
+float ts_controller_trigger_right(size_t controller_id = 0)
+{
+    return ts::InputHandler::get_controller_trigger_right(controller_id);
+}
 
 // ### MUSIC ###################################################
 

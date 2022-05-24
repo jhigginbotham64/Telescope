@@ -10,7 +10,6 @@
 
 namespace ts
 {
-
     /// \brief enum of keyboard keys
     enum KeyboardKey : int64_t
     {
