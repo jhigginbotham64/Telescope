@@ -92,7 +92,7 @@ namespace ts
             void flush();
 
             //
-            SDL_Window* native_window();
+            SDL_Window* get_native();
 
         private:
             SDL_Window* _window = nullptr;

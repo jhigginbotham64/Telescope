@@ -64,7 +64,7 @@ namespace ts
         _is_open = true;
     }
 
-    SDL_Window * Window::native_window()
+    SDL_Window * Window::get_native()
     {
         return _window;
     }
