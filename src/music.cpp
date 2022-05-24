@@ -45,7 +45,7 @@ namespace ts
         return _id;
     }
 
-    Mix_Music * Music::get_native()
+    Mix_Music* Music::get_native()
     {
         return _music;
     }

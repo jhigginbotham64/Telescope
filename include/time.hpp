@@ -40,6 +40,8 @@ namespace ts
             friend Time microseconds(double);
             friend Time nanoseconds(size_t);
 
+            friend class Clock;
+
             Time(int64_t n_nanoseconds);
 
             std::chrono::duration<int64_t, std::nano> _ns; // in nanoseconds
