@@ -41,6 +41,8 @@ int main()
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
 
+
+
     auto okedesuka = ts::Music("/home/clem/Music/ok_desu_ka.mp3");
     auto music = ts::Music("/home/clem/Music/otherworldly_foe.mp3");
     Mix_FadeInMusic(music.get_native(), -1, 23);

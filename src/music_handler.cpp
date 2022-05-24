@@ -116,7 +116,11 @@ namespace ts
     void MusicHandler::skip_to(Time timestamp)
     {
         auto guard = std::lock_guard(_lock);
-        Mix_SetMusicPosition(timestamp.as_seconds());
+
+        if (timestamp.as_seconds() == 0)
+            Mix_RewindMusic();
+        else
+            Mix_SetMusicPosition(timestamp.as_seconds());
     }
 
     void MusicHandler::set_volume(double zero_to_one)

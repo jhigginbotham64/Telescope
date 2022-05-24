@@ -27,31 +27,38 @@ namespace ts
             static void pause(size_t channel);
 
             //
-            static void resume(size_t channel);
+            static void unpause(size_t channel);
 
             //
             static void force_stop(size_t channel);
 
             //
-            static void is_playing(size_t channel);
+            static bool is_playing(size_t channel);
 
             //
-            static void is_paused(size_t channel);
+            static bool is_paused(size_t channel);
 
             //
-            static void is_stopped(size_t channel);
-
-            //
-            static Sound* get_active(size_t channel);
+            static bool is_stopped(size_t channel);
 
             //
             static void set_volume(size_t channel, float zero_to_one);
 
             //
+            static float get_volume(size_t channel);
+
+            //
             static void set_panning(size_t channel, size_t zero_to_360_degree);
 
+            //
+            static size_t get_panning(size_t channel);
+
         private:
-            static size_t assert_channel_index(const std::string function_name, size_t);
+            static int32_t forward_index(size_t channel, const std::string function_name);
+
+            static inline std::array<float, n_channels> _volume = {};
+            static inline std::array<size_t, n_channels> _panning = {};
+
             static inline std::mutex _lock = std::mutex();
     };
 }
