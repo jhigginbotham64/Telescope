@@ -10,19 +10,22 @@
 
 namespace ts
 {
-    // basic thread-safe log, used for debugging
+    /// \brief basic thread-safe log
     class Log
     {
         public:
-            //
+            /// \brief print as general info
+            /// \param args: arguments, converted to strings
             template<typename... Args_t>
             static void print(Args_t... args);
 
-            //
+            /// \brief print as warning to stderr
+            /// \param args: arguments, converted to strings
             template<typename... Args_t>
             static void warning(Args_t... args);
 
-            //
+            /// \brief print only if debug output was enabled
+            /// \param args: arguments, converted to strings
             template<typename... Args_t>
             static void debug(Args_t... args);
 

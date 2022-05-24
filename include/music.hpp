@@ -13,29 +13,34 @@
 
 namespace ts
 {
-    //
+    /// \brief memory management proxy for music, played with MusicHandler
     class Music
     {
         public:
-            //
+            /// \brief ctor, does not allocate
             Music();
 
-            //
+            /// \brief ctor, load music from a file, supports .wav, .mp3, .ogg, .flac
+            /// \param path: absolute path
             Music(const std::string& path);
 
-            //
+            /// \brief dtor, deallocates memory
             ~Music();
 
-            //
+            /// \brief load music from a file, supports .wav, .mp3, .ogg, .flac
+            /// \param path: absolute path
+            /// \returns true if load successfully, false otherwise
             bool load(const std::string& path);
 
-            // call destroy, useful for memory management
+            /// \brief deallocate memory
             void unload();
 
-            //
+            /// \brief get internal id
+            /// \returns id as uint64
             size_t get_id() const;
 
-            //
+            /// \brief get native SDL2 mixer music object
+            /// \returns pointer
             Mix_Music* get_native();
 
         private:

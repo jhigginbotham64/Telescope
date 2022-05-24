@@ -41,16 +41,13 @@ int main()
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
 
-
-
-    auto okedesuka = ts::Music("/home/clem/Music/ok_desu_ka.mp3");
-    auto music = ts::Music("/home/clem/Music/otherworldly_foe.mp3");
-    Mix_FadeInMusic(music.get_native(), -1, 23);
-    //ts::MusicHandler::play(music, false, ts::milliseconds(2));
-    //ts::MusicHandler::play_next(okedesuka, false);
+    auto music = ts::Sound("/home/clem/Music/otherworldly_foe.mp3");
+    ts::SoundHandler::play(music, 0);
 
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
+
+    float volume = 0;
 
     while (window.is_open())
     {
@@ -58,8 +55,7 @@ int main()
         ts::InputHandler::update(&window);
         window.clear();
 
-        if (ts::InputHandler::was_pressed(ts::KeyboardKey::SPACE))
-            ts::MusicHandler::next();
+        ts::SoundHandler::set_volume(0, volume += 1/60.f);
 
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
         std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));

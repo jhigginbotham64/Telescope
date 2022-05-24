@@ -11,7 +11,7 @@
 namespace ts
 {
 
-    //
+    /// \brief enum of keyboard keys
     enum KeyboardKey : int64_t
     {
         NUM_0 = SDLK_0,
@@ -133,7 +133,7 @@ namespace ts
         DELETE = SDLK_DELETE,
     };
 
-    //
+    /// \brief enum of mouse buttons
     enum MouseButton : int64_t
     {
         MOUSE_LEFT = SDL_BUTTON_LEFT,
@@ -144,7 +144,7 @@ namespace ts
         MOUSE_X2 = SDL_BUTTON_X2,
     };
 
-    //
+    /// \brief enum of controller buttons
     enum ControllerButton : int64_t
     {
         CONTROLLER_BUTTON_UNKNOWN = SDL_CONTROLLER_BUTTON_INVALID,

@@ -22,66 +22,101 @@
 
 namespace ts
 {
-    //
+    /// \brief controller id: 0, 1, ...
     using ControllerID = size_t;
     
-    // locked while updating, any query is blocked
+    /// \brief handle user input, thread-safe
     class InputHandler
     {
         public:
-            //
+            /// \brief is keyboard key currently down
+            /// \param keyboard_key: key
+            /// \returns bool
             static bool is_down(KeyboardKey keyboard_key);
             
-            //
+            /// \brief is mouse button currently down
+            /// \param mouse_button: button
+            /// \returns bool
             static bool is_down(MouseButton mouse_button);
             
-            //
+            /// \brief is controller button currently down
+            /// \param controller_button: button
+            /// \param controller_id: id of controller: 0, 1, ...
+            /// \returns bool
             static bool is_down(ControllerButton controller_button, ControllerID id = 0);
 
-            //
+            /// \brief is the state of a keyboard key this frame different from last frame
+            /// \param keyboard_key: key
+            /// \returns bool
             static bool has_state_changed(KeyboardKey keyboard_key);
             
-            //
+            /// \brief is the state of a mouse button this frame different from last frame
+            /// \param mouse_button: button
+            /// \returns bool
             static bool has_state_changed(MouseButton mouse_button);
             
-            //
+            /// \brief is the state of a controller button this frame different from last frame
+            /// \param controller_button: button
+            /// \param controller_id: id of controller: 0, 1, ...
+            /// \returns bool
             static bool has_state_changed(ControllerButton controller_button, ControllerID id = 0);
 
-            //           
+            /// \brief was the keyboard key up last frame and down this frame
+            /// \param keyboard_key: key
+            /// \returns bool
             static bool was_pressed(KeyboardKey keyboard_key);
             
-            //
+            /// \brief was the mouse button up last frame and down this frame
+            /// \param mouse_button: button
+            /// \returns bool
             static bool was_pressed(MouseButton mouse_button);
-            
-            //
+
+            /// \brief was the controller button up last frame and down this frame
+            /// \param controller_button: button
+            /// \param controller_id: id of controller: 0, 1, ...
+            /// \returns bool
             static bool was_pressed(ControllerButton controller_button, ControllerID id = 0);
 
-            //
+            /// \brief was the keyboard key down last frame and up this frame
+            /// \param keyboard_key: key
+            /// \returns bool
             static bool was_released(KeyboardKey keyboard_key);
-            
-            //
+
+            /// \brief was the mouse button down last frame and up this frame
+            /// \param mouse_button: button
+            /// \returns bool
             static bool was_released(MouseButton mouse_button);
-            
-            //
+
+            /// \brief was the controller button down last frame and up this frame
+            /// \param controller_button: button
+            /// \param controller_id: id of controller: 0, 1, ...
+            /// \returns bool
             static bool was_released(ControllerButton controller_button, ControllerID id = 0);
 
-            // relative to focused window top left, may be negative, absolute value in pixels
+            /// \brief get the current position of the mouse cursor on the screen
+            /// \returns vector of integers, where [0, 0] is the top left position of the currently focused window
             static Vector2i get_cursor_position();
 
-            // offset, 0 if no change
-            // +y: up, -y: down, +x: right, -x: left
+            /// \brief get the scrollwheel offset inputted last frame
+            /// \returns vector of floats, where +y: up, -y: down, +x: right, -x: left
             static Vector2f get_scrollwheel();
-            
-            // +y: up, -y: down, +x: right, -x: left, values in [-1, 1]
+
+            /// \brief get the current state of the left controller joystick
+            /// \param controller_id: id of controller: 0, 1, ...
+            /// \returns vector of floats, where +y: up, -y: down, +x: right, -x: left, values in [-1, 1]
             static Vector2f get_controller_axis_left(ControllerID = 0);
 
-            // +y: up, -y: down, +x: right, -x: left, values in [-1, 1]
+            /// \brief get the current state of the right controller joystick
+            /// \param controller_id: id of controller: 0, 1, ...
+            /// \returns vector of floats, where +y: up, -y: down, +x: right, -x: left, values in [-1, 1]
             static Vector2f get_controller_axis_right(ControllerID = 0);
-            
-            // in [0, 1], where 0: not pressed, 1: full pressed
+
+            /// \brief get the state of the left controller trigger
+            /// \returns float in [0, 1], where 0: not pressed, 1: full pressed
             static float get_controller_trigger_left(ControllerID = 0);
-            
-            // in [0, 1], where 0: not pressed, 1: fully pressed
+
+            /// \brief get the state of the left controller trigger
+            /// \returns float in [0, 1], where 0: not pressed, 1: fully pressed
             static float get_controller_trigger_right(ControllerID = 0);
 
         //protected:
