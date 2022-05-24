@@ -6,7 +6,6 @@
 #pragma once
 
 #include <mutex>
-#include <deque>
 
 #include <include/music.hpp>
 
@@ -17,9 +16,9 @@ namespace ts
     /// \brief manage music playback. Unlike sounds, only one music track can be active at the same time
     class MusicHandler
     {
-        static inline constexpr size_t sample_rate = 44100; // in Hz
-
         public:
+            static inline constexpr size_t sample_rate = 44100; // in Hz
+
             /// \brief instantly play new music, clears any scheduled music
             /// \param music: music to be played, user is responsible for the music staying in memory
             /// \param should_loop: should the music infinitely repeat until stopped
@@ -90,24 +89,6 @@ namespace ts
 
             static inline std::mutex _lock = std::mutex();
     };
-
-    namespace detail
-    {
-        // singleton wrapper to allow lambdas to be called as C-style function pointers
-        union MusicFunctionHook
-        {
-            static inline std::function<void()> function = [](){};
-
-            static void clear()
-            {
-                function = [](){};
-            }
-
-            static void invoke_once()
-            {
-                function();
-                clear();
-            }
-        };
-    }
 }
+
+#include <src/music.inl>

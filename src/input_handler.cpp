@@ -179,6 +179,12 @@ namespace ts
                     }
                 }
             }
+            else if (event.type == SDL_QUIT)
+            {
+                Log::print("System requested shutdown. Quitting...");
+                for (auto* w : windows)
+                    w->close();
+            }
             else
             {
                 // noop

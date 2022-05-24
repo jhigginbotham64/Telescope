@@ -18,6 +18,8 @@
 #include <include/input_handler.hpp>
 #include <include/music.hpp>
 #include <include/music_handler.hpp>
+#include <include/sound.hpp>
+#include <include/sound_handler.hpp>
 
 //https://lazyfoo.net/tutorials/SDL/36_multiple_windows/index.php
 
@@ -27,7 +29,9 @@ void initialize()
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_AudioInit(SDL_GetAudioDriver(1));
     Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
+
+    Mix_OpenAudio(ts::MusicHandler::sample_rate, MIX_DEFAULT_FORMAT, 2, 1024);
+    Mix_AllocateChannels(ts::SoundHandler::n_channels);
 }
 
 int main()

@@ -7,7 +7,8 @@
 
 #include <SDL2/SDL_mixer.h>
 
-#include <include/resource_id.hpp>
+#include <string>
+
 #include <include/time.hpp>
 
 namespace ts
@@ -20,19 +21,19 @@ namespace ts
             Music();
 
             //
-            Music(const std::string& path, bool should_loop = true);
+            Music(const std::string& path);
 
             //
             ~Music();
 
             //
-            bool load(const std::string& path, bool should_loop = true);
+            bool load(const std::string& path);
 
             // call destroy, useful for memory management
             void unload();
 
             //
-            size_t get_id();
+            size_t get_id() const;
 
             //
             Mix_Music* get_native();
@@ -41,7 +42,6 @@ namespace ts
             friend class MusicHandler;
 
             size_t _id;
-            bool _is_looping = true;
             Mix_Music* _music;
     };
 }

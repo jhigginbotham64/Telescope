@@ -9,15 +9,14 @@
 
 namespace ts
 {
-    Music::Music(const std::string& path, bool should_loop)
+    Music::Music(const std::string& path)
     {
-        load(path, should_loop);
+        load(path);
     }
 
-    bool Music::load(const std::string& path, bool should_loop)
+    bool Music::load(const std::string& path)
     {
         _music = Mix_LoadMUS(path.c_str());
-        _is_looping = should_loop;
         _id = std::hash<std::string>()(path);
 
         if (_music == nullptr)
@@ -41,7 +40,7 @@ namespace ts
         unload();
     }
 
-    size_t Music::get_id()
+    size_t Music::get_id() const
     {
         return _id;
     }
