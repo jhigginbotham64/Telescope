@@ -8,11 +8,16 @@
 #include <SDL2/SDL_gamecontroller.h>
 #include <SDL2/SDL_keycode.h>
 
+#include <string>
+#include <cinttypes>
+
 namespace ts
 {
     /// \brief enum of keyboard keys
     enum KeyboardKey : int64_t
     {
+        KEY_UNKNOWN = SDLK_UNKNOWN,
+
         NUM_0 = SDLK_0,
         NUM_1 = SDLK_1,
         NUM_2 = SDLK_2,
@@ -180,4 +185,11 @@ namespace ts
 
         CONTROLLER_PS5_TOUCHPAD = SDL_CONTROLLER_BUTTON_TOUCHPAD
     };
+
+    namespace detail
+    {
+        KeyboardKey string_to_keyboard_key(const char*);
+        MouseButton string_to_mouse_button(const std::string&);
+        ControllerButton string_to_controller_button(const std::string&);
+    }
 }

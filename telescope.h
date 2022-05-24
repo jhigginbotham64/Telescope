@@ -9,6 +9,7 @@
 
 #include <include/window.hpp>
 
+#include <include/key_or_button.hpp>
 #include <include/input_handler.hpp>
 
 #include <include/music.hpp>
@@ -19,6 +20,60 @@
 
 extern "C"
 {
+
+// ### TIME ####################################################
+
+namespace detail
+{
+    static inline size_t _clock_id = 0;
+    static inline std::unordered_map<size_t, ts::Clock> _clocks = {};
+}
+
+double ts_minutes(double n)
+{
+    return ts::minutes(n).as_milliseconds();
+}
+
+double ts_seconds(double n)
+{
+    return ts::seconds(n).as_milliseconds();
+}
+
+double ts_milliseconds(double n)
+{
+    return n;
+}
+
+double ts_microseconds(double n)
+{
+    return ts::microseconds(n).as_milliseconds();
+}
+
+double ts_nanoseconds(double n)
+{
+    return ts::nanoseconds(n).as_milliseconds();
+}
+
+size_t ts_clock_create()
+{
+    size_t id = _clock_id++;
+    detail::_clocks.emplace(id, ts::Clock());
+}
+
+void ts_clock_destroy(size_t id)
+{
+    detail::_clocks.erase(id);
+}
+
+double ts_clock_elapsed(size_t id)
+{
+    detail::_clocks.at(id).elapsed();
+}
+
+double ts_clock_restart(size_t id)
+{
+    detail::_clocks.at(id).restart();
+}
 
 // ### WINDOW ##################################################
 
@@ -50,97 +105,123 @@ size_t ts_window_create(
     if (resizable)
         option |= ts::RESIZABLE;
 
-    detail::_windows[id].create(title, width, height, options);
+    detail::_windows.at(id).create(title, width, height, options);
     return id;
 }
 
 void ts_window_destroy(size_t id)
 {
-    detail::_windows[id].close();
+    detail::_windows.at(id).close();
     detail::_windows.erase(id);
 }
 
 void ts_window_close(size_t id)
 {
-    detail::_windows[id].close();
+    detail::_windows.at(id).close();
 }
 
 bool ts_window_is_open(size_t id)
 {
-    return detail::_windows[id].is_open();
+    return detail::_windows.at(id).is_open();
 }
 
 size_t ts_window_get_size_x(size_t id)
 {
-    return detail::_windows[id].get_size().x;
+    return detail::_windows.at(id).get_size().x;
 }
 
 size_t ts_window_get_size_y(size_t id)
 {
-    return detail::_windows[id].get_size().y;
+    return detail::_windows.at(id).get_size().y;
 }
 
 size_t ts_window_get_position_x(size_t id)
 {
-    return detail::_windows[id].get_position().x;
+    return detail::_windows.at(id).get_position().x;
 }
 
 size_t ts_window_get_position_y(size_t id)
 {
-    return detail::_windows[id].get_position().y;
+    return detail::_windows.at(id).get_position().y;
 }
 
 void ts_window_set_hidden(size_t id, bool hidden)
 {
-    detail::_windows[id].set_hidden(hidden);
+    detail::_windows.at(id).set_hidden(hidden);
 }
 
 bool ts_window_is_hidden(size_t id)
 {
-    return detail::_windows[id].is_hidden();
+    return detail::_windows.at(id).is_hidden();
 }
 
 bool ts_window_minimize(size_t id)
 {
-    detail::_windows[id].minimize();
+    detail::_windows.at(id).minimize();
 }
 
 bool ts_window_is_minimized(size_t id)
 {
-    return detail::_windows[id].is_minimized();
+    return detail::_windows.at(id).is_minimized();
 }
 
 bool ts_window_maximize(size_t id)
 {
-    detail::_windows[id].maximize();
+    detail::_windows.at(id).maximize();
 }
 
 bool ts_window_is_maximized(size_t id)
 {
-    return detail::_windows[id].is_maximized();
+    return detail::_windows.at(id).is_maximized();
 }
 
 bool ts_window_has_focus(size_t id)
 {
-    return detail::_windows[id].has_focus();
+    return detail::_windows.at(id).has_focus();
 }
 
 bool ts_window_has_mouse_focus(size_t id)
 {
-    return detail::_windows[id].has_mouse_focus();
+    return detail::_windows.at(id).has_mouse_focus();
 }
 
 void ts_window_clear(size_t id)
 {
-    detail::_windows[id].clear();
+    detail::_windows.at(id).clear();
 }
 
 void ts_window_flush(size_t id)
 {
-    detail::_windows[id].flush();
+    detail::_windows.at(id).flush();
 }
 
 // ### INPUT ###################################################
+
+void ts_input_update()
+{
+    std::vector<ts::Window*> windows;
+    windows.reserve(detail::_windows.size());
+
+    for (auto& pair : detail::_windows)
+        windows.push_back(&pair.second);
+
+    ts::InputHandler::update(windows);
+}
+
+Int64_t ts_keyboard_key(const char* id)
+{
+    return (Int64_t) ts::detail::string_to_keyboard_key(id);
+}
+
+Int64_t ts_mouse_button(const char* id)
+{
+    return (Int64_t) ts::detail::string_to_mouse_button(id);
+}
+
+Int64_t ts_controller_button(const char* id)
+{
+    return (Int64_t) ts::detail::string_to_controller_button(id);
+}
 
 bool ts_keyboard_is_down(int64_t key)
 {
@@ -261,9 +342,9 @@ namespace detail
 
 size_t ts_music_load(const char* path)
 {
-    size_t out = std::hash<std::string>()(path);
-    detail::_music_library.emplace(out, ts::Music(path));
-    return out;
+    size_t id = std::hash<std::string>()(path);
+    detail::_music_library.emplace(id, ts::Music(path));
+    return id;
 }
 
 void ts_music_unload(size_t id)
@@ -271,22 +352,22 @@ void ts_music_unload(size_t id)
     detail::_music_library.erase(id);
 }
 
-void ts_music_play(size_t id, bool should_loop = true, int fade_in_ms = 0)
+void ts_music_play(size_t id, bool should_loop = true, double fade_in_ms = 0)
 {
-    ts::MusicHandler::play(detail::_music_library[id], should_loop, ts::milliseconds(fade_in_ms));
+    ts::MusicHandler::play(detail::_music_library.at(id), should_loop, ts::milliseconds(fade_in_ms));
 }
 
-void ts_music_play_next(size_t id, bool should_loop = true, int fade_in_ms = 0)
+void ts_music_play_next(size_t id, bool should_loop = true, double fade_in_ms = 0)
 {
     ts::MusicHandler::play_next(id, should_loop, fade_in_ms);
 }
 
-void ts_music_stop(int fade_out_ms = 0)
+void ts_music_stop(double fade_out_ms = 0)
 {
     ts::MusicHandler::stop(ts::milliseconds(fade_in_ms));
 }
 
-void ts_music_next(int fade_out_ms = 0)
+void ts_music_next(double fade_out_ms = 0)
 {
     ts::MusicHandler::next(ts::milliseconds(fade_out_ms));
 }
@@ -355,10 +436,10 @@ namespace detail
 
 size_t ts_sound_load(const char* path, float volume = 1)
 {
-    size_t out = std::hash<std::string>()(path);
+    size_t id = std::hash<std::string>()(path);
     detail::_sound_library.emplace(out, ts::Sound(path));
-    detail::_sound_library[out].set_volume(volume);
-    return out;
+    detail::_sound_library.at(id).set_volume(volume);
+    return id;
 }
 
 size_t ts_sound_unload(size_t id)
@@ -371,14 +452,14 @@ size_t ts_sound_n_channels()
     return ts::SoundHandler::n_channels;
 }
 
-void ts_sound_play(size_t id, size_t channel, size_t n_loops = 0, int fade_in_ms = 0)
+void ts_sound_play(size_t id, size_t channel, size_t n_loops = 0, double fade_in_ms = 0)
 {
-    ts::SoundHandler::play(detail::_sound_library[id], channel, n_loops, ts::milliseconds(fade_in_ms));
+    ts::SoundHandler::play(detail::_sound_library.at(id), channel, n_loops, ts::milliseconds(fade_in_ms));
 }
 
-void ts_sound_stop(size_t id, int fade_out_ms = 0)
+void ts_sound_stop(size_t id, double fade_out_ms = 0)
 {
-    ts::SoundHandler::stop(detail::_sound_library[id], ts::milliseconds(fade_out_ms));
+    ts::SoundHandler::stop(detail::_sound_library.at(id), ts::milliseconds(fade_out_ms));
 }
 
 void ts_sound_pause(size_t channel)
