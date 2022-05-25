@@ -30,7 +30,7 @@ namespace ts
             /// \param sound: sound to play, user is responsible for the sound staying in memory
             /// \param channel: channel index, [0, 255]
             /// \param fade_out_duration: duration of fade-out, set to 0 for no fade-out
-            static void stop(Sound&, size_t channel, Time fade_out_duration = milliseconds(0));
+            static void stop(size_t channel, Time fade_out_duration = milliseconds(0));
 
             /// \brief pause a channel
             /// \param channel: channel index, [0, 255]

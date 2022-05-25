@@ -30,7 +30,7 @@ namespace ts
             Mix_PlayChannel(channel, sound._chunk, n_loops);
     }
 
-    void SoundHandler::stop(Sound& sound, size_t channel, Time fade_out_duration)
+    void SoundHandler::stop(size_t channel, Time fade_out_duration)
     {
         auto guard = std::lock_guard(_lock);
         channel = forward_index(channel, "stop");
