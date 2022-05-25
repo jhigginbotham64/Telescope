@@ -4,6 +4,7 @@
 //
 
 #include <exception>
+#include <sstream>
 
 #include <include/key_or_button.hpp>
 
@@ -78,7 +79,7 @@ namespace ts::detail
 
         if (str == "HASH") return HASH;
         if (str == "PERCENT") return PERCENT;
-        if (str == "DOLLAR") return DOLLER;
+        if (str == "DOLLAR") return DOLLAR;
         if (str == "AND") return AND;
         if (str == "QUOTE") return QUOTE;
 
@@ -149,7 +150,7 @@ namespace ts::detail
         return MOUSE_LEFT;
     }
 
-    ControllerButton string_to_controller_button(const std::string&)
+    ControllerButton string_to_controller_button(const std::string& str)
     {
         if (str == "CONTROLLER_BUTTON_UNKNOWN") return CONTROLLER_BUTTON_UNKNOWN;
 
