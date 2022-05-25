@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <telescope.hpp>
+#include <~telescope.hpp>
 #include <include/~physics_object.hpp>
 #include <include/collision_event.hpp>
 
