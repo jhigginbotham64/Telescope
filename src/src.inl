@@ -4,7 +4,8 @@
   TODO: better support for rotation of rectangles, sprites, and collision objects
 */
 
-/*
+#pragma once
+
 #define VULKAN_HPP_TYPESAFE_CONVERSION 1
 #define VULKAN_HPP_DISPATCH_LOADER_DYNAMIC 1
 #define VULKAN_HPP_STORAGE_SHARED 1
@@ -41,7 +42,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-#include "telescope.h"
+#include <telescope.hpp>
 
 #define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
@@ -1889,18 +1890,3 @@ void TS_VkEndDrawPass(float r, float g, float b, float a)
   TS_VkQueueSubmit();
   TS_VkQueuePresent();
 }
-
-void TS_PlaySound(const char* sound_file, int loops, int ticks)
-{
-  Mix_Chunk *sample = Mix_LoadWAV_RW(SDL_RWFromFile(sound_file, "rb"), 1);
-  if (sample == NULL)
-  {
-    std::cerr << "Could not load sound file: " << std::string(sound_file) << std::endl << TS_SDLGetError() << std::endl;
-    return;
-  }
-  if (Mix_PlayChannelTimed(-1, sample, loops, ticks) == -1)
-  {
-    std::cerr << "Unable to play sound " << sound_file << std::endl << TS_SDLGetError() << std::endl;
-  }
-}
- */
