@@ -56,8 +56,9 @@ double ts_nanoseconds(double n)
 
 size_t ts_clock_create()
 {
-    size_t id = _clock_id++;
+    size_t id = detail::_clock_id++;
     detail::_clocks.emplace(id, ts::Clock());
+    return id;
 }
 
 void ts_clock_destroy(size_t id)
@@ -67,12 +68,12 @@ void ts_clock_destroy(size_t id)
 
 double ts_clock_elapsed(size_t id)
 {
-    detail::_clocks.at(id).elapsed();
+    return detail::_clocks.at(id).elapsed().as_milliseconds();
 }
 
 double ts_clock_restart(size_t id)
 {
-    detail::_clocks.at(id).restart();
+    return detail::_clocks.at(id).restart().as_milliseconds();
 }
 
 // ### WINDOW ##################################################
@@ -91,19 +92,19 @@ size_t ts_window_create(
     bool borderless = false,
     bool resizable = false)
 {
-    auto id = _window_id++;
+    auto id = detail::_window_id++;
     detail::_windows.emplace(id, ts::Window());
 
     uint32_t options = ts::WindowOptions::DEFAULT;
 
     if (fullscreen)
-        option |= ts::FULLSCREEN;
+        options |= ts::FULLSCREEN;
 
     if (borderless)
-        option |= ts::BORDERLESS;
+        options |= ts::BORDERLESS;
 
     if (resizable)
-        option |= ts::RESIZABLE;
+        options |= ts::RESIZABLE;
 
     detail::_windows.at(id).create(title, width, height, options);
     return id;
@@ -208,19 +209,19 @@ void ts_input_update()
     ts::InputHandler::update(windows);
 }
 
-Int64_t ts_keyboard_key(const char* id)
+int64_t ts_keyboard_key(const char* id)
 {
-    return (Int64_t) ts::detail::string_to_keyboard_key(id);
+    return (int64_t) ts::detail::string_to_keyboard_key(id);
 }
 
-Int64_t ts_mouse_button(const char* id)
+int64_t ts_mouse_button(const char* id)
 {
-    return (Int64_t) ts::detail::string_to_mouse_button(id);
+    return (int64_t) ts::detail::string_to_mouse_button(id);
 }
 
-Int64_t ts_controller_button(const char* id)
+int64_t ts_controller_button(const char* id)
 {
-    return (Int64_t) ts::detail::string_to_controller_button(id);
+    return (int64_t) ts::detail::string_to_controller_button(id);
 }
 
 bool ts_keyboard_is_down(int64_t key)
@@ -305,22 +306,22 @@ bool ts_controller_was_released(int64_t button, size_t controller_id)
 
 float ts_controller_axis_left_x(size_t controller_id = 0)
 {
-    return ts::InputHandler::get_controller_axis_left(controller_id).x
+    return ts::InputHandler::get_controller_axis_left(controller_id).x;
 }
 
 float ts_controller_axis_left_y(size_t controller_id = 0)
 {
-    return ts::InputHandler::get_controller_axis_left(controller_id).y
+    return ts::InputHandler::get_controller_axis_left(controller_id).y;
 }
 
 float ts_controller_axis_right_x(size_t controller_id = 0)
 {
-    return ts::InputHandler::get_controller_axis_right(controller_id).x
+    return ts::InputHandler::get_controller_axis_right(controller_id).x;
 }
 
 float ts_controller_axis_right_y(size_t controller_id = 0)
 {
-    return ts::InputHandler::get_controller_axis_right(controller_id).y
+    return ts::InputHandler::get_controller_axis_right(controller_id).y;
 }
 
 float ts_controller_trigger_left(size_t controller_id = 0)
@@ -359,12 +360,12 @@ void ts_music_play(size_t id, bool should_loop = true, double fade_in_ms = 0)
 
 void ts_music_play_next(size_t id, bool should_loop = true, double fade_in_ms = 0)
 {
-    ts::MusicHandler::play_next(id, should_loop, fade_in_ms);
+    ts::MusicHandler::play_next(detail::_music_library.at(id), should_loop, ts::milliseconds(fade_in_ms));
 }
 
 void ts_music_stop(double fade_out_ms = 0)
 {
-    ts::MusicHandler::stop(ts::milliseconds(fade_in_ms));
+    ts::MusicHandler::stop(ts::milliseconds(fade_out_ms));
 }
 
 void ts_music_next(double fade_out_ms = 0)
@@ -422,7 +423,7 @@ void ts_music_set_volume(float zero_to_one)
     ts::MusicHandler::set_volume(zero_to_one);
 }
 
-void ts_music_get_volume()
+float ts_music_get_volume()
 {
     return ts::MusicHandler::get_volume();
 }
@@ -437,7 +438,7 @@ namespace detail
 size_t ts_sound_load(const char* path, float volume = 1)
 {
     size_t id = std::hash<std::string>()(path);
-    detail::_sound_library.emplace(out, ts::Sound(path));
+    detail::_sound_library.emplace(id, ts::Sound(path));
     detail::_sound_library.at(id).set_volume(volume);
     return id;
 }
@@ -457,9 +458,9 @@ void ts_sound_play(size_t id, size_t channel, size_t n_loops = 0, double fade_in
     ts::SoundHandler::play(detail::_sound_library.at(id), channel, n_loops, ts::milliseconds(fade_in_ms));
 }
 
-void ts_sound_stop(size_t id, double fade_out_ms = 0)
+void ts_sound_stop(size_t channel, double fade_out_ms = 0)
 {
-    ts::SoundHandler::stop(detail::_sound_library.at(id), ts::milliseconds(fade_out_ms));
+    ts::SoundHandler::stop(channel, ts::milliseconds(fade_out_ms));
 }
 
 void ts_sound_pause(size_t channel)
@@ -509,7 +510,7 @@ void ts_sound_set_panning(size_t channel, size_t zero_to_360_degree)
 
 size_t ts_sound_get_panning(size_t channel)
 {
-    ts::SoundHandler::get_panning(channel);
+    return ts::SoundHandler::get_panning(channel);
 }
 
 }
