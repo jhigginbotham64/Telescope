@@ -51,7 +51,6 @@ int main()
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
 
-    auto* instance = SDL_Vulkan_GetVkGetInstanceProcAddr()
 
     while (window.is_open())
     {

@@ -140,7 +140,7 @@ target_link_libraries(telescope PUBLIC
 # TODO: REMOVE THIS
 find_library(glfw REQUIRED NAMES glfw)
 
-add_executable(debug_main main.cpp)
+add_executable(debug_main ~main.cpp)
 target_link_libraries(debug_main PRIVATE telescope glfw)
 set_target_properties(telescope PROPERTIES
   CXX_STANDARD 20
