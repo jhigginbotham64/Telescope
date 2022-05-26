@@ -66,6 +66,7 @@ find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
 find_library(SDL2_net REQUIRED NAMES SDL2_net)
 find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
+find_library(vulkan REQUIRES NAMES vulkan)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(shaderc_shared REQUIRED)
@@ -74,13 +75,7 @@ find_package(shaderc_shared REQUIRED)
 
 add_library(telescope SHARED
 
-    include/vulkan_interface.hpp
-    include/bullet_interface.hpp
-    include/common.hpp
-    include/physics_object.hpp
-    include/vertex.hpp
-    src/src.cpp
-    include/collision_event.hpp
+    telescope.h
 
     include/logging.hpp
     src/logging.inl
@@ -94,6 +89,7 @@ add_library(telescope SHARED
     include/vector.hpp
 
     include/key_or_button.hpp
+    src/key_or_button.cpp
 
     include/time.hpp
     src/time.cpp
@@ -106,10 +102,14 @@ add_library(telescope SHARED
 
     include/music_handler.hpp
     src/music_handler.cpp
+    src/music.inl
 
     include/sound.hpp
     src/sound.cpp
-        include/sound_handler.hpp src/music.inl src/sound_handler.cpp telescope.h include/hash.hpp src/key_or_button.cpp)
+
+    include/sound_handler.hpp
+    src/sound_handler.cpp
+        include/color.hpp src/color.cpp include/texture.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX
@@ -127,18 +127,21 @@ target_include_directories(telescope PUBLIC
 )
 
 target_link_libraries(telescope PUBLIC
-  SDL2
-  SDL2_image
-  SDL2_mixer
-  SDL2_net
-  SDL2_ttf
-  ${BULLET_LIBRARIES}
-  ${shader_c_shared}
+    SDL2
+    SDL2_image
+    SDL2_mixer
+    SDL2_net
+    SDL2_ttf
+    ${BULLET_LIBRARIES}
+    ${shader_c_shared}
+    vulkan
 )
 
 # TODO: REMOVE THIS
+find_library(glfw REQUIRED NAMES glfw)
+
 add_executable(debug_main main.cpp)
-target_link_libraries(debug_main PRIVATE telescope)
+target_link_libraries(debug_main PRIVATE telescope glfw)
 set_target_properties(telescope PROPERTIES
   CXX_STANDARD 20
 )

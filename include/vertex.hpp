@@ -1,44 +1,30 @@
-//
-// Copyright 2022, Joshua Higginbotham
+// 
+// Copyright 2022 Clemens Cords
+// Created on 25.05.22 by clem (mail@clemens-cords.com)
 //
 
 #pragma once
 
-#include <glm/glm.hpp>
-#include <vulkan/vulkan.hpp>
+#include <include/vector.hpp>
+#include <include/color.hpp>
 
-/// \brief vertex object
-struct TS_Vertex
+namespace ts
 {
-  /// \brief position in 2D space
-  glm::vec2 pos;
+    class Texture;
 
-  /// \brief uv coordinate
-  glm::vec2 uv;
+    //
+    struct Vertex
+    {
+        //
+        Vector2f position = Vector2f(0, 0);
 
-  /// \brief color, in RGBA
-  glm::vec4 col;
+        //
+        Texture* texture = nullptr;
 
-  /// \brief texture id
-  int tex;
+        //
+        Vector2f texture_coordinates = Vector2f(0, 0);
 
-  /// \brief ctor
-  /// \param x: x position
-  /// \param y: y position
-  /// \param r: red component
-  /// \param g: green component
-  /// \param b: blue component
-  /// \param a: transparency component
-  /// \param u: u-coordinate
-  /// \param v: v-coordinate
-  /// \param t: texture id
-  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1);
-
-  /// \brief get vertices vulkan binding description
-  /// \returns description
-  static vk::VertexInputBindingDescription getBindingDescription();
-
-  /// \brief get vertices vulkan attribute description
-  /// \returns 4-array of descriptions
-  static std::array<vk::VertexInputAttributeDescription, 4> getAttributeDescriptions();
-};
+        //
+        RGBA color = RGBA(1, 1, 1, 1);
+    };
+}

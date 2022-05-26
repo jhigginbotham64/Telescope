@@ -42,7 +42,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-#include <telescope.hpp>
+#include <~telescope.hpp>
 
 #define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
 
@@ -217,7 +217,7 @@ TS_PhysicsObject::TS_PhysicsObject(btCollisionShape * s, float mass, bool isKine
       this->cshape->calculateLocalInertia(mass, locInertia);
 
     this->dmstate = new btDefaultMotionState(t);
-    
+
     btRigidBody::btRigidBodyConstructionInfo cinfo(mass, this->dmstate, this->cshape, locInertia);
 
     this->rbody = new btRigidBody(cinfo);
@@ -242,7 +242,7 @@ TS_PhysicsObject::TS_PhysicsObject(btCollisionShape * s, float mass, bool isKine
 TS_PhysicsObject::~TS_PhysicsObject()
 {
     if (this->rbody)
-    { 
+    {
       btdw.removeRigidBody(this->rbody);
       delete this->rbody;
     }
@@ -1889,4 +1889,9 @@ void TS_VkEndDrawPass(float r, float g, float b, float a)
   TS_VkEndCommandBuffer();
   TS_VkQueueSubmit();
   TS_VkQueuePresent();
-}
+}//
+// Copyright 2022 Clemens Cords
+// Created on 26.05.22 by clem (mail@clemens-cords.com)
+//
+
+#pragma once

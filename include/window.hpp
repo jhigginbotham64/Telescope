@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <vulkan/vulkan.hpp>
+
 #include <SDL2/SDL_render.h>
 
 #include <string>
@@ -94,7 +96,11 @@ namespace ts
             //
             SDL_Window* get_native();
 
-        private:
+
+        //private:
+            vk::Instance _instance;
+            void initialize_vulkan_instance();
+
             SDL_Window* _window = nullptr;
             SDL_Renderer* _renderer = nullptr;
             bool _is_open = false;
