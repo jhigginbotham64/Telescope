@@ -14,3 +14,7 @@ if a block of code is executed exactly twice or more times, it should be replace
 order of .hpp declaration shall be the same as in the .cpp
 
 all files using templates should implement all (templated and non-template) in .inl
+
+struct only for aggregrate initialization,
+class otherwise
+union for singletons
