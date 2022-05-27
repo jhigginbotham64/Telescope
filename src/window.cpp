@@ -183,5 +183,10 @@ namespace ts
     {
         SDL_RenderFlush(_renderer);
     }
+
+    SDL_Renderer * Window::get_render_context()
+    {
+        return _renderer;
+    }
 }
 

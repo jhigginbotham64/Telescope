@@ -96,6 +96,9 @@ namespace ts
             //
             SDL_Window* get_native();
 
+            //
+            SDL_Renderer* get_render_context();
+
 
         //private:
             vk::Instance _instance;
