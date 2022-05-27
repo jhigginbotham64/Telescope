@@ -12,6 +12,7 @@
 #include <string>
 
 #include <include/vector.hpp>
+#include <include/render_target.hpp>
 
 namespace ts
 {
@@ -25,7 +26,7 @@ namespace ts
 
     using WindowID = int32_t;
 
-    class Window
+    class Window : public RenderTarget
     {
         friend class InputHandler;
 
@@ -96,16 +97,9 @@ namespace ts
             //
             SDL_Window* get_native();
 
-            //
-            SDL_Renderer* get_render_context();
 
-
-        //private:
-            vk::Instance _instance;
-            void initialize_vulkan_instance();
-
+        private:
             SDL_Window* _window = nullptr;
-            SDL_Renderer* _renderer = nullptr;
             bool _is_open = false;
 
             bool _is_borderless;

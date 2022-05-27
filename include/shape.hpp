@@ -19,7 +19,7 @@ namespace ts
     {
         public:
             //
-            void draw(RenderTarget&) const;
+            void render(const RenderTarget*) const override;
 
             // -1 for all
             void set_color(RGBA, int vertex_index = -1);

@@ -10,10 +10,10 @@
 
 namespace ts
 {
-    void Shape::draw(RenderTarget& target) const
+    void Shape::render(const RenderTarget* target) const
     {
         SDL_RenderGeometry(
-            target.get_renderer(),
+            target->get_renderer(),
             _texture->get_native(),
             _vertices.data(),
             _vertices.size(),

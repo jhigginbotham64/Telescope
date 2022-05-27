@@ -11,17 +11,29 @@
 
 namespace ts
 {
+    class Window;
+
     //
     class RenderTarget
     {
         public:
+            //
+            RenderTarget();
+
+            //
+            ~RenderTarget();
+
+            //
+            void create(Window*);
+
             // invokes renderable.render(*this)
-            virtual void render(Renderable& renderable) const = 0;
+            void render(Renderable* renderable) const;
 
             //
             SDL_Renderer* get_renderer() const;
 
         private:
+            Window* _window;
             SDL_Renderer* _renderer;
     };
 }

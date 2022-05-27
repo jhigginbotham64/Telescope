@@ -24,7 +24,8 @@ namespace ts
         _vertices.clear();
 
         _vertices.emplace_back();
-        _vertices.back().position = center;
+        _vertices.back().position.x = center.x;
+        _vertices.back().position.y = center.y;
         _vertices.back().color = old.at(0).color;
         _vertices.back().tex_coord.x = 0.5;
         _vertices.back().tex_coord.y = 0.5;
@@ -32,8 +33,8 @@ namespace ts
         for (size_t angle = 0, i = 1; angle < 360; angle += step, i++)
         {
             _vertices.emplace_back();
-            _vertices.back().position.x = center.x + cos(angle) * radius;
-            _vertices.back().position.x = center.y + sin(angle) * radius;
+            _vertices.back().position.x = center.x + cos(angle) * _radius;
+            _vertices.back().position.x = center.y + sin(angle) * _radius;
             _vertices.back().color = old.at(i).color;
             _vertices.back().tex_coord.x = 0.5 + cos(angle) * 0.5;
             _vertices.back().tex_coord.y = 0.5 + sin(angle) * 0.5;
@@ -50,18 +51,23 @@ namespace ts
             sum.y += v.position.y;
         }
 
-        return sum / _vertices.size();
+        return sum / Vector2f(_vertices.size());
     }
 
-    void CircleShape::set_center(Vector2f center) const
+    void CircleShape::set_center(Vector2f center)
     {
         update(center);
     }
 
-    void CircleShape::set_radius(float radius) const
+    float CircleShape::get_radius() const
+    {
+        return _radius;
+    }
+
+    void CircleShape::set_radius(float radius)
     {
         _radius = radius;
-        update();
+        update(get_center());
     }
 }
 

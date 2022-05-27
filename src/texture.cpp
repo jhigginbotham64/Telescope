@@ -12,7 +12,7 @@
 namespace ts
 {
     Texture::Texture(Window* context)
-        : _renderer(context->get_render_context()), _texture(nullptr)
+        : _renderer(context->get_renderer()), _texture(nullptr)
     {}
 
     Texture::~Texture()

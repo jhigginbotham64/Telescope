@@ -20,13 +20,13 @@ namespace ts
             Vector2f get_center() const;
 
             //
-            void set_center(Vector2f) const;
+            void set_center(Vector2f);
 
             //
             float get_radius() const;
 
             //
-            void set_radius() const;
+            void set_radius(float);
 
         private:
             float _radius;

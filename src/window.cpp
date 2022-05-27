@@ -49,9 +49,6 @@ namespace ts
         if (_window != nullptr)
             SDL_DestroyWindow(_window);
 
-        if (_renderer != nullptr)
-            SDL_DestroyRenderer(_renderer);
-
         _window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, sdl_options);
 
         if (_is_borderless)
@@ -60,7 +57,7 @@ namespace ts
         if (_is_fullscreen)
             SDL_SetWindowFullscreen(_window, SDL_TRUE);
 
-        _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+        RenderTarget::create(this);
         _is_open = true;
     }
 
@@ -81,8 +78,6 @@ namespace ts
         _has_mouse_focus = false;
 
         SDL_DestroyWindow(_window);
-        SDL_DestroyRenderer(_renderer);
-
         _is_open = false;
     }
 
@@ -176,17 +171,12 @@ namespace ts
 
     void Window::clear()
     {
-        SDL_RenderClear(_renderer);
+        SDL_RenderClear(get_renderer());
     }
 
     void Window::flush()
     {
-        SDL_RenderFlush(_renderer);
-    }
-
-    SDL_Renderer * Window::get_render_context()
-    {
-        return _renderer;
+        SDL_RenderFlush(get_renderer());
     }
 }
 

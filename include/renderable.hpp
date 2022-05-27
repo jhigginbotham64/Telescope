@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include <include/render_target.hpp>
-
 namespace ts
 {
+    class RenderTarget;
+
     //
     struct Renderable
     {
         public:
             //
-            virtual void render(RenderTarget& target) = 0;
+            virtual void render(const RenderTarget* target) const = 0;
     };
 }

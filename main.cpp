@@ -25,10 +25,11 @@
 #include <include/music_handler.hpp>
 #include <include/sound.hpp>
 #include <include/sound_handler.hpp>
+#include <include/triangle_shape.hpp>
 
 void initialize()
 {
-    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Init(SDL_INIT_VIDEO);
     SDL_VideoInit(SDL_GetVideoDriver(1));
 
     SDL_Vulkan_LoadLibrary(NULL);
@@ -41,8 +42,11 @@ void initialize()
     Mix_AllocateChannels(ts::SoundHandler::n_channels);
 }
 
+using namespace ts;
+
 int main()
 {
+    /*
     initialize();
 
     auto window = ts::Window();
@@ -51,7 +55,7 @@ int main()
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
 
-    auto* instance = SDL_Vulkan_GetVkGetInstanceProcAddr()
+    auto tri = TriangleShape(Vector2f(50, 50), Vector2f(100, 100), Vector2f(75, 75));
 
     while (window.is_open())
     {
@@ -59,10 +63,11 @@ int main()
         ts::InputHandler::update(&window);
         window.clear();
 
-
+        window.render(&tri);
 
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
         std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));
         window.flush();
     }
+     */
 }

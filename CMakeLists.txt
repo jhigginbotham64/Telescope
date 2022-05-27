@@ -64,8 +64,8 @@ find_package(Bullet REQUIRED)
 find_package(SDL2 2.0.18 REQUIRED)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
-find_library(SDL2_net REQUIRED NAMES SDL2_net)
-find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
+#find_library(SDL2_net REQUIRED NAMES SDL2_net)
+#find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
 find_library(vulkan REQUIRES NAMES vulkan)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -126,7 +126,7 @@ add_library(telescope SHARED
     include/shape.hpp
     src/shape.cpp
 
-    src/rectangle_shape.hpp
+    include/rectangle_shape.hpp
     src/rectangle_shape.cpp
 
     include/triangle_shape.hpp
@@ -134,7 +134,7 @@ add_library(telescope SHARED
 
     include/circle_shape.hpp
     src/circle_shape.cpp
-)
+        src/render_target.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX
@@ -153,12 +153,12 @@ target_include_directories(telescope PUBLIC
 
 target_link_libraries(telescope PUBLIC
     SDL2
-    SDL2_image
-    SDL2_mixer
+    ${SDL2_image}
+    ${SDL2_mixer}
     SDL2_net
     SDL2_ttf
-    ${BULLET_LIBRARIES}
-    ${shader_c_shared}
+    #${BULLET_LIBRARIES}
+    #${shader_c_shared}
     vulkan
 )
 
@@ -166,7 +166,7 @@ target_link_libraries(telescope PUBLIC
 find_library(glfw REQUIRED NAMES glfw)
 
 add_executable(debug_main main.cpp)
-target_link_libraries(debug_main PRIVATE telescope glfw)
+target_link_libraries(debug_main PRIVATE telescope)
 set_target_properties(telescope PROPERTIES
   CXX_STANDARD 20
 )
