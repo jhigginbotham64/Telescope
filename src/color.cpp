@@ -30,6 +30,21 @@ namespace ts
         return Vector4f(red, green, blue, alpha);
     }
 
+    RGBA::operator SDL_Color()
+    {
+        SDL_Color out;
+        out.r = red * 255;
+        out.g = green * 255;
+        out.b = blue * 255;
+        out.a = alpha * 255;
+
+        return out;
+    }
+
+    RGBA::RGBA(SDL_Color in)
+        : RGBA(in.r / 255.f, in.g / 255.f, in.b / 255.f, in.a / 255.f)
+    {}
+
     HSVA::HSVA()
         : HSVA(Vector4f(0, 0, 0, 1))
     {}

@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <SDL2/SDL_render.h>
+
 #include <include/vector.hpp>
 
 namespace ts
@@ -26,6 +28,12 @@ namespace ts
 
         //
         operator Vector4f();
+
+        //
+        operator SDL_Color();
+
+        //
+        RGBA(SDL_Color);
 
         //
         HSVA as_hsv() const;
