@@ -61,7 +61,7 @@ file(GLOB INCLUDE_FILES src/*.h)
 ### FIND DEPENDENCIES ###
 
 find_package(Bullet REQUIRED)
-find_package(SDL2 REQUIRED)
+find_package(SDL2 2.0.18 REQUIRED)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
 find_library(SDL2_net REQUIRED NAMES SDL2_net)
@@ -109,7 +109,32 @@ add_library(telescope SHARED
 
     include/sound_handler.hpp
     src/sound_handler.cpp
-        include/color.hpp src/color.cpp include/texture.hpp)
+
+    include/color.hpp
+    src/color.cpp
+
+    include/texture.hpp
+    src/texture.cpp
+
+    include/vertex.hpp
+    src/vertex.cpp
+
+    include/renderable.hpp
+
+    include/render_target.hpp
+
+    include/shape.hpp
+    src/shape.cpp
+
+    src/rectangle_shape.hpp
+    src/rectangle_shape.cpp
+
+    include/triangle_shape.hpp
+    src/triangle_shape.cpp
+
+    include/circle_shape.hpp
+    src/circle_shape.cpp
+)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX
@@ -140,7 +165,7 @@ target_link_libraries(telescope PUBLIC
 # TODO: REMOVE THIS
 find_library(glfw REQUIRED NAMES glfw)
 
-add_executable(debug_main ~main.cpp)
+add_executable(debug_main main.cpp)
 target_link_libraries(debug_main PRIVATE telescope glfw)
 set_target_properties(telescope PROPERTIES
   CXX_STANDARD 20
