@@ -1,0 +1,51 @@
+// 
+// Copyright 2022 Clemens Cords
+// Created on 27.05.22 by clem (mail@clemens-cords.com)
+//
+
+#include <include/vertex.hpp>
+
+namespace ts
+{
+    Vertex::Vertex(
+        float position_x,
+        float position_y,
+        float tex_coord_x,
+        float tex_coord_y,
+        float r,
+        float g,
+        float b,
+        float a)
+        : Vertex(Vector2f(position_x, position_y), Vector2f(tex_coord_x, tex_coord_y), RGBA(r, g, b, a))
+    {}
+
+    Vertex::Vertex(Vector2f pos, Vector2f tex_coords, RGBA col)
+        : position(pos), texture_coordinates(tex_coords), color(col)
+    {}
+
+    Vertex::operator SDL_Vertex() const
+    {
+        SDL_Vertex out;
+
+        SDL_FPoint pos;
+        pos.x = position.x;
+        pos.y = position.y;
+
+        SDL_Color col;
+        col.r = color.red * 255;
+        col.g = color.green * 255;
+        col.b = color.blue * 255;
+        col.a = color.alpha * 255;
+
+        SDL_FPoint tex_coord;
+        tex_coord.x = texture_coordinates.x;
+        tex_coord.y = texture_coordinates.y;
+
+        out.position = pos;
+        out.color = col;
+        out.tex_coord = tex_coord;
+
+        return out;
+    }
+}
+
