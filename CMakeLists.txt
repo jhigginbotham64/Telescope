@@ -51,7 +51,7 @@ This will run all tests, printing their output to the console.
 
 cmake_minimum_required(VERSION 3.13)
 
-project(telescope VERSION 0.2.0)
+project(telescope VERSION 0.2.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -61,15 +61,23 @@ file(GLOB INCLUDE_FILES src/*.h)
 ### FIND DEPENDENCIES ###
 
 find_package(Bullet REQUIRED)
-find_package(SDL2 2.0.18 REQUIRED)
-find_library(SDL2_image REQUIRED NAMES SDL2_image)
-find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
-#find_library(SDL2_net REQUIRED NAMES SDL2_net)
-#find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
-find_library(vulkan REQUIRES NAMES vulkan)
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-find_package(shaderc_shared REQUIRED)
+find_library(SDL2 REQUIRED)
+find_library(SDL2_image REQUIRED)
+find_library(SDL2_mixer REQUIRED)
+find_library(SDL2_ttf REQUIRED)
+find_library(SDL2_net REQUIRED)
+
+if (FALSE)
+     # not required
+    find_library(vulkan REQUIRED)
+
+    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+    find_package(shaderc_shared REQUIRED) # not required
+else()
+    set(shaderc_shared "")
+    set(vulkan "")
+endif()
 
 ### TELESCOPE ###
 
@@ -134,7 +142,9 @@ add_library(telescope SHARED
 
     include/circle_shape.hpp
     src/circle_shape.cpp
-        src/render_target.cpp)
+
+    src/render_target.cpp
+)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX
@@ -152,24 +162,24 @@ target_include_directories(telescope PUBLIC
 )
 
 target_link_libraries(telescope PUBLIC
-    SDL2
+    ${SDL2}
     ${SDL2_image}
     ${SDL2_mixer}
-    SDL2_net
-    SDL2_ttf
-    #${BULLET_LIBRARIES}
-    #${shader_c_shared}
-    vulkan
+    ${SDL2_net}
+    ${SDL2_ttf}
+    ${BULLET_LIBRARIES}
+    ${shader_c_shared}
+    ${vulkan}
 )
 
 # TODO: REMOVE THIS
-find_library(glfw REQUIRED NAMES glfw)
 
 add_executable(debug_main main.cpp)
-target_link_libraries(debug_main PRIVATE telescope)
+target_link_libraries(debug_main PUBLIC telescope)
 set_target_properties(telescope PROPERTIES
   CXX_STANDARD 20
 )
+
 # TODO REMOVE THIS
 
 ### TESTS ####
@@ -189,7 +199,6 @@ if (BUILD_TESTS)
 
         target_link_libraries(${test_name} PRIVATE
             telescope
-            ${shaderc_shared}
         )
 
         target_include_directories(${test_name} PRIVATE
