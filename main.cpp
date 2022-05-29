@@ -18,6 +18,7 @@
 #include <thread>
 #include <cassert>
 
+#include <include/exceptions.hpp>
 #include <include/logging.hpp>
 #include <include/time.hpp>
 #include <include/input_handler.hpp>
@@ -29,15 +30,36 @@
 
 void initialize()
 {
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_VideoInit(SDL_GetVideoDriver(1));
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    {
+        ts::Log::warning("Unable to initialize SDL");
+        ts::forward_sdl_error();
+    }
 
-    SDL_Vulkan_LoadLibrary(NULL);
+    if (SDL_VideoInit(SDL_GetVideoDriver(0)) != 0)
+    {
+        ts::Log::warning("Unable to initialize SDL Video");
+        ts::forward_sdl_error();
+    }
 
-    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0)
+    {
+        ts::Log::warning("Unable to initialize SDL IMG");
+        ts::forward_sdl_error();
+    }
+    
+    if (SDL_AudioInit(SDL_GetAudioDriver(1)) != 0)
+    {
+        ts::Log::warning("Unable to initialize SDL Audio");
+        ts::forward_sdl_error();
+    }
+    
+    if (Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC) == 0)
+    {
+        ts::Log::warning("Unable to initialize SDL Mixer");
+        ts::forward_sdl_error();
+    }
 
-    SDL_AudioInit(SDL_GetAudioDriver(1));
-    Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC); // | MIX_INIT_MID | MIX_INIT_MOD | MIX_INIT_OPS)
     Mix_OpenAudio(ts::MusicHandler::sample_rate, MIX_DEFAULT_FORMAT, 2, 1024);
     Mix_AllocateChannels(ts::SoundHandler::n_channels);
 }
@@ -46,9 +68,11 @@ using namespace ts;
 
 int main()
 {
-    /*
     initialize();
 
+    SDL_Window* window = SDL_CreateWindow("", 0, 0, 800, 600, 0);
+
+    /*
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
 

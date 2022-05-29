@@ -62,11 +62,11 @@ file(GLOB INCLUDE_FILES src/*.h)
 
 find_package(Bullet REQUIRED)
 
-find_library(SDL2 REQUIRED)
-find_library(SDL2_image REQUIRED)
-find_library(SDL2_mixer REQUIRED)
-find_library(SDL2_ttf REQUIRED)
-find_library(SDL2_net REQUIRED)
+find_library(SDL2 REQUIRED NAMES SDL2)
+find_library(SDL2_image REQUIRED NAMES SDL2_image)
+find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
+find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
+find_library(SDL2_net REQUIRED NAMES SDL2_net)
 
 if (FALSE)
      # not required
