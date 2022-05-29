@@ -42,7 +42,7 @@ void initialize()
         ts::forward_sdl_error();
     }
 
-    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0)
+    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0) // sic
     {
         ts::Log::warning("Unable to initialize SDL IMG");
         ts::forward_sdl_error();
@@ -70,9 +70,6 @@ int main()
 {
     initialize();
 
-    SDL_Window* window = SDL_CreateWindow("", 0, 0, 800, 600, 0);
-
-    /*
     auto window = ts::Window();
     window.create("window", 800, 600, ts::DEFAULT);
 
@@ -87,11 +84,10 @@ int main()
         ts::InputHandler::update(&window);
         window.clear();
 
-        window.render(&tri);
+        //window.render(&tri);
 
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
         std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));
         window.flush();
     }
-     */
 }
