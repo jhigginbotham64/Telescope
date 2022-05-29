@@ -18,6 +18,8 @@
 #include <thread>
 #include <cassert>
 
+#include <SDL2/SDL2_gfxPrimitives.h>
+
 #include <include/exceptions.hpp>
 #include <include/logging.hpp>
 #include <include/time.hpp>
@@ -27,6 +29,8 @@
 #include <include/sound.hpp>
 #include <include/sound_handler.hpp>
 #include <include/triangle_shape.hpp>
+#include <include/circle_shape.hpp>
+#include <include/rectangle_shape.hpp>
 
 void initialize()
 {
@@ -71,12 +75,22 @@ int main()
     initialize();
 
     auto window = ts::Window();
-    window.create("window", 800, 600, ts::DEFAULT);
+    window.create("", 800, 600, ts::DEFAULT);
+
+    SDL_GL_CreateContext(window.get_native());
 
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
+    auto tri = TriangleShape(Vector2f(400, 150), Vector2f(200, 450), Vector2f(600, 450));
 
-    auto tri = TriangleShape(Vector2f(50, 50), Vector2f(100, 100), Vector2f(75, 75));
+    auto rect = ts::RectangleShape(50, 50, 400, 200);
+    auto tex = ts::Texture(&window);
+    tex.load("/home/clem/Workspace/backup/bckp2/bg.png");
+    tri.set_texture(&tex);
+    rect.set_texture(&tex);
+
+    std::array<Sint16, 3> x = {400, 200, 600};
+    std::array<Sint16, 3> y = {150, 450, 450};
 
     while (window.is_open())
     {
@@ -84,10 +98,10 @@ int main()
         ts::InputHandler::update(&window);
         window.clear();
 
-        //window.render(&tri);
+        rect.render(&window);
 
+        window.flush();
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
         std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));
-        window.flush();
     }
 }

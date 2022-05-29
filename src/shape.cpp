@@ -4,9 +4,11 @@
 //
 
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_image.h>
 
 #include <include/render_target.hpp>
 #include <include/shape.hpp>
+#include <stdexcept>
 
 namespace ts
 {
@@ -14,7 +16,7 @@ namespace ts
     {
         SDL_RenderGeometry(
             target->get_renderer(),
-            _texture->get_native(),
+            (_texture != nullptr ? _texture->get_native() : nullptr),
             _vertices.data(),
             _vertices.size(),
             nullptr, 0);
@@ -22,6 +24,9 @@ namespace ts
 
     Shape::Shape(std::vector<Vertex> vertices)
     {
+        if (vertices.size() % 3 != 0)
+            throw std::invalid_argument("In Shape Ctor: vertices need to be a set of triangles");
+
         _vertices.reserve(vertices.size());
         for (auto& v : vertices)
             _vertices.push_back(v.operator SDL_Vertex());

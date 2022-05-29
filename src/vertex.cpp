@@ -31,18 +31,16 @@ namespace ts
         pos.x = position.x;
         pos.y = position.y;
 
-        SDL_Color col;
-        col.r = color.red * 255;
-        col.g = color.green * 255;
-        col.b = color.blue * 255;
-        col.a = color.alpha * 255;
+        out.color.r = color.red * 255;
+        out.color.g = color.green * 255;
+        out.color.b = color.blue * 255;
+        out.color.a = color.alpha * 255;
 
         SDL_FPoint tex_coord;
         tex_coord.x = texture_coordinates.x;
         tex_coord.y = texture_coordinates.y;
 
         out.position = pos;
-        out.color = col;
         out.tex_coord = tex_coord;
 
         return out;

@@ -8,13 +8,15 @@
 namespace ts
 {
     RectangleShape::RectangleShape(Vector2f top_left, Vector2f size)
-        : Shape({
-                // in order of tri decomposition: top left, top_right, bottom_left, bottom_right
-                Vertex(top_left, Vector2f(0, 0), RGBA(1, 1, 1, 1)),
-                Vertex(top_left + Vector2f(size.x, 0), Vector2f(0, 1), RGBA(1, 1, 1, 1)),
-                Vertex(top_left + Vector2f(0, size.y), Vector2f(1, 0), RGBA(1, 1, 1, 1)),
-                Vertex(top_left + size, Vector2f(1, 1), RGBA(1, 1, 1, 1))
-            })
+        : Shape([top_left, size]() -> std::vector<Vertex> {
+
+                auto tl = Vertex(top_left, Vector2f(0, 0), RGBA(1, 1, 1, 1));
+                auto tr = Vertex(top_left + Vector2f(size.x, 0), Vector2f(0, 1), RGBA(1, 1, 1, 1));
+                auto bl = Vertex(top_left + Vector2f(0, size.y), Vector2f(1, 0), RGBA(1, 1, 1, 1));
+                auto br = Vertex(top_left + size, Vector2f(1, 1), RGBA(1, 1, 1, 1));
+
+                return {tl, tr, bl, tr, bl, br};
+        }())
     {}
 
     RectangleShape::RectangleShape(float top_left_x, float top_left_y, float width, float height)

@@ -60,23 +60,24 @@ file(GLOB INCLUDE_FILES src/*.h)
 
 ### FIND DEPENDENCIES ###
 
-find_package(Bullet REQUIRED)
-
-find_library(SDL2 REQUIRED NAMES SDL2)
+find_package(SDL2 2.0.18 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
 find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
 find_library(SDL2_net REQUIRED NAMES SDL2_net)
 
-if (FALSE)
-     # not required
-    find_library(vulkan REQUIRED)
+find_package(Bullet REQUIRED)
+find_library(vulkan REQUIRED NAMES vulkan)
 
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX("glm/glm.hpp" GLM_FOUND)
+if(NOT GLM_FOUND)
+    message(FATAL_ERROR "Missing Dependency: glm")
+endif()
+
+if (FALSE) # TODO
     list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
     find_package(shaderc_shared REQUIRED) # not required
-else()
-    set(shaderc_shared "")
-    set(vulkan "")
 endif()
 
 ### TELESCOPE ###
@@ -172,7 +173,7 @@ target_link_libraries(telescope PUBLIC
     ${vulkan}
 )
 
-# TODO: REMOVE THIS
+# TODO: REMOVE THIS vvv
 
 add_executable(debug_main main.cpp)
 target_link_libraries(debug_main PUBLIC telescope)
@@ -180,7 +181,7 @@ set_target_properties(telescope PROPERTIES
   CXX_STANDARD 20
 )
 
-# TODO REMOVE THIS
+# TODO REMOVE THIS ^^
 
 ### TESTS ####
 

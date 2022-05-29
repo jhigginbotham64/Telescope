@@ -15,10 +15,10 @@ namespace ts
             static auto infinity = std::numeric_limits<float>::max();
             static auto negative_infinity = std::numeric_limits<float>::min();
 
-            float max_x = infinity;
-            float max_y = infinity;
-            float min_x = negative_infinity;
-            float min_y = negative_infinity;
+            float min_x = infinity;
+            float min_y = infinity;
+            float max_x = negative_infinity;
+            float max_y = negative_infinity;
 
             for (auto& v : {a, b, c})
             {
@@ -32,9 +32,9 @@ namespace ts
             auto size = Vector2f(max_x - min_x, max_y - min_y);
 
             return {
-                Vertex(a, (a - top_left) / size, RGBA(1, 1, 1, 1)),
-                Vertex(b, (b - top_left) / size, RGBA(1, 1, 1, 1)),
-                Vertex(c, (c - top_left) / size, RGBA(1, 1, 1, 1))
+                Vertex(a, abs(a - top_left) / size, RGBA(1, 1, 1, 1)),
+                Vertex(b, abs(b - top_left) / size, RGBA(1, 1, 1, 1)),
+                Vertex(c, abs(c - top_left) / size, RGBA(1, 1, 1, 1))
             };
 
         }(a, b, c))

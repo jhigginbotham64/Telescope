@@ -42,7 +42,7 @@ namespace ts
             //
             Vector2f get_position(Vector2f);
 
-        protected:
+        //protected:
             //
             Shape(std::vector<Vertex>);
 

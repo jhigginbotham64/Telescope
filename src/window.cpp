@@ -171,12 +171,14 @@ namespace ts
 
     void Window::clear()
     {
+        SDL_SetRenderDrawColor(get_renderer(), 0, 0, 0, 255);
         SDL_RenderClear(get_renderer());
     }
 
     void Window::flush()
     {
         SDL_RenderFlush(get_renderer());
+        SDL_RenderPresent(get_renderer());
     }
 }
 
