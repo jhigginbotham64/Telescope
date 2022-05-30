@@ -3,15 +3,21 @@
 // Created on 27.05.22 by clem (mail@clemens-cords.com)
 //
 
+#include <SDL2/SDL_render.h>
+
 #include <include/circle_shape.hpp>
 
 namespace ts
 {
-    CircleShape::CircleShape(Vector2f center, float radius, size_t n_vertices)
-        : _n_vertices(n_vertices), _radius(radius), Shape({})
+    CircleShape::CircleShape(Vector2f center, float radius, size_t n_outer_vertices)
+        : _n_vertices(n_outer_vertices), _radius(radius), Shape({})
     {
         update(center);
     }
+
+    CircleShape::CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices)
+        : CircleShape({center_x, center_y}, radius, n_outer_vertices)
+    {}
 
     void CircleShape::update(Vector2f center)
     {
@@ -20,24 +26,54 @@ namespace ts
         size_t n = _n_vertices + 1;
         size_t step = 360 / _n_vertices;
 
-        std::vector<SDL_Vertex> old = _vertices;
-        _vertices.clear();
-
-        _vertices.emplace_back();
-        _vertices.back().position.x = center.x;
-        _vertices.back().position.y = center.y;
-        _vertices.back().color = old.at(0).color;
-        _vertices.back().tex_coord.x = 0.5;
-        _vertices.back().tex_coord.y = 0.5;
-
-        for (size_t angle = 0, i = 1; angle < 360; angle += step, i++)
+        std::vector<RGBA> colors;
+        if (not _vertices.empty())
         {
-            _vertices.emplace_back();
-            _vertices.back().position.x = center.x + cos(angle) * _radius;
-            _vertices.back().position.x = center.y + sin(angle) * _radius;
-            _vertices.back().color = old.at(i).color;
-            _vertices.back().tex_coord.x = 0.5 + cos(angle) * 0.5;
-            _vertices.back().tex_coord.y = 0.5 + sin(angle) * 0.5;
+            for (auto& v : _vertices)
+                colors.emplace_back(v.color);
+        }
+
+        auto middle = SDL_Vertex();
+        middle.position.x = center.x;
+        middle.position.y = center.y;
+        middle.tex_coord.x = 0.5;
+        middle.tex_coord.y = 0.5;
+
+        // TODO: optimize this, outers are allocated twice redundantly
+
+        auto outer = std::vector<SDL_Vertex>();
+        for (size_t angle = 0; angle < 360; angle += step)
+        {
+            outer.emplace_back();
+            float radians = angle * M_PI / 180;
+            outer.back().position.x = center.x + cos(radians) * _radius;
+            outer.back().position.y = center.y + sin(radians) * _radius;
+            outer.back().tex_coord.x = 0.5 + cos(radians) * 0.5;
+            outer.back().tex_coord.y = 0.5 + sin(radians) * 0.5;
+        }
+
+        _vertices.clear();
+        _vertices.push_back(middle);
+        _vertices.push_back(outer.at(0));
+        _vertices.push_back(outer.at(1));
+
+        for (size_t i = 1; i < outer.size(); ++i)
+        {
+            _vertices.push_back(outer.at(i-1));
+            _vertices.push_back(middle);
+            _vertices.push_back(outer.at(i));
+        }
+
+        _vertices.push_back(outer.back());
+        _vertices.push_back(middle);
+        _vertices.push_back(outer.front());
+
+        for (size_t i = 0; i < _vertices.size(); ++i)
+        {
+            if (not colors.empty())
+                _vertices.at(i).color = colors.at(i).operator SDL_Color();
+            else
+                _vertices.at(i).color = RGBA(1, 1, 1, 1).operator SDL_Color();
         }
     }
 

@@ -14,10 +14,14 @@ namespace ts
     {
         public:
             //
-            CircleShape(Vector2f center, float radius, size_t n_vertices);
+            CircleShape(Vector2f center, float radius, size_t n_outer_vertices);
+
+            //
+            CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices);
 
             //
             Vector2f get_center() const;
+
 
             //
             void set_center(Vector2f);
@@ -31,6 +35,7 @@ namespace ts
         private:
             float _radius;
             size_t _n_vertices;
+                // number of outer vertices before tri decomposition
 
             void update(Vector2f center);
     };
