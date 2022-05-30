@@ -40,16 +40,32 @@ namespace ts
             void set_position(Vector2f position);
 
             //
-            Vector2f get_position(Vector2f);
+            Vector2f get_position();
 
-        //protected:
             //
-            Shape(std::vector<Vertex>);
+            void set_origin(Vector2f absolute_position);
+
+            //
+            Vector2f get_origin() const;
+
+            //
+            void set_rotation(float in_degree);
+
+        protected:
+            //
+            Shape();
 
             //
             std::vector<SDL_Vertex> _vertices;
 
+            // forces daugters to declare origin
+            virtual Vector2f get_initial_origin() = 0;
+
+            // update the shape when fields change
+            virtual void update() = 0;
+
         private:
+            Vector2f _origin;
             Texture* _texture;
     };
 }

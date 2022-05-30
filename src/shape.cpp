@@ -22,14 +22,12 @@ namespace ts
             nullptr, 0);
     }
 
-    Shape::Shape(std::vector<Vertex> vertices)
+    Shape::Shape()
     {
-        if (vertices.size() % 3 != 0)
-            throw std::invalid_argument("In Shape Ctor: vertices need to be a set of triangles");
+        update();
 
-        _vertices.reserve(vertices.size());
-        for (auto& v : vertices)
-            _vertices.push_back(v.operator SDL_Vertex());
+        if (_vertices.size() % 3 != 0 or _vertices.empty())
+            throw std::invalid_argument("In Shape Ctor: vertices need to be a set of triangles");
     }
 
     void Shape::set_color(RGBA color, int vertex_index)
@@ -77,12 +75,27 @@ namespace ts
             v.position.x = new_pos.x;
             v.position.y = new_pos.y;
         }
+
+        update();
     }
 
-    Vector2f Shape::get_position(Vector2f position)
+    Vector2f Shape::get_position()
     {
         auto& pos = _vertices.at(0).position;
         return Vector2f(pos.x, pos.y);
     }
+
+    Vector2f Shape::get_origin() const
+    {
+        return _origin;
+    }
+
+    void Shape::set_origin(Vector2f absolute_position)
+    {
+        _origin = absolute_position;
+        update();
+    }
+
+
 }
 
