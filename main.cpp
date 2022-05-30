@@ -18,8 +18,6 @@
 #include <thread>
 #include <cassert>
 
-#include <SDL2/SDL2_gfxPrimitives.h>
-
 #include <include/exceptions.hpp>
 #include <include/logging.hpp>
 #include <include/time.hpp>
@@ -31,6 +29,8 @@
 #include <include/triangle_shape.hpp>
 #include <include/circle_shape.hpp>
 #include <include/rectangle_shape.hpp>
+
+#include <glm/glm.hpp>
 
 void initialize()
 {

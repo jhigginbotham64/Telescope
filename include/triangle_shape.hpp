@@ -15,5 +15,17 @@ namespace ts
         public:
             //
             TriangleShape(Vector2f a, Vector2f b, Vector2f c);
+
+            //
+            void set_centroid(Vector2f) override;
+
+            //
+            Vector2f get_centroid() const override;
+
+        private:
+            void update();
+
+            Vector2f _centroid;
+            std::array<Vector2f, 3> _coordinates;
     };
 }

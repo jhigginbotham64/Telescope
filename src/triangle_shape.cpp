@@ -8,8 +8,19 @@
 namespace ts
 {
     TriangleShape::TriangleShape(Vector2f a, Vector2f b, Vector2f c)
-        : Shape([](Vector2f a, Vector2f b, Vector2f c) -> std::vector<Vertex> {
+        : _coordinates{a, b, c}
+    {
+        update();
+    }
 
+    void TriangleShape::update()
+    {
+        auto& a = _coordinates.at(0);
+        auto& b = _coordinates.at(1);
+        auto& c = _coordinates.at(2);
+
+        if (_vertices.empty())
+        {
             // find bounding box and infer texture coordinates
 
             static auto infinity = std::numeric_limits<float>::max();
@@ -20,7 +31,7 @@ namespace ts
             float max_x = negative_infinity;
             float max_y = negative_infinity;
 
-            for (auto& v : {a, b, c})
+            for (auto &v: {a, b, c})
             {
                 max_x = std::max(max_x, v.x);
                 max_y = std::max(max_y, v.y);
@@ -31,13 +42,43 @@ namespace ts
             auto top_left = Vector2f(min_x, min_y);
             auto size = Vector2f(max_x - min_x, max_y - min_y);
 
-            return {
-                Vertex(a, abs(a - top_left) / size, RGBA(1, 1, 1, 1)),
-                Vertex(b, abs(b - top_left) / size, RGBA(1, 1, 1, 1)),
-                Vertex(c, abs(c - top_left) / size, RGBA(1, 1, 1, 1))
+            _vertices = {
+                    Vertex(a, abs(a - top_left) / size, RGBA(1, 1, 1, 1)),
+                    Vertex(b, abs(b - top_left) / size, RGBA(1, 1, 1, 1)),
+                    Vertex(c, abs(c - top_left) / size, RGBA(1, 1, 1, 1))
             };
+        }
+        else
+        {
+            for (size_t i = 0; i < 3; ++i)
+            {
+                _vertices.at(i).position.x = _coordinates.at(i).x
+                _vertices.at(i).position.y = _coordinates.at(i).y
+            }
+        }
 
-        }(a, b, c))
-    {}
+        float x_sum = 0, y_sum = 0;
+        for (size_t i = 0; i < 3; ++i)
+        {
+            x_sum += _vertices.at(i).position.x;
+            y_sum += _vertices.at(i).position.y;
+        }
+
+        _centroid = {x_sum / 3.f, y_sum / 3.f};
+    }
+
+    void TriangleShape::set_centroid(Vector2f position)
+    {
+        auto offset = _centroid - position;
+
+        for (auto& v : _coordinates)
+            v += offset;
+
+        update();
+    }
+
+    Vector2f TriangleShape::get_centroid() const
+    {
+        return _centroid;
+    }
 }
-

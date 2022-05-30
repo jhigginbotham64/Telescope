@@ -10,16 +10,16 @@
 namespace ts
 {
     CircleShape::CircleShape(Vector2f center, float radius, size_t n_outer_vertices)
-        : _n_vertices(n_outer_vertices), _radius(radius), Shape({})
+        : _center(center), _radius(radius), _n_vertices(n_outer_vertices)
     {
-        update(center);
+        update();
     }
 
     CircleShape::CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices)
         : CircleShape({center_x, center_y}, radius, n_outer_vertices)
     {}
 
-    void CircleShape::update(Vector2f center)
+    void CircleShape::update()
     {
         // triangle fan decomposition
 
@@ -34,8 +34,8 @@ namespace ts
         }
 
         auto middle = SDL_Vertex();
-        middle.position.x = center.x;
-        middle.position.y = center.y;
+        middle.position.x = _center.x;
+        middle.position.y = _center.y;
         middle.tex_coord.x = 0.5;
         middle.tex_coord.y = 0.5;
 
@@ -46,8 +46,8 @@ namespace ts
         {
             outer.emplace_back();
             float radians = angle * M_PI / 180;
-            outer.back().position.x = center.x + cos(radians) * _radius;
-            outer.back().position.y = center.y + sin(radians) * _radius;
+            outer.back().position.x = _center.x + cos(radians) * _radius;
+            outer.back().position.y = _center.y + sin(radians) * _radius;
             outer.back().tex_coord.x = 0.5 + cos(radians) * 0.5;
             outer.back().tex_coord.y = 0.5 + sin(radians) * 0.5;
         }
@@ -77,22 +77,15 @@ namespace ts
         }
     }
 
-    Vector2f CircleShape::get_center() const
+    Vector2f CircleShape::get_centroid() const
     {
-        auto sum = Vector2f(0, 0);
-
-        for (auto& v : _vertices)
-        {
-            sum.x += v.position.x;
-            sum.y += v.position.y;
-        }
-
-        return sum / Vector2f(_vertices.size());
+        return _center;
     }
 
-    void CircleShape::set_center(Vector2f center)
+    void CircleShape::set_centroid(Vector2f center)
     {
-        update(center);
+        _center = center;
+        update();
     }
 
     float CircleShape::get_radius() const
@@ -103,7 +96,7 @@ namespace ts
     void CircleShape::set_radius(float radius)
     {
         _radius = radius;
-        update(get_center());
+        update();
     }
 }
 

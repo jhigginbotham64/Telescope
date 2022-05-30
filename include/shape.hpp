@@ -20,7 +20,13 @@ namespace ts
     {
         public:
             //
-            void render(const RenderTarget*) const override;
+            virtual void set_centroid(Vector2f position) = 0;
+
+            //
+            virtual Vector2f get_centroid() const = 0;
+
+            //
+            void render(const RenderTarget*) const final override;
 
             // -1 for all
             void set_color(RGBA, int vertex_index = -1);
@@ -38,12 +44,6 @@ namespace ts
             void set_texture(Texture*);
 
             //
-            void set_position(Vector2f position);
-
-            //
-            Vector2f get_position();
-
-            //
             void set_origin(Vector2f absolute_position);
 
             //
@@ -52,21 +52,22 @@ namespace ts
             //
             void set_rotation(float in_degree);
 
+            //
+            Rectangle get_bounding_box() const;
+
         protected:
             //
-            Shape();
+            Shape() = default;
 
-            //
+            // tris
             std::vector<SDL_Vertex> _vertices;
 
-            // forces daugters to declare origin
-            virtual Vector2f get_initial_origin() = 0;
-
-            // update the shape when fields change
-            virtual void update() = 0;
-
         private:
-            Vector2f _origin;
             Texture* _texture;
+
+            // offset from centroid
+            Vector2f _origin = {0, 0};
+
+            Vector2f compute_centroid() const;
     };
 }

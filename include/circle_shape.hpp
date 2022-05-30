@@ -20,11 +20,10 @@ namespace ts
             CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices);
 
             //
-            Vector2f get_center() const;
-
+            Vector2f get_centroid() const override;
 
             //
-            void set_center(Vector2f);
+            void set_centroid(Vector2f) override;
 
             //
             float get_radius() const;
@@ -33,10 +32,11 @@ namespace ts
             void set_radius(float);
 
         private:
+            Vector2f _center;
             float _radius;
             size_t _n_vertices;
                 // number of outer vertices before tri decomposition
 
-            void update(Vector2f center);
+            void update();
     };
 }
