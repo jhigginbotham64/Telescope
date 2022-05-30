@@ -77,20 +77,22 @@ int main()
     auto window = ts::Window();
     window.create("", 800, 600, ts::DEFAULT);
 
-    SDL_GL_CreateContext(window.get_native());
-
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
-    auto tri = TriangleShape(Vector2f(400, 150), Vector2f(200, 450), Vector2f(600, 450));
-
+    auto tri = ts::TriangleShape(Vector2f(400, 150), Vector2f(200, 450), Vector2f(600, 450));
     auto rect = ts::RectangleShape(50, 50, 400, 200);
+    auto circ = ts::CircleShape({400, 300}, 100, 64);
+
     auto tex = ts::Texture(&window);
     tex.load("/home/clem/Workspace/backup/bckp2/bg.png");
     tri.set_texture(&tex);
     rect.set_texture(&tex);
+    circ.set_texture(&tex);
 
     std::array<Sint16, 3> x = {400, 200, 600};
     std::array<Sint16, 3> y = {150, 450, 450};
+
+    size_t n = 1;
 
     while (window.is_open())
     {
@@ -98,7 +100,8 @@ int main()
         ts::InputHandler::update(&window);
         window.clear();
 
-        rect.render(&window);
+        circ.render(&window);
+        circ.set_position(circ.get_position() + Vector2f(sin(n * M_PI)))
 
         window.flush();
         auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();

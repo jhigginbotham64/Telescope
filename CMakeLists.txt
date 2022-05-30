@@ -145,6 +145,9 @@ add_library(telescope SHARED
     src/circle_shape.cpp
 
     src/render_target.cpp
+
+    include/angle.hpp
+    src/angle.cpp
 )
 
 set_target_properties(telescope PROPERTIES
