@@ -11,6 +11,7 @@
 #include <include/texture.hpp>
 #include <include/vertex.hpp>
 #include <include/color.hpp>
+#include <include/geometric_shapes.hpp>
 
 namespace ts
 {
