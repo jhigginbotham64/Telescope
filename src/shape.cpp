@@ -64,5 +64,26 @@ namespace ts
     {
         _origin = origin;
     }
+
+    Rectangle Shape::get_bounding_box() const
+    {
+        static auto infinity = std::numeric_limits<float>::max();
+        static auto negative_infinity = std::numeric_limits<float>::min();
+
+        float max_x = infinity;
+        float max_y = infinity;
+        float min_x = negative_infinity;
+        float min_y = negative_infinity;
+
+        for (auto& v : _vertices)
+        {
+            max_x = std::max(max_x, v.position.x);
+            max_y = std::max(max_y, v.position.y);
+            min_x = std::min(min_x, v.position.x);
+            min_y = std::min(min_x, v.position.y);
+        }
+
+        return Rectangle{Vector2f{min_x, min_y}, Vector2f{max_x - min_x, max_y - min_y}};
+    }
 }
 

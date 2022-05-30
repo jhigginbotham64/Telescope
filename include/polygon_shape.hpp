@@ -13,9 +13,12 @@ namespace ts
     {
         public:
             //
-            PolygonShape(std::vector<Triangle> tris);
+            PolygonShape(std::vector<Vector2f> positions);
 
-            // automatic triangle decomposition
-            //PolygonShape(std::vector<Vector2f> positions);
+            //
+            Vector2f get_centroid() const override;
+
+            //
+            void set_centroid(Vector2f);
     };
 }
