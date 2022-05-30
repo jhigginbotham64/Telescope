@@ -29,7 +29,7 @@ namespace ts
 
         if (_chunk == nullptr)
         {
-            Log::warning("In Sound.load : unable to load \"", path, "\"");
+            Log::warning("In ts::Sound.load : unable to load \"", path, "\"");
             return false;
         }
         else
@@ -57,13 +57,13 @@ namespace ts
     {
         if (zero_to_one > 1.0)
         {
-            Log::warning("In Sound.set_volume: volume level ", zero_to_one,
+            Log::warning("In ts::Sound.set_volume: volume level ", zero_to_one,
                          " is outside [0, 1]; volume will instead be set to 1 (the maximum).");
             zero_to_one = 1.0;
         }
         else if (zero_to_one < 0)
         {
-            Log::warning("In Sound.set_volume: volume level ", zero_to_one,
+            Log::warning("In ts::Sound.set_volume: volume level ", zero_to_one,
                          " is outside [0, 1]; volume will instead be set to 0 (the minimum).");
             zero_to_one = 0.0;
         }

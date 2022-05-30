@@ -103,7 +103,7 @@ namespace ts
                     static bool already_printed = false;
                     if (not already_printed)
                     {
-                        Log::warning("In InputHandler.update: controller axis ", event.caxis.axis, " unsupported");
+                        Log::warning("In ts::InputHandler.update: controller axis ", event.caxis.axis, " unsupported");
                         already_printed = true;
                     }
                 }
@@ -220,7 +220,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::is_down: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::is_down: No controller with id ", id, " connected, returning false");
             return false;
         }
 
@@ -251,7 +251,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::has_state_changed: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::has_state_changed: No controller with id ", id, " connected, returning false");
             return false;
         }
 
@@ -279,7 +279,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::was_pressed: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::was_pressed: No controller with id ", id, " connected, returning false");
             return false;
         }
 
@@ -304,7 +304,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::was_released: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::was_released: No controller with id ", id, " connected, returning false");
             return false;
         }
 
@@ -326,7 +326,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::get_controller_axis_left: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::get_controller_axis_left: No controller with id ", id, " connected, returning false");
             return Vector2f(0, 0);
         }
         return it->second[1].axis_left;
@@ -337,7 +337,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::get_controller_axis_right: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::get_controller_axis_right: No controller with id ", id, " connected, returning false");
             return Vector2f(0, 0);
         }
         return it->second[1].axis_right;
@@ -348,7 +348,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::get_controller_trigger_left: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::get_controller_trigger_left: No controller with id ", id, " connected, returning false");
             return 0;
         }
         return it->second[1].trigger_left;
@@ -359,7 +359,7 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In InputHandler::get_controller_trigger_right: No controller with id ", id, " connected, returning false");
+            Log::warning("In ts::InputHandler::get_controller_trigger_right: No controller with id ", id, " connected, returning false");
             return 0;
         }
         return it->second[1].trigger_right;

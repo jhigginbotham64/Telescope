@@ -97,7 +97,6 @@ namespace ts
             //
             SDL_Window* get_native();
 
-
         private:
             SDL_Window* _window = nullptr;
             bool _is_open = false;

@@ -15,7 +15,7 @@ namespace ts
             return channel;
         else
         {
-            Log::warning("In SoundHandler.", function_name, ": channel index ", channel, " is not in [0, ", n_channels-1, "], instead using any channel #", n_channels-1);
+            Log::warning("In ts::SoundHandler.", function_name, ": channel index ", channel, " is not in [0, ", n_channels-1, "], instead using any channel #", n_channels-1);
             return n_channels - 1;
         }
     }
@@ -82,13 +82,13 @@ namespace ts
         auto guard = std::lock_guard(_lock);
         if (zero_to_one > 1.0)
         {
-            Log::warning("In SoundHandler.set_volume: volume level ", zero_to_one,
+            Log::warning("In ts::SoundHandler.set_volume: volume level ", zero_to_one,
                          " is outside [0, 1]; volume will instead be set to 1 (the maximum).");
             zero_to_one = 1.0;
         }
         else if (zero_to_one < 0)
         {
-            Log::warning("In SoundHandler.set_volume: volume level ", zero_to_one,
+            Log::warning("In ts::SoundHandler.set_volume: volume level ", zero_to_one,
                          " is outside [0, 1]; volume will instead be set to 0 (the minimum).");
             zero_to_one = 0.0;
         }

@@ -49,7 +49,11 @@ namespace ts
         _texture = IMG_LoadTexture(_renderer, path.c_str());
 
         if (_texture == nullptr)
-            ts::Log::warning("In Texture.load: unable to load texture from file \"", path, "\"");
+        {
+            ts::Log::warning("In ts::Texture.load: unable to load texture from file \"", path, "\"");
+            _texture = nullptr;
+            return;
+        }
 
         update();
 
@@ -87,7 +91,7 @@ namespace ts
         _filtering_mode = mode;
 
         if (_texture != nullptr)
-            Log::warning("In Texture.set_filtering_mode: Cannot change texture filtering mode if the texture is already GPU-side. Instead, `unload` the texture, set the filtering mode, then `load` the texture again.");
+            Log::warning("In ts::Texture.set_filtering_mode: Cannot change texture filtering mode if the texture is already GPU-side. Instead, `unload` the texture, set the filtering mode, then `load` the texture again.");
     }
 
     TextureFilteringMode Texture::get_filtering_mode() const

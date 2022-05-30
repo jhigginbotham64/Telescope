@@ -6,6 +6,7 @@
 #pragma once
 
 #include <mutex>
+#include <array>
 
 #include <include/sound.hpp>
 #include <include/time.hpp>
