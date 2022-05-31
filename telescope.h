@@ -7,16 +7,18 @@
 
 #include <unordered_map>
 
+#include <include/common.hpp>
 #include <include/window.hpp>
-
 #include <include/key_or_button.hpp>
 #include <include/input_handler.hpp>
-
 #include <include/music.hpp>
 #include <include/music_handler.hpp>
-
 #include <include/sound.hpp>
 #include <include/sound_handler.hpp>
+#include <include/rectangle_shape.hpp>
+#include <include/triangle_shape.hpp>
+#include <include/circle_shape.hpp>
+#include <include/polygon_shape.hpp>
 
 extern "C"
 {
@@ -194,6 +196,150 @@ void ts_window_clear(size_t id)
 void ts_window_flush(size_t id)
 {
     detail::_windows.at(id).flush();
+}
+
+// ### COMMON ##################################################
+
+bool ts_initialize()
+{
+    return ts::initialize();
+}
+
+void ts_set_framerate_limit(size_t frames_per_second)
+{
+    ts::set_framerate_limit(frames_per_second);
+}
+
+void ts_start_frame(size_t window_id)
+{
+    ts::start_frame(&detail::_windows.at(window_id));
+}
+
+void ts_end_frame(size_t window_id)
+{
+    ts::end_frame(&detail::_windows.at(window_id));
+}
+
+// ### TEXTURES ##################################################
+
+namespace detail
+{
+    size_t _texture_id;
+    std::unordered_map<size_t, ts::Texture> _textures;
+}
+
+size_t ts_texture_load(size_t window_id, const char* path)
+{
+    auto id = detail::_texture_id++;
+    detail::_textures.emplace(id, ts::Texture(&detail::_windows.at(window_id)));
+    detail::_textures.at(id).load(path);
+    return id;
+}
+
+void ts_texture_unload(size_t texture_id)
+{
+    detail::_textures.erase(texture_id);
+}
+
+void ts_texture_set_color(size_t texture_id, float r, float g, float b, float a)
+{
+    detail::_textures.at(texture_id).set_color(ts::RGBA(r, g, b, a));
+}
+
+// ### SHAPES ##################################################
+
+void ts_shape_render(void* shape_ptr, size_t window_id)
+{
+    detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr));
+}
+
+float ts_shape_get_centroid_x(void* shape_ptr)
+{
+    return ((ts::Shape*) shape_ptr)->get_centroid().x;
+}
+
+float ts_shape_get_centroid_y(void* shape_ptr)
+{
+    return ((ts::Shape*) shape_ptr)->get_centroid().y;
+}
+
+void ts_shape_set_centroid(void* shape_ptr, float x, float y)
+{
+    ((ts::Shape*) shape_ptr)->set_centroid(ts::Vector2f{x, y});
+}
+
+void ts_shape_set_color(void* shape_ptr, float r, float g, float b, float a)
+{
+    ((ts::Shape*) shape_ptr)->set_color(ts::RGBA(r, g, b, a));
+}
+
+void ts_shape_set_texture(void* shape_ptr, size_t texture_id)
+{
+    ((ts::Shape*) shape_ptr)->set_texture(&detail::_textures.at(texture_id));
+}
+
+float ts_shape_get_aabb_x(void* shape_ptr)
+{
+    ((ts::Shape*) shape_ptr)->get_bounding_box().top_left.x;
+}
+
+float ts_shape_get_aabb_y(void* shape_ptr)
+{
+    ((ts::Shape*) shape_ptr)->get_bounding_box().top_left.y;
+}
+
+float ts_shape_get_aabb_width(void* shape_ptr)
+{
+    ((ts::Shape*) shape_ptr)->get_bounding_box().size.x;
+}
+
+float ts_shape_get_aabb_height(void* shape_ptr)
+{
+    ((ts::Shape*) shape_ptr)->get_bounding_box().size.y;
+}
+
+void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)
+{
+    return new ts::TriangleShape({a_x, a_y}, {b_x, b_y}, {c_x, c_y});
+}
+
+void ts_shape_destroy_triangle(void* triangle_pointer)
+{
+    delete ((ts::TriangleShape*) triangle_pointer);
+}
+
+void* ts_shape_new_rectangle(float top_left_x, float top_left_y, float width, float height)
+{
+    return new ts::RectangleShape(ts::Vector2f{top_left_x, top_left_y}, ts::Vector2f{width, height});
+}
+
+void* ts_shape_destroy_rectangle(void* rectangle_pointer)
+{
+    delete ((ts::TriangleShape*) rectangle_pointer);
+}
+
+void* ts_shape_new_circle(float center_x, float center_y, float radius)
+{
+    return new ts::CircleShape(ts::Vector2f{center_x, center_y}, radius);
+}
+
+void ts_shape_destroy_circle(void* circle_pointer)
+{
+    delete ((ts::Circle*) circle_pointer);
+}
+
+void* ts_shape_new_polygon(float* vertices_x, float* vertices_y, size_t n_vertices)
+{
+    std::vector<ts::Vector2f> vertices;
+    for (size_t i = 0; i < n_vertices; ++i)
+        vertices.push_back(ts::Vector2f(vertices_x[i], vertices_y[i]));
+
+    return new ts::PolygonShape(vertices);
+}
+
+void ts_shape_destroy_polygon(void* polygon_pointer)
+{
+    delete ((ts::PolygonShape*) polygon_pointer);
 }
 
 // ### INPUT ###################################################
