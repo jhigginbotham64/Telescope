@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <array>
+
 #include <include/shape.hpp>
 
 namespace ts

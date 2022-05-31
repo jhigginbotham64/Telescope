@@ -52,8 +52,8 @@ namespace ts
         {
             for (size_t i = 0; i < 3; ++i)
             {
-                _vertices.at(i).position.x = _coordinates.at(i).x
-                _vertices.at(i).position.y = _coordinates.at(i).y
+                _vertices.at(i).position.x = _coordinates.at(i).x;
+                _vertices.at(i).position.y = _coordinates.at(i).y;
             }
         }
 
