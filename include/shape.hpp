@@ -6,6 +6,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 
 #include <include/renderable.hpp>
 #include <include/static_texture.hpp>
@@ -62,6 +63,9 @@ namespace ts
             // tris
             std::vector<SDL_Vertex> _vertices;
 
+            // call when _vertices was modified in any way
+            void signal_vertices_updated();
+
         private:
             Texture* _texture = nullptr;
 
@@ -69,5 +73,11 @@ namespace ts
             Vector2f _origin = {0, 0};
 
             Vector2f compute_centroid() const;
+
+            // contiguous data needed for fast rendering
+            std::vector<float> _xy;
+            std::vector<SDL_Color> _colors;
+            std::vector<float> _uv;
+
     };
 }

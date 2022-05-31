@@ -63,6 +63,7 @@ namespace ts
             SDL_SetWindowFullscreen(_window, SDL_TRUE);
 
         _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+        SDL_RenderSetVSync(_renderer, true);
         _is_open = true;
     }
 
@@ -94,7 +95,7 @@ namespace ts
     Vector2ui Window::get_size() const
     {
         int width, height;
-        SDL_GetWindowSize(_window, &width, &height);
+        SDL_GetRendererOutputSize(_renderer, &width, &height);
         return Vector2ui(width, height);
     }
 

@@ -83,6 +83,8 @@ namespace ts
             temp_color.hue += step;
         }
         // TODO
+
+        Shape::signal_vertices_updated();
     }
 
     Vector2f PolygonShape::get_centroid() const

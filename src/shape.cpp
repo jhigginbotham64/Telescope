@@ -3,23 +3,69 @@
 // Created on 27.05.22 by clem (mail@clemens-cords.com)
 //
 
+#include <stdexcept>
+#include <iostream> //TODO
+
+#include <glm/glm.hpp>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_image.h>
 
 #include <include/render_target.hpp>
 #include <include/shape.hpp>
-#include <stdexcept>
 
 namespace ts
 {
+    void Shape::signal_vertices_updated()
+    {
+        _xy.clear();
+        _colors.clear();
+        _uv.clear();
+
+        _xy.reserve(_vertices.size() * 2);
+        _colors.reserve(_vertices.size());
+        _uv.reserve(_vertices.size() * 2);
+
+        for (auto& v : _vertices)
+        {
+            _xy.push_back(v.position.x);
+            _xy.push_back(v.position.y);
+            _colors.push_back(v.color);
+            _uv.push_back(v.tex_coord.x);
+            _uv.push_back(v.tex_coord.y);
+        }
+    }
+
     void Shape::render(const RenderTarget* target) const
     {
-        SDL_RenderGeometry(
+        static glm::mat3x3 transform = {
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        };
+
+        transform[0][2] += 1;
+        transform[1][2] += 1;
+
+        auto xy = _xy;
+
+        for (size_t i = 0; i < xy.size(); i += 2)
+        {
+            auto new_pos = Vector3f{xy.at(i), xy.at(i+1), 1} * transform;
+
+            std::cout << xy.at(i) - new_pos.x << std::endl;
+            xy.at(i) = new_pos.x;
+            xy.at(i+1) = new_pos.y;
+        }
+
+        SDL_RenderGeometryRaw(
             const_cast<RenderTarget*>(target),
             _texture != nullptr ? _texture->get_native() : nullptr,
-            _vertices.data(),
+            xy.data(), 2 * sizeof(float),
+            _colors.data(), sizeof(SDL_Color),
+            _uv.data(), 2 * sizeof(float),
             _vertices.size(),
-            nullptr, 0);
+            (const void*) nullptr, 0, 0
+        );
     }
 
     void Shape::set_color(RGBA color, int vertex_index)

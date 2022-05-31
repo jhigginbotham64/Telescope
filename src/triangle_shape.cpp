@@ -65,6 +65,8 @@ namespace ts
         }
 
         _centroid = {x_sum / 3.f, y_sum / 3.f};
+
+        Shape::signal_vertices_updated();
     }
 
     void TriangleShape::set_centroid(Vector2f position)

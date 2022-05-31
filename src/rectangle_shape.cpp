@@ -43,6 +43,8 @@ namespace ts
             _vertices.at(5).position.x = br.x;
             _vertices.at(5).position.y = br.y;
         }
+
+        Shape::signal_vertices_updated();
     }
 
     RectangleShape::RectangleShape(Vector2f top_left, Vector2f size)

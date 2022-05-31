@@ -154,7 +154,7 @@ add_library(telescope SHARED
 
     include/angle.hpp
     src/angle.cpp
-        include/geometric_shapes.hpp include/polygon_shape.hpp src/polygon_shape.cpp include/common.hpp src/common.cpp src/renderable.cpp)
+        include/geometric_shapes.hpp include/polygon_shape.hpp src/polygon_shape.cpp include/common.hpp src/common.cpp src/renderable.cpp include/transform.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX

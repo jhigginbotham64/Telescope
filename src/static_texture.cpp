@@ -21,7 +21,6 @@ namespace ts
 
         auto* surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, (uint32_t) PIXEL_FORMAT);
         _texture = SDL_CreateTextureFromSurface(get_window()->get_renderer(), surface);
-
         Texture::update();
 
         SDL_FreeSurface(surface);

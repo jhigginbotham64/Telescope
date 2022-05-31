@@ -75,6 +75,8 @@ namespace ts
             else
                 _vertices.at(i).color = RGBA(1, 1, 1, 1).operator SDL_Color();
         }
+
+        Shape::signal_vertices_updated();
     }
 
     Vector2f CircleShape::get_centroid() const

@@ -72,13 +72,61 @@ int main()
 
     rect.set_texture(&render_texture);
 
+    auto port = SDL_Rect();
+    port.x = 0;
+    port.y = 0;
+    port.w = 800;
+    port.h = 600;
+
+    float scale = 1;
+
+    auto update_port = [&]() {
+        SDL_RenderSetViewport(window.get_renderer(), &port);
+        SDL_RenderSetClipRect(window.get_renderer(), &port);
+        //SDL_RenderSetScale(window.get_renderer(), scale, scale);
+    };
+
     while (window.is_open())
     {
         ts::start_frame(&window);
         window.clear();
 
+        if (InputHandler::was_pressed(KeyboardKey::RIGHT))
+            port.x += 10;
+
+        if (InputHandler::was_pressed(KeyboardKey::LEFT))
+            port.x -= 10;
+
+        if (InputHandler::was_pressed(KeyboardKey::UP))
+            port.y -= 10;
+
+        if (InputHandler::was_pressed(KeyboardKey::DOWN))
+            port.y += 10;
+
+        if (InputHandler::was_pressed(A))
+        {
+            scale += 0.1;
+        }
+
+        if (InputHandler::was_pressed(B))
+        {
+            scale -= 0.1;
+        }
+
+        if (InputHandler::was_pressed(SPACE))
+        {
+            Vector2f center = {400, 300};
+            port.x = center.x - port.w * 0.5 * scale;
+            port.y = center.y - port.h * 0.5 * scale;
+        }
+
         window.render(&rect);
         window.render(&poly);
+
+        SDL_SetRenderDrawColor(window.get_renderer(), 255, 0, 0, 255);
+        SDL_RenderDrawRect(window.get_renderer(), &port);
+
+        update_port();
 
         ts::end_frame(&window);
     }
