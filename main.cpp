@@ -29,44 +29,10 @@
 #include <include/triangle_shape.hpp>
 #include <include/circle_shape.hpp>
 #include <include/rectangle_shape.hpp>
+#include <include/polygon_shape.hpp>
+#include <include/common.hpp>
 
 #include <glm/glm.hpp>
-
-void initialize()
-{
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-    {
-        ts::Log::warning("Unable to initialize SDL");
-        ts::forward_sdl_error();
-    }
-
-    if (SDL_VideoInit(SDL_GetVideoDriver(0)) != 0)
-    {
-        ts::Log::warning("Unable to initialize SDL Video");
-        ts::forward_sdl_error();
-    }
-
-    if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0) // sic
-    {
-        ts::Log::warning("Unable to initialize SDL IMG");
-        ts::forward_sdl_error();
-    }
-    
-    if (SDL_AudioInit(SDL_GetAudioDriver(1)) != 0)
-    {
-        ts::Log::warning("Unable to initialize SDL Audio");
-        ts::forward_sdl_error();
-    }
-    
-    if (Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG | MIX_INIT_FLAC) == 0)
-    {
-        ts::Log::warning("Unable to initialize SDL Mixer");
-        ts::forward_sdl_error();
-    }
-
-    Mix_OpenAudio(ts::MusicHandler::sample_rate, MIX_DEFAULT_FORMAT, 2, 1024);
-    Mix_AllocateChannels(ts::SoundHandler::n_channels);
-}
 
 using namespace ts;
 
@@ -83,6 +49,19 @@ int main()
     auto rect = ts::RectangleShape(50, 50, 400, 200);
     auto circ = ts::CircleShape({400, 300}, 100, 64);
 
+    auto center = Vector2f(800, 600) / Vector2f(2, 2);
+
+    std::vector<Vector2f> poly_v = {
+        center + Vector2f(-100, -100),
+        center + Vector2f(-50, -150),
+        center + Vector2f(100, -100),
+        center + Vector2f(70, 200),
+        center + Vector2f(150, 130),
+        center + Vector2f(-230, 75)
+    };
+
+    auto poly = ts::PolygonShape(poly_v);
+
     auto tex = ts::Texture(&window);
     tex.load("/home/clem/Workspace/backup/bckp2/bg.png");
     tri.set_texture(&tex);
@@ -96,15 +75,16 @@ int main()
 
     while (window.is_open())
     {
-        clock.restart();
-        ts::InputHandler::update(&window);
-        window.clear();
+        ts::start_frame(&window);
 
-        circ.render(&window);
-        circ.set_position(circ.get_position() + Vector2f(sin(n * M_PI)))
+        poly.render(&window);
 
-        window.flush();
-        auto to_wait = target_frame_duration.as_microseconds() - clock.elapsed().as_microseconds();
-        std::this_thread::sleep_for(std::chrono::microseconds(size_t(to_wait)));
+        for (auto& v : poly._vertices)
+        {
+            SDL_SetRenderDrawColor(window.get_renderer(), 255, 0, 0, 255);
+            SDL_RenderDrawPoint(window.get_renderer(), v.position.x, v.position.y);
+        }
+
+        ts::end_frame(&window);
     }
 }

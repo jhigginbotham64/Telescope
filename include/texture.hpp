@@ -1,13 +1,11 @@
 // 
 // Copyright 2022 Clemens Cords
-// Created on 26.05.22 by clem (mail@clemens-cords.com)
+// Created on 5/31/22 by clem (mail@clemens-cords.com)
 //
 
 #pragma once
 
 #include <SDL2/SDL_render.h>
-
-#include <string>
 
 #include <include/color.hpp>
 
@@ -52,19 +50,10 @@ namespace ts
     {
         public:
             //
-            Texture(Window* context);
+            Texture() = delete;
 
             //
             ~Texture();
-
-            //
-            void create(size_t width, size_t height, RGBA color);
-
-            //
-            void load(const std::string& path);
-
-            //
-            void unload();
 
             //
             void set_color(RGBA);
@@ -87,14 +76,18 @@ namespace ts
             //
             SDL_Texture* get_native();
 
+            //
+            Window* get_window() const;
+
+        protected:
+            Texture(Window*);
+            SDL_Texture* _texture;
+            void update();
+
         private:
+            Window* _window;
             RGBA _color = RGBA(1, 1, 1, 1);
             TextureBlendMode _blend_mode = ALPHA;
             TextureFilteringMode _filtering_mode = LINEAR;
-
-            void update();
-
-            SDL_Renderer* _renderer;
-            SDL_Texture* _texture;
     };
 }

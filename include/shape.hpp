@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <include/renderable.hpp>
-#include <include/texture.hpp>
+#include <include/static_texture.hpp>
 #include <include/vertex.hpp>
 #include <include/color.hpp>
 #include <include/geometric_shapes.hpp>
@@ -44,18 +44,18 @@ namespace ts
             void set_texture(Texture*);
 
             //
-            void set_origin(Vector2f absolute_position);
-
-            //
-            Vector2f get_origin() const;
-
-            //
-            void set_rotation(float in_degree);
-
-            //
             Rectangle get_bounding_box() const;
 
-        protected:
+            //
+            //void set_origin(Vector2f absolute_position);
+
+            //
+            //Vector2f get_origin() const;
+
+            //
+            //void set_rotation(float in_degree);
+
+        protected: TODO
             //
             Shape() = default;
 
@@ -63,7 +63,7 @@ namespace ts
             std::vector<SDL_Vertex> _vertices;
 
         private:
-            Texture* _texture;
+            Texture* _texture = nullptr;
 
             // offset from centroid
             Vector2f _origin = {0, 0};

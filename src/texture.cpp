@@ -1,73 +1,26 @@
-// 
-// Copyright 2022 Clemens Cords
-// Created on 27.05.22 by clem (mail@clemens-cords.com)
 //
-
-#include <SDL2/SDL_image.h>
+// Created by clem on 5/31/22.
+//
 
 #include <include/logging.hpp>
 #include <include/texture.hpp>
-#include <include/window.hpp>
 
 namespace ts
 {
-    Texture::Texture(Window* context)
-        : _renderer(context->get_renderer()), _texture(nullptr)
+    Texture::Texture(Window* window)
+        : _window(window), _texture(nullptr)
     {}
 
     Texture::~Texture()
     {
-        unload();
-    }
-
-    void Texture::update()
-    {
-        if (_texture == nullptr)
-            return;
-
-        SDL_SetTextureBlendMode(_texture, (SDL_BlendMode) _blend_mode);
-        SDL_SetTextureColorMod(_texture, _color.red * 255, _color.blue * 255, _color.green * 255);
-        SDL_SetTextureAlphaMod(_texture, _color.alpha * 255);
-    }
-
-    void Texture::create(size_t width, size_t height, RGBA color)
-    {
-        SDL_SetHint("SDL_HINT_RENDER_SCALE_QUALITY", std::to_string((size_t) _filtering_mode).c_str());
-
-        auto* surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, (uint32_t) PIXEL_FORMAT);
-        _texture = SDL_CreateTextureFromSurface(_renderer, surface);
-
-        update();
-
-        SDL_FreeSurface(surface);
-        SDL_ClearHints();
-    }
-
-    void Texture::load(const std::string& path)
-    {
-        SDL_SetHint("SDL_HINT_RENDER_SCALE_QUALITY", std::to_string((size_t) _filtering_mode).c_str());
-        _texture = IMG_LoadTexture(_renderer, path.c_str());
-
-        if (_texture == nullptr)
-        {
-            ts::Log::warning("In ts::Texture.load: unable to load texture from file \"", path, "\"");
-            _texture = nullptr;
-            return;
-        }
-
-        update();
-
-        SDL_ClearHints();
-    }
-
-    void Texture::unload()
-    {
-        SDL_DestroyTexture(_texture);
+        if (_texture != nullptr)
+            SDL_DestroyTexture(_texture);
     }
 
     void Texture::set_color(RGBA color)
     {
         _color = color;
+        update();
     }
 
     RGBA Texture::get_color() const
@@ -103,5 +56,19 @@ namespace ts
     {
         return _texture;
     }
-}
 
+    Window* Texture::get_window() const
+    {
+        return _window;
+    }
+
+    void Texture::update()
+    {
+        if (_texture == nullptr)
+            return;
+
+        SDL_SetTextureBlendMode(_texture, (SDL_BlendMode) _blend_mode);
+        SDL_SetTextureColorMod(_texture, _color.red * 255, _color.blue * 255, _color.green * 255);
+        SDL_SetTextureAlphaMod(_texture, _color.alpha * 255);
+    }
+}
