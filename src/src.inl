@@ -40,7 +40,7 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 #include <utility>
 #include <cmath>
 
-namespace quarantined
+namespace ts::detail::quarantined
 {
 
 #define CLAMP(x, lo, hi) ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
