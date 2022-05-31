@@ -9,26 +9,37 @@
 
 namespace ts
 {
-    //
+    /// \brief circle shape with variable number of vertices
     class CircleShape : public Shape
     {
         public:
-            //
+            /// \brief construct
+            /// \param center: centroid
+            /// \param radius: radius
+            /// \param n_outer_vertices: number of vertices along the circumference of the circle
             CircleShape(Vector2f center, float radius, size_t n_outer_vertices);
 
-            //
+            /// \brief construct C-interface
+            /// \param center_x: x-coordinate of the centroid
+            /// \param center_y: y-coordinate of the centroid
+            /// \param radius: radius
+            /// \param n_outer_vertices: number of vertices along the circumference of the circle
             CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices);
 
-            //
+            /// \brief get centroid
+            /// \returns center
             Vector2f get_centroid() const override;
 
-            //
+            /// \brief set centroid
+            /// \param centroid coordinates
             void set_centroid(Vector2f) override;
 
-            //
+            /// \param get radius
+            /// \returns float
             float get_radius() const;
 
-            //
+            /// \param set radius
+            /// \param radius
             void set_radius(float);
 
         private:

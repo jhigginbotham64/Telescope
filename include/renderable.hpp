@@ -9,11 +9,12 @@ namespace ts
 {
     class RenderTarget;
 
-    //
+    /// \brief an object that can be drawn to the screen
     struct Renderable
     {
         public:
-            //
+            /// \brief queue object for drawing
+            /// \param target: render context the object will be drawn to
             virtual void render(const RenderTarget* target) const = 0;
     };
 }

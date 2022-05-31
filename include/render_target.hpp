@@ -13,23 +13,27 @@ namespace ts
 {
     class Window;
 
-    //
+    /// \brief an object that any Renderable can be drawn to
     class RenderTarget
     {
         public:
-            //
+            /// \brief default construct
             RenderTarget();
 
-            //
+            /// \brief safely deallocate
+            /// \note any texture that constructed using the renderer will trigger undefined behavior if accessed after its renderer is destroyed
             ~RenderTarget();
 
-            //
+            /// \brief create and instance from a window
+            /// \param window
             void create(Window*);
 
-            // invokes renderable.render(*this)
+            /// \brief queue a Renderable for drawing, invokes renderable.render(*this)
+            /// \param renderable
             void render(Renderable* renderable) const;
 
-            //
+            /// \brief expose the native SDL renderer
+            /// \returns pointer to renderer
             SDL_Renderer* get_renderer() const;
 
         private:
