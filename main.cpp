@@ -78,6 +78,7 @@ int main()
         window.clear();
 
         window.render(&rect);
+        window.render(&poly);
 
         ts::end_frame(&window);
     }

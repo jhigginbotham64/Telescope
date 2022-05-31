@@ -8,7 +8,7 @@
 namespace ts
 {
     Texture::Texture(Window* window)
-        : _window(window), _texture(nullptr)
+        : _window(window), _texture(nullptr), _size(0, 0)
     {}
 
     Texture::~Texture()
@@ -68,5 +68,12 @@ namespace ts
         SDL_SetTextureBlendMode(_texture, (SDL_BlendMode) _blend_mode);
         SDL_SetTextureColorMod(_texture, _color.red * 255, _color.blue * 255, _color.green * 255);
         SDL_SetTextureAlphaMod(_texture, _color.alpha * 255);
+    }
+
+    Vector2ui Texture::get_size() const
+    {
+        int width, height;
+        SDL_QueryTexture(_texture, nullptr, nullptr, &width, &height);
+        return Vector2f{(size_t) width, (size_t) height};
     }
 }

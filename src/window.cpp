@@ -25,7 +25,7 @@ namespace ts
 
     void Window::render(Renderable* object) const
     {
-        object->render(_renderer);
+        detail::forward_render(object, _renderer);
     }
 
     void Window::create(size_t width, size_t height, uint32_t options)

@@ -12,11 +12,16 @@ namespace ts
     //
     using RenderTarget = SDL_Renderer;
 
+    class Renderable;
+    namespace detail { void forward_render(const Renderable *, RenderTarget *); }
+
     /// \brief an object that can be drawn to the screen
-    struct Renderable
+    class Renderable
     {
-        public:
-            /// \brief queue object for drawing
+        friend void detail::forward_render(const Renderable *, RenderTarget *);
+
+        protected:
+            /// \brief queue object for drawing, this function should not be called by the user
             /// \param target: render context the object will be drawn to
             virtual void render(const RenderTarget* target) const = 0;
     };

@@ -25,9 +25,6 @@ namespace ts
             //
             virtual Vector2f get_centroid() const = 0;
 
-            //
-            void render(const RenderTarget*) const final override;
-
             // -1 for all
             void set_color(RGBA, int vertex_index = -1);
 
@@ -58,6 +55,9 @@ namespace ts
         protected:
             //
             Shape() = default;
+
+            //
+            void render(const RenderTarget*) const final override;
 
             // tris
             std::vector<SDL_Vertex> _vertices;

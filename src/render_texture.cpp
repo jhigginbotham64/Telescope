@@ -17,10 +17,9 @@ namespace ts
 
     void RenderTexture::create(size_t width, size_t height)
     {
-        SDL_SetHint("SDL_HINT_RENDER_SCALE_QUALITY", std::to_string((size_t) get_filtering_mode()).c_str());
-
         _texture = SDL_CreateTexture(_window->get_renderer(), PIXEL_FORMAT, SDL_TEXTUREACCESS_TARGET, width, height);
-        SDL_ClearHints();
+        set_blend_mode(TextureBlendMode::ALPHA);
+        set_filtering_mode(TextureFilteringMode::ANISOTROPIC);
     }
 
     void RenderTexture::unload()
@@ -32,7 +31,7 @@ namespace ts
     void RenderTexture::render(Renderable * object) const
     {
         SDL_SetRenderTarget(_window->get_renderer(), _texture);
-        object->render(_window->get_renderer());
+        detail::forward_render(object, _window->get_renderer());
         SDL_SetRenderTarget(_window->get_renderer(), nullptr);
     }
 }

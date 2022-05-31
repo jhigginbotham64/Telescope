@@ -79,6 +79,9 @@ namespace ts
             //
             Window* get_window() const;
 
+            //
+            Vector2ui get_size() const;
+
         protected:
             Texture(Window*);
             SDL_Texture* _texture;
@@ -89,5 +92,7 @@ namespace ts
             RGBA _color = RGBA(1, 1, 1, 1);
             TextureBlendMode _blend_mode = ALPHA;
             TextureFilteringMode _filtering_mode = LINEAR;
+
+            Vector2f _size;
     };
 }

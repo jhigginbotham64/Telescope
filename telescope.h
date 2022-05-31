@@ -6,6 +6,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <memory>
 
 #include <include/common.hpp>
 #include <include/window.hpp>
@@ -19,6 +20,9 @@
 #include <include/triangle_shape.hpp>
 #include <include/circle_shape.hpp>
 #include <include/polygon_shape.hpp>
+#include <include/texture.hpp>
+#include <include/static_texture.hpp>
+#include <include/render_texture.hpp>
 
 extern "C"
 {
@@ -224,26 +228,77 @@ void ts_end_frame(size_t window_id)
 
 namespace detail
 {
-    size_t _texture_id;
-    std::unordered_map<size_t, ts::Texture> _textures;
+    size_t _texture_id = 0;
+    std::unordered_map<size_t, std::unique_ptr<ts::Texture>> _textures;
 }
 
-size_t ts_texture_load(size_t window_id, const char* path)
+int32_t ts_texture_filtering_mode_nearest_neighbour()
 {
-    auto id = detail::_texture_id++;
-    detail::_textures.emplace(id, ts::Texture(&detail::_windows.at(window_id)));
+    return ts::TextureFilteringMode::NEAREST_NEIGHBOUR;
+}
+
+int32_t ts_texture_filtering_mode_linear()
+{
+    return ts::TextureFilteringMode::LINEAR;
+}
+
+int32_t ts_texture_filtering_mode_anisotropic()
+{
+    return ts::TextureFilteringMode::ANISOTROPIC;
+}
+
+int32_t ts_texture_blend_mode_none()
+{
+    return ts::TextureBlendMode::NONE;
+}
+
+int32_t ts_texture_blend_mode_alpha()
+{
+    return ts::TextureBlendMode::ALPHA;
+}
+
+int32_t ts_texture_blend_mode_add()
+{
+    return ts::TextureBlendMode::ADD;
+}
+
+int32_t ts_texture_blend_mode_multiply()
+{
+    return ts::TextureBlendMode::MULTIPLY;
+}
+
+size_t ts_texture_create_static_texture(size_t window_id, size_t width, size_t height, float r, float g, float b, float a)
+{
+    size_t id = detail::_texture_id++;
+    detail::_textures.emplace(id, ts::StaticTexture(&detail::_windows.at(window_id)));
+    detail::_textures.at(id).create(width, height, ts::RGBA(r, g, b, a));
+    return id;
+}
+
+size_t ts_texture_load_static_texture(size_t window_id, const char* path)
+{
+    size_t id = detail::_texture_id++;
+    detail::_textures.emplace(id, ts::StaticTexture(&detail::_windows.at(window_id)));
     detail::_textures.at(id).load(path);
     return id;
 }
 
-void ts_texture_unload(size_t texture_id)
+size_t ts_texture_destroy_static_texture(size_t texture_id)
 {
     detail::_textures.erase(texture_id);
 }
 
-void ts_texture_set_color(size_t texture_id, float r, float g, float b, float a)
+size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t height)
 {
-    detail::_textures.at(texture_id).set_color(ts::RGBA(r, g, b, a));
+    size_t id = detail::_render_texture_id++;
+    detail::_render_textures.emplace(id, ts::RenderTexture(&detail::_windows.at(window_id)));
+    detail::_render_textures.at(id).create(width, height);
+    return id;
+}
+
+size_t ts_texture_destroy_render_texture(size_t texture_id)
+{
+    detail::_render_textures.erase(texture_id);
 }
 
 // ### SHAPES ##################################################
