@@ -5,9 +5,12 @@
 
 #pragma once
 
+#include <SDL2/SDL_render.h>
+
 namespace ts
 {
-    class RenderTarget;
+    //
+    using RenderTarget = SDL_Renderer;
 
     /// \brief an object that can be drawn to the screen
     struct Renderable

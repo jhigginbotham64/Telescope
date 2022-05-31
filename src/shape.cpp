@@ -15,8 +15,8 @@ namespace ts
     void Shape::render(const RenderTarget* target) const
     {
         SDL_RenderGeometry(
-            target->get_renderer(),
-            (_texture != nullptr ? _texture->get_native() : nullptr),
+            const_cast<RenderTarget*>(target),
+            _texture != nullptr ? _texture->get_native() : nullptr,
             _vertices.data(),
             _vertices.size(),
             nullptr, 0);
@@ -55,6 +55,7 @@ namespace ts
         _texture = texture;
     }
 
+    /*
     Vector2f Shape::get_origin() const
     {
         return _origin;
@@ -64,6 +65,7 @@ namespace ts
     {
         _origin = origin;
     }
+     */
 
     Rectangle Shape::get_bounding_box() const
     {

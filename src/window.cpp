@@ -23,6 +23,11 @@ namespace ts
         close();
     }
 
+    void Window::render(Renderable* object) const
+    {
+        object->render(_renderer);
+    }
+
     void Window::create(size_t width, size_t height, uint32_t options)
     {
         create("", width, height, options);
@@ -57,7 +62,7 @@ namespace ts
         if (_is_fullscreen)
             SDL_SetWindowFullscreen(_window, SDL_TRUE);
 
-        RenderTarget::create(this);
+        _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
         _is_open = true;
     }
 
@@ -168,17 +173,22 @@ namespace ts
     {
         return SDL_GetWindowID(_window);
     }
+    
+    RenderTarget* Window::get_renderer()
+    {
+        return _renderer;
+    }
 
     void Window::clear()
     {
-        SDL_SetRenderDrawColor(get_renderer(), 0, 0, 0, 255);
-        SDL_RenderClear(get_renderer());
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+        SDL_RenderClear(_renderer);
     }
 
     void Window::flush()
     {
-        SDL_RenderFlush(get_renderer());
-        SDL_RenderPresent(get_renderer());
+        SDL_RenderFlush(_renderer);
+        SDL_RenderPresent(_renderer);
     }
 }
 

@@ -31,6 +31,7 @@
 #include <include/rectangle_shape.hpp>
 #include <include/polygon_shape.hpp>
 #include <include/common.hpp>
+#include <include/render_texture.hpp>
 
 #include <glm/glm.hpp>
 
@@ -43,6 +44,9 @@ int main()
     auto window = ts::Window();
     window.create("", 800, 600, ts::DEFAULT);
 
+    auto render_texture = ts::RenderTexture(&window);
+    render_texture.create(800, 600);
+
     auto clock = ts::Clock();
     auto target_frame_duration = ts::seconds(1 / 60.f);
     auto tri = ts::TriangleShape(Vector2f(400, 150), Vector2f(200, 450), Vector2f(600, 450));
@@ -51,7 +55,8 @@ int main()
 
     auto center = Vector2f(800, 600) / Vector2f(2, 2);
 
-    std::vector<Vector2f> poly_v = {
+    std::vector<Vector2f> poly_v =
+    {
         center + Vector2f(-100, -100),
         center + Vector2f(-50, -150),
         center + Vector2f(100, -100),
@@ -59,31 +64,20 @@ int main()
         center + Vector2f(150, 130),
         center + Vector2f(-230, 75)
     };
-
     auto poly = ts::PolygonShape(poly_v);
+    render_texture.set_color(RGBA(1, 0, 0, 1));
 
-    auto tex = ts::Texture(&window);
-    tex.load("/home/clem/Workspace/backup/bckp2/bg.png");
-    tri.set_texture(&tex);
-    rect.set_texture(&tex);
-    circ.set_texture(&tex);
+    assert(render_texture.get_native() != nullptr);
+    render_texture.render(&poly);
 
-    std::array<Sint16, 3> x = {400, 200, 600};
-    std::array<Sint16, 3> y = {150, 450, 450};
-
-    size_t n = 1;
+    rect.set_texture(&render_texture);
 
     while (window.is_open())
     {
         ts::start_frame(&window);
+        window.clear();
 
-        poly.render(&window);
-
-        for (auto& v : poly._vertices)
-        {
-            SDL_SetRenderDrawColor(window.get_renderer(), 255, 0, 0, 255);
-            SDL_RenderDrawPoint(window.get_renderer(), v.position.x, v.position.y);
-        }
+        window.render(&rect);
 
         ts::end_frame(&window);
     }

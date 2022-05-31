@@ -11,18 +11,14 @@
 namespace ts
 {
     RGBA::RGBA()
-        : RGBA(Vector4f(0, 0, 0, 1))
+        : RGBA(0, 0, 0, 1)
     {}
 
     RGBA::RGBA(float r, float g, float b, float a)
-        : RGBA(Vector4f(r, g, b, a))
-    {}
-
-    RGBA::RGBA(Vector4f in)
-        : red(glm::clamp<float>(in.r, 0, 1)),
-          green(glm::clamp<float>(in.g, 0, 1)),
-          blue(glm::clamp<float>(in.b, 0, 1)),
-          alpha(glm::clamp<float>(in.a, 0, 1))
+        : red(glm::clamp<float>(r, 0, 1)),
+          green(glm::clamp<float>(g, 0, 1)),
+          blue(glm::clamp<float>(b, 0, 1)),
+          alpha(glm::clamp<float>(a, 0, 1))
     {}
 
     RGBA::operator Vector4f()
@@ -46,18 +42,14 @@ namespace ts
     {}
 
     HSVA::HSVA()
-        : HSVA(Vector4f(0, 0, 0, 1))
+        : HSVA(0, 0, 0, 1)
     {}
 
     HSVA::HSVA(float h, float s, float v, float a)
-        : HSVA(Vector4f(h, s, v, a))
-    {}
-
-    HSVA::HSVA(Vector4f in)
-        : hue(glm::clamp<float>(in.x, 0, 1)),
-          saturation(glm::clamp<float>(in.y, 0, 1)),
-          value(glm::clamp<float>(in.z, 0, 1)),
-          alpha(glm::clamp<float>(in.a, 0, 1))
+        : hue(glm::clamp<float>(h, 0, 1)),
+          saturation(glm::clamp<float>(s, 0, 1)),
+          value(glm::clamp<float>(v, 0, 1)),
+          alpha(glm::clamp<float>(a, 0, 1))
     {}
 
     HSVA::operator Vector4f()
@@ -157,7 +149,7 @@ namespace ts
         rgb.g += m;
         rgb.b += m;
 
-        return RGBA(Vector4f(rgb.r, rgb.g, rgb.b, alpha));
+        return RGBA(rgb.r, rgb.g, rgb.b, alpha);
     }
 }
 

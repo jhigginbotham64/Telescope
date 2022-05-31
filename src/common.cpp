@@ -89,10 +89,6 @@ namespace ts
     ts::Time start_frame(std::vector<Window*> windows)
     {
         ts::InputHandler::update(windows);
-
-        for (auto* w : windows)
-            w->clear();
-
         return detail::_frame_clock.restart();
     }
 

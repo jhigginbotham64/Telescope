@@ -45,8 +45,6 @@ namespace ts
 
         static auto push_vertex = [&](Vector2f position) -> void
         {
-            std::cout << position.x << " " << position.y << std::endl;
-
             _vertices.emplace_back();
 
             _vertices.back().position.x = position.x;
@@ -84,6 +82,7 @@ namespace ts
             v.color = temp_color.as_rgb().operator SDL_Color();
             temp_color.hue += step;
         }
+        // TODO
     }
 
     Vector2f PolygonShape::get_centroid() const

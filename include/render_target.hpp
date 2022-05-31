@@ -13,6 +13,7 @@ namespace ts
 {
     class Window;
 
+    /*
     /// \brief an object that any Renderable can be drawn to
     class RenderTarget
     {
@@ -40,4 +41,5 @@ namespace ts
             Window* _window;
             SDL_Renderer* _renderer;
     };
+     */
 }

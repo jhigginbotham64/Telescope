@@ -18,13 +18,13 @@ namespace ts
     enum TextureFilteringMode
     {
         //
-        NEAREST_NEIGHBOUR = 0,
+        NEAREST_NEIGHBOUR = SDL_ScaleModeNearest,
 
         //
-        LINEAR = 1,
+        LINEAR = SDL_ScaleModeLinear,
 
         //
-        ANISOTROPIC = 2
+        ANISOTROPIC = SDL_ScaleModeBest
     };
 
     //

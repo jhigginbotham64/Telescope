@@ -42,9 +42,7 @@ namespace ts
     void Texture::set_filtering_mode(TextureFilteringMode mode)
     {
         _filtering_mode = mode;
-
-        if (_texture != nullptr)
-            Log::warning("In ts::Texture.set_filtering_mode: Cannot change texture filtering mode if the texture is already GPU-side. Instead, `unload` the texture, set the filtering mode, then `load` the texture again.");
+        SDL_SetTextureScaleMode(_texture, (SDL_ScaleMode) _filtering_mode);
     }
 
     TextureFilteringMode Texture::get_filtering_mode() const

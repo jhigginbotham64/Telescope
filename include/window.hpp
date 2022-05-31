@@ -26,7 +26,7 @@ namespace ts
 
     using WindowID = int32_t;
 
-    class Window : public RenderTarget
+    class Window
     {
         friend class InputHandler;
 
@@ -36,6 +36,9 @@ namespace ts
 
             //
             ~Window();
+
+            //
+            void render(Renderable*) const;
 
             //
             void create(size_t width, size_t height, uint32_t options = DEFAULT);
@@ -97,8 +100,12 @@ namespace ts
             //
             SDL_Window* get_native();
 
+            //
+            RenderTarget* get_renderer();
+
         private:
             SDL_Window* _window = nullptr;
+            SDL_Renderer* _renderer;
             bool _is_open = false;
 
             bool _is_borderless;

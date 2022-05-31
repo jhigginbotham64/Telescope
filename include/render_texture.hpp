@@ -12,7 +12,7 @@
 
 namespace ts
 {
-    class RenderTexture : public RenderTarget, public Texture
+    class RenderTexture : public Texture
     {
         public:
             //
@@ -25,6 +25,9 @@ namespace ts
             void unload();
 
             //
-            using RenderTarget::render;
+            void render(Renderable*) const;
+
+        private:
+            Window* _window;
     };
 }

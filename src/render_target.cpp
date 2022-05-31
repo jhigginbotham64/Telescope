@@ -9,6 +9,7 @@
 
 namespace ts
 {
+    /*
     RenderTarget::RenderTarget()
         : _window(nullptr), _renderer(nullptr)
     {}
@@ -26,12 +27,13 @@ namespace ts
     void RenderTarget::create(Window* window)
     {
         _window = window;
-        _renderer = SDL_CreateRenderer(window->get_native(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
+        _renderer = window->get_renderer();//SDL_CreateRenderer(window->get_native(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_TARGETTEXTURE);
     }
 
     void RenderTarget::render(Renderable* renderable) const
     {
         renderable->render(this);
     }
+     */
 }
 

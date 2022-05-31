@@ -55,7 +55,7 @@ namespace ts
             //
             //void set_rotation(float in_degree);
 
-        protected: TODO
+        protected:
             //
             Shape() = default;
 
