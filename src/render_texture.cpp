@@ -28,10 +28,15 @@ namespace ts
         _texture = nullptr;
     }
 
-    void RenderTexture::render(Renderable * object) const
+    void RenderTexture::render(const Renderable * object, Transform transform)
     {
         SDL_SetRenderTarget(_window->get_renderer(), _texture);
-        detail::forward_render(object, _window->get_renderer());
+        detail::forward_render(this, object, transform);
         SDL_SetRenderTarget(_window->get_renderer(), nullptr);
+    }
+
+    SDL_Renderer* RenderTexture::get_renderer()
+    {
+        return _window->get_renderer();
     }
 }

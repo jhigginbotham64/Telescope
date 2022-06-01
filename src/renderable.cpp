@@ -6,8 +6,8 @@
 
 namespace ts::detail
 {
-    void forward_render(const Renderable * object, RenderTarget * target)
+    void forward_render(RenderTarget* target, const Renderable* object, Transform transform)
     {
-        object->render(target);
+        object->render(target, transform);
     }
 }

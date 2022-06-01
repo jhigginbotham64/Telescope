@@ -58,7 +58,7 @@ namespace ts
             Shape() = default;
 
             //
-            void render(const RenderTarget*) const final override;
+            void render(RenderTarget*, Transform) const final override;
 
             // tris
             std::vector<SDL_Vertex> _vertices;

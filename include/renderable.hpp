@@ -7,22 +7,24 @@
 
 #include <SDL2/SDL_render.h>
 
+#include <include/transform.hpp>
+
 namespace ts
 {
-    //
-    using RenderTarget = SDL_Renderer;
-
+    class RenderTarget;
     class Renderable;
-    namespace detail { void forward_render(const Renderable *, RenderTarget *); }
+
+    namespace detail { void forward_render(RenderTarget*, const Renderable*, Transform); }
 
     /// \brief an object that can be drawn to the screen
     class Renderable
     {
-        friend void detail::forward_render(const Renderable *, RenderTarget *);
+        friend void detail::forward_render(RenderTarget*, const Renderable*, Transform);
 
         protected:
-            /// \brief queue object for drawing, this function should not be called by the user
+            /// \brief queue object for drawing, this function is called by RenderTarget, not by the user
             /// \param target: render context the object will be drawn to
-            virtual void render(const RenderTarget* target) const = 0;
+            /// \param transform: affine transform applied to all vertex positions before drawing
+            virtual void render(RenderTarget* target, Transform transform) const = 0;
     };
 }

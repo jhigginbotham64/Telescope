@@ -136,9 +136,7 @@ add_library(telescope SHARED
 
     include/renderable.hpp
 
-    include/render_target.hpp
-
-    include/shape.hpp
+        include/shape.hpp
     src/shape.cpp
 
     include/rectangle_shape.hpp
@@ -150,11 +148,9 @@ add_library(telescope SHARED
     include/circle_shape.hpp
     src/circle_shape.cpp
 
-    src/render_target.cpp
-
-    include/angle.hpp
+        include/angle.hpp
     src/angle.cpp
-        include/geometric_shapes.hpp include/polygon_shape.hpp src/polygon_shape.cpp include/common.hpp src/common.cpp src/renderable.cpp include/transform.hpp)
+        include/geometric_shapes.hpp include/polygon_shape.hpp src/polygon_shape.cpp include/common.hpp src/common.cpp src/renderable.cpp include/transform.hpp src/transform.cpp include/render_target.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE CXX

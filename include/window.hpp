@@ -26,7 +26,7 @@ namespace ts
 
     using WindowID = int32_t;
 
-    class Window
+    class Window : public RenderTarget
     {
         friend class InputHandler;
 
@@ -38,7 +38,7 @@ namespace ts
             ~Window();
 
             //
-            void render(Renderable*) const;
+            void render(const Renderable*, Transform = ts::Transform()) override;
 
             //
             void create(size_t width, size_t height, uint32_t options = DEFAULT);
@@ -101,7 +101,7 @@ namespace ts
             SDL_Window* get_native();
 
             //
-            RenderTarget* get_renderer();
+            SDL_Renderer* get_renderer() override;
 
         private:
             SDL_Window* _window = nullptr;

@@ -3,6 +3,8 @@
 // Created on 29.05.22 by clem (mail@clemens-cords.com)
 //
 
+#pragma once
+
 #include <cinttypes>
 
 namespace ts

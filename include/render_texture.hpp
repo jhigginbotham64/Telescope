@@ -12,7 +12,7 @@
 
 namespace ts
 {
-    class RenderTexture : public Texture
+    class RenderTexture : public Texture, public RenderTarget
     {
         public:
             //
@@ -25,7 +25,10 @@ namespace ts
             void unload();
 
             //
-            void render(Renderable*) const;
+            void render(const Renderable*, Transform = ts::Transform()) override;
+
+            //
+            SDL_Renderer* get_renderer() override;
 
         private:
             Window* _window;

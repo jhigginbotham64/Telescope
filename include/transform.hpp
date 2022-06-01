@@ -7,30 +7,35 @@
 
 #include <glm/glm.hpp>
 
+#include <include/vector.hpp>
 #include <include/angle.hpp>
 
 namespace ts
 {
-    //
-    struct Transform : public glm::mat3x3
+    /// \brief affine transform
+    struct Transform
     {
         public:
-            // https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.alanzucconi.com%2Fwp-content%2Fuploads%2F2016%2F02%2F2D_affine_transformation_matrix.svg_.png&f=1&nofb=1
-
             //
             Transform();
+
+            //
+            Transform(glm::mat3x3);
+
+            //
+            Vector2f apply_to(Vector2f);
 
             //
             void reset();
 
             //
-            void combine(Transform&);
+            void combine(const Transform&);
 
             //
             void translate(float x, float y);
 
             //
-            void rotate(Angle);
+            void rotate(Angle, Vector2f origin = Vector2f{0, 0});
 
             //
             void scale(float x, float y);
@@ -40,5 +45,11 @@ namespace ts
 
             //
             void reflect(bool about_x_axis, bool about_y_axis);
+
+            //
+            glm::mat3x3& get_native();
+
+        private:
+            glm::mat3x3 _matrix;
     };
 }

@@ -32,8 +32,9 @@
 #include <include/polygon_shape.hpp>
 #include <include/common.hpp>
 #include <include/render_texture.hpp>
-
 #include <glm/glm.hpp>
+
+#include <glm/gtx/transform.hpp>
 
 using namespace ts;
 
@@ -72,19 +73,8 @@ int main()
 
     rect.set_texture(&render_texture);
 
-    auto port = SDL_Rect();
-    port.x = 0;
-    port.y = 0;
-    port.w = 800;
-    port.h = 600;
-
-    float scale = 1;
-
-    auto update_port = [&]() {
-        SDL_RenderSetViewport(window.get_renderer(), &port);
-        SDL_RenderSetClipRect(window.get_renderer(), &port);
-        //SDL_RenderSetScale(window.get_renderer(), scale, scale);
-    };
+    auto transform = ts::Transform();
+    std::cout << poly.get_centroid().x << " " << poly.get_centroid().y << std::endl;
 
     while (window.is_open())
     {
@@ -92,41 +82,34 @@ int main()
         window.clear();
 
         if (InputHandler::was_pressed(KeyboardKey::RIGHT))
-            port.x += 10;
+            transform.translate(10, 0);
 
         if (InputHandler::was_pressed(KeyboardKey::LEFT))
-            port.x -= 10;
+            transform.translate(-10, 0);
 
         if (InputHandler::was_pressed(KeyboardKey::UP))
-            port.y -= 10;
+            transform.translate(0, -10);
 
         if (InputHandler::was_pressed(KeyboardKey::DOWN))
-            port.y += 10;
+            transform.translate(0, 10);
 
         if (InputHandler::was_pressed(A))
         {
-            scale += 0.1;
+            transform.rotate(ts::degrees(10), poly.get_centroid());
         }
 
         if (InputHandler::was_pressed(B))
         {
-            scale -= 0.1;
+            transform.rotate(ts::degrees(-10), poly.get_centroid()); //, poly.get_centroid());
+            //transform.reflect(false, true);
         }
 
         if (InputHandler::was_pressed(SPACE))
         {
-            Vector2f center = {400, 300};
-            port.x = center.x - port.w * 0.5 * scale;
-            port.y = center.y - port.h * 0.5 * scale;
+            transform.reset();
         }
 
-        window.render(&rect);
-        window.render(&poly);
-
-        SDL_SetRenderDrawColor(window.get_renderer(), 255, 0, 0, 255);
-        SDL_RenderDrawRect(window.get_renderer(), &port);
-
-        update_port();
+        window.render(&poly, transform);
 
         ts::end_frame(&window);
     }

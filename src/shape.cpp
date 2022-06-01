@@ -35,30 +35,18 @@ namespace ts
         }
     }
 
-    void Shape::render(const RenderTarget* target) const
+    void Shape::render(RenderTarget* target, Transform transform) const
     {
-        static glm::mat3x3 transform = {
-            1, 0, 0,
-            0, 1, 0,
-            0, 0, 1
-        };
-
-        transform[0][2] += 1;
-        transform[1][2] += 1;
-
         auto xy = _xy;
-
         for (size_t i = 0; i < xy.size(); i += 2)
         {
-            auto new_pos = Vector3f{xy.at(i), xy.at(i+1), 1} * transform;
-
-            std::cout << xy.at(i) - new_pos.x << std::endl;
+            auto new_pos = transform.apply_to(Vector2f{xy.at(i), xy.at(i+1)});
             xy.at(i) = new_pos.x;
             xy.at(i+1) = new_pos.y;
         }
 
         SDL_RenderGeometryRaw(
-            const_cast<RenderTarget*>(target),
+            target->get_renderer(),
             _texture != nullptr ? _texture->get_native() : nullptr,
             xy.data(), 2 * sizeof(float),
             _colors.data(), sizeof(SDL_Color),
@@ -118,10 +106,10 @@ namespace ts
         static auto infinity = std::numeric_limits<float>::max();
         static auto negative_infinity = std::numeric_limits<float>::min();
 
-        float max_x = infinity;
-        float max_y = infinity;
-        float min_x = negative_infinity;
-        float min_y = negative_infinity;
+        float min_x = infinity;
+        float min_y = infinity;
+        float max_x = negative_infinity;
+        float max_y = negative_infinity;
 
         for (auto& v : _vertices)
         {

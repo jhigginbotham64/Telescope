@@ -23,9 +23,9 @@ namespace ts
         close();
     }
 
-    void Window::render(Renderable* object) const
+    void Window::render(const Renderable * object, Transform transform)
     {
-        detail::forward_render(object, _renderer);
+        detail::forward_render(this, object, transform);
     }
 
     void Window::create(size_t width, size_t height, uint32_t options)
@@ -174,11 +174,7 @@ namespace ts
     {
         return SDL_GetWindowID(_window);
     }
-    
-    RenderTarget* Window::get_renderer()
-    {
-        return _renderer;
-    }
+
 
     void Window::clear()
     {
@@ -190,6 +186,11 @@ namespace ts
     {
         SDL_RenderFlush(_renderer);
         SDL_RenderPresent(_renderer);
+    }
+
+    SDL_Renderer* Window::get_renderer()
+    {
+        return _renderer;
     }
 }
 
