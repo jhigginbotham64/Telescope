@@ -32,7 +32,7 @@ namespace ts
 
     void Transform::combine(const Transform & other)
     {
-        this->_matrix *= other._matrix;
+        this->_matrix = other._matrix * this->_matrix;
     }
 
     void Transform::reset()
@@ -81,21 +81,24 @@ namespace ts
         float sin = std::sin(rad);
 
         combine(Transform({
-            cos, -sin, origin.x * (1 - cos) + origin.y * sin,
-            sin,  cos, origin.y * (1 - cos) - origin.x * sin,
-            0,    0,   1
+            cos, -sin, 0,
+            sin,  cos, 0,
+            origin.x * (1 - cos) - origin.y * sin,    origin.y * (1 - cos) + origin.x * sin,   1
         }));
     }
 
-    void Transform::reflect(bool about_x_axis, bool about_y_axis)
+    void Transform::reflect(bool about_x_axis, bool about_y_axis, Vector2f origin)
     {
         auto x = about_x_axis ? -1 : 1;
         auto y = about_y_axis ? -1 : 1;
+
+        translate(-origin.x, -origin.y);
         combine(Transform({
-            y, 0, 0,
-            0, x, 0,
+            x, 0, 0,
+            0, y, 0,
             0, 0, 1
         }));
+        translate(origin.x, origin.y);
     }
 
     glm::mat3x3 &Transform::get_native()

@@ -44,7 +44,7 @@ namespace ts
             void shear(float x_offset, float y_offset);
 
             //
-            void reflect(bool about_x_axis, bool about_y_axis);
+            void reflect(bool about_x_axis, bool about_y_axis, Vector2f origin = Vector2f{0, 0});
 
             //
             glm::mat3x3& get_native();

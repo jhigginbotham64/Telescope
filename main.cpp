@@ -54,6 +54,13 @@ int main()
     auto rect = ts::RectangleShape(50, 50, 400, 200);
     auto circ = ts::CircleShape({400, 300}, 100, 64);
 
+    SDL_Rect port;
+    port.x = -400;//-800;
+    port.y = -300;//-600;
+    port.h = 800;
+    port.w = 600;
+
+    SDL_RenderSetViewport(window.get_renderer(), &port);
     auto center = Vector2f(800, 600) / Vector2f(2, 2);
 
     std::vector<Vector2f> poly_v =
@@ -74,7 +81,7 @@ int main()
     rect.set_texture(&render_texture);
 
     auto transform = ts::Transform();
-    std::cout << poly.get_centroid().x << " " << poly.get_centroid().y << std::endl;
+    auto centroid = poly.get_centroid();
 
     while (window.is_open())
     {
@@ -95,18 +102,24 @@ int main()
 
         if (InputHandler::was_pressed(A))
         {
-            transform.rotate(ts::degrees(10), poly.get_centroid());
+            transform.translate(-centroid.x, -centroid.y);
         }
 
         if (InputHandler::was_pressed(B))
         {
-            transform.rotate(ts::degrees(-10), poly.get_centroid()); //, poly.get_centroid());
-            //transform.reflect(false, true);
+            transform.translate(+centroid.x, +centroid.y);
+        }
+
+        if (InputHandler::was_pressed(C))
+        {
+            transform.reflect(true, true, centroid);
         }
 
         if (InputHandler::was_pressed(SPACE))
         {
             transform.reset();
+            //transform.translate(-centroid.x, -centroid.y);
+            //transform.rotate(ts::degrees(45));
         }
 
         window.render(&poly, transform);
