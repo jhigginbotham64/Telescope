@@ -89,16 +89,16 @@ int main()
         window.clear();
 
         if (InputHandler::was_pressed(KeyboardKey::RIGHT))
-            transform.translate(10, 0);
+            transform.shear(0.1, 0);
 
         if (InputHandler::was_pressed(KeyboardKey::LEFT))
-            transform.translate(-10, 0);
+            transform.shear(-0.1, 0);
 
         if (InputHandler::was_pressed(KeyboardKey::UP))
-            transform.translate(0, -10);
+            transform.shear(0, -0.1);
 
         if (InputHandler::was_pressed(KeyboardKey::DOWN))
-            transform.translate(0, 10);
+            transform.shear(0, 0.1);
 
         if (InputHandler::was_pressed(A))
         {

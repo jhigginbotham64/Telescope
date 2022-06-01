@@ -65,11 +65,11 @@ namespace ts
         }));
     }
 
-    void Transform::shear(float x_offset, float y_offset)
+    void Transform::shear(float x_scale, float y_scale)
     {
         combine(Transform({
-            1, y_offset, 0,
-            x_offset, 1, 0,
+            1, y_scale, 0,
+            x_scale, 1, 0,
             0, 0, 1
         }));
     }
@@ -105,6 +105,4 @@ namespace ts
     {
         return _matrix;
     }
-
-
 }
