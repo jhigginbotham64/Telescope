@@ -52,8 +52,8 @@ namespace ts
 
     void Transform::translate(float x, float y)
     {
-        _matrix[2][0] += x;
-        _matrix[2][1] += y;
+        _matrix[2][0] = x;
+        _matrix[2][1] = y;
     }
 
     void Transform::scale(float x, float y)

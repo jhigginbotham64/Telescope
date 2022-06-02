@@ -35,7 +35,7 @@ namespace ts
             /// \param transform: other transform
             void combine(const Transform&);
 
-            /// \brief translate by an offset in 2d space
+            /// \brief set translation offset in 2d space
             /// \param x: x-offset, negative for screen-left, positive for screen-right
             /// \param y: y-offset, negative for screen-up, positive for screen-down
             void translate(float x, float y);

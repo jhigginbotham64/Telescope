@@ -25,6 +25,7 @@ namespace ts
 
     void Window::render(const Renderable * object, Transform transform)
     {
+        transform.combine(_global_transform);
         detail::forward_render(this, object, transform);
     }
 

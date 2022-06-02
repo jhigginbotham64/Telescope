@@ -32,6 +32,7 @@
 #include <include/polygon_shape.hpp>
 #include <include/common.hpp>
 #include <include/render_texture.hpp>
+#include <include/camera.hpp>
 #include <glm/glm.hpp>
 
 #include <glm/gtx/transform.hpp>
@@ -83,43 +84,40 @@ int main()
     auto transform = ts::Transform();
     auto centroid = poly.get_centroid();
 
+    auto camera = Camera(&window);
+
     while (window.is_open())
     {
         ts::start_frame(&window);
         window.clear();
 
-        if (InputHandler::was_pressed(KeyboardKey::RIGHT))
-            transform.shear(0.1, 0);
+        if (InputHandler::is_down(KeyboardKey::RIGHT))
+            camera.move(+10, 0);
 
-        if (InputHandler::was_pressed(KeyboardKey::LEFT))
-            transform.shear(-0.1, 0);
+        if (InputHandler::is_down(KeyboardKey::LEFT))
+            camera.move(-10, 0);
 
-        if (InputHandler::was_pressed(KeyboardKey::UP))
-            transform.shear(0, -0.1);
+        if (InputHandler::is_down(KeyboardKey::UP))
+            camera.move(0, -10);
 
-        if (InputHandler::was_pressed(KeyboardKey::DOWN))
-            transform.shear(0, 0.1);
+        if (InputHandler::is_down(KeyboardKey::DOWN))
+            camera.move(0, +10);
 
-        if (InputHandler::was_pressed(A))
-        {
-            transform.translate(-centroid.x, -centroid.y);
-        }
+        if (InputHandler::is_down(V))
+            camera.rotate(ts::degrees(-5));
 
         if (InputHandler::was_pressed(B))
-        {
-            transform.translate(+centroid.x, +centroid.y);
-        }
+            camera.rotate(ts::degrees(+5));
 
-        if (InputHandler::was_pressed(C))
-        {
-            transform.reflect(true, true, centroid);
-        }
+        if (InputHandler::was_pressed(F))
+            camera.flip_horizontally();
+
+        if (InputHandler::was_pressed(H))
+            camera.flip_vertically();
 
         if (InputHandler::was_pressed(SPACE))
         {
-            transform.reset();
-            //transform.translate(-centroid.x, -centroid.y);
-            //transform.rotate(ts::degrees(45));
+            camera.center_on(poly.get_centroid());
         }
 
         window.render(&poly, transform);

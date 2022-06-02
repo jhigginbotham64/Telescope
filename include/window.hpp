@@ -13,6 +13,7 @@
 
 #include <include/vector.hpp>
 #include <include/render_target.hpp>
+#include <include/transform.hpp>
 
 namespace ts
 {
@@ -29,6 +30,7 @@ namespace ts
     class Window : public RenderTarget
     {
         friend class InputHandler;
+        friend class Camera;
 
         public:
             //
@@ -106,6 +108,9 @@ namespace ts
         private:
             SDL_Window* _window = nullptr;
             SDL_Renderer* _renderer;
+
+            Transform _global_transform; // camera state
+
             bool _is_open = false;
 
             bool _is_borderless;
