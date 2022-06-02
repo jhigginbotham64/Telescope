@@ -26,8 +26,11 @@ namespace ts
             //
             virtual Vector2f get_centroid() const = 0;
 
-            // -1 for all
-            void set_color(RGBA, int vertex_index = -1);
+            //
+            void move(float x_offset, float y_offset);
+
+            // of all vertices
+            void set_color(RGBA);
 
             //
             RGBA get_color(size_t vertex_index) const;
@@ -45,13 +48,22 @@ namespace ts
             Rectangle get_bounding_box() const;
 
             //
-            //void set_origin(Vector2f absolute_position);
+            void set_vertex_position(size_t index, Vector2f pos);
 
             //
-            //Vector2f get_origin() const;
+            void set_vertex_color(size_t index, RGBA);
+
+            // in [0, 1]
+            void set_vertex_texture_coordinates(size_t index, Vector2f relative);
 
             //
-            //void set_rotation(float in_degree);
+            Vector2f get_vertex_position(size_t index) const;
+
+            //
+            RGBA get_vertex_color(size_t index) const;
+
+            //
+            Vector2f get_vertex_texture_coordinates(size_t index);
 
         protected:
             //
@@ -75,9 +87,14 @@ namespace ts
             Vector2f compute_centroid() const;
 
             // contiguous data needed for fast rendering
-            std::vector<float> _xy;
-            std::vector<SDL_Color> _colors;
-            std::vector<float> _uv;
+
+            std::vector<float> _xy; // spacial position, absolute
+            std::vector<SDL_Color> _colors; // color
+            std::vector<float> _uv; // texture position, relative
+
+            void update_xy();
+            void update_colors();
+            void update_uv();
 
     };
 }

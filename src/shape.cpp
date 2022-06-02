@@ -17,43 +17,50 @@ namespace ts
 {
     void Shape::signal_vertices_updated()
     {
+        update_xy();
+        update_colors();
+        update_uv();
+    }
+
+    void Shape::update_xy()
+    {
         _xy.clear();
-        _colors.clear();
-        _uv.clear();
-
-        _xy.reserve(_vertices.size() * 2);
-        _colors.reserve(_vertices.size());
-        _uv.reserve(_vertices.size() * 2);
-
+        _xy.reserve(2 * _vertices.size());
         for (auto& v : _vertices)
         {
             _xy.push_back(v.position.x);
             _xy.push_back(v.position.y);
+        }
+    }
+
+    void Shape::update_colors()
+    {
+        _colors.clear();
+        _colors.reserve(_vertices.size());
+        for (auto& v : _vertices)
             _colors.push_back(v.color);
+    }
+
+    void Shape::update_uv()
+    {
+        _uv.clear();
+        _uv.reserve(2 * _vertices.size());
+        for (auto& v : _vertices)
+        {
             _uv.push_back(v.tex_coord.x);
             _uv.push_back(v.tex_coord.y);
         }
     }
 
-    void Shape::render(RenderTarget* target, Transform transform) const
+    void Shape::move(float x_offset, float y_offset)
     {
-        auto xy = _xy;
-        for (size_t i = 0; i < xy.size(); i += 2)
+        for (auto& v : _vertices)
         {
-            auto new_pos = transform.apply_to(Vector2f{xy.at(i), xy.at(i+1)});
-            xy.at(i) = new_pos.x;
-            xy.at(i+1) = new_pos.y;
+            v.position.x += x_offset;
+            v.position.y += y_offset;
         }
 
-        SDL_RenderGeometryRaw(
-            target->get_renderer(),
-            _texture != nullptr ? _texture->get_native() : nullptr,
-            xy.data(), 2 * sizeof(float),
-            _colors.data(), sizeof(SDL_Color),
-            _uv.data(), 2 * sizeof(float),
-            _vertices.size(),
-            (const void*) nullptr, 0, 0
-        );
+        update_xy();
     }
 
     void Shape::set_color(RGBA color, int vertex_index)
@@ -66,6 +73,8 @@ namespace ts
         }
         else
             _vertices.at(vertex_index).color = col;
+
+        update_colors();
     }
 
     RGBA Shape::get_color(size_t vertex_index) const
@@ -89,18 +98,6 @@ namespace ts
         _texture = texture;
     }
 
-    /*
-    Vector2f Shape::get_origin() const
-    {
-        return _origin;
-    }
-
-    void Shape::set_origin(Vector2f origin)
-    {
-        _origin = origin;
-    }
-     */
-
     Rectangle Shape::get_bounding_box() const
     {
         static auto infinity = std::numeric_limits<float>::max();
@@ -120,6 +117,44 @@ namespace ts
         }
 
         return Rectangle{Vector2f{min_x, min_y}, Vector2f{max_x - min_x, max_y - min_y}};
+    }
+
+    void Shape::set_vertex_position(size_t index, Vector2f pos)
+    {
+        _vertices.at(index).position.x = pos.x;
+        _vertices.at(index).position.y = pos.y;
+
+        update_xy();
+    }
+
+    void Shape::set_vertex_color(size_t index, RGBA color)
+    {
+        _vertices.at(index).color = color.operator SDL_Color();
+
+        update_colors();
+    }
+
+    void Shape::set_vertex_texture_coordinates(size_t index, Vector2f relative)
+    {
+        _vertices.at(index).tex_coord.x = relative.x;
+        _vertices.at(index).tex_coord.y = relative.y;
+    }
+
+    Vector2f Shape::get_vertex_position(size_t index) const
+    {
+        auto pos = _vertices.at(index).position;
+        return Vector2f{pos.x, pos.y};
+    }
+
+    Vector2f Shape::get_vertex_texture_coordinates(size_t index)
+    {
+        auto pos = _vertices.at(index).tex_coord;
+        return Vector2f{pos.x, pos.y};
+    }
+
+    RGBA Shape::get_vertex_color(size_t index) const
+    {
+        return RGBA(_vertices.at(index).color);
     }
 }
 

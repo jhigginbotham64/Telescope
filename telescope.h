@@ -132,24 +132,14 @@ bool ts_window_is_open(size_t id)
     return detail::_windows.at(id).is_open();
 }
 
-size_t ts_window_get_size_x(size_t id)
+void ts_window_get_size(size_t window_id, size_t* out_x, size_t* out_y)
 {
-    return detail::_windows.at(id).get_size().x;
+    SDL_GetWindowSize(detail::_windows.at(window_id).get_native(), (int*) out_x, (int*) out_y);
 }
 
-size_t ts_window_get_size_y(size_t id)
+void ts_window_get_position(size_t window_id, size_t* out_x, size_t* out_y)
 {
-    return detail::_windows.at(id).get_size().y;
-}
-
-size_t ts_window_get_position_x(size_t id)
-{
-    return detail::_windows.at(id).get_position().x;
-}
-
-size_t ts_window_get_position_y(size_t id)
-{
-    return detail::_windows.at(id).get_position().y;
+    SDL_GetWindowPosition(detail::_windows.at(window_id).get_native(), (int*) out_x, (int*) out_y);
 }
 
 void ts_window_set_hidden(size_t id, bool hidden)
@@ -270,52 +260,50 @@ int32_t ts_texture_blend_mode_multiply()
 size_t ts_texture_create_static_texture(size_t window_id, size_t width, size_t height, float r, float g, float b, float a)
 {
     size_t id = detail::_texture_id++;
-    detail::_textures.emplace(id, ts::StaticTexture(&detail::_windows.at(window_id)));
-    detail::_textures.at(id).create(width, height, ts::RGBA(r, g, b, a));
+    detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::StaticTexture(&detail::_windows.at(window_id))));
+    ((ts::StaticTexture*) detail::_textures.at(id).get())->create(width, height, ts::RGBA(r, g, b, a));
     return id;
 }
 
 size_t ts_texture_load_static_texture(size_t window_id, const char* path)
 {
     size_t id = detail::_texture_id++;
-    detail::_textures.emplace(id, ts::StaticTexture(&detail::_windows.at(window_id)));
-    detail::_textures.at(id).load(path);
+    detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::StaticTexture(&detail::_windows.at(window_id))));
+    ((ts::StaticTexture*) detail::_textures.at(id).get())->load(path);
     return id;
 }
 
-size_t ts_texture_destroy_static_texture(size_t texture_id)
+void ts_texture_get_size(size_t texture_id, size_t* out_x, size_t* out_y)
+{
+    SDL_QueryTexture(detail::_textures.at(texture_id)->get_native(), 0, 0, (int*) out_x, (int*) out_y);
+}
+
+size_t ts_texture_destroy_texture(size_t texture_id)
 {
     detail::_textures.erase(texture_id);
 }
 
 size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t height)
 {
-    size_t id = detail::_render_texture_id++;
-    detail::_render_textures.emplace(id, ts::RenderTexture(&detail::_windows.at(window_id)));
-    detail::_render_textures.at(id).create(width, height);
+    size_t id = detail::_texture_id++;
+    detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::RenderTexture(&detail::_windows.at(window_id))));
+    ((ts::RenderTexture*) detail::_textures.at(id).get())->create(width, height);
     return id;
-}
-
-size_t ts_texture_destroy_render_texture(size_t texture_id)
-{
-    detail::_render_textures.erase(texture_id);
 }
 
 // ### SHAPES ##################################################
 
-void ts_shape_render(void* shape_ptr, size_t window_id)
+void ts_shape_render(void* shape_ptr, size_t window_id,
+     float t_00, float t_01, float t_02, float t_10, float t_11, float t_12, float t_20, float t_21, float t_22) // transform elements
 {
-    detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr));
+    detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), ts::Transform({t_00, t_01, t_02, t_10, t_11, t_12, t_20, t_21, t_22}));
 }
 
-float ts_shape_get_centroid_x(void* shape_ptr)
+void ts_shape_get_centroid(void* shape_ptr, int* out_x, int* out_y)
 {
-    return ((ts::Shape*) shape_ptr)->get_centroid().x;
-}
-
-float ts_shape_get_centroid_y(void* shape_ptr)
-{
-    return ((ts::Shape*) shape_ptr)->get_centroid().y;
+    auto centroid = ((ts::Shape*) shape_ptr)->get_centroid();
+    *out_x = centroid.x;
+    *out_y = centroid.y;
 }
 
 void ts_shape_set_centroid(void* shape_ptr, float x, float y)
@@ -323,34 +311,82 @@ void ts_shape_set_centroid(void* shape_ptr, float x, float y)
     ((ts::Shape*) shape_ptr)->set_centroid(ts::Vector2f{x, y});
 }
 
+size_t ts_shape_get_n_vertices(void* shape_ptr)
+{
+    ((ts::Shape*) shape_ptr)->get_n_vertices();
+}
+
+void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index, float* out_pos_x, float* out_pos_y, float* out_tex_coord_x, float * out_tex_coord_y, float* out_r, float* out_g, float* out_b, float* out_a)
+{
+    auto* shape = (ts::Shape*) shape_ptr;
+
+    *out_pos_x = shape->get_vertex_position(vertex_index).x;
+    *out_pos_y = shape->get_vertex_position(vertex_index).y;
+    *out_tex_coord_x = shape->get_vertex_texture_coordinates(vertex_index).x;
+    *out_tex_coord_y = shape->get_vertex_texture_coordinates(vertex_index).y;
+
+    auto color = shape->get_vertex_color(vertex_index);
+    *out_r = color.red;
+    *out_g = color.green;
+    *out_b = color.blue;
+    *out_a = color.alpha;
+}
+
 void ts_shape_set_color(void* shape_ptr, float r, float g, float b, float a)
 {
     ((ts::Shape*) shape_ptr)->set_color(ts::RGBA(r, g, b, a));
 }
 
+void ts_shape_set_vertex_color(void* shape_ptr, size_t vertex_index, float r, float g, float b, float a)
+{
+    ((ts::Shape*) shape_ptr)->set_vertex_color(vertex_index, ts::RGBA(r, g, b, a));
+}
+
+void ts_shape_get_vertex_color(void* shape_ptr, size_t vertex_index, float* out_r, float* out_g, float* out_b, float* out_a)
+{
+    auto color = ((ts::Shape*) shape_ptr)->get_color(vertex_index);
+    *out_r = color.red;
+    *out_g = color.green;
+    *out_b = color.blue;
+    *out_a = color.alpha;
+}
+
+void ts_shape_set_vertex_texture_coordinates(void* shape_ptr, size_t vertex_index, float u, float v)
+{
+    ((ts::Shape*) shape_ptr)->set_vertex_texture_coordinates(vertex_index, ts::Vector2f{u, v});
+}
+
+void ts_shape_get_vertex_texture_coordinates(void* shape_ptr, size_t vertex_index, float* out_u, float* out_v)
+{
+    auto uv = ((ts::Shape*) shape_ptr)->get_vertex_texture_coordinates(vertex_index);
+    *out_u = uv.x;
+    *out_v = uv.y;
+}
+
+void ts_shape_set_vertex_position(void* shape_ptr, size_t vertex_index, float x, float y)
+{
+    ((ts::Shape*) shape_ptr)->set_vertex_position(vertex_index, ts::Vector2f{x, y});
+}
+
+void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* out_x, float* out_y)
+{
+    auto pos = ((ts::Shape*) shape_ptr)->get_vertex_position(vertex_index);
+    *out_x = pos.x;
+    *out_y = pos.y;
+}
+
 void ts_shape_set_texture(void* shape_ptr, size_t texture_id)
 {
-    ((ts::Shape*) shape_ptr)->set_texture(&detail::_textures.at(texture_id));
+    ((ts::Shape*) shape_ptr)->set_texture(detail::_textures.at(texture_id).get());
 }
 
-float ts_shape_get_aabb_x(void* shape_ptr)
+void ts_shape_get_aabb(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height)
 {
-    ((ts::Shape*) shape_ptr)->get_bounding_box().top_left.x;
-}
-
-float ts_shape_get_aabb_y(void* shape_ptr)
-{
-    ((ts::Shape*) shape_ptr)->get_bounding_box().top_left.y;
-}
-
-float ts_shape_get_aabb_width(void* shape_ptr)
-{
-    ((ts::Shape*) shape_ptr)->get_bounding_box().size.x;
-}
-
-float ts_shape_get_aabb_height(void* shape_ptr)
-{
-    ((ts::Shape*) shape_ptr)->get_bounding_box().size.y;
+    auto aabb = ((ts::Shape*) shape_ptr)->get_bounding_box();
+    *out_top_left_x = aabb.top_left.x;
+    *out_top_left_y = aabb.top_left.y;
+    *out_width = aabb.size.x;
+    *out_height = aabb.size.y;
 }
 
 void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)
@@ -358,9 +394,20 @@ void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_
     return new ts::TriangleShape({a_x, a_y}, {b_x, b_y}, {c_x, c_y});
 }
 
-void ts_shape_destroy_triangle(void* triangle_pointer)
+void ts_shape_triangle_get_vertices(void* triangle_ptr, float* out_a_x, float* out_a_y, float* out_b_x, float* out_b_y, float* out_c_x, float* out_c_y)
 {
-    delete ((ts::TriangleShape*) triangle_pointer);
+    auto* tri = ((ts::Triangle*) triangle_ptr);
+    *out_a_x = tri->a.x;
+    *out_a_y = tri->a.y;
+    *out_b_x = tri->b.x;
+    *out_b_y = tri->b.y;
+    *out_c_x = tri->c.x;
+    *out_c_y = tri->c.y;
+}
+
+void ts_shape_destroy_triangle(void* triangle_ptr)
+{
+    delete ((ts::TriangleShape*) triangle_ptr);
 }
 
 void* ts_shape_new_rectangle(float top_left_x, float top_left_y, float width, float height)
@@ -368,19 +415,24 @@ void* ts_shape_new_rectangle(float top_left_x, float top_left_y, float width, fl
     return new ts::RectangleShape(ts::Vector2f{top_left_x, top_left_y}, ts::Vector2f{width, height});
 }
 
-void* ts_shape_destroy_rectangle(void* rectangle_pointer)
+void* ts_shape_destroy_rectangle(void* rectangle_ptr)
 {
-    delete ((ts::TriangleShape*) rectangle_pointer);
+    delete ((ts::TriangleShape*) rectangle_ptr);
 }
 
-void* ts_shape_new_circle(float center_x, float center_y, float radius)
+void* ts_shape_new_circle(float center_x, float center_y, float radius, size_t n_vertices = 64)
 {
-    return new ts::CircleShape(ts::Vector2f{center_x, center_y}, radius);
+    return new ts::CircleShape(ts::Vector2f{center_x, center_y}, radius, n_vertices);
 }
 
-void ts_shape_destroy_circle(void* circle_pointer)
+float ts_shape_circle_get_radius(void* circle_ptr)
 {
-    delete ((ts::Circle*) circle_pointer);
+    return ((ts::CircleShape*) circle_ptr)->get_radius();
+}
+
+void ts_shape_destroy_circle(void* circle_ptr)
+{
+    delete ((ts::Circle*) circle_ptr);
 }
 
 void* ts_shape_new_polygon(float* vertices_x, float* vertices_y, size_t n_vertices)
@@ -392,9 +444,9 @@ void* ts_shape_new_polygon(float* vertices_x, float* vertices_y, size_t n_vertic
     return new ts::PolygonShape(vertices);
 }
 
-void ts_shape_destroy_polygon(void* polygon_pointer)
+void ts_shape_destroy_polygon(void* polygon_ptr)
 {
-    delete ((ts::PolygonShape*) polygon_pointer);
+    delete ((ts::PolygonShape*) polygon_ptr);
 }
 
 // ### INPUT ###################################################
