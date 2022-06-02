@@ -63,16 +63,11 @@ namespace ts
         update_xy();
     }
 
-    void Shape::set_color(RGBA color, int vertex_index)
+    void Shape::set_color(RGBA color)
     {
         auto col = color.operator SDL_Color();
-        if (vertex_index == -1)
-        {
-            for (auto& v : _vertices)
-                v.color = col;
-        }
-        else
-            _vertices.at(vertex_index).color = col;
+        for (auto& v : _vertices)
+            v.color = col;
 
         update_colors();
     }

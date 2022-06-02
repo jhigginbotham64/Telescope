@@ -23,6 +23,7 @@
 #include <include/texture.hpp>
 #include <include/static_texture.hpp>
 #include <include/render_texture.hpp>
+#include <include/camera.hpp>
 
 extern "C"
 {
@@ -88,6 +89,7 @@ namespace detail
 {
     static inline size_t _window_id = 0;
     static inline std::unordered_map<size_t, ts::Window> _windows = {};
+    static inline std::unordered_map<size_t, ts::Camera> _cameras = {};
 }
 
 size_t ts_window_create(
@@ -112,7 +114,10 @@ size_t ts_window_create(
     if (resizable)
         options |= ts::RESIZABLE;
 
-    detail::_windows.at(id).create(title, width, height, options);
+    auto& window = detail::_windows.at(id);
+    window.create(title, width, height, options);
+    detail::_cameras.emplace(id, ts::Camera(&window));
+
     return id;
 }
 
@@ -120,6 +125,7 @@ void ts_window_destroy(size_t id)
 {
     detail::_windows.at(id).close();
     detail::_windows.erase(id);
+    detail::_cameras.erase(id);
 }
 
 void ts_window_close(size_t id)
@@ -192,6 +198,67 @@ void ts_window_flush(size_t id)
     detail::_windows.at(id).flush();
 }
 
+// ### CAMERA ##################################################
+
+void ts_window_camera_center_on(size_t window_id, float x, float y)
+{
+    detail::_cameras.at(window_id).center_on(ts::Vector2f{x, y});
+}
+
+void ts_window_camera_move(size_t window_id, float x, float y)
+{
+    detail::_cameras.at(window_id).move(x, y);
+}
+
+void ts_window_camera_zoom_in(size_t window_id, float factor)
+{
+    detail::_cameras.at(window_id).zoom_in(factor);
+}
+
+void ts_window_camera_zoom_out(size_t window_id, float factor)
+{
+    detail::_cameras.at(window_id).zoom_out(factor);
+}
+
+void ts_window_camera_set_zoom(size_t window_id, float factor)
+{
+    detail::_cameras.at(window_id).set_zoom(factor);
+}
+
+void ts_window_camera_rotate(size_t window_id, float degrees)
+{
+    detail::_cameras.at(window_id).rotate(ts::degrees(degrees));
+}
+
+void ts_window_camera_set_rotation(size_t window_id, float degrees)
+{
+    detail::_cameras.at(window_id).set_rotation(ts::degrees(degrees));
+}
+
+void ts_window_camera_get_center(size_t window_id, float* out_x, float* out_y)
+{
+    auto center = detail::_cameras.at(window_id).get_center();
+    *out_x = center.x;
+    *out_y = center.y;
+}
+
+void ts_window_camera_get_view_area(size_t window_id,
+    float* out_top_left_x, float* out_top_left_y,
+    float* out_top_right_x, float* out_top_right_y,
+    float* out_bottom_left_x, float* out_bottom_left_y,
+    float* out_bottom_right_x, float* out_bottom_right_y)
+{
+    auto rect = detail::_cameras.at(window_id).get_view_area();
+    *out_top_left_x = rect.top_left.x;
+    *out_top_left_y = rect.top_left.y;
+    *out_top_right_x = rect.top_right.x;
+    *out_top_right_y = rect.top_right.y;
+    *out_bottom_left_x = rect.bottom_left.x;
+    *out_bottom_left_y = rect.bottom_left.y;
+    *out_bottom_right_x = rect.bottom_right.x;
+    *out_bottom_right_y = rect.bottom_right.y;
+}
+
 // ### COMMON ##################################################
 
 bool ts_initialize()
@@ -257,7 +324,9 @@ int32_t ts_texture_blend_mode_multiply()
     return ts::TextureBlendMode::MULTIPLY;
 }
 
-size_t ts_texture_create_static_texture(size_t window_id, size_t width, size_t height, float r, float g, float b, float a)
+size_t ts_texture_create_static_texture(size_t window_id,
+    size_t width, size_t height,
+    float r, float g, float b, float a)
 {
     size_t id = detail::_texture_id++;
     detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::StaticTexture(&detail::_windows.at(window_id))));
@@ -294,7 +363,9 @@ size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t h
 // ### SHAPES ##################################################
 
 void ts_shape_render(void* shape_ptr, size_t window_id,
-     float t_00, float t_01, float t_02, float t_10, float t_11, float t_12, float t_20, float t_21, float t_22) // transform elements
+     float t_00, float t_01, float t_02,
+     float t_10, float t_11, float t_12,
+     float t_20, float t_21, float t_22) // transform elements
 {
     detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), ts::Transform({t_00, t_01, t_02, t_10, t_11, t_12, t_20, t_21, t_22}));
 }
@@ -316,7 +387,10 @@ size_t ts_shape_get_n_vertices(void* shape_ptr)
     ((ts::Shape*) shape_ptr)->get_n_vertices();
 }
 
-void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index, float* out_pos_x, float* out_pos_y, float* out_tex_coord_x, float * out_tex_coord_y, float* out_r, float* out_g, float* out_b, float* out_a)
+void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index,
+     float* out_pos_x, float* out_pos_y,
+     float* out_tex_coord_x, float * out_tex_coord_y,
+     float* out_r, float* out_g, float* out_b, float* out_a)
 {
     auto* shape = (ts::Shape*) shape_ptr;
 
@@ -380,7 +454,9 @@ void ts_shape_set_texture(void* shape_ptr, size_t texture_id)
     ((ts::Shape*) shape_ptr)->set_texture(detail::_textures.at(texture_id).get());
 }
 
-void ts_shape_get_aabb(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height)
+void ts_shape_get_aabb(void* shape_ptr,
+    float* out_top_left_x, float* out_top_left_y,
+    float* out_width, float* out_height)
 {
     auto aabb = ((ts::Shape*) shape_ptr)->get_bounding_box();
     *out_top_left_x = aabb.top_left.x;
@@ -394,7 +470,10 @@ void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_
     return new ts::TriangleShape({a_x, a_y}, {b_x, b_y}, {c_x, c_y});
 }
 
-void ts_shape_triangle_get_vertices(void* triangle_ptr, float* out_a_x, float* out_a_y, float* out_b_x, float* out_b_y, float* out_c_x, float* out_c_y)
+void ts_shape_triangle_get_vertices(void* triangle_ptr,
+    float* out_a_x, float* out_a_y,
+    float* out_b_x, float* out_b_y,
+    float* out_c_x, float* out_c_y)
 {
     auto* tri = ((ts::Triangle*) triangle_ptr);
     *out_a_x = tri->a.x;
