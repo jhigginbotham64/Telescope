@@ -1,12 +1,11 @@
-// 
+//
 // Copyright 2022 Clemens Cords
 // Created on 24.05.22 by clem (mail@clemens-cords.com)
 //
 
-#pragma once
-
 #include <unordered_map>
 #include <memory>
+#include <iostream>
 
 #include <include/common.hpp>
 #include <include/window.hpp>
@@ -25,8 +24,12 @@
 #include <include/render_texture.hpp>
 #include <include/camera.hpp>
 
-extern "C"
+extern "C" {
+
+void ts_test()
 {
+    std::cout << "test" << std::endl;
+}
 
 // ### TIME ####################################################
 
@@ -93,12 +96,12 @@ namespace detail
 }
 
 size_t ts_window_create(
-    size_t width,
-    size_t height,
-    const char* title = "",
-    bool fullscreen = false,
-    bool borderless = false,
-    bool resizable = false)
+        size_t width,
+        size_t height,
+        const char* title,
+        bool fullscreen,
+        bool borderless,
+        bool resizable)
 {
     auto id = detail::_window_id++;
     detail::_windows.emplace(id, ts::Window());
@@ -243,10 +246,10 @@ void ts_window_camera_get_center(size_t window_id, float* out_x, float* out_y)
 }
 
 void ts_window_camera_get_view_area(size_t window_id,
-    float* out_top_left_x, float* out_top_left_y,
-    float* out_top_right_x, float* out_top_right_y,
-    float* out_bottom_left_x, float* out_bottom_left_y,
-    float* out_bottom_right_x, float* out_bottom_right_y)
+                                    float* out_top_left_x, float* out_top_left_y,
+                                    float* out_top_right_x, float* out_top_right_y,
+                                    float* out_bottom_left_x, float* out_bottom_left_y,
+                                    float* out_bottom_right_x, float* out_bottom_right_y)
 {
     auto rect = detail::_cameras.at(window_id).get_view_area();
     *out_top_left_x = rect.top_left.x;
@@ -325,8 +328,8 @@ int32_t ts_texture_blend_mode_multiply()
 }
 
 size_t ts_texture_create_static_texture(size_t window_id,
-    size_t width, size_t height,
-    float r, float g, float b, float a)
+                                        size_t width, size_t height,
+                                        float r, float g, float b, float a)
 {
     size_t id = detail::_texture_id++;
     detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::StaticTexture(&detail::_windows.at(window_id))));
@@ -363,9 +366,9 @@ size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t h
 // ### SHAPES ##################################################
 
 void ts_shape_render(void* shape_ptr, size_t window_id,
-     float t_00, float t_01, float t_02,
-     float t_10, float t_11, float t_12,
-     float t_20, float t_21, float t_22) // transform elements
+                     float t_00, float t_01, float t_02,
+                     float t_10, float t_11, float t_12,
+                     float t_20, float t_21, float t_22) // transform elements
 {
     detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), ts::Transform({t_00, t_01, t_02, t_10, t_11, t_12, t_20, t_21, t_22}));
 }
@@ -388,9 +391,9 @@ size_t ts_shape_get_n_vertices(void* shape_ptr)
 }
 
 void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index,
-     float* out_pos_x, float* out_pos_y,
-     float* out_tex_coord_x, float * out_tex_coord_y,
-     float* out_r, float* out_g, float* out_b, float* out_a)
+                         float* out_pos_x, float* out_pos_y,
+                         float* out_tex_coord_x, float * out_tex_coord_y,
+                         float* out_r, float* out_g, float* out_b, float* out_a)
 {
     auto* shape = (ts::Shape*) shape_ptr;
 
@@ -460,9 +463,9 @@ void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_
 }
 
 void ts_shape_triangle_get_vertices(void* triangle_ptr,
-    float* out_a_x, float* out_a_y,
-    float* out_b_x, float* out_b_y,
-    float* out_c_x, float* out_c_y)
+                                    float* out_a_x, float* out_a_y,
+                                    float* out_b_x, float* out_b_y,
+                                    float* out_c_x, float* out_c_y)
 {
     auto* tri = ((ts::Triangle*) triangle_ptr);
     *out_a_x = tri->a.x;
@@ -488,7 +491,7 @@ void ts_shape_destroy_rectangle(void* rectangle_ptr)
     delete ((ts::TriangleShape*) rectangle_ptr);
 }
 
-void* ts_shape_new_circle(float center_x, float center_y, float radius, size_t n_vertices = 64)
+void* ts_shape_new_circle(float center_x, float center_y, float radius, size_t n_vertices)
 {
     return new ts::CircleShape(ts::Vector2f{center_x, center_y}, radius, n_vertices);
 }
@@ -625,32 +628,32 @@ bool ts_controller_was_released(int64_t button, size_t controller_id)
     return ts::InputHandler::was_released((ts::ControllerButton) button, controller_id);
 }
 
-float ts_controller_axis_left_x(size_t controller_id = 0)
+float ts_controller_axis_left_x(size_t controller_id)
 {
     return ts::InputHandler::get_controller_axis_left(controller_id).x;
 }
 
-float ts_controller_axis_left_y(size_t controller_id = 0)
+float ts_controller_axis_left_y(size_t controller_id)
 {
     return ts::InputHandler::get_controller_axis_left(controller_id).y;
 }
 
-float ts_controller_axis_right_x(size_t controller_id = 0)
+float ts_controller_axis_right_x(size_t controller_id)
 {
     return ts::InputHandler::get_controller_axis_right(controller_id).x;
 }
 
-float ts_controller_axis_right_y(size_t controller_id = 0)
+float ts_controller_axis_right_y(size_t controller_id)
 {
     return ts::InputHandler::get_controller_axis_right(controller_id).y;
 }
 
-float ts_controller_trigger_left(size_t controller_id = 0)
+float ts_controller_trigger_left(size_t controller_id)
 {
     return ts::InputHandler::get_controller_trigger_left(controller_id);
 }
 
-float ts_controller_trigger_right(size_t controller_id = 0)
+float ts_controller_trigger_right(size_t controller_id)
 {
     return ts::InputHandler::get_controller_trigger_right(controller_id);
 }
@@ -674,22 +677,22 @@ void ts_music_unload(size_t id)
     detail::_music_library.erase(id);
 }
 
-void ts_music_play(size_t id, bool should_loop = true, double fade_in_ms = 0)
+void ts_music_play(size_t id, bool should_loop, double fade_in_ms)
 {
     ts::MusicHandler::play(detail::_music_library.at(id), should_loop, ts::milliseconds(fade_in_ms));
 }
 
-void ts_music_play_next(size_t id, bool should_loop = true, double fade_in_ms = 0)
+void ts_music_play_next(size_t id, bool should_loop, double fade_in_ms)
 {
     ts::MusicHandler::play_next(detail::_music_library.at(id), should_loop, ts::milliseconds(fade_in_ms));
 }
 
-void ts_music_stop(double fade_out_ms = 0)
+void ts_music_stop(double fade_out_ms)
 {
     ts::MusicHandler::stop(ts::milliseconds(fade_out_ms));
 }
 
-void ts_music_next(double fade_out_ms = 0)
+void ts_music_next(double fade_out_ms)
 {
     ts::MusicHandler::next(ts::milliseconds(fade_out_ms));
 }
@@ -756,7 +759,7 @@ namespace detail
     std::unordered_map<size_t, ts::Sound> _sound_library;
 }
 
-size_t ts_sound_load(const char* path, float volume = 1)
+size_t ts_sound_load(const char* path, float volume)
 {
     size_t id = std::hash<std::string>()(path);
     detail::_sound_library.emplace(id, ts::Sound(path));
@@ -774,12 +777,12 @@ size_t ts_sound_n_channels()
     return ts::SoundHandler::n_channels;
 }
 
-void ts_sound_play(size_t id, size_t channel, size_t n_loops = 0, double fade_in_ms = 0)
+void ts_sound_play(size_t id, size_t channel, size_t n_loops, double fade_in_ms)
 {
     ts::SoundHandler::play(detail::_sound_library.at(id), channel, n_loops, ts::milliseconds(fade_in_ms));
 }
 
-void ts_sound_stop(size_t channel, double fade_out_ms = 0)
+void ts_sound_stop(size_t channel, double fade_out_ms)
 {
     ts::SoundHandler::stop(channel, ts::milliseconds(fade_out_ms));
 }

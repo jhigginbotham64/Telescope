@@ -56,11 +56,10 @@ project(telescope VERSION 0.2.0 LANGUAGES C CXX)
 include(GNUInstallDirs)
 
 include(CTest)
-file(GLOB INCLUDE_FILES src/*.h)
 
 ### FIND DEPENDENCIES ###
 
-find_package(SDL2 2.0.18 REQUIRED NAMES SDL2)
+find_library(SDL2 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
 find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
@@ -84,7 +83,7 @@ endif()
 
 add_library(telescope SHARED
 
-    telescope.h
+    telescope.hpp
 
     include/logging.hpp
     src/logging.inl
@@ -167,11 +166,14 @@ add_library(telescope SHARED
 
     include/camera.hpp
     src/camera.cpp
-)
+
+    include/c_interface.hpp
+    src/c_interface.cpp
+        telescope.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
-  CXX_STANDARD 20
+  CXX_STANDARD 17
   MACOSX_RPATH 1
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}# TODO "${CMAKE_BINARY_DIR}/lib"
   POSITION_INDEPENDENT_CODE ON
@@ -195,12 +197,14 @@ target_link_libraries(telescope PUBLIC
     ${vulkan}
 )
 
+### TODO ###
+
 # TODO: REMOVE THIS vvv
 
 add_executable(debug_main main.cpp)
 target_link_libraries(debug_main PUBLIC telescope)
 set_target_properties(telescope PROPERTIES
-    CXX_STANDARD 20
+    CXX_STANDARD 17
     LINKER_LANGUAGE C
 )
 

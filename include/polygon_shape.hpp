@@ -23,6 +23,6 @@ namespace ts
 
             /// \brief set the centroid, moves all vertices accordingly
             /// \param new_position: new position of the centroid
-            void set_centroid(Vector2f);
+            void set_centroid(Vector2f) override;
     };
 }

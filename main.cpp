@@ -42,8 +42,6 @@ using namespace ts;
 
 int main()
 {
-    initialize();
-
     ts_initialize();
 
     auto window = ts::Window();
