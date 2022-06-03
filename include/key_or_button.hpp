@@ -189,7 +189,7 @@ namespace ts
 
     namespace detail
     {
-        KeyboardKey string_to_keyboard_key(const char*);
+        KeyboardKey string_to_keyboard_key(const std::string&);
         MouseButton string_to_mouse_button(const std::string&);
         ControllerButton string_to_controller_button(const std::string&);
     }

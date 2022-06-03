@@ -158,7 +158,7 @@ bool ts_window_is_hidden(size_t id)
     return detail::_windows.at(id).is_hidden();
 }
 
-bool ts_window_minimize(size_t id)
+void ts_window_minimize(size_t id)
 {
     detail::_windows.at(id).minimize();
 }
@@ -168,7 +168,7 @@ bool ts_window_is_minimized(size_t id)
     return detail::_windows.at(id).is_minimized();
 }
 
-bool ts_window_maximize(size_t id)
+void ts_window_maximize(size_t id)
 {
     detail::_windows.at(id).maximize();
 }
@@ -347,7 +347,7 @@ void ts_texture_get_size(size_t texture_id, size_t* out_x, size_t* out_y)
     SDL_QueryTexture(detail::_textures.at(texture_id)->get_native(), 0, 0, (int*) out_x, (int*) out_y);
 }
 
-size_t ts_texture_destroy_texture(size_t texture_id)
+void ts_texture_destroy_texture(size_t texture_id)
 {
     detail::_textures.erase(texture_id);
 }
@@ -384,7 +384,7 @@ void ts_shape_set_centroid(void* shape_ptr, float x, float y)
 
 size_t ts_shape_get_n_vertices(void* shape_ptr)
 {
-    ((ts::Shape*) shape_ptr)->get_n_vertices();
+    return ((ts::Shape*) shape_ptr)->get_n_vertices();
 }
 
 void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index,
@@ -454,17 +454,6 @@ void ts_shape_set_texture(void* shape_ptr, size_t texture_id)
     ((ts::Shape*) shape_ptr)->set_texture(detail::_textures.at(texture_id).get());
 }
 
-void ts_shape_get_aabb(void* shape_ptr,
-    float* out_top_left_x, float* out_top_left_y,
-    float* out_width, float* out_height)
-{
-    auto aabb = ((ts::Shape*) shape_ptr)->get_bounding_box();
-    *out_top_left_x = aabb.top_left.x;
-    *out_top_left_y = aabb.top_left.y;
-    *out_width = aabb.size.x;
-    *out_height = aabb.size.y;
-}
-
 void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)
 {
     return new ts::TriangleShape({a_x, a_y}, {b_x, b_y}, {c_x, c_y});
@@ -494,7 +483,7 @@ void* ts_shape_new_rectangle(float top_left_x, float top_left_y, float width, fl
     return new ts::RectangleShape(ts::Vector2f{top_left_x, top_left_y}, ts::Vector2f{width, height});
 }
 
-void* ts_shape_destroy_rectangle(void* rectangle_ptr)
+void ts_shape_destroy_rectangle(void* rectangle_ptr)
 {
     delete ((ts::TriangleShape*) rectangle_ptr);
 }
@@ -775,7 +764,7 @@ size_t ts_sound_load(const char* path, float volume = 1)
     return id;
 }
 
-size_t ts_sound_unload(size_t id)
+void ts_sound_unload(size_t id)
 {
     detail::_sound_library.erase(id);
 }

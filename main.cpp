@@ -34,6 +34,7 @@
 #include <include/render_texture.hpp>
 #include <include/camera.hpp>
 #include <glm/glm.hpp>
+#include <telescope.h>
 
 #include <glm/gtx/transform.hpp>
 
@@ -42,6 +43,8 @@ using namespace ts;
 int main()
 {
     initialize();
+
+    ts_initialize();
 
     auto window = ts::Window();
     window.create("", 800, 600, ts::DEFAULT);
@@ -108,12 +111,6 @@ int main()
 
         if (InputHandler::was_pressed(B))
             camera.rotate(ts::degrees(+5));
-
-        if (InputHandler::was_pressed(F))
-            camera.flip_horizontally();
-
-        if (InputHandler::was_pressed(H))
-            camera.flip_vertically();
 
         if (InputHandler::was_pressed(SPACE))
         {

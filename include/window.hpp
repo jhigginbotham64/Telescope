@@ -15,6 +15,8 @@
 #include <include/render_target.hpp>
 #include <include/transform.hpp>
 
+extern "C" {
+
 namespace ts
 {
     enum WindowOptions : uint32_t
@@ -125,4 +127,6 @@ namespace ts
             bool _has_focus;
             bool _has_mouse_focus;
     };
+}
+
 }

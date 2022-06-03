@@ -51,7 +51,7 @@ This will run all tests, printing their output to the console.
 
 cmake_minimum_required(VERSION 3.13)
 
-project(telescope VERSION 0.2.0 LANGUAGES CXX)
+project(telescope VERSION 0.2.0 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 
@@ -135,8 +135,11 @@ add_library(telescope SHARED
     src/vertex.cpp
 
     include/renderable.hpp
+    src/renderable.cpp
 
-        include/shape.hpp
+    include/render_target.hpp
+
+    include/shape.hpp
     src/shape.cpp
 
     include/rectangle_shape.hpp
@@ -148,15 +151,29 @@ add_library(telescope SHARED
     include/circle_shape.hpp
     src/circle_shape.cpp
 
-        include/angle.hpp
+    include/angle.hpp
     src/angle.cpp
-        include/geometric_shapes.hpp include/polygon_shape.hpp src/polygon_shape.cpp include/common.hpp src/common.cpp src/renderable.cpp include/transform.hpp src/transform.cpp include/render_target.hpp include/camera.hpp src/camera.cpp)
+
+    include/geometric_shapes.hpp
+
+    include/polygon_shape.hpp
+    src/polygon_shape.cpp
+
+    include/common.hpp
+    src/common.cpp
+
+    include/transform.hpp
+    src/transform.cpp
+
+    include/camera.hpp
+    src/camera.cpp
+)
 
 set_target_properties(telescope PROPERTIES
-  LINKER_LANGUAGE CXX
+  LINKER_LANGUAGE C
   CXX_STANDARD 20
   MACOSX_RPATH 1
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}# TODO "${CMAKE_BINARY_DIR}/lib"
   POSITION_INDEPENDENT_CODE ON
 )
 
@@ -183,7 +200,8 @@ target_link_libraries(telescope PUBLIC
 add_executable(debug_main main.cpp)
 target_link_libraries(debug_main PUBLIC telescope)
 set_target_properties(telescope PROPERTIES
-  CXX_STANDARD 20
+    CXX_STANDARD 20
+    LINKER_LANGUAGE C
 )
 
 # TODO REMOVE THIS ^^

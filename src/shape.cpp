@@ -15,6 +15,27 @@
 
 namespace ts
 {
+    void Shape::render(RenderTarget* target, Transform transform) const
+    {
+        auto xy = _xy;
+        for (size_t i = 0; i < xy.size(); i += 2)
+        {
+            auto new_pos = transform.apply_to(Vector2f{xy.at(i), xy.at(i+1)});
+            xy.at(i) = new_pos.x;
+            xy.at(i+1) = new_pos.y;
+        }
+
+        SDL_RenderGeometryRaw(
+                target->get_renderer(),
+                _texture != nullptr ? _texture->get_native() : nullptr,
+                xy.data(), 2 * sizeof(float),
+                _colors.data(), sizeof(SDL_Color),
+                _uv.data(), 2 * sizeof(float),
+                _vertices.size(),
+                (const void*) nullptr, 0, 0
+        );
+    }
+
     void Shape::signal_vertices_updated()
     {
         update_xy();
