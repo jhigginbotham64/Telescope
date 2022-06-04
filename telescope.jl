@@ -4,6 +4,7 @@
 #
 
 module ts
+
     ### COMMON ################################################################
 
     const _lib = "./libtelescope.so"
@@ -227,6 +228,7 @@ module ts
         out_ns::Csize_t = ccall((:ts_clock_elapsed, _lib), Cdouble, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
     end
+    export elapsed
 
     """
     `restart!(::Clock) -> Time`
@@ -235,6 +237,7 @@ module ts
         out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Cdouble, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
     end
+    export restart!
 
     ### ANGLE ################################################################
 
@@ -244,30 +247,39 @@ module ts
     struct Angle
         _degrees::Float32
     end
+    export Angle
 
     """
     `degrees(::Float32) -> Angle`
     """
     function degrees(n::Float32) ::Angle
+        return Angle(n % 360.0)
     end
+    export degrees
 
     """
     `radians(::Float32) -> Angle`
     """
     function radians(n::Float32) ::Angle
+        return Angle(ccall((:ts_radians_to_degree, _lib), Cfloat, (Cfloat,), n))
     end
+    export radians
 
     """
     `as_degrees(::Angle) -> Float32`
     """
     function as_degrees(angle::Angle) ::Float32
+        return angle._degrees % 360.f;
     end
+    export as_degrees
 
     """
     `as_radians(::Angle) -> Float32`
     """
     function as_radians(angle::Angle) ::Float32
+        return ccall((:ts_degrees_to_radians, _lib), Cfloat, (Cfloat,), angle._degrees)
     end
+    export as_radians
 
     ### INPUT ################################################################
 
@@ -682,6 +694,7 @@ module ts
     export Sound
 
     const ChannelID = Csize_t;
+    export ChannelID
 
     """
     TODO
@@ -910,6 +923,7 @@ module ts
     ### WINDOW ################################################################
 
     const WindowID = UInt64
+    export WindowID
 
     @enum WindowOptions begin
 
@@ -1076,66 +1090,77 @@ module ts
         function Camera(window::Window)
         end
     end
+    export Camera
 
     """
     `center_on!(::Camera, ::Vector2f) -> Nothing`
     """
     function center_on!(camera::Camera, point::Vector2f) ::Nothing
     end
+    export center_on!
 
     """
     `move!(::Camera, ::Float32, Float32) -> Nothing`
     """
     function move!(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
     end
+    export move!
 
     """
     `zoom_in!(::Camera, ::Float32) -> Nothing`
     """
     function zoom_in!(camera::Camera, factor::Float32) ::Nothing
     end
+    export zoom_in!
 
     """
     `zoom_out!(::Camera, ::Float32) -> Nothing`
     """
     function zoom_out!(camera::Camera, factor::Float32) ::Nothing
     end
+    export zoom_out!
 
     """
     `set_zoom!(::Camera, ::Float32) -> Nothing`
     """
     function set_zoom!(camera::Camera, factor::Float32) ::Nothing
     end
+    export set_zoom!
 
     """
     `rotate!(::Camera, ::Angle) -> Nothing`
     """
     function rotate!(camera::Camera, angle::Angle) ::Nothing
     end
+    export rotate!
 
     """
     `set_rotation!(::Camera, ::Angle) -> Nothing`
     """
     function set_rotation!(camera::Camera, angle::Angle) ::Nothing
     end
+    export set_rotation!
 
     """
     `get_transform(::Camera) -> Transform`
     """
     function get_transform(camera::Camera) ::Transform
     end
+    export get_transform
 
     """
     `get_center(::Camera) -> Vector2f`
     """
     function get_center(camera::Camera) ::Vector2f
     end
+    export get_center
 
     """
     `get_view_area(::Camera) -> Trapezoid`
     """
     function get_view_area(camera::Camera) ::Trapezoid
-    ned
+    end
+    export get_view_area
 
     ### TEXTURES ##############################################################
 
@@ -1163,6 +1188,7 @@ module ts
     export Texture
 
     const TextureID = UInt64
+    export TextureID
 
     """
     TODO
@@ -1184,6 +1210,7 @@ module ts
             end
         end
     end
+    export RenderTexture
 
     """
     TODO
@@ -1216,108 +1243,138 @@ module ts
             end
         end
     end
+    export StaticTexture
 
     """
     `unload!(::Texture) -> Nothing`
     """
     function unload!(texture::Texture) ::Nothing
     end
+    export unload!
     
     """
     `set_color!(::Texture) -> Nothing`
     """
     function set_color!(texture::Texture) ::Nothing
     end
+    export set_color!
     
     """
     `get_color(::Texture) -> RGBA`
     """
     function get_color(texture::Texture) ::RGBA
     end
+    export get_color
     
     """
     `set_blend_mode!(::Texture, ::TextureBlendMode) -> RGBA`
     """
     function set_blend_mode!(texture::Texture, mode::TextureBlendMode) ::Nothing
     end
+    export set_blend_mode!
 
     """
     `get_blend_mode(::Texture) -> TextureBlendMode`
     """
     function get_blend_mode(texture::Texture) ::TextureBlendMode
     end
+    export get_blend_mode
 
     """
     `set_filtering_mode!(::Texture, ::TextureFilteringMode) -> Nothing`
     """
     function set_filtering_mode!(texture::Texture, mode::TextureFilteringMode) ::Nothing
     end
+    export set_filtering_mode!
 
     """
     `get_filtering_mode(::Texture) -> TextureFilteringMode`
     """
     function get_filtering_mode(texture::Texture) ::TextureFilteringMode
     end
+    export get_filtering_mode
 
     """
     `get_size(::Texture) -> Vector2ui`
     """
     function get_size(texture::Texture) ::Vector2ui
     end
+    export get_size
 
     ### TRANSFORM #############################################################
 
     """
     """
-    struct Transform end
+    struct Transform
+
+        _native::Ptr{Cvoid}
+
+        function Transform()
+
+            ptr = ccall((:ts_transform_create, _lib), Ptr{Cvoid}, ())
+            out = new(ptr)
+            finalizer(out) do x::Transform
+                ccall((:ts_transform_destroy, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+            end
+        end
+    end
+    export Transform
 
     """
     `apply_to(::Transform, ::Vector2f) -> Vector2f`
     """
     function apply_to(transform::Transform, point::Vector2f) ::Vector2f
     end
+    export apply_to
 
     """
     `reset!(::Transform) -> Nothing`
     """
     function reset!(transform::Transform) ::Nothing
     end
+    export reset!
 
     """
     `combine!(::Transform, ::Transform) -> Nothing`
     """
     function combine!(left::Transform, right::Transform) ::Nothing
     end
+    export combine!
 
     """
     `translate!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
     function translate!(transform::Transform, x::Float32, y::Float32) ::Nothing
     end
+    export translate!
 
     """
     `rotate!(::Transform, ::Angle, ::Vector2f) -> Nothing`
     """
     function rotate!(transform::Transform, angle::Angle, origin::Vector2f) ::Nothing
     end
+    export rotate!
 
     """
     `scale!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
     function scale!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
     end
+    export scale!
 
     """
     `shear!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
     function shear!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
     end
+    export shear!
 
     """
     `reflect!(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
     """
     function reflect!(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f) ::Nothing
     end
+    export reflect!
 
     ### GEOMETRY ##############################################################
 
@@ -1330,6 +1387,7 @@ module ts
         b::Vector2f
         c::Vector2f
     end
+    export Triangle
 
     """
     TODO
@@ -1339,6 +1397,7 @@ module ts
         top_left::Vector2f
         size::Vector2f
     end
+    export Rectangle
 
     """
     TODO
@@ -1350,6 +1409,7 @@ module ts
         bottom_left::Vector2f
         bottom_right::Vector2f
     end
+    export Trapezoid
 
     """
     TODO
@@ -1359,114 +1419,133 @@ module ts
         center::Vector2f
         radius::Float32
     end
+    export Circle
 
     ### SHAPE #################################################################
 
     """
     """
     abstract type Shape end
+    export Shape
 
     """
     `set_centroid!(::Shape, ::Vector2f) -> Nothing`
     """
     function set_centroid!(shape::Shape, position::Vector2f) ::Nothing
     end
+    export set_centroid!
 
     """
     `get_centroid(::Shape) -> Vector2f`
     """
     function get_centroid(shape::Shape) ::Vector2f
     end
+    export get_centroid
 
     """
     `move!(::Shape, ::Float32, ::Float32) -> Nothing`
     """
     function move!(shape::Shape) ::Nothing
     end
+    export move!
 
     """
     `set_color!(::Shape, ::RGBA) -> Nothing`
     """
     function set_color!(shape::Shape, color::RGBA) ::Nothing
     end
+    export set_color!
 
     """
     `get_color(::Shape) -> RGBA`
     """
     function get_color(shape::Shape) ::RGBA
     end
+    export get_color
 
     """
     `get_n_vertices(::Shape) -> UInt64`
     """
     function get_n_vertices(shape::Shape) ::UInt64
     end
+    export get_n_vertices
 
     """
     `get_texture(::Shape) -> Ref{Texture}`
     """
     function get_texture(shape::Shape) ::Ref{Texture}
     end
+    export get_texture
 
     """
     `set_texture!(::Shape, ::Texture) -> Nothing`
     """
     function set_texture!(shape::Shape, texture::Texture) ::Nothing
     end
+    export set_texture!
 
     """
     `set_texture_rectangle!(::Shape, ::Rectangle) -> Nothing`
     """
     function set_texture_rectangle!(shape::Shape, rect::Rectangle) ::Nothing
     end
+    export set_texture_rectangle!
 
     """
     `get_texture_rectangle(::Shape) -> Rectangle`
     """
     function get_texture_rectangle(shape::Shape) ::Rectangle
     end
+    export get_texture_rectangle
 
     """
     `get_bounding_box(::Shape) -> Rectangle`
     """
     function get_bounding_box(shape::Shape) ::Rectangle
     end
+    export get_bounding_box
 
     """
     `set_vertex_position!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
     function set_vertex_position!(shape::Shape, index::Integer, position::Vector2f) ::Nothing
     end
+    export set_vertex_position!
 
     """
     `set_vertex_color!(::Shape, ::Integer, ::RGBA) -> Nothing`
     """
-    function set_vertex_position!(shape::Shape, index::Integer, color::RGBA) ::Nothing
+    function set_vertex_color!(shape::Shape, index::Integer, color::RGBA) ::Nothing
     end
+    export set_vertex_color!
 
     """
     `set_vertex_texture_coordinate!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
     function set_vertex_texture_coordinate!(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
     end
+    export set_Vertex_texture_coordinate!
 
     """
     `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
     """
     function get_vertex_position(shape::Shape, index::Integer) ::Vector2f
     end
+    export get_vertex_position
 
     """
     `get_vertex_color(shape::Shape, index::Integer) -> RGBA`
     """
     function get_vertex_color(shape::Shape, index::Integer) ::RGBA
     end
+    export get_vertex_color
 
     """
     `get_vertex_texture_coordinate(shape::Shape, index::Integer) -> Vector2f`
     """
     function get_vertex_texture_coordinate(shape::Shape, index::Integer) ::Vector2f
     end
+    export get_vertex_texture_coordinate
 
     ### TRIANGLE SHAPE ########################################################
 
@@ -1480,6 +1559,7 @@ module ts
         function TriangleShape(a::Vector2f, b::Vector2f, c::Vector2f)
         end
     end
+    export TriangleShape
 
     ### RECTANGLE SHAPE #######################################################
 
@@ -1493,30 +1573,35 @@ module ts
         function RectangleShape(top_left::Vector2f, size::Vector2f)
         end
     end
+    export RectangleShape
 
     """
     `set_top_left!(::RectangleShape, ::Vector2f) -> Nothing`
     """
     function set_top_left!(rect::RectangleShape, position::Vector2f) ::Nothing
     end
+    export set_top_left!
 
     """
     `get_top_left(::RectangleShape) -> Vector2f`
     """
     function get_top_left(rect::RectangleShape) ::Vector2f
     end
+    export get_top_left
 
     """
     `get_size(::RectangleShape) -> Vector2f`
     """
     function get_size(rect::RectangleShape) ::Vector2f
     end
+    export get_size
 
     """
     `set_size!(::RectangleShape, ::Vector2f) -> Nothing`
     """
     function set_size!(rect::RectangleShape, size::Vector2f) ::Nothing
     end
+    export set_size!
 
     ### POLYGON SHAPE #########################################################
 
@@ -1530,4 +1615,5 @@ module ts
         function PolygonShape(positions::Vector2f...)
         end
     end
+    export PolygonShape
 end
