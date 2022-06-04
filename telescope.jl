@@ -1063,6 +1063,79 @@ module ts
     end
     export end_frame
 
+    ### CAMERA ################################################################
+
+    """
+    TODO
+    """
+    struct Camera
+
+        _native_window_id::WindowID
+
+        function Camera(window::Window)
+        end
+    end
+
+    """
+    `center_on(::Camera, ::Vector2f) -> Nothing`
+    """
+    function center_on(camera::Camera, point::Vector2f) ::Nothing
+    end
+
+    """
+    `move(::Camera, ::Float32, Float32) -> Nothing`
+    """
+    function move(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
+    end
+
+    """
+    `zoom_in(::Camera, ::Float32) -> Nothing`
+    """
+    function zoom_in(camera::Camera, factor::Float32) ::Nothing
+    end
+
+    """
+    `zoom_out(::Camera, ::Float32) -> Nothing`
+    """
+    function zoom_out(camera::Camera, factor::Float32) ::Nothing
+    end
+
+    """
+    `set_zoom(::Camera, ::Float32) -> Nothing`
+    """
+    function set_zoom(camera::Camera, factor::Float32) ::Nothing
+    end
+
+    """
+    `rotate(::Camera, ::Angle) -> Nothing`
+    """
+    function rotate(camera::Camera, angle::Angle) ::Nothing
+    end
+
+    """
+    `set_rotation(::Camera, ::Angle) -> Nothing`
+    """
+    function set_rotation(camera::Camera, angle::Angle) ::Nothing
+    end
+
+    """
+    `get_transform(::Camera) -> Transform`
+    """
+    function get_transform(camera::Camera) ::Transform
+    end
+
+    """
+    `get_center(::Camera) -> Vector2f`
+    """
+    function get_center(camera::Camera) ::Vector2f
+    end
+
+    """
+    `get_view_area(::Camera) -> Trapezoid`
+    """
+    function get_view_area(camera::Camera) ::Trapezoid
+    ned
+
     ### TEXTURES ##############################################################
 
     @enum TextureFilteringMode begin
@@ -1085,7 +1158,7 @@ module ts
     """
     TODO
     """
-    abstract type Texture end;
+    abstract type Texture end
     export Texture
 
     const TextureID = UInt64
@@ -1264,6 +1337,17 @@ module ts
 
         top_left::Vector2f
         size::Vector2f
+    end
+
+    """
+    TODO
+    """
+    struct Trapezoid
+
+        top_left::Vector2f
+        top_right::Vector2f
+        bottom_left::Vector2f
+        bottom_right::Vector2f
     end
 
     """
