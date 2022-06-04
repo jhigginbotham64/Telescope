@@ -81,6 +81,7 @@ endif()
 
 ### TELESCOPE ###
 
+set(CMAKE_CXX_STANDARD 17)
 add_library(telescope SHARED
 
     telescope.hpp
@@ -169,7 +170,7 @@ add_library(telescope SHARED
 
     include/c_interface.hpp
     src/c_interface.cpp
-        telescope.hpp)
+)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C

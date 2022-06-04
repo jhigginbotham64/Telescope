@@ -34,7 +34,7 @@
 #include <include/render_texture.hpp>
 #include <include/camera.hpp>
 #include <glm/glm.hpp>
-#include <telescope.h>
+#include <include/c_interface.hpp>
 
 #include <glm/gtx/transform.hpp>
 
@@ -42,7 +42,12 @@ using namespace ts;
 
 int main()
 {
-    ts_initialize();
+    float a = 0;
+    ts_test(&a);
+    std::cout << a << std::endl;
+    return 0;
+
+    initialize();
 
     auto window = ts::Window();
     window.create("", 800, 600, ts::DEFAULT);

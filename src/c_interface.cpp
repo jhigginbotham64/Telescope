@@ -26,9 +26,9 @@
 
 extern "C" {
 
-void ts_test()
+void ts_test(float* x)
 {
-    std::cout << "test" << std::endl;
+    *x = 1234;
 }
 
 // ### TIME ####################################################
@@ -39,29 +39,54 @@ namespace detail
     static inline std::unordered_map<size_t, ts::Clock> _clocks = {};
 }
 
-double ts_minutes(double n)
+double ts_ns_to_minutes(size_t n)
 {
-    return ts::minutes(n).as_milliseconds();
+    return ts::nanoseconds(n).as_minutes();
 }
 
-double ts_seconds(double n)
+double ts_ns_to_seconds(size_t n)
 {
-    return ts::seconds(n).as_milliseconds();
+    return ts::nanoseconds(n).as_seconds();
 }
 
-double ts_milliseconds(double n)
-{
-    return n;
-}
-
-double ts_microseconds(double n)
-{
-    return ts::microseconds(n).as_milliseconds();
-}
-
-double ts_nanoseconds(double n)
+double ts_ns_to_milliseconds(size_t n)
 {
     return ts::nanoseconds(n).as_milliseconds();
+}
+
+double ts_ns_to_microseconds(size_t n)
+{
+    return ts::nanoseconds(n).as_microseconds();
+}
+
+size_t ts_ns_to_nanoseconds(size_t n)
+{
+    return ts::nanoseconds(n).as_nanoseconds();
+}
+
+size_t ts_minutes_to_ns(double n)
+{
+    return ts::minutes(n).as_nanoseconds();
+}
+
+size_t ts_seconds_to_ns(double n)
+{
+    return ts::seconds(n).as_nanoseconds();
+}
+
+size_t ts_milliseconds_to_ns(double n)
+{
+    return ts::milliseconds(n).as_nanoseconds();
+}
+
+size_t ts_microseconds_to_ns(double n)
+{
+    return ts::microseconds(n).as_nanoseconds();
+}
+
+size_t ts_nanoseconds_to_ns(size_t n)
+{
+    return ts::nanoseconds(n).as_nanoseconds();
 }
 
 size_t ts_clock_create()
@@ -76,14 +101,14 @@ void ts_clock_destroy(size_t id)
     detail::_clocks.erase(id);
 }
 
-double ts_clock_elapsed(size_t id)
+size_t ts_clock_elapsed(size_t id)
 {
-    return detail::_clocks.at(id).elapsed().as_milliseconds();
+    return detail::_clocks.at(id).elapsed().as_nanoseconds();
 }
 
-double ts_clock_restart(size_t id)
+size_t ts_clock_restart(size_t id)
 {
-    return detail::_clocks.at(id).restart().as_milliseconds();
+    return detail::_clocks.at(id).restart().as_nanoseconds();
 }
 
 // ### WINDOW ##################################################
@@ -588,24 +613,19 @@ bool ts_mouse_was_released(int64_t button)
     return ts::InputHandler::was_released((ts::MouseButton) button);
 }
 
-float ts_mouse_cursor_position_x()
+void ts_mouse_cursor_position(float* out_x, float* out_y)
 {
-    return ts::InputHandler::get_cursor_position().x;
+    auto pos = ts::InputHandler::get_cursor_position();
+    *out_x = pos.x;
+    *out_y = pos.y;
 }
 
-float ts_mouse_cursor_position_y()
-{
-    return ts::InputHandler::get_cursor_position().y;
-}
 
-float ts_mouse_scrollwheel_x()
+void ts_mouse_scrollwheel(float* out_x, float* out_y)
 {
-    return ts::InputHandler::get_scrollwheel().x;
-}
-
-float ts_mouse_scrollwheel_y()
-{
-    return ts::InputHandler::get_scrollwheel().y;
+    auto pos = ts::InputHandler::get_scrollwheel();
+    *out_x = pos.x;
+    *out_y = pos.y;
 }
 
 bool ts_controller_is_down(int64_t button, size_t controller_id)
@@ -628,24 +648,18 @@ bool ts_controller_was_released(int64_t button, size_t controller_id)
     return ts::InputHandler::was_released((ts::ControllerButton) button, controller_id);
 }
 
-float ts_controller_axis_left_x(size_t controller_id)
+void ts_controller_axis_left(size_t controller_id, float* out_x, float* out_y)
 {
-    return ts::InputHandler::get_controller_axis_left(controller_id).x;
+    auto state = ts::InputHandler::get_controller_axis_left(controller_id);
+    *out_x = state.x;
+    *out_y = state.y;
 }
 
-float ts_controller_axis_left_y(size_t controller_id)
+void ts_controller_axis_right(size_t controller_id, float* out_x, float* out_y)
 {
-    return ts::InputHandler::get_controller_axis_left(controller_id).y;
-}
-
-float ts_controller_axis_right_x(size_t controller_id)
-{
-    return ts::InputHandler::get_controller_axis_right(controller_id).x;
-}
-
-float ts_controller_axis_right_y(size_t controller_id)
-{
-    return ts::InputHandler::get_controller_axis_right(controller_id).y;
+    auto state = ts::InputHandler::get_controller_axis_right(controller_id);
+    *out_x = state.x;
+    *out_y = state.y;
 }
 
 float ts_controller_trigger_left(size_t controller_id)

@@ -5,25 +5,192 @@
 
 module ts
 
+    ### COMMON ################################################################
+
+    const _lib = "./libtelescope.so"
+
+    ### VECTOR ################################################################
+
+    """
+    TODO
+    """
+    struct Vector2{T}
+        x::T
+        y::T
+    end
+    export Vector2
+
+    const Vector2f = Vector2{Float32}
+    const Vector2i = Vector2{Int64}
+    const Vector2ui = Vector2{Csize_t}
+
+    export Vector2f, Vector2i, Vector2ui
+
+    """
+    TODO
+    """
+    struct Vector3{T}
+        x::T
+        y::T
+        z::T
+    end
+    export Vector3
+
+    const Vector3f = Vector3{Float32}
+    const Vector3i = Vector3{Int64}
+    const Vector3ui = Vector3{Csize_t}
+
+    export Vector3f, Vector3i, Vector3ui
+
+    ### TIME #################################################################
+
+    """
+    TODO
+    """
+    struct Time
+        _count_ns::Int64
+    end
+    export Time
+
+    """
+    `as_minutes(::Time) -> Float64`
+    """
+    function as_minutes(time::Time) ::Float64
+        return ccall((:ts_ns_to_minutes, _lib), Cdouble, (Csize_t,), time._count_ns)
+    end
+    export as_minutes
+
+    """
+    `as_seconds(::Time) -> Float64`
+    """
+    function as_seconds(time::Time) ::Float64
+        return ccall((:ts_ns_to_seconds, _lib), Cdouble, (Csize_t,), time._count_ns)
+    end
+    export as_seconds
+
+    """
+    `as_milliseconds(::Time) -> Float64`
+    """
+    function as_milliseconds(time::Time) ::Float64
+        return ccall((:ts_ns_to_milliseconds, _lib), Cdouble, (Csize_t,), time._count_ns)
+    end
+    export as_milliseconds
+
+    """
+    `as_microseconds(::Time) -> Float64`
+    """
+    function as_microseconds(time::Time) ::Float64
+        return ccall((:ts_ns_to_microseconds, _lib), Cdouble, (Csize_t,), time._count_ns)
+    end
+    export as_microseconds
+
+    """
+    `as_nanoseconds(::Time) -> Float64`
+    """
+    function as_nanoseconds(time::Time) ::Float64
+        return ccall((:ts_ns_to_nanoseconds, _lib), Cdouble, (Csize_t,), time._count_ns)
+    end
+    export as_nanoseconds
+
+    """
+    `minutes(::Float64) -> Time`
+    """
+    function minutes(n::Float64) ::Time
+        ns::Csize_t = ccall((:ts_minutes_to_ns, _lib), Csize_t, (Cdouble,), n)
+        return Time(ns)
+    end
+    export minutes
+
+    """
+    `seconds(::Float64) -> Time`
+    """
+    function seconds(n::Float64) ::Time
+        ns::Csize_t = ccall((:ts_seconds_to_ns, _lib), Csize_t, (Cdouble,), n)
+        return Time(ns)
+    end
+    export seconds
+
+    """
+    `milliseconds(::Float64) -> Time`
+    """
+    function milliseconds(n::Float64) ::Time
+        ns::Csize_t = ccall((:ts_milliseconds_to_ns, _lib), Csize_t, (Cdouble,), n)
+        return Time(ns)
+    end
+    export milliseconds
+
+    """
+    `microseconds(::Float64) -> Time`
+    """
+    function microseconds(n::Float64) ::Time
+        ns::Csize_t = ccall((:ts_microseconds_to_ns, _lib), Csize_t, (Cdouble,), n)
+        return Time(ns)
+    end
+    export microseconds
+
+    """
+    `nanoseconds(::UInt64) -> Time`
+    """
+    function nanoseconds(n::UInt64) ::Time
+        ns::Csize_t = ccall((:ts_nanoseconds_to_ns, _lib), Csize_t, (Cdouble,), n)
+        return Time(ns)
+    end
+    export nanoseconds
+
+    """
+    TODO
+    """
+    struct Clock
+        _native_id::UInt64
+
+        function Clock()
+
+            id = ccall((:ts_clock_create, _lib), Csize_t, ())
+            out = new(id)
+            finalizer(out) do x
+                ccall((:ts_clock_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+        end
+    end
+    export Clock
+
+    """
+    `elapsed(::Clock) -> Time`
+    """
+    function elapsed(clock::Clock) ::Time
+        out_ns::Csize_t = ccall((:ts_clock_elapsed, _lib), Cdouble, (Csize_t,), clock._native_id)
+        return nanoseconds(out_ns)
+    end
+
+    """
+    `restart(::Clock) -> Time`
+    """
+    function restart(clock::Clock) ::Time
+        out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Cdouble, (Csize_t,), clock._native_id)
+        return nanoseconds(out_ns)
+    end
+
+    ### INPUT ################################################################
+
     function get_keyboard_key(str::String) ::Int32
-        return ccall((:ts_keyboard_key, "./libtelescope.so"), Int64, (Cstring,), str)
+        return ccall((:ts_keyboard_key, _lib), Int64, (Cstring,), str)
     end
     # no export
 
     function get_mouse_button(str::String) ::Int32
-        return ccall((:ts_mouse_button, "./libtelescope.so"), Int64, (Cstring,), str)
+        return ccall((:ts_mouse_button, _lib), Int64, (Cstring,), str)
     end
     # no export
 
     function get_controller_button(str::String) ::Int32
-        return ccall((:ts_controller_button, "./libtelescope.so"), Int64, (Cstring,), str)
+        return ccall((:ts_controller_button, _lib), Int64, (Cstring,), str)
     end
     # no export
 
-    function export_enum(name::Symbol) ::Nothing
+    function export_enum(enum::Enum) ::Nothing
 
         this_module = @__MODULE__
-        this_module.eval(:(export $name))
+        this_module.eval(:(export $(enum.name)))
 
         for x in instances(this_module.eval(name))
             this_module.eval(:(export $x))
@@ -34,130 +201,402 @@ module ts
     # no export
 
     """
+    TODO
     """
     @enum KeyboardKey begin
     
-        KEY_UNKNOWN = get_mouse_button("KEY_UNKNOWN")
+        KEY_UNKNOWN = get_keyboard_key("KEY_UNKNOWN")
 
-        NUM_0 = get_mouse_button("NUM_0")
-        NUM_1 = get_mouse_button("NUM_1")
-        NUM_2 = get_mouse_button("NUM_2")
-        NUM_3 = get_mouse_button("NUM_3")
-        NUM_4 = get_mouse_button("NUM_4")
-        NUM_5 = get_mouse_button("NUM_5")
-        NUM_6 = get_mouse_button("NUM_6")
-        NUM_7 = get_mouse_button("NUM_7")
-        NUM_8 = get_mouse_button("NUM_8")
-        NUM_9 = get_mouse_button("NUM_9")
+        NUM_0 = get_keyboard_key("NUM_0")
+        NUM_1 = get_keyboard_key("NUM_1")
+        NUM_2 = get_keyboard_key("NUM_2")
+        NUM_3 = get_keyboard_key("NUM_3")
+        NUM_4 = get_keyboard_key("NUM_4")
+        NUM_5 = get_keyboard_key("NUM_5")
+        NUM_6 = get_keyboard_key("NUM_6")
+        NUM_7 = get_keyboard_key("NUM_7")
+        NUM_8 = get_keyboard_key("NUM_8")
+        NUM_9 = get_keyboard_key("NUM_9")
 
-        A = get_mouse_button("A")
-        B = get_mouse_button("B")
-        C = get_mouse_button("C")
-        D = get_mouse_button("D")
-        E = get_mouse_button("E")
-        F = get_mouse_button("F")
-        G = get_mouse_button("G")
-        H = get_mouse_button("H")
-        I = get_mouse_button("I")
-        J = get_mouse_button("J")
-        K = get_mouse_button("K")
-        L = get_mouse_button("L")
-        M = get_mouse_button("M")
-        N = get_mouse_button("N")
-        O = get_mouse_button("O")
-        P = get_mouse_button("P")
-        Q = get_mouse_button("Q")
-        R = get_mouse_button("R")
-        S = get_mouse_button("S")
-        T = get_mouse_button("T")
-        U = get_mouse_button("U")
-        V = get_mouse_button("V")
-        W = get_mouse_button("W")
-        X = get_mouse_button("X")
-        Y = get_mouse_button("Y")
-        Z = get_mouse_button("Z")
+        A = get_keyboard_key("A")
+        B = get_keyboard_key("B")
+        C = get_keyboard_key("C")
+        D = get_keyboard_key("D")
+        E = get_keyboard_key("E")
+        F = get_keyboard_key("F")
+        G = get_keyboard_key("G")
+        H = get_keyboard_key("H")
+        I = get_keyboard_key("I")
+        J = get_keyboard_key("J")
+        K = get_keyboard_key("K")
+        L = get_keyboard_key("L")
+        M = get_keyboard_key("M")
+        N = get_keyboard_key("N")
+        O = get_keyboard_key("O")
+        P = get_keyboard_key("P")
+        Q = get_keyboard_key("Q")
+        R = get_keyboard_key("R")
+        S = get_keyboard_key("S")
+        T = get_keyboard_key("T")
+        U = get_keyboard_key("U")
+        V = get_keyboard_key("V")
+        W = get_keyboard_key("W")
+        X = get_keyboard_key("X")
+        Y = get_keyboard_key("Y")
+        Z = get_keyboard_key("Z")
 
-        ALT = get_mouse_button("ALT")
-        RIGHT_ALT = get_mouse_button("RIGHT_ALT")
+        ALT = get_keyboard_key("ALT")
+        RIGHT_ALT = get_keyboard_key("RIGHT_ALT")
 
-        CTRL = get_mouse_button("CTRL")
-        RIGHT_CTRL = get_mouse_button("RIGHT_CTRL")
-        CAPS = get_mouse_button("CAPS")
+        CTRL = get_keyboard_key("CTRL")
+        RIGHT_CTRL = get_keyboard_key("RIGHT_CTRL")
+        CAPS = get_keyboard_key("CAPS")
 
-        SHIFT = get_mouse_button("SHIFT")
-        RIGHT_SHIFT = get_mouse_button("RIGHT_SHIFT")
+        SHIFT = get_keyboard_key("SHIFT")
+        RIGHT_SHIFT = get_keyboard_key("RIGHT_SHIFT")
 
-        BRACKET_LEFT = get_mouse_button("BRACKET_LEFT")
-        BRACKET_RIGHT = get_mouse_button("BRACKET_RIGHT")
+        BRACKET_LEFT = get_keyboard_key("BRACKET_LEFT")
+        BRACKET_RIGHT = get_keyboard_key("BRACKET_RIGHT")
 
-        SLASH = get_mouse_button("SLASH")
-        BACKSLASH = get_mouse_button("BACKSLASH")
+        SLASH = get_keyboard_key("SLASH")
+        BACKSLASH = get_keyboard_key("BACKSLASH")
 
-        UP = get_mouse_button("UP")
-        DOWN = get_mouse_button("DOWN")
-        LEFT = get_mouse_button("LEFT")
-        RIGHT = get_mouse_button("RIGHT")
+        UP = get_keyboard_key("UP")
+        DOWN = get_keyboard_key("DOWN")
+        LEFT = get_keyboard_key("LEFT")
+        RIGHT = get_keyboard_key("RIGHT")
 
-        RETURN = get_mouse_button("RETURN")
-        ESCAPE = get_mouse_button("ESCAPE")
-        BACKSPACE = get_mouse_button("BACKSPACE")
-        TAB = get_mouse_button("TAB")
-        SPACE = get_mouse_button("SPACE")
+        RETURN = get_keyboard_key("RETURN")
+        ESCAPE = get_keyboard_key("ESCAPE")
+        BACKSPACE = get_keyboard_key("BACKSPACE")
+        TAB = get_keyboard_key("TAB")
+        SPACE = get_keyboard_key("SPACE")
 
-        HASH = get_mouse_button("HASH")
-        PERCENT = get_mouse_button("PERCENT")
-        DOLLAR = get_mouse_button("DOLLAR")
-        AND = get_mouse_button("AND")
-        QUOTE = get_mouse_button("QUOTE")
+        HASH = get_keyboard_key("HASH")
+        PERCENT = get_keyboard_key("PERCENT")
+        DOLLAR = get_keyboard_key("DOLLAR")
+        AND = get_keyboard_key("AND")
+        QUOTE = get_keyboard_key("QUOTE")
 
-        LEFT_PARENTHESIS = get_mouse_button("LEFT_PARENTHESIS")
-        RIGHT_PARENTHESIS= get_mouse_button("RIGHT_PARENTHESIS")
+        LEFT_PARENTHESIS = get_keyboard_key("LEFT_PARENTHESIS")
+        RIGHT_PARENTHESIS= get_keyboard_key("RIGHT_PARENTHESIS")
 
-        ASTERISK = get_mouse_button("ASTERISK")
-        PLUS = get_mouse_button("PLUS")
-        MINUS = get_mouse_button("MINUS")
-        UNDERSCORE = get_mouse_button("UNDERSCORE")
+        ASTERISK = get_keyboard_key("ASTERISK")
+        PLUS = get_keyboard_key("PLUS")
+        MINUS = get_keyboard_key("MINUS")
+        UNDERSCORE = get_keyboard_key("UNDERSCORE")
 
-        COMMA = get_mouse_button("COMMA")
-        PERIOD = get_mouse_button("PERIOD")
-        SEMICOLON = get_mouse_button("SEMICOLON")
-        COLON = get_mouse_button("COLON")
+        COMMA = get_keyboard_key("COMMA")
+        PERIOD = get_keyboard_key("PERIOD")
+        SEMICOLON = get_keyboard_key("SEMICOLON")
+        COLON = get_keyboard_key("COLON")
 
-        LESS_THAN = get_mouse_button("LESS_THAN")
-        GREATER_THAN = get_mouse_button("GREATER_THAN")
+        LESS_THAN = get_keyboard_key("LESS_THAN")
+        GREATER_THAN = get_keyboard_key("GREATER_THAN")
 
-        EQUALS = get_mouse_button("EQUALS")
-        CIRCUMFLEX = get_mouse_button("CIRCUMFLEX")
+        EQUALS = get_keyboard_key("EQUALS")
+        CIRCUMFLEX = get_keyboard_key("CIRCUMFLEX")
 
-        EXCLAMATION_MARK = get_mouse_button("EXCLAMATION_MARK")
-        QUESTION_MARK = get_mouse_button("QUESTION_MARK")
+        EXCLAMATION_MARK = get_keyboard_key("EXCLAMATION_MARK")
+        QUESTION_MARK = get_keyboard_key("QUESTION_MARK")
 
-        F1 = get_mouse_button("F1")
-        F2 = get_mouse_button("F2")
-        F3 = get_mouse_button("F3")
-        F4 = get_mouse_button("F4")
-        F5 = get_mouse_button("F5")
-        F6 = get_mouse_button("F6")
-        F7 = get_mouse_button("F7")
-        F8 = get_mouse_button("F8")
-        F9 = get_mouse_button("F9")
-        F10 = get_mouse_button("F10")
-        F11 = get_mouse_button("F11")
-        F12 = get_mouse_button("F12")
+        F1 = get_keyboard_key("F1")
+        F2 = get_keyboard_key("F2")
+        F3 = get_keyboard_key("F3")
+        F4 = get_keyboard_key("F4")
+        F5 = get_keyboard_key("F5")
+        F6 = get_keyboard_key("F6")
+        F7 = get_keyboard_key("F7")
+        F8 = get_keyboard_key("F8")
+        F9 = get_keyboard_key("F9")
+        F10 = get_keyboard_key("F10")
+        F11 = get_keyboard_key("F11")
+        F12 = get_keyboard_key("F12")
 
-        AUDIO_MUTE = get_mouse_button("AUDIO_MUTE")
-        AUDIO_STOP = get_mouse_button("AUDIO_STOP")
-        AUDIO_PLAY = get_mouse_button("AUDIO_PLAY")
-        AUDIO_NEXT = get_mouse_button("AUDIO_NEXT")
-        AUDIO_PREV = get_mouse_button("AUDIO_PREV")
-        VOLUME_UP = get_mouse_button("VOLUME_UP")
-        VOLUME_DOWN = get_mouse_button("VOLUME_DOWN")
+        AUDIO_MUTE = get_keyboard_key("AUDIO_MUTE")
+        AUDIO_STOP = get_keyboard_key("AUDIO_STOP")
+        AUDIO_PLAY = get_keyboard_key("AUDIO_PLAY")
+        AUDIO_NEXT = get_keyboard_key("AUDIO_NEXT")
+        AUDIO_PREV = get_keyboard_key("AUDIO_PREV")
+        VOLUME_UP = get_keyboard_key("VOLUME_UP")
+        VOLUME_DOWN = get_keyboard_key("VOLUME_DOWN")
 
-        INSERT = get_mouse_button("INSERT")
-        PRINTSCREEN = get_mouse_button("PRINTSCREEN")
-        DELETE = get_mouse_button("DELETE")
+        INSERT = get_keyboard_key("INSERT")
+        PRINTSCREEN = get_keyboard_key("PRINTSCREEN")
+        DELETE = get_keyboard_key("DELETE")
     end
-    export_enum(:KeyboardKey)
+    export_enum(KeyboardKey)
+
+    """
+    TODO
+    """
+    @enum MouseButton begin
+    
+        MOUSE_LEFT = get_mouse_button("MOUSE_LEFT")
+        MOUSE_RIGHT = get_mouse_button("MOUSE_RIGHT")
+        MOUSE_MIDDLE = get_mouse_button("MOUSE_MIDDLE")
+
+        MOUSE_X1 = get_mouse_button("MOUSE_X1")
+        MOUSE_X2 = get_mouse_button("MOUSE_X2")
+    end
+    export_enum(MouseButton)
+
+    """
+    TODO
+    """
+    @enum ControllerButton begin
+
+        CONTROLLER_BUTTON_UNKNOWN = get_controller_button("CONTROLLER_BUTTON_UNKNOWN")
+
+        CONTROLLER_BUTTON_A = get_controller_button("CONTROLLER_BUTTON_A")
+        CONTROLLER_BUTTON_B = get_controller_button("CONTROLLER_BUTTON_B")
+        CONTROLLER_BUTTON_X = get_controller_button("CONTROLLER_BUTTON_X")
+        CONTROLLER_BUTTON_Y = get_controller_button("CONTROLLER_BUTTON_Y")
+
+        CONTROLLER_LEFTSTICK_PRESS = get_controller_button("CONTROLLER_LEFTSTICK_PRESS")
+        CONTROLLER_RIGHTSTICK_PRESS = get_controller_button("CONTROLLER_RIGHTSTICK_PRESS")
+        CONTROLLER_LEFTSHOULDER = get_controller_button("CONTROLLER_LEFTSHOULDER")
+        CONTROLLER_RIGHTSHOULDER = get_controller_button("CONTROLLER_RIGHTSHOULDER")
+
+        CONTROLLER_DPAD_UP = get_controller_button("CONTROLLER_DPAD_UP")
+        CONTROLLER_DPAD_DOWN = get_controller_button("CONTROLLER_DPAD_DOWN")
+        CONTROLLER_DPAD_LEFT = get_controller_button("CONTROLLER_DPAD_LEFT")
+        CONTROLLER_DPAD_RIGHT = get_controller_button("CONTROLLER_DPAD_RIGHT")
+
+        CONTROLLER_SELECT = get_controller_button("CONTROLLER_SELECT")
+        CONTROLLER_START = get_controller_button("CONTROLLER_START")
+
+        CONTROLLER_GUIDE = get_controller_button("CONTROLLER_GUIDE")
+        CONTROLLER_MAX = get_controller_button("CONTROLLER_MAX")
+
+        CONTROLLER_XBOX_X_SHARE = get_controller_button("CONTROLLER_XBOX_X_SHARE")
+        CONTROLLER_PS5_MIC = get_controller_button("CONTROLLER_PS5_MIC")
+        CONTROLLER_SWITCH_CAPTURE = get_controller_button("CONTROLLER_SWITCH_CAPTURE")
+
+        CONTROLLER_PADDLE_01 = get_controller_button("CONTROLLER_PADDLE_01")
+        CONTROLLER_PADDLE_02 = get_controller_button("CONTROLLER_PADDLE_02")
+        CONTROLLER_PADDLE_03 = get_controller_button("CONTROLLER_PADDLE_03")
+        CONTROLLER_PADDLE_04 = get_controller_button("CONTROLLER_PADDLE_04")
+
+        CONTROLLER_PS5_TOUCHPAD = get_controller_button("CONTROLLER_PS5_TOUCHPAD")
+    end
+    export_enum(ControllerButton)
+
+    """
+    InputHandler: query the global state of the keyboard, mouse and any controller
+    """
+    module InputHandler
+
+        import Main.ts; using Main.ts
+        
+        ### KEYBOARD #########################################################
+
+        """
+        `is_down(::KeyboardKey) -> Bool`
+        """
+        function is_down(key::KeyboardKey) ::Bool
+            return ccall((:ts_keyboard_is_down, _lib), Bool, (Int64,), key)
+        end
+        export is_down
+        
+         """
+        `has_state_changed(::KeyboardKey) -> Bool`
+        """
+        function has_state_changed(key::KeyboardKey) ::Bool
+            return ccall((:ts_keyboard_has_state_changed, _lib), Bool, (Int64,), key)
+        end
+        export has_state_changed
+        
+        """
+        `was_pressed(::KeyboardKey) -> Bool`
+        """
+        function was_pressed(key::KeyboardKey) ::Bool
+            return ccall((:ts_keyboard_was_pressed, _lib), Bool, (Int64,), key)
+        end
+        export was_pressed
+        
+        """
+        `was_released(::KeyboardKey) -> Bool`
+        """
+        function was_released(key::KeyboardKey) ::Bool
+            return ccall((:ts_keyboard_was_released, _lib), Bool, (Int64,), key)
+        end
+        export was_released
+        
+        ### MOUSE ############################################################
+
+        """
+        `is_down(::MouseButton) -> Bool`
+        """
+        function is_down(key::MouseButton) ::Bool
+            return ccall((:ts_mouse_is_down, _lib), Bool, (Int64,), key)
+        end
+        export is_down
+        
+        """
+        `has_state_changed(::MouseButton) -> Bool`
+        """
+        function has_state_changed(key::MouseButton) ::Bool
+            return ccall((:ts_mouse_has_state_changed, _lib), Bool, (Int64,), key)
+        end
+        export has_state_changed
+        
+        """
+        `was_pressed(::MouseButton) -> Bool`
+        """
+        function was_pressed(key::MouseButton) ::Bool
+            return ccall((:ts_mouse_was_pressed, _lib), Bool, (Int64,), key)
+        end
+        export was_pressed
+        
+        """
+        `was_released(::MouseButton) -> Bool`
+        """
+        function was_released(key::MouseButton) ::Bool
+            return ccall((:ts_mouse_was_released, _lib), Bool, (Int64,), key)
+        end
+        export was_released
+        
+        """
+        `get_cursor_position() -> ts.Vector2f`
+        """
+        function get_cursor_position() ::Vector2f
+
+            x = Ref{Cfloat}(0)
+            y = Ref{Cfloat}(0)
+            ccall((:ts_mouse_cursor_position, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
+            return Vector2f(x, y)
+        end
+        export get_cursor_position
+
+        """
+        `get_scrollwheel() -> ts.Vector2f`
+        """
+        function get_scrollwheel() ::Vector2f
+
+            x = Ref{Cfloat}(0)
+            y = Ref{Cfloat}(0)
+            ccall((:ts_mouse_scrollwheel, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
+            return Vector2f(x, y)
+        end
+        export get_scrollwheel
+        
+        ### CONTROLLER #######################################################
+
+        const ControllerID = Csize_t
+        export ControllerID
+
+        """
+        `is_down(::ControllerButton, [::ControllerID]) -> Bool`
+        """
+        function is_down(key::ControllerButton, id::ControllerID = 0) ::Bool
+            return ccall((:ts_controller_is_down, _lib), Bool, (Int64, Csize_t), key, id)
+        end
+        export is_down
+
+        """
+        `has_state_changed(::ControllerButton, [::ControllerID]) -> Bool`
+        """
+        function has_state_changed(key::ControllerButton, id::ControllerID = 0) ::Bool
+            return ccall((:ts_controller_has_state_changed, _lib), Bool, (Int64, Csize_t), key, id)
+        end
+        export has_state_changed
+
+        """
+        `was_pressed(::ControllerButton, [::ControllerID]) -> Bool`
+        """
+        function was_pressed(key::ControllerButton, id::ControllerID = 0) ::Bool
+            return ccall((:ts_controller_was_pressed, _lib), Bool, (Int64, Csize_t), key, id)
+        end
+        export was_pressed
+        
+        """
+        `was_released(::ControllerButton, [::ControllerID]) -> Bool`
+        """
+        function was_released(key::ControllerButton, id::ControllerID = 0) ::Bool
+            return ccall((:ts_controller_was_released, _lib), Bool, (Int64, Csize_t), key, id)
+        end
+        export was_released
+
+        """
+        `get_controller_axis_left([::ControllerID]) -> ts.Vector2f`
+        """
+        function get_controller_axis_left(id::ControllerID = 0) ::Vector2f
+
+            x = Ref{Cfloat}(0)
+            y = Ref{Cfloat}(0)
+            ccall((:ts_controller_axis_left, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
+            return Vector2f(x, y)
+
+        end
+        export get_controller_axis_left
+
+        """
+        `get_controller_axis_right([::ControllerID]) -> ts.Vector2f`
+        """
+        function get_controller_axis_right(id::ControllerID = 0) ::Vector2f
+
+            x = Ref{Cfloat}(0)
+            y = Ref{Cfloat}(0)
+            ccall((:ts_controller_axis_right, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
+            return Vector2f(x, y)
+
+        end
+        export get_controller_axis_right
+
+        """
+        `get_controller_trigger_left([::ControllerID]) -> Float32`
+        """
+        function get_controller_trigger_left(id::ControllerID = 0) ::Float32
+            return ccall((:ts_controller_trigger_left, _lib), Cfloat, (Csize_t,), id)
+        end
+        export get_controller_trigger_left
+
+        """
+        `get_controller_trigger_right([::ControllerID]) -> Float32`
+        """
+        function get_controller_trigger_right(id::ControllerID = 0) ::Float32
+            return ccall((:ts_controller_trigger_left, _lib), Cfloat, (Csize_t,), id)
+        end
+        export get_controller_trigger_left
+    end
+
+    ### SOUND ################################################################
+
+    """
+    TODO
+    """
+    struct Sound
+
+        _native_id::Csize_t
+
+        function Sound(path::String, volume_modifier::Cfloat = 1)
+
+            id = ccall((:ts_sound_load, _lib), Csize_t, (Cstring, Cfloat), path, volume_modifier)
+            out = new(id)
+            finalizer(out) do x
+                call((:ts_sound_unload, _lib), Cvoid, (Csize_t), x._native_id)
+            end
+            return out
+        end
+    end
+    export Sound
+
+    const ChannelID = Csize_t;
+
+    """
+    TODO
+    """
+    module SoundHandler
+
+        import Main.ts; using Main.ts
+
+        """
+        `play(::Sound) -> nothing`
+        """
+        function play(sound::Sound, channel::ChannelID, n_loops::Integer, ) ::Nothing
+        end
+    end
 
 
 

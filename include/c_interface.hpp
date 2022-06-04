@@ -14,17 +14,30 @@ extern "C"
 #include <stddef.h>
 #include <stdbool.h>
 
+// TODO
+void ts_test(float*);
+
 // ### TIME ####################################################
 
-double ts_minutes(double n);
+double ts_ns_to_minutes(size_t n);
 
-double ts_seconds(double n);
+double ts_ns_to_seconds(size_t n);
 
-double ts_milliseconds(double n);
+double ts_ns_to_milliseconds(size_t n);
 
-double ts_microseconds(double n);
+double ts_ns_to_microseconds(size_t n);
 
-double ts_nanoseconds(double n);
+size_t ts_ns_to_nanoseconds(size_t n);
+
+size_t ts_minutes_to_ns(double n);
+
+size_t ts_seconds_to_ns(double n);
+
+size_t ts_milliseconds_to_ns(double n);
+
+size_t ts_microseconds_to_ns(double n);
+
+size_t ts_nanoseconds_to_ns(size_t n);
 
 size_t ts_clock_create();
 
@@ -219,13 +232,9 @@ bool ts_mouse_was_pressed(int64_t button);
 
 bool ts_mouse_was_released(int64_t button);
 
-float ts_mouse_cursor_position_x();
+void ts_mouse_cursor_position(float*, float*);
 
-float ts_mouse_cursor_position_y();
-
-float ts_mouse_scrollwheel_x();
-
-float ts_mouse_scrollwheel_y();
+void ts_mouse_scrollwheel(float*, float*);
 
 bool ts_controller_is_down(int64_t button, size_t controller_id);
 
@@ -235,13 +244,9 @@ bool ts_controller_was_pressed(int64_t button, size_t controller_id);
 
 bool ts_controller_was_released(int64_t button, size_t controller_id);
 
-float ts_controller_axis_left_x(size_t controller_id);
+float ts_controller_axis_left(size_t controller_id, float*, float*);
 
-float ts_controller_axis_left_y(size_t controller_id);
-
-float ts_controller_axis_right_x(size_t controller_id);
-
-float ts_controller_axis_right_y(size_t controller_id);
+float ts_controller_axis_right(size_t controller_id, float*, float*);
 
 float ts_controller_trigger_left(size_t controller_id);
 
