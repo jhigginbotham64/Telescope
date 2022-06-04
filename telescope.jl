@@ -206,6 +206,7 @@ module ts
     TODO
     """
     struct Clock
+
         _native_id::UInt64
 
         function Clock()
@@ -228,9 +229,9 @@ module ts
     end
 
     """
-    `restart(::Clock) -> Time`
+    `restart!(::Clock) -> Time`
     """
-    function restart(clock::Clock) ::Time
+    function restart!(clock::Clock) ::Time
         out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Cdouble, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
     end
@@ -693,37 +694,37 @@ module ts
         export n_channels
 
         """
-        `play(::ChannelID, ::Sound, ::Integer, ::Time) -> Nothing`
+        `play!(::ChannelID, ::Sound, ::Integer, ::Time) -> Nothing`
         """
-        function play(channel::ChannelID, sound::Sound, n_loops::Integer, fade_in_duration::Time) ::Nothing
+        function play!(channel::ChannelID, sound::Sound, n_loops::Integer, fade_in_duration::Time) ::Nothing
         end
         export play
         
         """
-        `stop(::ChannelID, ::Time) -> Nothing`
+        `stop!(::ChannelID, ::Time) -> Nothing`
         """
-        function stop(channel::ChannelID, fade_out_duration::Time) ::Nothing
+        function stop!(channel::ChannelID, fade_out_duration::Time) ::Nothing
         end
         export stop
         
         """
-        `pause(::ChannelID) -> Nothing`
+        `pause!(::ChannelID) -> Nothing`
         """
-        function pause(channel::ChannelID) ::Nothing
+        function pause!(channel::ChannelID) ::Nothing
         end
         export pause
         
         """
-        `unpause(::ChannelID) -> Nothing`
+        `unpause!(::ChannelID) -> Nothing`
         """
-        function unpause(channel::ChannelID) ::Nothing
+        function unpause!(channel::ChannelID) ::Nothing
         end
         export unpause
 
         """
-        `force_stop(::ChannelID) -> Nothing`
+        `force_stop!(::ChannelID) -> Nothing`
         """
-        function force_stop(channel::ChannelID) ::Nothing
+        function force_stop!(channel::ChannelID) ::Nothing
         end
         export force_stop
 
@@ -749,9 +750,9 @@ module ts
         export is_stopped
 
         """
-        `set_volume(::ChannelID, ::Float32) -> Nothing`
+        `set_volume!(::ChannelID, ::Float32) -> Nothing`
         """
-        function set_volume(channel::ChannelID, zero_to_one::Float32) ::Nothing
+        function set_volume!(channel::ChannelID, zero_to_one::Float32) ::Nothing
         end
         export set_volume
 
@@ -763,9 +764,9 @@ module ts
         export get_volume
 
         """
-        `set_panning(::ChannelID, ::Angle) -> Nothing`
+        `set_panning!(::ChannelID, ::Angle) -> Nothing`
         """
-        function set_panning(channel::ChannelID, angle::Angle) ::Nothing
+        function set_panning!(channel::ChannelID, angle::Angle) ::Nothing
         end
         export set_panning
 
@@ -808,9 +809,9 @@ module ts
         export sample_rate
 
         """
-        `set_volume(::Float32) -> Nothing`
+        `set_volume!(::Float32) -> Nothing`
         """
-        function set_volume(zero_to_one::Float32) ::Nothing
+        function set_volume!(zero_to_one::Float32) ::Nothing
         end
         export set_volume
 
@@ -822,65 +823,65 @@ module ts
         export get_volume
 
         """
-        `play(::Music, ::Bool, ::Time) -> Nothing`
+        `play!(::Music, ::Bool, ::Time) -> Nothing`
         """
-        function play(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+        function play!(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
         end
         export play
 
         """
-        `play_next(::Music, ::Bool, ::Time) -> Nothing
+        `play_next!(::Music, ::Bool, ::Time) -> Nothing
         """
-        function play_next(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+        function play_next!(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
         end
         export play_next
 
         """
-        `stop(::Time) -> Nothing`
+        `stop!(::Time) -> Nothing`
         """
-        function stop(fade_out_duration::Time) ::Nothing
+        function stop!(fade_out_duration::Time) ::Nothing
         end
         export stop
 
         """
-        `next(::Time) -> Nothing`
+        `next!(::Time) -> Nothing`
         """
-        function next(fade_out_duration::Time) ::Nothing
+        function next!(fade_out_duration::Time) ::Nothing
         end
         export next
 
         """
-        `clear_next() -> Nothing`
+        `clear_next!() -> Nothing`
         """
-        function clear_next() ::Nothing
+        function clear_next!() ::Nothing
         end
         export clear_next
 
         """
-        `force_stop() -> Nothing`
+        `force_stop!() -> Nothing`
         """
-        function force_stop() ::Nothing
+        function force_stop!() ::Nothing
         end
         export force_stop
 
         """
-        `pause() -> Nothing`
+        `pause!() -> Nothing`
         """
-        function pause() ::Nothing
+        function pause!() ::Nothing
         end
         export pause
 
         """
-        `unpause() -> Nothing`
+        `unpause!() -> Nothing`
         """
-        function unpause() ::Nothing
+        function unpause!() ::Nothing
         end
         export unpause
 
         """
-        `skip_to(::Time) -> Nothing`
+        `skip_to!(::Time) -> Nothing`
         """
-        function skip_to(timestamp::Time) ::Nothing
+        function skip_to!(timestamp::Time) ::Nothing
         end
         export skip_to
 
@@ -938,9 +939,9 @@ module ts
     export Window
 
     """
-    `close(::Window) -> Nothing`
+    `close!(::Window) -> Nothing`
     """
-    function close(window::Window) ::Nothing
+    function close!(window::Window) ::Nothing
     end
     export close
 
@@ -966,9 +967,9 @@ module ts
     export get_position
 
     """
-    `set_hidden(::Window, ::Bool) -> Nothing
+    `set_hidden!(::Window, ::Bool) -> Nothing
     """
-    function set_hidden(window::Window, hidden::Bool) ::Nothing
+    function set_hidden!(window::Window, hidden::Bool) ::Nothing
     end
     export set_hidden
 
@@ -980,9 +981,9 @@ module ts
     export is_hidden
 
     """
-    `minimize(::Window) -> Nothing`
+    `minimize!(::Window) -> Nothing`
     """
-    function minimize(window::Window) ::Nothing
+    function minimize!(window::Window) ::Nothing
     end
     export minimize
 
@@ -994,9 +995,9 @@ module ts
     export is_minimizedd
 
     """
-    `maximize(::Window) -> Nothing`
+    `maximize!(::Window) -> Nothing`
     """
-    function maximize(window::Window) ::Nothing
+    function maximize!(window::Window) ::Nothing
     end
     export maximize
 
@@ -1022,44 +1023,44 @@ module ts
     export has_mouse_focus
 
     """
-    `clear(::Window) -> Nothing`
+    `clear!(::Window) -> Nothing`
     """
-    function clear(window::Window) ::Nothing
+    function clear!(window::Window) ::Nothing
     end
     export clear
 
     """
-    `render(::Window, ::AbstractShape, ::Transform) ::Nothing`
+    `render!(::Window, ::AbstractShape, ::Transform) ::Nothing`
     """
-    function render(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: AbstractShape
+    function render!(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: AbstractShape
     end
     export render
 
     """
-    `flush(::Window) -> Nothing`
+    `flush!(::Window) -> Nothing`
     """
-    function flush(window::Window) ::Nothing
+    function flush!(window::Window) ::Nothing
     end
     export flush
 
     """
-    `set_framerate_limit(::Integer) -> Nothing`
+    `set_framerate_limit!(::Integer) -> Nothing`
     """
-    function set_framerate_limit(n_fps::Integer) ::Nothing
+    function set_framerate_limit!(n_fps::Integer) ::Nothing
     end
     export set_framerate_limit
 
     """
-    `start_frame(::Window) -> Nothing`
+    `start_frame!(::Window) -> Nothing`
     """
-    function start_frame(window::Window) ::Nothing
+    function start_frame!(window::Window) ::Nothing
     end
     export start_frame
 
     """
-    `end_frame(::Window) -> Nothing`
+    `end_frame!(::Window) -> Nothing`
     """
-    function end_frame(window::Window) ::Nothing
+    function end_frame!(window::Window) ::Nothing
     end
     export end_frame
 
@@ -1077,45 +1078,45 @@ module ts
     end
 
     """
-    `center_on(::Camera, ::Vector2f) -> Nothing`
+    `center_on!(::Camera, ::Vector2f) -> Nothing`
     """
-    function center_on(camera::Camera, point::Vector2f) ::Nothing
+    function center_on!(camera::Camera, point::Vector2f) ::Nothing
     end
 
     """
-    `move(::Camera, ::Float32, Float32) -> Nothing`
+    `move!(::Camera, ::Float32, Float32) -> Nothing`
     """
-    function move(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
+    function move!(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
     end
 
     """
-    `zoom_in(::Camera, ::Float32) -> Nothing`
+    `zoom_in!(::Camera, ::Float32) -> Nothing`
     """
-    function zoom_in(camera::Camera, factor::Float32) ::Nothing
+    function zoom_in!(camera::Camera, factor::Float32) ::Nothing
     end
 
     """
-    `zoom_out(::Camera, ::Float32) -> Nothing`
+    `zoom_out!(::Camera, ::Float32) -> Nothing`
     """
-    function zoom_out(camera::Camera, factor::Float32) ::Nothing
+    function zoom_out!(camera::Camera, factor::Float32) ::Nothing
     end
 
     """
-    `set_zoom(::Camera, ::Float32) -> Nothing`
+    `set_zoom!(::Camera, ::Float32) -> Nothing`
     """
-    function set_zoom(camera::Camera, factor::Float32) ::Nothing
+    function set_zoom!(camera::Camera, factor::Float32) ::Nothing
     end
 
     """
-    `rotate(::Camera, ::Angle) -> Nothing`
+    `rotate!(::Camera, ::Angle) -> Nothing`
     """
-    function rotate(camera::Camera, angle::Angle) ::Nothing
+    function rotate!(camera::Camera, angle::Angle) ::Nothing
     end
 
     """
-    `set_rotation(::Camera, ::Angle) -> Nothing`
+    `set_rotation!(::Camera, ::Angle) -> Nothing`
     """
-    function set_rotation(camera::Camera, angle::Angle) ::Nothing
+    function set_rotation!(camera::Camera, angle::Angle) ::Nothing
     end
 
     """
@@ -1217,15 +1218,15 @@ module ts
     end
 
     """
-    `unload(::Texture) -> Nothing`
+    `unload!(::Texture) -> Nothing`
     """
-    function unload(texture::Texture) ::Nothing
+    function unload!(texture::Texture) ::Nothing
     end
     
     """
-    `set_color(::Texture) -> Nothing`
+    `set_color!(::Texture) -> Nothing`
     """
-    function set_color(texture::Texture) ::Nothing
+    function set_color!(texture::Texture) ::Nothing
     end
     
     """
@@ -1235,9 +1236,9 @@ module ts
     end
     
     """
-    `set_blend_mode(::Texture, ::TextureBlendMode) -> RGBA`
+    `set_blend_mode!(::Texture, ::TextureBlendMode) -> RGBA`
     """
-    function set_blend_mode(texture::Texture, mode::TextureBlendMode) ::Nothing
+    function set_blend_mode!(texture::Texture, mode::TextureBlendMode) ::Nothing
     end
 
     """
@@ -1247,9 +1248,9 @@ module ts
     end
 
     """
-    `set_filtering_mode(::Texture, ::TextureFilteringMode) -> Nothing`
+    `set_filtering_mode!(::Texture, ::TextureFilteringMode) -> Nothing`
     """
-    function set_filtering_mode(texture::Texture, mode::TextureFilteringMode) ::Nothing
+    function set_filtering_mode!(texture::Texture, mode::TextureFilteringMode) ::Nothing
     end
 
     """
@@ -1277,45 +1278,45 @@ module ts
     end
 
     """
-    `reset(::Transform) -> Nothing`
+    `reset!(::Transform) -> Nothing`
     """
-    function reset(transform::Transform) ::Nothing
+    function reset!(transform::Transform) ::Nothing
     end
 
     """
-    `combine(::Transform, ::Transform) -> Nothing`
+    `combine!(::Transform, ::Transform) -> Nothing`
     """
-    function combine(left::Transform, right::Transform) ::Nothing
+    function combine!(left::Transform, right::Transform) ::Nothing
     end
 
     """
-    `translate(::Transform, ::Float32, ::Float32) -> Nothing`
+    `translate!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
-    function translate(transform::Transform, x::Float32, y::Float32) ::Nothing
+    function translate!(transform::Transform, x::Float32, y::Float32) ::Nothing
     end
 
     """
-    `rotate(::Transform, ::Angle, ::Vector2f) -> Nothing`
+    `rotate!(::Transform, ::Angle, ::Vector2f) -> Nothing`
     """
-    function rotate(transform::Transform, angle::Angle, origin::Vector2f) ::Nothing
+    function rotate!(transform::Transform, angle::Angle, origin::Vector2f) ::Nothing
     end
 
     """
-    `scale(::Transform, ::Float32, ::Float32) -> Nothing`
+    `scale!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
-    function scale(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+    function scale!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
     end
 
     """
-    `shear(::Transform, ::Float32, ::Float32) -> Nothing`
+    `shear!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
-    function shear(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+    function shear!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
     end
 
     """
-    `reflect(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
+    `reflect!(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
     """
-    function reflect(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f) ::Nothing
+    function reflect!(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f) ::Nothing
     end
 
     ### GEOMETRY ##############################################################
@@ -1366,9 +1367,9 @@ module ts
     abstract type Shape end
 
     """
-    `set_centroid(::Shape, ::Vector2f) -> Nothing`
+    `set_centroid!(::Shape, ::Vector2f) -> Nothing`
     """
-    function set_centroid(shape::Shape, position::Vector2f) ::Nothing
+    function set_centroid!(shape::Shape, position::Vector2f) ::Nothing
     end
 
     """
@@ -1378,15 +1379,15 @@ module ts
     end
 
     """
-    `move(::Shape, ::Float32, ::Float32) -> Nothing`
+    `move!(::Shape, ::Float32, ::Float32) -> Nothing`
     """
-    function move(shape::Shape) ::Nothing
+    function move!(shape::Shape) ::Nothing
     end
 
     """
-    `set_color(::Shape, ::RGBA) -> Nothing`
+    `set_color!(::Shape, ::RGBA) -> Nothing`
     """
-    function set_color(shape::Shape, color::RGBA) ::Nothing
+    function set_color!(shape::Shape, color::RGBA) ::Nothing
     end
 
     """
@@ -1408,15 +1409,15 @@ module ts
     end
 
     """
-    `set_texture(::Shape, ::Texture) -> Nothing`
+    `set_texture!(::Shape, ::Texture) -> Nothing`
     """
-    function set_texture(shape::Shape, texture::Texture) ::Nothing
+    function set_texture!(shape::Shape, texture::Texture) ::Nothing
     end
 
     """
-    `set_texture_rectangle(::Shape, ::Rectangle) -> Nothing`
+    `set_texture_rectangle!(::Shape, ::Rectangle) -> Nothing`
     """
-    function set_texture_rectangle(shape::Shape, rect::Rectangle) ::Nothing
+    function set_texture_rectangle!(shape::Shape, rect::Rectangle) ::Nothing
     end
 
     """
@@ -1432,21 +1433,21 @@ module ts
     end
 
     """
-    `set_vertex_position(::Shape, ::Integer, ::Vector2f) -> Nothing`
+    `set_vertex_position!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
-    function set_vertex_position(shape::Shape, index::Integer, position::Vector2f) ::Nothing
+    function set_vertex_position!(shape::Shape, index::Integer, position::Vector2f) ::Nothing
     end
 
     """
-    `set_vertex_color(::Shape, ::Integer, ::RGBA) -> Nothing`
+    `set_vertex_color!(::Shape, ::Integer, ::RGBA) -> Nothing`
     """
-    function set_vertex_position(shape::Shape, index::Integer, color::RGBA) ::Nothing
+    function set_vertex_position!(shape::Shape, index::Integer, color::RGBA) ::Nothing
     end
 
     """
-    `set_vertex_texture_coordinate(::Shape, ::Integer, ::Vector2f) -> Nothing`
+    `set_vertex_texture_coordinate!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
-    function set_vertex_texture_coordinate(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
+    function set_vertex_texture_coordinate!(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
     end
 
     """
@@ -1494,9 +1495,9 @@ module ts
     end
 
     """
-    `set_top_left(::RectangleShape, ::Vector2f) -> Nothing`
+    `set_top_left!(::RectangleShape, ::Vector2f) -> Nothing`
     """
-    function set_top_left(rect::RectangleShape, position::Vector2f) ::Nothing
+    function set_top_left!(rect::RectangleShape, position::Vector2f) ::Nothing
     end
 
     """
@@ -1512,9 +1513,9 @@ module ts
     end
 
     """
-    `set_size(::RectangleShape, ::Vector2f) -> Nothing`
+    `set_size!(::RectangleShape, ::Vector2f) -> Nothing`
     """
-    function set_size(rect::RectangleShape, size::Vector2f) ::Nothing
+    function set_size!(rect::RectangleShape, size::Vector2f) ::Nothing
     end
 
     ### POLYGON SHAPE #########################################################
