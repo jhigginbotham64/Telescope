@@ -23,6 +23,7 @@
 #include <include/static_texture.hpp>
 #include <include/render_texture.hpp>
 #include <include/camera.hpp>
+#include <include/angle.hpp>
 
 extern "C" {
 
@@ -109,6 +110,18 @@ size_t ts_clock_elapsed(size_t id)
 size_t ts_clock_restart(size_t id)
 {
     return detail::_clocks.at(id).restart().as_nanoseconds();
+}
+
+// ### ANGLE ###################################################
+
+float ts_degrees_to_radians(float degrees)
+{
+    return ts::degrees(degrees).as_radians();
+}
+
+float ts_radians_to_degrees(float radians)
+{
+    return ts::radians(radians).as_degrees();
 }
 
 // ### WINDOW ##################################################
@@ -679,6 +692,11 @@ namespace detail
     static inline std::unordered_map<size_t, ts::Music> _music_library = {};
 }
 
+size_t ts_music_sample_rate()
+{
+    return ts::MusicHandler::sample_rate;
+}
+
 size_t ts_music_load(const char* path)
 {
     size_t id = std::hash<std::string>()(path);
@@ -771,6 +789,11 @@ float ts_music_get_volume()
 namespace detail
 {
     std::unordered_map<size_t, ts::Sound> _sound_library;
+}
+
+size_t ts_sound_get_max_n_channels()
+{
+    return ts::SoundHandler::n_channels;
 }
 
 size_t ts_sound_load(const char* path, float volume)

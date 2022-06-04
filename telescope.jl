@@ -4,10 +4,43 @@
 #
 
 module ts
-
     ### COMMON ################################################################
 
     const _lib = "./libtelescope.so"
+
+    """
+    `initialize() -> Bool`
+    """
+    function initialize() ::Bool
+    end
+    export initialize
+
+    ### WINDOW ################################################################
+
+    """
+    TODO
+    """
+
+    """
+    `set_framerate_limit(::Integer) -> Nothing`
+    """
+    function set_framerate_limit(n_fps::Integer) ::Nothing
+    end
+    export set_framerate_limit
+
+    """
+    `start_frame(::Window) -> Nothing`
+    """
+    function start_frame(window::Window) ::Nothing
+    end
+    export start_frame
+
+    """
+    `end_frame(::Window) -> Nothing`
+    """
+    function end_frame(window::Window) ::Nothing
+    end
+    export end_frame
 
     ### VECTOR ################################################################
 
@@ -168,6 +201,39 @@ module ts
     function restart(clock::Clock) ::Time
         out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Cdouble, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
+    end
+
+    ### ANGLE ################################################################
+
+    """
+    TODO
+    """
+    struct Angle
+        _degrees::Float32
+    end
+
+    """
+    `degrees(::Float32) -> Angle`
+    """
+    function degrees(n::Float32) ::Angle
+    end
+
+    """
+    `radians(::Float32) -> Angle`
+    """
+    function radians(n::Float32) ::Angle
+    end
+
+    """
+    `as_degrees(::Angle) -> Float32`
+    """
+    function as_degrees(angle::Angle) ::Float32
+    end
+
+    """
+    `as_radians(::Angle) -> Float32`
+    """
+    function as_radians(angle::Angle) ::Float32
     end
 
     ### INPUT ################################################################
@@ -591,11 +657,221 @@ module ts
 
         import Main.ts; using Main.ts
 
+        const n_channels = ccall((:ts_sound_get_max_n_channels, _lib), Csize_t, ())
+        export n_channels
+
         """
-        `play(::Sound) -> nothing`
+        `play(::ChannelID, ::Sound, ::Integer, ::Time) -> Nothing`
         """
-        function play(sound::Sound, channel::ChannelID, n_loops::Integer, ) ::Nothing
+        function play(channel::ChannelID, sound::Sound, n_loops::Integer, fade_in_duration::Time) ::Nothing
         end
+        export play
+        
+        """
+        `stop(::ChannelID, ::Time) -> Nothing`
+        """
+        function stop(channel::ChannelID, fade_out_duration::Time) ::Nothing
+        end
+        export stop
+        
+        """
+        `pause(::ChannelID) -> Nothing`
+        """
+        function pause(channel::ChannelID) ::Nothing
+        end
+        export pause
+        
+        """
+        `unpause(::ChannelID) -> Nothing`
+        """
+        function unpause(channel::ChannelID) ::Nothing
+        end
+        export unpause
+
+        """
+        `force_stop(::ChannelID) -> Nothing`
+        """
+        function force_stop(channel::ChannelID) ::Nothing
+        end
+        export force_stop
+
+        """
+        `is_playing(::ChannelID) -> Bool`
+        """
+        function is_playing(channel::ChannelID) ::Bool
+        end
+        export is_playing
+
+        """
+        `is_paused(::ChannelID) -> Bool`
+        """
+        function is_paused(channel::ChannelID) ::Bool
+        end
+        export is_paused
+
+        """
+        `is_stopped(::ChannelID) -> Bool`
+        """
+        function is_stopped(channel::ChannelID) ::Bool
+        end
+        export is_stopped
+
+        """
+        `set_volume(::ChannelID, ::Float32) -> Nothing`
+        """
+        function set_volume(channel::ChannelID, zero_to_one::Float32) ::Nothing
+        end
+        export set_volume
+
+        """
+        `get_volume(::ChannelID) -> Float32`
+        """
+        function get_volume(channel::ChannelID) ::Float32
+        end
+        export get_volume
+
+        """
+        `set_panning(::ChannelID, ::Angle) -> Nothing`
+        """
+        function set_panning(channel::ChannelID, angle::Angle) ::Nothing
+        end
+        export set_panning
+
+        """
+        `get_panning(::ChannelID) -> Angle`
+        """
+        function get_panning(channel::ChannelID) ::Angle
+        end
+        export get_panning
+    end
+
+    ### MUSIC ################################################################
+
+    """
+    TODO
+    """
+    struct Music
+
+        _native_id::Csize_t
+
+        function Music(path::String)
+
+            id = ccall((:ts_music_load, _lib), Csize_t, (Cstring,), path)
+            out = new(id)
+            finalizer(out) do x
+                ccall((ts_music_unload, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+        end
+    end
+    export Music
+
+    """
+    TODO
+    """
+    module MusicHandler
+
+        import Main.ts; using Main.ts
+
+        const sample_rate = ccall((:ts_music_sample_rate, _lib), Csize_t, ())
+        export sample_rate
+
+        """
+        `set_volume(::Float32) -> Nothing`
+        """
+        function set_volume(zero_to_one::Float32) ::Nothing
+        end
+        export set_volume
+
+        """
+        `get_volume() -> Float32`
+        """
+        function get_volume() ::Float32
+        end
+        export get_volume
+
+        """
+        `play(::Music, ::Bool, ::Time) -> Nothing`
+        """
+        function play(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+        end
+        export play
+
+        """
+        `play_next(::Music, ::Bool, ::Time) -> Nothing
+        """
+        function play_next(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+        end
+        export play_next
+
+        """
+        `stop(::Time) -> Nothing`
+        """
+        function stop(fade_out_duration::Time) ::Nothing
+        end
+        export stop
+
+        """
+        `next(::Time) -> Nothing`
+        """
+        function next(fade_out_duration::Time) ::Nothing
+        end
+        export next
+
+        """
+        `clear_next() -> Nothing`
+        """
+        function clear_next() ::Nothing
+        end
+        export clear_next
+
+        """
+        `force_stop() -> Nothing`
+        """
+        function force_stop() ::Nothing
+        end
+        export force_stop
+
+        """
+        `pause() -> Nothing`
+        """
+        function pause() ::Nothing
+        end
+        export pause
+
+        """
+        `unpause() -> Nothing`
+        """
+        function unpause() ::Nothing
+        end
+        export unpause
+
+        """
+        `skip_to(::Time) -> Nothing`
+        """
+        function skip_to(timestamp::Time) ::Nothing
+        end
+        export skip_to
+
+        """
+        `is_playing() -> Bool`
+        """
+        function is_playing() ::Bool
+        end
+        export is_playing
+
+        """
+        `is_paused() -> Bool`
+        """
+        function is_paused() ::Bool
+        end
+        export is_paused
+
+        """
+        `is_stopped() -> Bool`
+        """
+        function is_stopped() ::Bool
+        end
+        export is_stopped
     end
 
 

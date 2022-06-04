@@ -49,6 +49,12 @@ double ts_clock_restart(size_t id);
 
 // ### WINDOW ##################################################
 
+float ts_degrees_to_radians(float degrees);
+
+float ts_radians_to_degrees(float radians);
+
+// ### WINDOW ##################################################
+
 size_t ts_window_create(
         size_t width,
         size_t height,
@@ -254,6 +260,8 @@ float ts_controller_trigger_right(size_t controller_id);
 
 // ### MUSIC ###################################################
 
+size_t ts_music_sample_rate();
+
 size_t ts_music_load(const char* path);
 
 void ts_music_unload(size_t id);
@@ -289,6 +297,8 @@ void ts_music_set_volume(float zero_to_one);
 float ts_music_get_volume();
 
 // ### SOUNDS ##################################################
+
+size_t ts_sound_get_max_n_channels();
 
 size_t ts_sound_load(const char* path, float volume);
 

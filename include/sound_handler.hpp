@@ -10,6 +10,7 @@
 
 #include <include/sound.hpp>
 #include <include/time.hpp>
+#include <include/angle.hpp>
 
 namespace ts
 {
@@ -21,11 +22,11 @@ namespace ts
             static inline constexpr size_t n_channels = 256;
 
             /// \brief play sample on specified channel
-            /// \param sound: sound to play, user is responsible for the sound staying in memory
             /// \param channel: channel index, [0, 255]
+            /// \param sound: sound to play, user is responsible for the sound staying in memory
             /// \param n_loops: number of times the sample will be repeated, set to 0 if sample should only be played once
             /// \param fade_in_duration: duration of fade-in, set to 0 for no fade-in
-            static void play(Sound&, size_t channel, size_t n_loops = 0, Time fade_in_duration = milliseconds(0));
+            static void play(size_t channel, Sound&, size_t n_loops = 0, Time fade_in_duration = milliseconds(0));
 
             /// \brief play sample on specified channel
             /// \param sound: sound to play, user is responsible for the sound staying in memory
@@ -70,7 +71,7 @@ namespace ts
             /// \brief set panning of a channel
             /// \param channel: channel index, [0, 255]
             /// \param zero_to_360_degree: angle, clockwise: 0° is no panning, +90° is full right, 180° is no panning, +270° is full left
-            static void set_panning(size_t channel, size_t zero_to_360_degree);
+            static void set_panning(size_t channel, Angle angle);
 
             /// \brief get panning of channel
             /// \param channel: channel index, [0, 255]

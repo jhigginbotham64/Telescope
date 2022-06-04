@@ -20,7 +20,7 @@ namespace ts
         }
     }
 
-    void SoundHandler::play(Sound& sound, size_t channel, size_t n_loops, Time fade_in_duration)
+    void SoundHandler::play(size_t channel, Sound& sound,  size_t n_loops, Time fade_in_duration)
     {
         channel = forward_index(channel, "play");
 
@@ -102,15 +102,14 @@ namespace ts
         return _volume[forward_index(channel, "get_volume")];
     }
 
-    void SoundHandler::set_panning(size_t channel, size_t zero_to_360_degree)
+    void SoundHandler::set_panning(size_t channel, Angle angle)
     {
         auto guard = std::lock_guard(_lock);
 
-        zero_to_360_degree = zero_to_360_degree % 360;
         channel = forward_index(channel, "set_panning");
-        _panning[channel] = zero_to_360_degree;
+        _panning[channel] = angle.as_degrees();
 
-        Mix_SetPosition(channel, zero_to_360_degree, 0);
+        Mix_SetPosition(channel, angle.as_degrees(), 0);
     }
 
     size_t SoundHandler::get_panning(size_t channel)
