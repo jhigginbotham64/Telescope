@@ -137,24 +137,10 @@ size_t ts_window_create(
         size_t width,
         size_t height,
         const char* title,
-        bool fullscreen,
-        bool borderless,
-        bool resizable)
+        uint32_t options)
 {
     auto id = detail::_window_id++;
     detail::_windows.emplace(id, ts::Window());
-
-    uint32_t options = ts::WindowOptions::DEFAULT;
-
-    if (fullscreen)
-        options |= ts::FULLSCREEN;
-
-    if (borderless)
-        options |= ts::BORDERLESS;
-
-    if (resizable)
-        options |= ts::RESIZABLE;
-
     auto& window = detail::_windows.at(id);
     window.create(title, width, height, options);
     detail::_cameras.emplace(id, ts::Camera(&window));
@@ -816,7 +802,7 @@ size_t ts_sound_n_channels()
 
 void ts_sound_play(size_t id, size_t channel, size_t n_loops, double fade_in_ms)
 {
-    ts::SoundHandler::play(detail::_sound_library.at(id), channel, n_loops, ts::milliseconds(fade_in_ms));
+    ts::SoundHandler::play(channel, detail::_sound_library.at(id), n_loops, ts::milliseconds(fade_in_ms));
 }
 
 void ts_sound_stop(size_t channel, double fade_out_ms)
@@ -866,7 +852,7 @@ float ts_sound_get_volume(size_t channel)
 
 void ts_sound_set_panning(size_t channel, size_t zero_to_360_degree)
 {
-    ts::SoundHandler::set_panning(channel, zero_to_360_degree);
+    ts::SoundHandler::set_panning(channel, ts::degrees(zero_to_360_degree));
 }
 
 size_t ts_sound_get_panning(size_t channel)

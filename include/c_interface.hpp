@@ -55,13 +55,7 @@ float ts_radians_to_degrees(float radians);
 
 // ### WINDOW ##################################################
 
-size_t ts_window_create(
-        size_t width,
-        size_t height,
-        const char* title,
-        bool fullscreen,
-        bool borderless,
-        bool resizable);
+size_t ts_window_create(size_t width, size_t height, const char* title, uint32_t options);
 
 void ts_window_destroy(size_t id);
 

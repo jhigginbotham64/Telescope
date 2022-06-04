@@ -15,33 +15,6 @@ module ts
     end
     export initialize
 
-    ### WINDOW ################################################################
-
-    """
-    TODO
-    """
-
-    """
-    `set_framerate_limit(::Integer) -> Nothing`
-    """
-    function set_framerate_limit(n_fps::Integer) ::Nothing
-    end
-    export set_framerate_limit
-
-    """
-    `start_frame(::Window) -> Nothing`
-    """
-    function start_frame(window::Window) ::Nothing
-    end
-    export start_frame
-
-    """
-    `end_frame(::Window) -> Nothing`
-    """
-    function end_frame(window::Window) ::Nothing
-    end
-    export end_frame
-
     ### VECTOR ################################################################
 
     """
@@ -180,7 +153,7 @@ module ts
 
             id = ccall((:ts_clock_create, _lib), Csize_t, ())
             out = new(id)
-            finalizer(out) do x
+            finalizer(out) do x::Clock
                 ccall((:ts_clock_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
             end
         end
@@ -640,7 +613,7 @@ module ts
 
             id = ccall((:ts_sound_load, _lib), Csize_t, (Cstring, Cfloat), path, volume_modifier)
             out = new(id)
-            finalizer(out) do x
+            finalizer(out) do x::Sound
                 call((:ts_sound_unload, _lib), Cvoid, (Csize_t), x._native_id)
             end
             return out
@@ -758,7 +731,7 @@ module ts
 
             id = ccall((:ts_music_load, _lib), Csize_t, (Cstring,), path)
             out = new(id)
-            finalizer(out) do x
+            finalizer(out) do x::Music
                 ccall((ts_music_unload, _lib), Cvoid, (Csize_t,), x._native_id)
             end
         end
@@ -873,6 +846,169 @@ module ts
         end
         export is_stopped
     end
+
+    ### TEXTURES ##############################################################
+
+    ### TRANSFORM #############################################################
+
+    ### SHAPE #################################################################
+
+    ### WINDOW ################################################################
+
+    const WindowID = UInt64
+
+    @enum WindowOptions begin
+
+        DEFAULT = 0
+        FULLSCREEN = 1 << 1
+        BORDERLESS = 1 << 2
+        RESIZABLE  = 1 << 3
+    end
+    export_enum(WindowOptions)
+
+    """
+    TODO
+    """
+    struct Window
+
+        _native_id::WindowID
+
+        function Window(width::Integer, height::Integer, title::Cstring, options::UInt32 = DEFAULT)
+            id = ccall((:ts_window_create, _lib), Csize_t, (Csize_t, Csize_t, Cstring, UInt32), width, height, title, options)
+            out = new(id)
+            finalizer(out) do x::Window
+                ccall((:ts_window_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+            return out
+        end
+    end
+    export Window
+
+    """
+    `close(::Window) -> Nothing`
+    """
+    function close(window::Window) ::Nothing
+    end
+    export close
+
+    """
+    `is_open(::Window) -> Bool`
+    """
+    function is_open(window::Window) ::Bool
+    end
+    export is_open
+
+    """
+    `get_size(::Window) -> Vector2ui`
+    """
+    function get_size(window::Window) ::Vector2ui
+    end
+    export get_size
+
+    """
+    `get_position(::Window) -> Vector2ui`
+    """
+    function get_position(window::Window) ::Vector2ui
+    end
+    export get_position
+
+    """
+    `set_hidden(::Window, ::Bool) -> Nothing
+    """
+    function set_hidden(window::Window, hidden::Bool) ::Nothing
+    end
+    export set_hidden
+
+    """
+    `is_hidden(::Window) -> Bool`
+    """
+    function is_hidden(window::Window) ::Bool
+    end
+    export is_hidden
+
+    """
+    `minimize(::Window) -> Nothing`
+    """
+    function minimize(window::Window) ::Nothing
+    end
+    export minimize
+
+    """
+    `is_minimized(::Window) -> Bool`
+    """
+    function is_minimized(window::Window) ::Bool
+    end
+    export is_minimizedd
+
+    """
+    `maximize(::Window) -> Nothing`
+    """
+    function maximize(window::Window) ::Nothing
+    end
+    export maximize
+
+    """
+    `is_maximized(::Window) -> Bool`
+    """
+    function is_maximized(window::Window) ::Bool
+    end
+    export is_maximized
+
+    """
+    `has_focus(::Window) -> Bool``
+    """
+    function has_focus(window::Window) ::Bool
+    end
+    export has_focus
+
+    """
+    `has_mouse_focus(::Window) -> Bool`
+    """
+    function has_mouse_focus(window::Window) ::Bool
+    end
+    export has_mouse_focus
+
+    """
+    `clear(::Window) -> Nothing`
+    """
+    function clear(window::Window) ::Nothing
+    end
+    export clear
+
+    """
+    `render(::Window, ::AbstractShape, ::Transform) ::Nothing`
+    """
+    function render(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: AbstractShape
+    end
+    export render
+
+    """
+    `flush(::Window) -> Nothing`
+    """
+    function flush(window::Window) ::Nothing
+    end
+    export flush
+
+    """
+    `set_framerate_limit(::Integer) -> Nothing`
+    """
+    function set_framerate_limit(n_fps::Integer) ::Nothing
+    end
+    export set_framerate_limit
+
+    """
+    `start_frame(::Window) -> Nothing`
+    """
+    function start_frame(window::Window) ::Nothing
+    end
+    export start_frame
+
+    """
+    `end_frame(::Window) -> Nothing`
+    """
+    function end_frame(window::Window) ::Nothing
+    end
+    export end_frame
 
 
 
