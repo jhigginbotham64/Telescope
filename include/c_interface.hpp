@@ -14,9 +14,6 @@ extern "C"
 #include <stddef.h>
 #include <stdbool.h>
 
-// TODO
-void ts_test(float*);
-
 // ### TIME ####################################################
 
 double ts_ns_to_minutes(size_t n);
@@ -47,7 +44,13 @@ double ts_clock_elapsed(size_t id);
 
 double ts_clock_restart(size_t id);
 
-// ### WINDOW ##################################################
+// ### COLORS ##################################################
+
+void ts_rgb_to_hsv(float r, float g, float b, float* out_h, float* out_s, float* out_v);
+
+void ts_hsv_to_rgb(float h, float s, float v, float* out_r, float* out_g, float* out_b);
+
+// ### ANGLE ##################################################
 
 float ts_degrees_to_radians(float degrees);
 
@@ -148,6 +151,10 @@ void ts_texture_get_size(size_t texture_id, size_t* out_x, size_t* out_y);
 void ts_texture_destroy_texture(size_t texture_id);
 
 size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t height);
+
+// ### TRANSFORMS ##################################################
+
+
 
 // ### SHAPES ##################################################
 

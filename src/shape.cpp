@@ -4,7 +4,6 @@
 //
 
 #include <stdexcept>
-#include <iostream> //TODO
 
 #include <glm/glm.hpp>
 #include <SDL2/SDL_render.h>
@@ -73,6 +72,21 @@ namespace ts
         }
     }
 
+    void Shape::apply_texture_rectangle()
+    {
+        // align vertex texture coordinates such that the texture is anchored at
+        // the top left of the bound box
+
+        auto aabb = get_bounding_box();
+        for (auto& v : _vertices)
+        {
+            v.tex_coord.x = (v.position.x - aabb.top_left.x) / aabb.size.x;
+            v.tex_coord.y = (v.position.y - aabb.top_left.y) / aabb.size.y;
+        }
+
+        update_uv();
+    }
+
     void Shape::move(float x_offset, float y_offset)
     {
         for (auto& v : _vertices)
@@ -112,6 +126,18 @@ namespace ts
     void Shape::set_texture(Texture* texture)
     {
         _texture = texture;
+        apply_texture_rectangle();
+    }
+
+    void Shape::set_texture_rectangle(Rectangle rect)
+    {
+        _texture_rect = rect;
+        apply_texture_rectangle();
+    }
+
+    Rectangle Shape::get_texture_rectangle(Rectangle rect)
+    {
+        return _texture_rect;
     }
 
     Rectangle Shape::get_bounding_box() const

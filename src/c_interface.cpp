@@ -308,6 +308,26 @@ void ts_end_frame(size_t window_id)
     ts::end_frame(&detail::_windows.at(window_id));
 }
 
+// ### COLORS ####################################################
+
+void ts_rgb_to_hsv(float r, float g, float b, float* out_h, float* out_s, float* out_v)
+{
+    auto in = ts::RGBA(r, g, b, 1);
+    auto out = in.as_hsv();
+    *out_h = out.hue;
+    *out_s = out.saturation;
+    *out_v = out.value;
+}
+
+void ts_hsv_to_rgb(float h, float s, float v, float* out_r, float* out_g, float* out_b)
+{
+    auto in = ts::HSVA(h, s, v, 1);
+    auto out = in.as_rgb();
+    *out_r = out.red;
+    *out_g = out.green;
+    *out_b = out.blue;
+}
+
 // ### TEXTURES ##################################################
 
 namespace detail

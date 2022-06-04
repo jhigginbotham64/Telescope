@@ -54,6 +54,13 @@ namespace ts
             /// \param pointer to texture, or nullptr for no texture
             void set_texture(Texture*);
 
+            /// \brief set which part of the texture is mapped
+            /// \param rect: rectangle, relative coordinates. Rectangle({0, 0,}, {1, 1}) is the whole texture
+            void set_texture_rectangle(Rectangle rect);
+
+            /// \brief get the texture rectangle
+            Rectangle get_texture_rectangle(Rectangle rect);
+
             /// \brief get the axis-aligned bounding box of the shape
             /// \returns rectangle
             Rectangle get_bounding_box() const;
@@ -103,9 +110,8 @@ namespace ts
 
         private:
             Texture* _texture = nullptr;
-
-            // offset from centroid
-            Vector2f _origin = {0, 0};
+            Rectangle _texture_rect = Rectangle{{0, 0}, {1, 1}};
+            void apply_texture_rectangle();
 
             Vector2f compute_centroid() const;
 

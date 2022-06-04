@@ -47,6 +47,65 @@ module ts
     const Vector3ui = Vector3{Csize_t}
 
     export Vector3f, Vector3i, Vector3ui
+        
+    ### COLOR #################################################################
+    
+    """
+    TODO
+    """
+    struct RGBA
+        red::Float32
+        green::Float32
+        blue::Float32
+        alpha::Float32
+    end
+    export RGBA
+    
+    """
+    TODO
+    """
+    struct HSVA
+        hue::Float32
+        saturation::Float32
+        value::Float32
+        alpha::Float32
+    end
+    export HSVA
+    
+    """
+    `as_hsv(::RGBA) -> HSVA`
+    """
+    function as_hsv(rgba::RGBA) ::HSVA
+        
+        h = Ref{Float32}(-1)
+        s = Ref{Float32}(-1)
+        v = Ref{Float32}(-1)
+
+        ccall((:ts_rgb_to_hsv, _lib), Cvoid, 
+            (Cfloat, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            rgba.red, rgba.green, rgba.blue, h, s, v)
+            
+        return HSVA(h[], s[], v[], rgba.alpha)
+    end
+    export as_hsv
+    
+    """
+    `as_rgb(::HSVA) -> RGBA`
+    """
+    function as_rgb(hsva::HSVA) ::RGBA
+        
+        r = Ref{Float32}(-1)
+        g = Ref{Float32}(-1)
+        b = Ref{Float32}(-1)
+
+        ccall((:ts_rgb_to_hsv, _lib), Cvoid, 
+            (Cfloat, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            hsva.hue, hsva.saturation, hsva.value, r, g, b)
+            
+        return RGBA(r[], g[], b[], hsva.alpha)
+    end
+    export as_rgb
+
 
     ### TIME #################################################################
 
@@ -211,17 +270,17 @@ module ts
 
     ### INPUT ################################################################
 
-    function get_keyboard_key(str::String) ::Int32
+    function get_keyboard_key_enum_value(str::String) ::Int32
         return ccall((:ts_keyboard_key, _lib), Int64, (Cstring,), str)
     end
     # no export
 
-    function get_mouse_button(str::String) ::Int32
+    function get_mouse_button_enum_value(str::String) ::Int32
         return ccall((:ts_mouse_button, _lib), Int64, (Cstring,), str)
     end
     # no export
 
-    function get_controller_button(str::String) ::Int32
+    function get_controller_button_enum_value(str::String) ::Int32
         return ccall((:ts_controller_button, _lib), Int64, (Cstring,), str)
     end
     # no export
@@ -244,125 +303,125 @@ module ts
     """
     @enum KeyboardKey begin
     
-        KEY_UNKNOWN = get_keyboard_key("KEY_UNKNOWN")
+        KEY_UNKNOWN = get_keyboard_key_enum_value("KEY_UNKNOWN")
 
-        NUM_0 = get_keyboard_key("NUM_0")
-        NUM_1 = get_keyboard_key("NUM_1")
-        NUM_2 = get_keyboard_key("NUM_2")
-        NUM_3 = get_keyboard_key("NUM_3")
-        NUM_4 = get_keyboard_key("NUM_4")
-        NUM_5 = get_keyboard_key("NUM_5")
-        NUM_6 = get_keyboard_key("NUM_6")
-        NUM_7 = get_keyboard_key("NUM_7")
-        NUM_8 = get_keyboard_key("NUM_8")
-        NUM_9 = get_keyboard_key("NUM_9")
+        NUM_0 = get_keyboard_key_enum_value("NUM_0")
+        NUM_1 = get_keyboard_key_enum_value("NUM_1")
+        NUM_2 = get_keyboard_key_enum_value("NUM_2")
+        NUM_3 = get_keyboard_key_enum_value("NUM_3")
+        NUM_4 = get_keyboard_key_enum_value("NUM_4")
+        NUM_5 = get_keyboard_key_enum_value("NUM_5")
+        NUM_6 = get_keyboard_key_enum_value("NUM_6")
+        NUM_7 = get_keyboard_key_enum_value("NUM_7")
+        NUM_8 = get_keyboard_key_enum_value("NUM_8")
+        NUM_9 = get_keyboard_key_enum_value("NUM_9")
 
-        A = get_keyboard_key("A")
-        B = get_keyboard_key("B")
-        C = get_keyboard_key("C")
-        D = get_keyboard_key("D")
-        E = get_keyboard_key("E")
-        F = get_keyboard_key("F")
-        G = get_keyboard_key("G")
-        H = get_keyboard_key("H")
-        I = get_keyboard_key("I")
-        J = get_keyboard_key("J")
-        K = get_keyboard_key("K")
-        L = get_keyboard_key("L")
-        M = get_keyboard_key("M")
-        N = get_keyboard_key("N")
-        O = get_keyboard_key("O")
-        P = get_keyboard_key("P")
-        Q = get_keyboard_key("Q")
-        R = get_keyboard_key("R")
-        S = get_keyboard_key("S")
-        T = get_keyboard_key("T")
-        U = get_keyboard_key("U")
-        V = get_keyboard_key("V")
-        W = get_keyboard_key("W")
-        X = get_keyboard_key("X")
-        Y = get_keyboard_key("Y")
-        Z = get_keyboard_key("Z")
+        A = get_keyboard_key_enum_value("A")
+        B = get_keyboard_key_enum_value("B")
+        C = get_keyboard_key_enum_value("C")
+        D = get_keyboard_key_enum_value("D")
+        E = get_keyboard_key_enum_value("E")
+        F = get_keyboard_key_enum_value("F")
+        G = get_keyboard_key_enum_value("G")
+        H = get_keyboard_key_enum_value("H")
+        I = get_keyboard_key_enum_value("I")
+        J = get_keyboard_key_enum_value("J")
+        K = get_keyboard_key_enum_value("K")
+        L = get_keyboard_key_enum_value("L")
+        M = get_keyboard_key_enum_value("M")
+        N = get_keyboard_key_enum_value("N")
+        O = get_keyboard_key_enum_value("O")
+        P = get_keyboard_key_enum_value("P")
+        Q = get_keyboard_key_enum_value("Q")
+        R = get_keyboard_key_enum_value("R")
+        S = get_keyboard_key_enum_value("S")
+        T = get_keyboard_key_enum_value("T")
+        U = get_keyboard_key_enum_value("U")
+        V = get_keyboard_key_enum_value("V")
+        W = get_keyboard_key_enum_value("W")
+        X = get_keyboard_key_enum_value("X")
+        Y = get_keyboard_key_enum_value("Y")
+        Z = get_keyboard_key_enum_value("Z")
 
-        ALT = get_keyboard_key("ALT")
-        RIGHT_ALT = get_keyboard_key("RIGHT_ALT")
+        ALT = get_keyboard_key_enum_value("ALT")
+        RIGHT_ALT = get_keyboard_key_enum_value("RIGHT_ALT")
 
-        CTRL = get_keyboard_key("CTRL")
-        RIGHT_CTRL = get_keyboard_key("RIGHT_CTRL")
-        CAPS = get_keyboard_key("CAPS")
+        CTRL = get_keyboard_key_enum_value("CTRL")
+        RIGHT_CTRL = get_keyboard_key_enum_value("RIGHT_CTRL")
+        CAPS = get_keyboard_key_enum_value("CAPS")
 
-        SHIFT = get_keyboard_key("SHIFT")
-        RIGHT_SHIFT = get_keyboard_key("RIGHT_SHIFT")
+        SHIFT = get_keyboard_key_enum_value("SHIFT")
+        RIGHT_SHIFT = get_keyboard_key_enum_value("RIGHT_SHIFT")
 
-        BRACKET_LEFT = get_keyboard_key("BRACKET_LEFT")
-        BRACKET_RIGHT = get_keyboard_key("BRACKET_RIGHT")
+        BRACKET_LEFT = get_keyboard_key_enum_value("BRACKET_LEFT")
+        BRACKET_RIGHT = get_keyboard_key_enum_value("BRACKET_RIGHT")
 
-        SLASH = get_keyboard_key("SLASH")
-        BACKSLASH = get_keyboard_key("BACKSLASH")
+        SLASH = get_keyboard_key_enum_value("SLASH")
+        BACKSLASH = get_keyboard_key_enum_value("BACKSLASH")
 
-        UP = get_keyboard_key("UP")
-        DOWN = get_keyboard_key("DOWN")
-        LEFT = get_keyboard_key("LEFT")
-        RIGHT = get_keyboard_key("RIGHT")
+        UP = get_keyboard_key_enum_value("UP")
+        DOWN = get_keyboard_key_enum_value("DOWN")
+        LEFT = get_keyboard_key_enum_value("LEFT")
+        RIGHT = get_keyboard_key_enum_value("RIGHT")
 
-        RETURN = get_keyboard_key("RETURN")
-        ESCAPE = get_keyboard_key("ESCAPE")
-        BACKSPACE = get_keyboard_key("BACKSPACE")
-        TAB = get_keyboard_key("TAB")
-        SPACE = get_keyboard_key("SPACE")
+        RETURN = get_keyboard_key_enum_value("RETURN")
+        ESCAPE = get_keyboard_key_enum_value("ESCAPE")
+        BACKSPACE = get_keyboard_key_enum_value("BACKSPACE")
+        TAB = get_keyboard_key_enum_value("TAB")
+        SPACE = get_keyboard_key_enum_value("SPACE")
 
-        HASH = get_keyboard_key("HASH")
-        PERCENT = get_keyboard_key("PERCENT")
-        DOLLAR = get_keyboard_key("DOLLAR")
-        AND = get_keyboard_key("AND")
-        QUOTE = get_keyboard_key("QUOTE")
+        HASH = get_keyboard_key_enum_value("HASH")
+        PERCENT = get_keyboard_key_enum_value("PERCENT")
+        DOLLAR = get_keyboard_key_enum_value("DOLLAR")
+        AND = get_keyboard_key_enum_value("AND")
+        QUOTE = get_keyboard_key_enum_value("QUOTE")
 
-        LEFT_PARENTHESIS = get_keyboard_key("LEFT_PARENTHESIS")
-        RIGHT_PARENTHESIS= get_keyboard_key("RIGHT_PARENTHESIS")
+        LEFT_PARENTHESIS = get_keyboard_key_enum_value("LEFT_PARENTHESIS")
+        RIGHT_PARENTHESIS= get_keyboard_key_enum_value("RIGHT_PARENTHESIS")
 
-        ASTERISK = get_keyboard_key("ASTERISK")
-        PLUS = get_keyboard_key("PLUS")
-        MINUS = get_keyboard_key("MINUS")
-        UNDERSCORE = get_keyboard_key("UNDERSCORE")
+        ASTERISK = get_keyboard_key_enum_value("ASTERISK")
+        PLUS = get_keyboard_key_enum_value("PLUS")
+        MINUS = get_keyboard_key_enum_value("MINUS")
+        UNDERSCORE = get_keyboard_key_enum_value("UNDERSCORE")
 
-        COMMA = get_keyboard_key("COMMA")
-        PERIOD = get_keyboard_key("PERIOD")
-        SEMICOLON = get_keyboard_key("SEMICOLON")
-        COLON = get_keyboard_key("COLON")
+        COMMA = get_keyboard_key_enum_value("COMMA")
+        PERIOD = get_keyboard_key_enum_value("PERIOD")
+        SEMICOLON = get_keyboard_key_enum_value("SEMICOLON")
+        COLON = get_keyboard_key_enum_value("COLON")
 
-        LESS_THAN = get_keyboard_key("LESS_THAN")
-        GREATER_THAN = get_keyboard_key("GREATER_THAN")
+        LESS_THAN = get_keyboard_key_enum_value("LESS_THAN")
+        GREATER_THAN = get_keyboard_key_enum_value("GREATER_THAN")
 
-        EQUALS = get_keyboard_key("EQUALS")
-        CIRCUMFLEX = get_keyboard_key("CIRCUMFLEX")
+        EQUALS = get_keyboard_key_enum_value("EQUALS")
+        CIRCUMFLEX = get_keyboard_key_enum_value("CIRCUMFLEX")
 
-        EXCLAMATION_MARK = get_keyboard_key("EXCLAMATION_MARK")
-        QUESTION_MARK = get_keyboard_key("QUESTION_MARK")
+        EXCLAMATION_MARK = get_keyboard_key_enum_value("EXCLAMATION_MARK")
+        QUESTION_MARK = get_keyboard_key_enum_value("QUESTION_MARK")
 
-        F1 = get_keyboard_key("F1")
-        F2 = get_keyboard_key("F2")
-        F3 = get_keyboard_key("F3")
-        F4 = get_keyboard_key("F4")
-        F5 = get_keyboard_key("F5")
-        F6 = get_keyboard_key("F6")
-        F7 = get_keyboard_key("F7")
-        F8 = get_keyboard_key("F8")
-        F9 = get_keyboard_key("F9")
-        F10 = get_keyboard_key("F10")
-        F11 = get_keyboard_key("F11")
-        F12 = get_keyboard_key("F12")
+        F1 = get_keyboard_key_enum_value("F1")
+        F2 = get_keyboard_key_enum_value("F2")
+        F3 = get_keyboard_key_enum_value("F3")
+        F4 = get_keyboard_key_enum_value("F4")
+        F5 = get_keyboard_key_enum_value("F5")
+        F6 = get_keyboard_key_enum_value("F6")
+        F7 = get_keyboard_key_enum_value("F7")
+        F8 = get_keyboard_key_enum_value("F8")
+        F9 = get_keyboard_key_enum_value("F9")
+        F10 = get_keyboard_key_enum_value("F10")
+        F11 = get_keyboard_key_enum_value("F11")
+        F12 = get_keyboard_key_enum_value("F12")
 
-        AUDIO_MUTE = get_keyboard_key("AUDIO_MUTE")
-        AUDIO_STOP = get_keyboard_key("AUDIO_STOP")
-        AUDIO_PLAY = get_keyboard_key("AUDIO_PLAY")
-        AUDIO_NEXT = get_keyboard_key("AUDIO_NEXT")
-        AUDIO_PREV = get_keyboard_key("AUDIO_PREV")
-        VOLUME_UP = get_keyboard_key("VOLUME_UP")
-        VOLUME_DOWN = get_keyboard_key("VOLUME_DOWN")
+        AUDIO_MUTE = get_keyboard_key_enum_value("AUDIO_MUTE")
+        AUDIO_STOP = get_keyboard_key_enum_value("AUDIO_STOP")
+        AUDIO_PLAY = get_keyboard_key_enum_value("AUDIO_PLAY")
+        AUDIO_NEXT = get_keyboard_key_enum_value("AUDIO_NEXT")
+        AUDIO_PREV = get_keyboard_key_enum_value("AUDIO_PREV")
+        VOLUME_UP = get_keyboard_key_enum_value("VOLUME_UP")
+        VOLUME_DOWN = get_keyboard_key_enum_value("VOLUME_DOWN")
 
-        INSERT = get_keyboard_key("INSERT")
-        PRINTSCREEN = get_keyboard_key("PRINTSCREEN")
-        DELETE = get_keyboard_key("DELETE")
+        INSERT = get_keyboard_key_enum_value("INSERT")
+        PRINTSCREEN = get_keyboard_key_enum_value("PRINTSCREEN")
+        DELETE = get_keyboard_key_enum_value("DELETE")
     end
     export_enum(KeyboardKey)
 
@@ -371,12 +430,12 @@ module ts
     """
     @enum MouseButton begin
     
-        MOUSE_LEFT = get_mouse_button("MOUSE_LEFT")
-        MOUSE_RIGHT = get_mouse_button("MOUSE_RIGHT")
-        MOUSE_MIDDLE = get_mouse_button("MOUSE_MIDDLE")
+        MOUSE_LEFT = get_mouse_button_enum_value("MOUSE_LEFT")
+        MOUSE_RIGHT = get_mouse_button_enum_value("MOUSE_RIGHT")
+        MOUSE_MIDDLE = get_mouse_button_enum_value("MOUSE_MIDDLE")
 
-        MOUSE_X1 = get_mouse_button("MOUSE_X1")
-        MOUSE_X2 = get_mouse_button("MOUSE_X2")
+        MOUSE_X1 = get_mouse_button_enum_value("MOUSE_X1")
+        MOUSE_X2 = get_mouse_button_enum_value("MOUSE_X2")
     end
     export_enum(MouseButton)
 
@@ -385,39 +444,39 @@ module ts
     """
     @enum ControllerButton begin
 
-        CONTROLLER_BUTTON_UNKNOWN = get_controller_button("CONTROLLER_BUTTON_UNKNOWN")
+        CONTROLLER_BUTTON_UNKNOWN = get_controller_button_enum_value("CONTROLLER_BUTTON_UNKNOWN")
 
-        CONTROLLER_BUTTON_A = get_controller_button("CONTROLLER_BUTTON_A")
-        CONTROLLER_BUTTON_B = get_controller_button("CONTROLLER_BUTTON_B")
-        CONTROLLER_BUTTON_X = get_controller_button("CONTROLLER_BUTTON_X")
-        CONTROLLER_BUTTON_Y = get_controller_button("CONTROLLER_BUTTON_Y")
+        CONTROLLER_BUTTON_A = get_controller_button_enum_value("CONTROLLER_BUTTON_A")
+        CONTROLLER_BUTTON_B = get_controller_button_enum_value("CONTROLLER_BUTTON_B")
+        CONTROLLER_BUTTON_X = get_controller_button_enum_value("CONTROLLER_BUTTON_X")
+        CONTROLLER_BUTTON_Y = get_controller_button_enum_value("CONTROLLER_BUTTON_Y")
 
-        CONTROLLER_LEFTSTICK_PRESS = get_controller_button("CONTROLLER_LEFTSTICK_PRESS")
-        CONTROLLER_RIGHTSTICK_PRESS = get_controller_button("CONTROLLER_RIGHTSTICK_PRESS")
-        CONTROLLER_LEFTSHOULDER = get_controller_button("CONTROLLER_LEFTSHOULDER")
-        CONTROLLER_RIGHTSHOULDER = get_controller_button("CONTROLLER_RIGHTSHOULDER")
+        CONTROLLER_LEFTSTICK_PRESS = get_controller_button_enum_value("CONTROLLER_LEFTSTICK_PRESS")
+        CONTROLLER_RIGHTSTICK_PRESS = get_controller_button_enum_value("CONTROLLER_RIGHTSTICK_PRESS")
+        CONTROLLER_LEFTSHOULDER = get_controller_button_enum_value("CONTROLLER_LEFTSHOULDER")
+        CONTROLLER_RIGHTSHOULDER = get_controller_button_enum_value("CONTROLLER_RIGHTSHOULDER")
 
-        CONTROLLER_DPAD_UP = get_controller_button("CONTROLLER_DPAD_UP")
-        CONTROLLER_DPAD_DOWN = get_controller_button("CONTROLLER_DPAD_DOWN")
-        CONTROLLER_DPAD_LEFT = get_controller_button("CONTROLLER_DPAD_LEFT")
-        CONTROLLER_DPAD_RIGHT = get_controller_button("CONTROLLER_DPAD_RIGHT")
+        CONTROLLER_DPAD_UP = get_controller_button_enum_value("CONTROLLER_DPAD_UP")
+        CONTROLLER_DPAD_DOWN = get_controller_button_enum_value("CONTROLLER_DPAD_DOWN")
+        CONTROLLER_DPAD_LEFT = get_controller_button_enum_value("CONTROLLER_DPAD_LEFT")
+        CONTROLLER_DPAD_RIGHT = get_controller_button_enum_value("CONTROLLER_DPAD_RIGHT")
 
-        CONTROLLER_SELECT = get_controller_button("CONTROLLER_SELECT")
-        CONTROLLER_START = get_controller_button("CONTROLLER_START")
+        CONTROLLER_SELECT = get_controller_button_enum_value("CONTROLLER_SELECT")
+        CONTROLLER_START = get_controller_button_enum_value("CONTROLLER_START")
 
-        CONTROLLER_GUIDE = get_controller_button("CONTROLLER_GUIDE")
-        CONTROLLER_MAX = get_controller_button("CONTROLLER_MAX")
+        CONTROLLER_GUIDE = get_controller_button_enum_value("CONTROLLER_GUIDE")
+        CONTROLLER_MAX = get_controller_button_enum_value("CONTROLLER_MAX")
 
-        CONTROLLER_XBOX_X_SHARE = get_controller_button("CONTROLLER_XBOX_X_SHARE")
-        CONTROLLER_PS5_MIC = get_controller_button("CONTROLLER_PS5_MIC")
-        CONTROLLER_SWITCH_CAPTURE = get_controller_button("CONTROLLER_SWITCH_CAPTURE")
+        CONTROLLER_XBOX_X_SHARE = get_controller_button_enum_value("CONTROLLER_XBOX_X_SHARE")
+        CONTROLLER_PS5_MIC = get_controller_button_enum_value("CONTROLLER_PS5_MIC")
+        CONTROLLER_SWITCH_CAPTURE = get_controller_button_enum_value("CONTROLLER_SWITCH_CAPTURE")
 
-        CONTROLLER_PADDLE_01 = get_controller_button("CONTROLLER_PADDLE_01")
-        CONTROLLER_PADDLE_02 = get_controller_button("CONTROLLER_PADDLE_02")
-        CONTROLLER_PADDLE_03 = get_controller_button("CONTROLLER_PADDLE_03")
-        CONTROLLER_PADDLE_04 = get_controller_button("CONTROLLER_PADDLE_04")
+        CONTROLLER_PADDLE_01 = get_controller_button_enum_value("CONTROLLER_PADDLE_01")
+        CONTROLLER_PADDLE_02 = get_controller_button_enum_value("CONTROLLER_PADDLE_02")
+        CONTROLLER_PADDLE_03 = get_controller_button_enum_value("CONTROLLER_PADDLE_03")
+        CONTROLLER_PADDLE_04 = get_controller_button_enum_value("CONTROLLER_PADDLE_04")
 
-        CONTROLLER_PS5_TOUCHPAD = get_controller_button("CONTROLLER_PS5_TOUCHPAD")
+        CONTROLLER_PS5_TOUCHPAD = get_controller_button_enum_value("CONTROLLER_PS5_TOUCHPAD")
     end
     export_enum(ControllerButton)
 
@@ -847,12 +906,6 @@ module ts
         export is_stopped
     end
 
-    ### TEXTURES ##############################################################
-
-    ### TRANSFORM #############################################################
-
-    ### SHAPE #################################################################
-
     ### WINDOW ################################################################
 
     const WindowID = UInt64
@@ -1010,7 +1063,386 @@ module ts
     end
     export end_frame
 
+    ### TEXTURES ##############################################################
 
+    @enum TextureFilteringMode begin
 
+        NEAREST_NEIGHBOUR = ccall((:ts_texture_filtering_mode_nearest_neighbour), Cint, ())
+        LINEAR = ccall((:ts_texture_filtering_mode_linear), Cint, ())
+        ANISOTROPIC = ccall((:ts_texture_filtering_mode_anisotropic), Cint, ())
+    end
+    export_enum(TextureFilteringMode)
 
+    @enum TextureBlendMode begin
+
+        NONE = ccall((:ts_texture_blend_mode_none), Cint, ())
+        ALPHA = ccall((:ts_texture_blend_mode_alpha), Cint, ())
+        ADD = ccall((:ts_texture_blend_mode_add), Cint, ())
+        MULTIPLY = ccall((:ts_texture_blend_mode_multiply), Cint, ())
+    end
+    export_enum(TextureBlendMode)
+
+    """
+    TODO
+    """
+    abstract type Texture end;
+    export Texture
+
+    const TextureID = UInt64
+
+    """
+    TODO
+    """
+    struct RenderTexture <: Texture
+
+        _native_id::TextureID
+
+        # equivalent to ts::RenderTexture::create
+        function RenderTexture(window::Window, width::Unsigned, height::Unsigned)
+
+            id = ccall((:ts_texture_create_render_texture, _lib),
+                    Csize_t, (Csize_t, Csize_t, Csize_t),
+                    window._native_id, width, height)
+
+            out = new(id)
+            finalizer(out) do x::RenderTexture
+                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+        end
+    end
+
+    """
+    TODO
+    """
+    struct StaticTexture <: Texture
+
+        _native_id::TextureID
+
+        # equivalent to ts::StaticTexture::load
+        function StaticTexture(window::Window, path::String)
+
+            id = ccall((:ts_texture_load_static_texture, _lib), Csize_t, (Csize_t, Cstring), window._native_id, path)
+
+            out = new(id)
+            finalizer(out) do x::StaticTexture
+                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+        end
+
+        # equivalent to ts::StaticTexture::create
+        function StaticTexture(window::Window, width::Unsigned, height::Unsigned, color::RGBA)
+
+            id = ccall((:ts_texture_create_static_texture, _lib), Csize_t,
+                    (Csize_t, Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
+                    window._native_id, width, height, color.red, color.green, color.blue, color.alpha)
+
+            out = new(id)
+            finalizer(out) do x::StaticTexture
+                ccall((ts_texture_destroy_texture, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+        end
+    end
+
+    """
+    `unload(::Texture) -> Nothing`
+    """
+    function unload(texture::Texture) ::Nothing
+    end
+    
+    """
+    `set_color(::Texture) -> Nothing`
+    """
+    function set_color(texture::Texture) ::Nothing
+    end
+    
+    """
+    `get_color(::Texture) -> RGBA`
+    """
+    function get_color(texture::Texture) ::RGBA
+    end
+    
+    """
+    `set_blend_mode(::Texture, ::TextureBlendMode) -> RGBA`
+    """
+    function set_blend_mode(texture::Texture, mode::TextureBlendMode) ::Nothing
+    end
+
+    """
+    `get_blend_mode(::Texture) -> TextureBlendMode`
+    """
+    function get_blend_mode(texture::Texture) ::TextureBlendMode
+    end
+
+    """
+    `set_filtering_mode(::Texture, ::TextureFilteringMode) -> Nothing`
+    """
+    function set_filtering_mode(texture::Texture, mode::TextureFilteringMode) ::Nothing
+    end
+
+    """
+    `get_filtering_mode(::Texture) -> TextureFilteringMode`
+    """
+    function get_filtering_mode(texture::Texture) ::TextureFilteringMode
+    end
+
+    """
+    `get_size(::Texture) -> Vector2ui`
+    """
+    function get_size(texture::Texture) ::Vector2ui
+    end
+
+    ### TRANSFORM #############################################################
+
+    """
+    """
+    struct Transform end
+
+    """
+    `apply_to(::Transform, ::Vector2f) -> Vector2f`
+    """
+    function apply_to(transform::Transform, point::Vector2f) ::Vector2f
+    end
+
+    """
+    `reset(::Transform) -> Nothing`
+    """
+    function reset(transform::Transform) ::Nothing
+    end
+
+    """
+    `combine(::Transform, ::Transform) -> Nothing`
+    """
+    function combine(left::Transform, right::Transform) ::Nothing
+    end
+
+    """
+    `translate(::Transform, ::Float32, ::Float32) -> Nothing`
+    """
+    function translate(transform::Transform, x::Float32, y::Float32) ::Nothing
+    end
+
+    """
+    `rotate(::Transform, ::Angle, ::Vector2f) -> Nothing`
+    """
+    function rotate(transform::Transform, angle::Angle, origin::Vector2f) ::Nothing
+    end
+
+    """
+    `scale(::Transform, ::Float32, ::Float32) -> Nothing`
+    """
+    function scale(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+    end
+
+    """
+    `shear(::Transform, ::Float32, ::Float32) -> Nothing`
+    """
+    function shear(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+    end
+
+    """
+    `reflect(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
+    """
+    function reflect(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f) ::Nothing
+    end
+
+    ### GEOMETRY ##############################################################
+
+    """
+    TODO
+    """
+    struct Triangle
+
+        a::Vector2f
+        b::Vector2f
+        c::Vector2f
+    end
+
+    """
+    TODO
+    """
+    struct Rectangle
+
+        top_left::Vector2f
+        size::Vector2f
+    end
+
+    """
+    TODO
+    """
+    struct Circle
+
+        center::Vector2f
+        radius::Float32
+    end
+
+    ### SHAPE #################################################################
+
+    """
+    """
+    abstract type Shape end
+
+    """
+    `set_centroid(::Shape, ::Vector2f) -> Nothing`
+    """
+    function set_centroid(shape::Shape, position::Vector2f) ::Nothing
+    end
+
+    """
+    `get_centroid(::Shape) -> Vector2f`
+    """
+    function get_centroid(shape::Shape) ::Vector2f
+    end
+
+    """
+    `move(::Shape, ::Float32, ::Float32) -> Nothing`
+    """
+    function move(shape::Shape) ::Nothing
+    end
+
+    """
+    `set_color(::Shape, ::RGBA) -> Nothing`
+    """
+    function set_color(shape::Shape, color::RGBA) ::Nothing
+    end
+
+    """
+    `get_color(::Shape) -> RGBA`
+    """
+    function get_color(shape::Shape) ::RGBA
+    end
+
+    """
+    `get_n_vertices(::Shape) -> UInt64`
+    """
+    function get_n_vertices(shape::Shape) ::UInt64
+    end
+
+    """
+    `get_texture(::Shape) -> Ref{Texture}`
+    """
+    function get_texture(shape::Shape) ::Ref{Texture}
+    end
+
+    """
+    `set_texture(::Shape, ::Texture) -> Nothing`
+    """
+    function set_texture(shape::Shape, texture::Texture) ::Nothing
+    end
+
+    """
+    `set_texture_rectangle(::Shape, ::Rectangle) -> Nothing`
+    """
+    function set_texture_rectangle(shape::Shape, rect::Rectangle) ::Nothing
+    end
+
+    """
+    `get_texture_rectangle(::Shape) -> Rectangle`
+    """
+    function get_texture_rectangle(shape::Shape) ::Rectangle
+    end
+
+    """
+    `get_bounding_box(::Shape) -> Rectangle`
+    """
+    function get_bounding_box(shape::Shape) ::Rectangle
+    end
+
+    """
+    `set_vertex_position(::Shape, ::Integer, ::Vector2f) -> Nothing`
+    """
+    function set_vertex_position(shape::Shape, index::Integer, position::Vector2f) ::Nothing
+    end
+
+    """
+    `set_vertex_color(::Shape, ::Integer, ::RGBA) -> Nothing`
+    """
+    function set_vertex_position(shape::Shape, index::Integer, color::RGBA) ::Nothing
+    end
+
+    """
+    `set_vertex_texture_coordinate(::Shape, ::Integer, ::Vector2f) -> Nothing`
+    """
+    function set_vertex_texture_coordinate(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
+    end
+
+    """
+    `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
+    """
+    function get_vertex_position(shape::Shape, index::Integer) ::Vector2f
+    end
+
+    """
+    `get_vertex_color(shape::Shape, index::Integer) -> RGBA`
+    """
+    function get_vertex_color(shape::Shape, index::Integer) ::RGBA
+    end
+
+    """
+    `get_vertex_texture_coordinate(shape::Shape, index::Integer) -> Vector2f`
+    """
+    function get_vertex_texture_coordinate(shape::Shape, index::Integer) ::Vector2f
+    end
+
+    ### TRIANGLE SHAPE ########################################################
+
+    """
+    TODO
+    """
+    struct TriangleShape
+
+        _native::Ptr{Cvoid}
+
+        function TriangleShape(a::Vector2f, b::Vector2f, c::Vector2f)
+        end
+    end
+
+    ### RECTANGLE SHAPE #######################################################
+
+    """
+    TODO
+    """
+    struct RectangleShape
+
+        _native::Ptr{Cvoid}
+
+        function RectangleShape(top_left::Vector2f, size::Vector2f)
+        end
+    end
+
+    """
+    `set_top_left(::RectangleShape, ::Vector2f) -> Nothing`
+    """
+    function set_top_left(rect::RectangleShape, position::Vector2f) ::Nothing
+    end
+
+    """
+    `get_top_left(::RectangleShape) -> Vector2f`
+    """
+    function get_top_left(rect::RectangleShape) ::Vector2f
+    end
+
+    """
+    `get_size(::RectangleShape) -> Vector2f`
+    """
+    function get_size(rect::RectangleShape) ::Vector2f
+    end
+
+    """
+    `set_size(::RectangleShape, ::Vector2f) -> Nothing`
+    """
+    function set_size(rect::RectangleShape, size::Vector2f) ::Nothing
+    end
+
+    ### POLYGON SHAPE #########################################################
+
+    """
+    TODO
+    """
+    struct PolygonShape
+
+        _native::Ptr{Cvoid}
+
+        function PolygonShape(positions::Vector2f...)
+        end
+    end
 end
