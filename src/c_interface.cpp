@@ -407,14 +407,68 @@ size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t h
     return id;
 }
 
+// ### TRANSFORMS ##################################################
+
+void* ts_transform_create()
+{
+    return new ts::Transform();
+}
+
+void ts_transform_destroy(void* transform_ptr)
+{
+    delete ((ts::Transform*) transform_ptr);
+}
+
+void ts_transform_set(void* transform_ptr, size_t x, size_t y, float value)
+{
+    ((ts::Transform*) transform_ptr)->get_native()[x][y] = value;
+}
+
+float ts_transform_get(void* transform_ptr, size_t x, size_t y)
+{
+    return ((ts::Transform*) transform_ptr)->get_native()[x][y];
+}
+
+void ts_transform_reset(void* transform_ptr)
+{
+    ((ts::Transform*) transform_ptr)->reset();
+}
+
+void ts_transform_combine(void* left, void* right)
+{
+    ((ts::Transform*) left)->combine(*((ts::Transform*) right));
+}
+
+void ts_transform_translate(void* transform_ptr, float x, float y)
+{
+    ((ts::Transform*) transform_ptr)->translate(x, y);
+}
+
+void ts_transform_rotate(void* transform_ptr, float degrees, float origin_x, float origin_y)
+{
+    ((ts::Transform*) transform_ptr)->rotate(ts::degrees(degrees), ts::Vector2f{origin_x, origin_y});
+}
+
+void ts_transform_scale(void* transform_ptr, float x_scale, float y_scale)
+{
+    ((ts::Transform*) transform_ptr)->scale(x_scale, y_scale);
+}
+
+void ts_transform_shear(void* transform_ptr, float x_scale, float y_scale)
+{
+    ((ts::Transform*) transform_ptr)->shear(x_scale, y_scale);
+}
+
+void ts_transform_reflect(void* transform_ptr, bool about_x_axis, bool about_y_axis, float origin_x, float origin_y)
+{
+    ((ts::Transform*) transform_ptr)->reflect(about_x_axis, about_y_axis, ts::Vector2f{origin_x, origin_y});
+}
+
 // ### SHAPES ##################################################
 
-void ts_shape_render(void* shape_ptr, size_t window_id,
-                     float t_00, float t_01, float t_02,
-                     float t_10, float t_11, float t_12,
-                     float t_20, float t_21, float t_22) // transform elements
+void ts_shape_render(void* shape_ptr, size_t window_id, void* transform_ptr)
 {
-    detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), ts::Transform({t_00, t_01, t_02, t_10, t_11, t_12, t_20, t_21, t_22}));
+    detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), *((ts::Transform*) transform_ptr));
 }
 
 void ts_shape_get_centroid(void* shape_ptr, int* out_x, int* out_y)
