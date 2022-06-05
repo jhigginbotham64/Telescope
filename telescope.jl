@@ -1321,9 +1321,38 @@ module ts
     export Transform
 
     """
+    `getindex(::Transform, ::Integer, ::Integer) -> Float32`
+    """
+    function Base.getindex(transform::Transform, x::Integer, y::Integer) ::Float32
+
+        return ccall((:ts_transform_get, _lib), Cfloat,
+            (Ptr{Cvoid}, Csize_t, Csize_t),
+            transform._native, x, y)
+    end
+
+    """
+    `setindex!(::Transform, ::Float32, ::Integer, ::Integer) -> Float32`
+    """
+    function Base.setindex!(transform::Transform, value::Float32, x::Integer, y::Integer) ::Nothing
+
+        ccall((:ts_transform_set, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Csize_t, Cfloat),
+            transform._native, x, y, value)
+        return nothing
+    end
+
+    """
     `apply_to(::Transform, ::Vector2f) -> Vector2f`
     """
     function apply_to(transform::Transform, point::Vector2f) ::Vector2f
+
+        x = Ref{Float32}(0)
+        y = Ref{Float32}(0)
+        ccall((:ts_transform_apply_to, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}),
+            transform._native, point.x, point.y, x, y)
+
+        return Vector2f{x[], y[]}
     end
     export apply_to
 
@@ -1331,6 +1360,7 @@ module ts
     `reset!(::Transform) -> Nothing`
     """
     function reset!(transform::Transform) ::Nothing
+        ccall((:ts_transform_reset, _lib), Cvoid, (Ptr{Cvoid}, transform._native))
     end
     export reset!
 
@@ -1338,6 +1368,7 @@ module ts
     `combine!(::Transform, ::Transform) -> Nothing`
     """
     function combine!(left::Transform, right::Transform) ::Nothing
+        ccall((:ts_transform_combin, _lib), Cvoid, (Ptr{Cvoid}, Ptr{Cvoid}, left._native, right._native))
     end
     export combine!
 
@@ -1345,6 +1376,7 @@ module ts
     `translate!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
     function translate!(transform::Transform, x::Float32, y::Float32) ::Nothing
+        ccall((:ts_transform_translate, _lib), Cvoid, (Ptr{Cvoid}, Cfloat, Cfloat), transform._native, x, y)
     end
     export translate!
 
@@ -1352,6 +1384,9 @@ module ts
     `rotate!(::Transform, ::Angle, ::Vector2f) -> Nothing`
     """
     function rotate!(transform::Transform, angle::Angle, origin::Vector2f) ::Nothing
+        ccall((:ts_transform_rotate, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat),
+            transform._native, as_degrees(angle), origin.x, origin.y)
     end
     export rotate!
 
@@ -1359,6 +1394,9 @@ module ts
     `scale!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
     function scale!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+        ccall((:ts_transform_scale, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat),
+            transform._native, x_scale, y_scale)
     end
     export scale!
 
@@ -1366,6 +1404,9 @@ module ts
     `shear!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
     function shear!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+        ccall((:ts_transform_shear, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat),
+            transform._native, x_scale, y_scale)
     end
     export shear!
 
@@ -1373,6 +1414,9 @@ module ts
     `reflect!(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
     """
     function reflect!(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f) ::Nothing
+        ccall((:ts_transform_reflect, _lib), Cvoid,
+            (Ptr{Cvoid}, Bool, Bool, Cfloat, Cfloat),
+            transform._native, about_x_axis, about_y_axis, origin.x, origin.y)
     end
     export reflect!
 
@@ -1432,6 +1476,10 @@ module ts
     `set_centroid!(::Shape, ::Vector2f) -> Nothing`
     """
     function set_centroid!(shape::Shape, position::Vector2f) ::Nothing
+
+        ccall((:ts_shape_set_centroid, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat),
+            shape._native, position.x, position.y)
     end
     export set_centroid!
 
@@ -1439,13 +1487,21 @@ module ts
     `get_centroid(::Shape) -> Vector2f`
     """
     function get_centroid(shape::Shape) ::Vector2f
+
+        x = Ref{Cint}(0)
+        y = Ref{Cint}(0)
+
+        ccall((:ts_shape_get_centroid, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cint}, Ref{Cint}),
+            shape._native, x, y)
     end
     export get_centroid
 
     """
     `move!(::Shape, ::Float32, ::Float32) -> Nothing`
     """
-    function move!(shape::Shape) ::Nothing
+    function move!(shape::Shape, x::Float32, y::Float32) ::Nothing
+        ccall((:ts_shape_move, _lib), Cvoid, (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, x, y)
     end
     export move!
 
@@ -1453,13 +1509,28 @@ module ts
     `set_color!(::Shape, ::RGBA) -> Nothing`
     """
     function set_color!(shape::Shape, color::RGBA) ::Nothing
+
+        ccall((:ts_shape_set_color, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
+            shape._native, color.red, color.green, color.blue, color.alpha)
     end
     export set_color!
 
     """
     `get_color(::Shape) -> RGBA`
     """
-    function get_color(shape::Shape) ::RGBA
+    function get_color(shape::Shape, vertex_index::UInt64) ::RGBA
+
+        r = Ref{Cfloat}(-1)
+        g = Ref{Cfloat}(-1)
+        b = Ref{Cfloat}(-1)
+        a = Ref{Cfloat}(-1)
+
+        ccall((:ts_shape_get_vertex_color, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            shape._native, vertex_index, r, g, b, a)
+
+        return RGBA(r[], g[], b[], a[])
     end
     export get_color
 
@@ -1467,13 +1538,15 @@ module ts
     `get_n_vertices(::Shape) -> UInt64`
     """
     function get_n_vertices(shape::Shape) ::UInt64
+        return ccall((:ts_shape_get_n_vertices, _lib), Csize_t, (Ptr{Cvoid},), shape._native)
     end
     export get_n_vertices
 
     """
     `get_texture(::Shape) -> Ref{Texture}`
     """
-    function get_texture(shape::Shape) ::Ref{Texture}
+    function get_texture(shape::Shape) ::Texture
+        out::Ptr{Cvoid} = ccall((:ts_shape_get_texture))
     end
     export get_texture
 

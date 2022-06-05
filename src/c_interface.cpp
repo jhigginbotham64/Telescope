@@ -330,12 +330,6 @@ void ts_hsv_to_rgb(float h, float s, float v, float* out_r, float* out_g, float*
 
 // ### TEXTURES ##################################################
 
-namespace detail
-{
-    size_t _texture_id = 0;
-    std::unordered_map<size_t, std::unique_ptr<ts::Texture>> _textures;
-}
-
 int32_t ts_texture_filtering_mode_nearest_neighbour()
 {
     return ts::TextureFilteringMode::NEAREST_NEIGHBOUR;
@@ -371,40 +365,37 @@ int32_t ts_texture_blend_mode_multiply()
     return ts::TextureBlendMode::MULTIPLY;
 }
 
-size_t ts_texture_create_static_texture(size_t window_id,
+void* ts_texture_create_static_texture(size_t window_id,
                                         size_t width, size_t height,
                                         float r, float g, float b, float a)
 {
-    size_t id = detail::_texture_id++;
-    detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::StaticTexture(&detail::_windows.at(window_id))));
-    ((ts::StaticTexture*) detail::_textures.at(id).get())->create(width, height, ts::RGBA(r, g, b, a));
-    return id;
+    auto* out = new ts::StaticTexture(&detail::_windows.at(window_id));
+    out->create(width, height, ts::RGBA(r, g, b, a));
+    return out;
 }
 
-size_t ts_texture_load_static_texture(size_t window_id, const char* path)
+void* ts_texture_load_static_texture(size_t window_id, const char* path)
 {
-    size_t id = detail::_texture_id++;
-    detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::StaticTexture(&detail::_windows.at(window_id))));
-    ((ts::StaticTexture*) detail::_textures.at(id).get())->load(path);
-    return id;
+    auto* out = new ts::StaticTexture(&detail::_windows.at(window_id));
+    out->load(path);
+    return out;
 }
 
-void ts_texture_get_size(size_t texture_id, size_t* out_x, size_t* out_y)
+void ts_texture_get_size(void* texture, size_t* out_x, size_t* out_y)
 {
-    SDL_QueryTexture(detail::_textures.at(texture_id)->get_native(), 0, 0, (int*) out_x, (int*) out_y);
+    SDL_QueryTexture(((ts::Texture*) texture)->get_native(), 0, 0, (int*) out_x, (int*) out_y);
 }
 
-void ts_texture_destroy_texture(size_t texture_id)
+void ts_texture_destroy_texture(void* texture)
 {
-    detail::_textures.erase(texture_id);
+    delete ((ts::Texture*) texture);
 }
 
-size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t height)
+void* ts_texture_create_render_texture(size_t window_id, size_t width, size_t height)
 {
-    size_t id = detail::_texture_id++;
-    detail::_textures.emplace(id, std::unique_ptr<ts::Texture>(new ts::RenderTexture(&detail::_windows.at(window_id))));
-    ((ts::RenderTexture*) detail::_textures.at(id).get())->create(width, height);
-    return id;
+    auto* out = new ts::RenderTexture(&detail::_windows.at(window_id));
+    out->create(width, height);
+    return out;
 }
 
 // ### TRANSFORMS ##################################################
@@ -427,6 +418,13 @@ void ts_transform_set(void* transform_ptr, size_t x, size_t y, float value)
 float ts_transform_get(void* transform_ptr, size_t x, size_t y)
 {
     return ((ts::Transform*) transform_ptr)->get_native()[x][y];
+}
+
+void ts_transform_apply_to(void* transform_ptr, float x, float y, float* out_x, float* out_y)
+{
+    auto out = ((ts::Transform*) transform_ptr)->apply_to(ts::Vector2f{x, y});
+    *out_x = out.x;
+    *out_y = out.y;
 }
 
 void ts_transform_reset(void* transform_ptr)
@@ -469,6 +467,11 @@ void ts_transform_reflect(void* transform_ptr, bool about_x_axis, bool about_y_a
 void ts_shape_render(void* shape_ptr, size_t window_id, void* transform_ptr)
 {
     detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), *((ts::Transform*) transform_ptr));
+}
+
+void ts_shape_move(void* shape_ptr, float x, float y)
+{
+    ((ts::Shape*) shape_ptr)->move(x, y);
 }
 
 void ts_shape_get_centroid(void* shape_ptr, int* out_x, int* out_y)
@@ -553,6 +556,11 @@ void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* o
 void ts_shape_set_texture(void* shape_ptr, size_t texture_id)
 {
     ((ts::Shape*) shape_ptr)->set_texture(detail::_textures.at(texture_id).get());
+}
+
+size_t ts_shape_get_texture(void* shape_ptr)
+{
+    ((ts::Shape*) shape_ptr)->get_texture()->get
 }
 
 void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)

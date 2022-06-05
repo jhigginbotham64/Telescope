@@ -140,17 +140,17 @@ int32_t ts_texture_blend_mode_add();
 
 int32_t ts_texture_blend_mode_multiply();
 
-size_t ts_texture_create_static_texture(size_t window_id,
+void* ts_texture_create_static_texture(size_t window_id,
                                         size_t width, size_t height,
                                         float r, float g, float b, float a);
 
-size_t ts_texture_load_static_texture(size_t window_id, const char* path);
+void* ts_texture_load_static_texture(size_t window_id, const char* path);
 
-void ts_texture_get_size(size_t texture_id, size_t* out_x, size_t* out_y);
+void ts_texture_get_size(void* texture, size_t* out_x, size_t* out_y);
 
-void ts_texture_destroy_texture(size_t texture_id);
+void ts_texture_destroy_texture(void* texture);
 
-size_t ts_texture_create_render_texture(size_t window_id, size_t width, size_t height);
+void* ts_texture_create_render_texture(size_t window_id, size_t width, size_t height);
 
 // ### TRANSFORMS ##################################################
 
@@ -161,6 +161,8 @@ void ts_transform_destroy(void* transform_ptr);
 void ts_transform_set(void* transform_ptr, size_t x, size_t y, float value);
 
 float ts_transform_get(void* transform_ptr, size_t x, size_t y);
+
+void ts_transform_apply_to(void* transform_ptr, float x, float y, float* out_x, float* out_y);
 
 void ts_transform_reset(void* transform_ptr);
 
@@ -184,6 +186,8 @@ void ts_shape_get_centroid(void* shape_ptr, int* out_x, int* out_y);
 
 void ts_shape_set_centroid(void* shape_ptr, float x, float y);
 
+void ts_shape_move(void* shape_ptr, float x, float y);
+
 size_t ts_shape_get_n_vertices(void* shape_ptr);
 
 void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index,
@@ -205,7 +209,9 @@ void ts_shape_set_vertex_position(void* shape_ptr, size_t vertex_index, float x,
 
 void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* out_x, float* out_y);
 
-void ts_shape_set_texture(void* shape_ptr, size_t texture_id);
+void ts_shape_set_texture(void* shape_ptr, void* texture_id);
+
+size_t ts_shape_get_texture(void* shape_ptr);
 
 void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y);
 
