@@ -65,7 +65,6 @@ find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
 find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
 find_library(SDL2_net REQUIRED NAMES SDL2_net)
 
-find_package(Bullet REQUIRED)
 find_library(vulkan REQUIRED NAMES vulkan)
 
 include(CheckIncludeFileCXX)
@@ -74,9 +73,15 @@ if(NOT GLM_FOUND)
     message(FATAL_ERROR "Missing Dependency: glm")
 endif()
 
+CHECK_INCLUDE_FILE_CXX("box2d/box2d.h" BOX2D_FOUND)
+if(NOT BOX2D_FOUND)
+    message(FATAL_ERROR "Missing Dependency: box2d")
+endif()
+
 if (FALSE) # TODO
+    find_package(Bullet REQUIRED)
     list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-    find_package(shaderc_shared REQUIRED) # not required
+    find_package(shaderc_shared REQUIRED)
 endif()
 
 ### TELESCOPE ###
@@ -170,7 +175,10 @@ add_library(telescope SHARED
 
     include/c_interface.hpp
     src/c_interface.cpp
-)
+
+    include/physics.hpp
+    include/physics/world.hpp
+     include/physics/collision_shape.hpp include/physics/collision_circle.hpp include/physics/collision_polygon.hpp include/physics/collision_line.hpp include/physics/collision_wireframe.hpp include/physics/physics_object.hpp include/physics/~collision_filter.hpp include/physics/collision_bounding_box.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
@@ -182,9 +190,9 @@ set_target_properties(telescope PROPERTIES
 
 target_include_directories(telescope PUBLIC
   "${CMAKE_SOURCE_DIR}"
-  "${BULLET_INCLUDE_DIRS}"
-  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp"
-  "${SHADERC_INCLUDE_DIRS}"
+  #"${BULLET_INCLUDE_DIRS}" #TODO
+  #"${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp" #TODO
+  #"${SHADERC_INCLUDE_DIRS}" #TODO
 )
 
 target_link_libraries(telescope PUBLIC
@@ -193,12 +201,10 @@ target_link_libraries(telescope PUBLIC
     ${SDL2_mixer}
     ${SDL2_net}
     ${SDL2_ttf}
-    ${BULLET_LIBRARIES}
-    ${shader_c_shared}
     ${vulkan}
+    #${BULLET_LIBRARIES} #TODO
+    #${shader_c_shared}  #TODO
 )
-
-### TODO ###
 
 # TODO: REMOVE THIS vvv
 

@@ -553,14 +553,14 @@ void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* o
     *out_y = pos.y;
 }
 
-void ts_shape_set_texture(void* shape_ptr, size_t texture_id)
+void ts_shape_set_texture(void* shape_ptr, void* texture)
 {
-    ((ts::Shape*) shape_ptr)->set_texture(detail::_textures.at(texture_id).get());
+    ((ts::Shape*) shape_ptr)->set_texture((ts::Texture*) texture);
 }
 
-size_t ts_shape_get_texture(void* shape_ptr)
+void* ts_shape_get_texture(void* shape_ptr)
 {
-    ((ts::Shape*) shape_ptr)->get_texture()->get
+    return ((ts::Shape*) shape_ptr)->get_texture();
 }
 
 void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)

@@ -38,15 +38,20 @@
 
 #include <glm/gtx/transform.hpp>
 
+#include <bullet/btBulletCollisionCommon.h>
+#include <box2d/b2_world.h>
+
 using namespace ts;
 
 int main()
 {
-    float a = 0;
-    ts_test(&a);
-    std::cout << a << std::endl;
-    return 0;
+    auto gravity = b2Vec2(0.0, -10.0);
+    auto world = b2World(gravity);
 
+
+
+
+    return 0;
     initialize();
 
     auto window = ts::Window();

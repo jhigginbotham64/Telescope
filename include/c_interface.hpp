@@ -209,9 +209,9 @@ void ts_shape_set_vertex_position(void* shape_ptr, size_t vertex_index, float x,
 
 void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* out_x, float* out_y);
 
-void ts_shape_set_texture(void* shape_ptr, void* texture_id);
+void ts_shape_set_texture(void* shape_ptr, void* texture);
 
-size_t ts_shape_get_texture(void* shape_ptr);
+void* ts_shape_get_texture(void* shape_ptr);
 
 void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y);
 
