@@ -39,15 +39,15 @@
 #include <glm/gtx/transform.hpp>
 
 #include <bullet/btBulletCollisionCommon.h>
-#include <box2d/b2_world.h>
+
+#include <include/physics.hpp>
 
 using namespace ts;
 
 int main()
 {
-    auto gravity = b2Vec2(0.0, -10.0);
-    auto world = b2World(gravity);
-
+    auto world = ts::PhysicsWorld();
+    world.set_gravity({0, -10});
 
 
 

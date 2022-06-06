@@ -178,7 +178,7 @@ add_library(telescope SHARED
 
     include/physics.hpp
     include/physics/world.hpp
-     include/physics/collision_shape.hpp include/physics/collision_circle.hpp include/physics/collision_polygon.hpp include/physics/collision_line.hpp include/physics/collision_wireframe.hpp include/physics/physics_object.hpp include/physics/~collision_filter.hpp include/physics/collision_bounding_box.hpp)
+     include/physics/collision_shape.hpp include/physics/collision_circle.hpp include/physics/collision_polygon.hpp include/physics/collision_line.hpp include/physics/collision_wireframe.hpp include/physics/physics_object.hpp include/physics/~collision_filter.hpp include/physics/collision_bounding_box.hpp src/physics_object.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C

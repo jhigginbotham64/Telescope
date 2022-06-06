@@ -9,15 +9,17 @@
 
 namespace ts
 {
-    //
+    /// \brief collision shape: a 2-point line
     class CollisionLine : public CollisionShape
     {
         public:
-            // chain shape without loop
-            CollisionLine(const std::vector<Vector2f>&);
-
-            //
+            /// \brief construct from 2 points
+            /// \param a: first point
+            /// \param b: second point
             CollisionLine(Vector2f a, Vector2f b);
+
+        protected:
+            b2Shape* get_shape() override;
 
         private:
             b2EdgeShape _shape;

@@ -23,41 +23,58 @@
 
 namespace ts
 {
-    //
+    /// \brief abstract collision shape
     struct CollisionShape
     {
         public:
-            //
+            /// \brief destruct, this also deallocates the box2d fixture. The user is responsible for keeping the shape in memory while it is attached to a PhysicsObject
+            ~CollisionShape();
+
+            /// \brief attach to a physics object
+            /// \param object: physics object
+            /// \param config: config for this shape
             void attach_to(PhysicsObject&, AttachmentConfig = AttachmentConfig());
 
-            //
+            /// \brief detach from a physics object
+            /// \param object: physics object
             void detach_from(PhysicsObject&);
 
-            //
+            /// \brief set the density of this shape. This governs mass
+            /// \param density
             void set_density(float);
 
-            //
+            /// \brief access the density of this shape
+            /// \returns density
             float get_density() const;
 
-            //
+            /// \brief set the friction of the shape
+            /// \param friction
             void set_friction(float);
 
-            //
+            /// \brief get the friction of the shape
+            /// \returns friction
             float get_friction() const;
 
-            //
+            /// \brief set the restitution of the shape
+            /// \param restitution
             void set_restitution(float);
 
-            //
+            /// \brief get the restitution of the shape
+            /// \returns restitution
             float get_restitution() const;
 
-            //
+            /// \brief compute the axis-aligned bounding box of the shape
+            /// \returns rectangle that is the bounding box
             Rectangle get_bounding_box() const;
 
-            //
+            /// \brief get the shapes center of mass
+            /// \returns world coordinates of the center of mass
             Vector2f get_centroid() const;
 
         protected:
-            b2Fixture _fixture;
+            b2Body* _body;
+            b2Fixture* _fixture;
+
+            virtual b2Shape* get_shape() = 0;
     };
 }

@@ -9,20 +9,28 @@
 
 namespace ts
 {
-    //
+    /// \brief collision shape: a perfect circle
     class CollisionCircle : public CollisionShape
     {
         public:
-            //
-            CollisionCircle(Vector2f center, float radius, size_t n_outer_vertices);
+            /// \brief construct from center and radius
+            /// \param center: world coordinates of the center
+            /// \param radius: radius of the circle
+            CollisionCircle(Vector2f center, float radius);
 
-            //
+            /// \brief construct from ts::Circle
+            /// \param circle: provides center and radius
             CollisionCircle(Circle);
 
-            //
+            /// \brief construct from ts::CircleShape
+            /// \param circle: provides center and radius
+            /// \note unlike ts::CircleShape, ts::CollisionShape is simulated as if it had an infinite number of outer vertices
             CollisionCircle(const CircleShape&);
 
+        protected:
+            b2Shape* get_shape() override;
+
         private:
-            b2CircleShape _b2_shape;
+            b2CircleShape _shape;
     };
 }
