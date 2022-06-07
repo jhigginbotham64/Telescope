@@ -5,6 +5,58 @@
 
 module ts
 
+    ### EXPORTS ###############################################################
+
+    export initialize, set_framerate_limit!, start_frame!, end_frame!
+
+    export Vector2, Vector2f, Vector2i, Vector2ui, Vector3, Vector3f, Vector3i, Vector3ui
+
+    export Angle
+    export degrees, radians, as_degrees, as_radians
+
+    export RGBA, HSVA
+    export as_hsv, as_rgb
+
+    export Time, Clock
+    export as_minutes, as_seconds, as_milliseconds, as_microseconds, as_nanoseconds,
+        minutes, seconds, milliseconds, microseconds, nanoseconds, elapsed, restart
+
+    export InputHandler, KeyboardKey, MouseButton, ControllerButton
+    export is_down, has_state_changed, was_pressed, was_released, get_cursor_position,
+        get_scrollwheel, get_controller_axis_left, get_controller_axis_right,
+        get_controller_trigger_left, get_controller_trigger_right
+
+    export Sound, SoundHandler
+    export n_channels, play!, stop!, pause!, unpause!, force_stop!, is_playing, is_stopped,
+        set_volume!, get_volume, set_panning!, get_panning
+
+    export Music, MusicHandler
+    export sample_rate, set_volume!, get_volume, play!, play_next!, stop!, next!, clear_next!,
+        force_stop!, pause!, unpause!, skip_to!, is_playing, is_paused, is_stopped
+
+    export Texture, RenderTexture, StaticTexture, TextureFilteringMode, TextureBlendMode
+    export set_color!, get_color, set_blend_mode!, get_blend_mode, set_filtering_mode!,
+        get_filtering_mode, get_size
+
+    export Transform
+    export apply_to, reset!, combine!, translate!, rotate!, scale!, shear!, reflect!
+
+    export Triangle, Rectangle, Trapezoid, Circle
+    export Shape, TriangleShape, RectangleShape, CircleShape, PolygonShape
+        set_centroid!, get_centroid, move!, set_color!, get_color, set_texture!,
+        set_texture_rectangle!, get_texture_rectangle, get_bounding_box, get_n_vertices,
+        set_vertex_position!, set_vertex_color!, set_vertex_texture_coordinate!,
+        get_vertex_position, get_vertex_color, get_vertex_texture_coordinate, get_top_left,
+        get_size, set_size!, set_top_left, get_radius, set_radius!
+
+    export Window, WindowOptions
+    export close!, is_open, get_size, get_position, set_hidden!, is_hidden, minimize!, is_minimized,
+        maximize!, is_maximized, has_focus, has_mouse_focus, clear, render!, flush!
+
+    export Camera
+    export center_on!, move!, zoom_in!, zoom_out!, rotate!, set_rotation!, get_transform,
+        get_center, get_view_area
+
     ### COMMON ################################################################
 
     const _lib = "./libtelescope.so"
@@ -43,7 +95,7 @@ module ts
     export Vector2f, Vector2i, Vector2ui
 
     """
-     Vector3{<: Any}
+    Vector3{<: Any}
 
     ## Members
     + x::T
@@ -81,10 +133,16 @@ module ts
     `RGBA(r::Float32, g::Float32, b::Float32, a::Float32)`
     """
     struct RGBA
+
         red::Float32
         green::Float32
         blue::Float32
         alpha::Float32
+
+        function RGBA(r::AbstractFloat, g::AbstractFloat, b::AbstractFloat, a::AbstractFloat)
+            fclamp(x::AbstractFloat) = if x < 0 return 0 elseif x > 1 return 1 else return x end
+            new(fclamp(r), fclamp(g), fclamp(b), fclamp(a))
+        end
     end
     export RGBA
     
@@ -101,10 +159,16 @@ module ts
     `RGBA(h::Float32, s::Float32, v::Float32, a::Float32)`
     """
     struct HSVA
+
         hue::Float32
         saturation::Float32
         value::Float32
         alpha::Float32
+
+        function RGBA(h::AbstractFloat, s::AbstractFloat, b::AbstractFloat, a::AbstractFloat)
+            fclamp(x::AbstractFloat) = if x < 0 return 0 elseif x > 1 return 1 else return x end
+            new(fclamp(h), fclamp(s), fclamp(v), fclamp(a))
+        end
     end
     export HSVA
     
@@ -253,7 +317,7 @@ module ts
     ## Constructors
     `Clock()`
     """
-    struct Clock
+    mutable struct Clock
 
         _native_id::UInt64
 
@@ -619,7 +683,7 @@ module ts
         export was_released
         
         """
-        `get_cursor_position() -> ts.Vector2f`
+        `get_cursor_position() -> Vector2f`
         """
         function get_cursor_position() ::Vector2f
 
@@ -631,7 +695,7 @@ module ts
         export get_cursor_position
 
         """
-        `get_scrollwheel() -> ts.Vector2f`
+        `get_scrollwheel() -> Vector2f`
         """
         function get_scrollwheel() ::Vector2f
 
@@ -680,7 +744,7 @@ module ts
         export was_released
 
         """
-        `get_controller_axis_left([::ControllerID]) -> ts.Vector2f`
+        `get_controller_axis_left([::ControllerID]) -> Vector2f`
         """
         function get_controller_axis_left(id::ControllerID = 0) ::Vector2f
 
@@ -693,7 +757,7 @@ module ts
         export get_controller_axis_left
 
         """
-        `get_controller_axis_right([::ControllerID]) -> ts.Vector2f`
+        `get_controller_axis_right([::ControllerID]) -> Vector2f`
         """
         function get_controller_axis_right(id::ControllerID = 0) ::Vector2f
 
@@ -721,6 +785,7 @@ module ts
         end
         export get_controller_trigger_left
     end
+    import Main.ts.InputHandler; using Main.ts.InputHandler
 
     ### SOUND ################################################################
 
@@ -733,7 +798,7 @@ module ts
     ## Constructors
     `Sound(file_path::String, volume::Cfloat)`
     """
-    struct Sound
+    mutable struct Sound
 
         _native_id::Csize_t
 
@@ -865,6 +930,7 @@ module ts
         end
         export get_panning
     end
+    import Main.ts.SoundHandler; using Main.ts.SoundHandler
 
     ### MUSIC ################################################################
 
@@ -877,7 +943,7 @@ module ts
     ## Constructors
     `Music(path::String)`
     """
-    struct Music
+    mutable struct Music
 
         _native_id::Csize_t
 
@@ -1056,8 +1122,14 @@ module ts
     abstract type Texture end
     export Texture
 
-    # forward declaration
+    """
+    AbstractWindow (Abstract Interface)
+    
+    ## Expected Members
+    + _native_id::Csize_t
+    """
     abstract type AbstractWindow end
+    # no export
 
     """
     RenderTexture
@@ -1068,7 +1140,7 @@ module ts
     ## Constructors
     `RenderTexture(::Window, width::Unsigned, height::Unsigned)`
     """
-    struct RenderTexture <: Texture
+    mutable struct RenderTexture <: Texture
 
         _native::Ptr{Cvoid}
 
@@ -1088,6 +1160,10 @@ module ts
     export RenderTexture
 
     """
+    `render(::`
+    """
+
+    """
     StaticTexture
 
     ## Members
@@ -1097,7 +1173,7 @@ module ts
     `StaticTexture(::Window, path::String)`
     `StaticTexture(::Window, width::Unsigned, height::Unsigned, ::RGBA)`
     """
-    struct StaticTexture <: Texture
+    mutable struct StaticTexture <: Texture
 
         _native::Ptr{Cvoid}
 
@@ -1128,13 +1204,6 @@ module ts
         end
     end
     export StaticTexture
-
-    """
-    `unload!(::Texture) -> Nothing`
-    """
-    function unload!(texture::Texture) ::Nothing
-
-    end
 
     """
     `set_color!(::Texture) -> Nothing`
@@ -1232,7 +1301,7 @@ module ts
     ## Constructors
     `Transform()`
     """
-    struct Transform
+    mutable struct Transform
 
         _native::Ptr{Cvoid}
 
@@ -1588,7 +1657,7 @@ module ts
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), coordinate.x, coordinate.y)
     end
-    export set_Vertex_texture_coordinate!
+    export set_vertex_texture_coordinate!
 
     """
     `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
@@ -1651,7 +1720,7 @@ module ts
     ## Constructors
     `TriangleShape(::Vector2f, ::Vector2f, ::Vector2f)`
     """
-    struct TriangleShape
+    mutable struct TriangleShape
 
         _native::Ptr{Cvoid}
 
@@ -1682,7 +1751,7 @@ module ts
     ## Constructors
     `RectangleShape(top_left::Vector2f, size::Vector2f)`
     """
-    struct RectangleShape
+    mutable struct RectangleShape
 
         _native::Ptr{Cvoid}
 
@@ -1759,7 +1828,7 @@ module ts
     ## Constructors
     `CircleShape(center::Vector2f, radius::Float32, [n_vertices::UInt64])
     """
-    struct CircleShape
+    mutable struct CircleShape
 
         _native::Ptr{Cvoid}
 
@@ -1786,13 +1855,13 @@ module ts
     export get_radius
 
     """
-    `set_radius(::CircleShape) -> Float32`
+    `set_radius!(::CircleShape) -> Float32`
     """
-    function set_radius(circle::CircleShape, radius::Float32) ::Nothing
+    function set_radius!(circle::CircleShape, radius::Float32) ::Nothing
        ccall((:ts_shape_circle_set_radius, _lib), Cvoid,
         (Ptr{Cvoid}, Cfloat), circle._native, radius)
     end
-    export set_radius
+    export set_radius!
 
     ### POLYGON SHAPE #########################################################
 
@@ -1805,7 +1874,7 @@ module ts
     ## Constructors
     `PolygonShape(points::Vector2f...)`
     """
-    struct PolygonShape
+    mutable struct PolygonShape
 
         _native::Ptr{Cvoid}
 
@@ -1838,18 +1907,15 @@ module ts
 
     ### WINDOW ################################################################
 
-    const WindowID = UInt64
-    export WindowID
-
     """
     enum WindowOptions <: UInt32
     """
     @enum WindowOptions begin
 
-        DEFAULT = 0
-        FULLSCREEN = 1 << 1
-        BORDERLESS = 1 << 2
-        RESIZABLE  = 1 << 3
+        DEFAULT = UInt32(0)
+        FULLSCREEN = UInt32(1) << 1
+        BORDERLESS = UInt32(1) << 2
+        RESIZABLE  = UInt32(1) << 3
     end
     @export_enum(WindowOptions)
 
@@ -1862,11 +1928,11 @@ module ts
     ## Constructors
     `Window(width::Integer, height::Integer, title::String, [options::UInt32])`
     """
-    struct Window <: AbstractWindow
+    mutable struct Window <: AbstractWindow
 
-        _native_id::WindowID
+        _native_id::Csize_t
 
-        function Window(width::Integer, height::Integer, title::Cstring, options::UInt32 = DEFAULT)
+        function Window(width::Integer, height::Integer, title::String, options::UInt32 = UInt32(DEFAULT))
             id = ccall((:ts_window_create, _lib), Csize_t, (Csize_t, Csize_t, Cstring, UInt32), width, height, title, options)
             out = new(id)
             finalizer(out) do x::Window
@@ -1990,14 +2056,24 @@ module ts
     export clear
 
     """
-    `render!(::Window, ::Shape, ::Transform) ::Nothing`
+    `render!(::Window, ::Shape, ::Transform) -> Nothing`
     """
     function render!(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: Shape
-        ccall((:ts_window_render, _lib), Cvoid,
-            (Csize_t, Ptr{Cvoid}, Ptr{Cvoid}),
-            window._native_id, shape._native, transform._native)
+        ccall((:ts_shape_render_to_window, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Ptr{Cvoid}),
+            shape._native, window._native_id, transform._native)
     end
-    export render
+    export render!
+
+    """
+    `render!(::RenderTexture, ::Shape, ::Transform) -> Nothing`
+    """
+    function render!(render_texture::RenderTexture, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: Shape
+        ccall((:ts_shape_render_to_texture, _lib), Cvoid,
+            (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
+            shape._native, render_texture._native, transform._native)
+    end
+    export render!
 
     """
     `flush!(::Window) -> Nothing`
@@ -2005,7 +2081,7 @@ module ts
     function flush!(window::Window) ::Nothing
         ccall((:ts_window_flush, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export flush
+    export flush!
 
     """
     `set_framerate_limit!(::Integer) -> Nothing`
@@ -2044,10 +2120,9 @@ module ts
     """
     struct Camera
 
-        _native_window_id::WindowID
+        _native_window_id::Csize_t
 
-        function Camera(window::Window)
-        end
+        Camera(window::Window) = new(window._native_id)
     end
     export Camera
 
@@ -2164,4 +2239,87 @@ module ts
             camera._native_window_id, top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y)
     end
     export get_view_area
+
+    ### TODO #############################################################################
+
+    module test
+
+        import Main.ts; using Main.ts
+        import Test; using Test
+
+        function run()
+
+            @test ts.initialize()
+
+            @testset "Colors" begin
+
+                rgb_in = RGBA(1, 0.5, 0.5, 1)
+                hsv = as_hsv(rgb)
+                rgb = as_rgb(hsv)
+                @test rgb.r == rgb_in.r
+                @test rgb.g == rgb_in.g
+                @test rgb.b == rgb_in.b
+                @test rgb.a == rgb_in.a
+            end
+
+            @testset "Time" begin
+
+                ns = 123456789
+                time = Time(ns)
+
+                @test as_minutes(minutes(ns)) == ns
+                @test as_seconds(seconds(ns)) == ns
+                @test as_milliseconds(milliseconds(ns)) == ns
+                @test as_microseconds(microseconds(ns)) == ns
+                @test as_nanoseconds(nanoseconds(ns)) == ns
+
+                clock = Clock()
+                sleep(0.3)
+                @test elapsed(clock).as_seconds > 0.2
+                @test restart(clock).as_seconds > 0.2
+                @test elapsed(clock).as_seconds < 0.05
+            end
+
+            @testset "Angle" begin
+
+                ns = 123
+                angle = degrees(ns)
+                @test as_degrees(angle) == ns
+                @test as_degrees(radians(as_radians(angle))) == ns
+            end
+
+            window::Union{Window, Nothing} = nothing
+
+            @testset "Window" begin
+
+                window = ts.Window(0, 0, "TEST IN PROGRESS", DEFAULT)
+
+                @test is_open(window)
+                @test has_focus(window) == true
+                @test has_mouse_focus(window) == false
+
+                @test get_size(window) == Vector2f(0, 0)
+                @test get_position(window).x >= 0
+                @test get_position(window).y >= 0
+
+                set_hidden!(window, true)
+                @test is_hidden(window) == false
+                set_hidden!(window, false)
+                @test is_hidden(window) == true
+
+                minimize!(window)
+                @test is_minimized(window) == true
+
+                maximize!(window)
+                @test is_maximized(window) == true
+
+                clear!(window)
+            end
+
+        end
+        # no export
+    end
 end
+
+
+

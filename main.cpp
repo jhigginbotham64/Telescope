@@ -47,7 +47,7 @@ int main()
     initialize();
 
     auto window = ts::Window();
-    window.create("", 800, 600, ts::DEFAULT);
+    window.create("", 0, 0, ts::DEFAULT);
 
     auto render_texture = ts::RenderTexture(&window);
     render_texture.create(800, 600);
@@ -93,6 +93,9 @@ int main()
     {
         ts::start_frame(&window);
         window.clear();
+
+        if (InputHandler::was_pressed(KeyboardKey::SPACE))
+            std::cout << "space" << std::endl;
 
         if (InputHandler::is_down(KeyboardKey::RIGHT))
             camera.move(+10, 0);

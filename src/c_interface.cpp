@@ -510,9 +510,14 @@ void ts_transform_reflect(void* transform_ptr, bool about_x_axis, bool about_y_a
 
 // ### SHAPES ##################################################
 
-void ts_shape_render(void* shape_ptr, size_t window_id, void* transform_ptr)
+void ts_shape_render_to_window(void* shape_ptr, size_t window_id, void* transform_ptr)
 {
     detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), *((ts::Transform*) transform_ptr));
+}
+
+void ts_shape_render_to_texture(void* shape_ptr, void* render_texture_ptr, void* transform_ptr)
+{
+    ((ts::RenderTexture*) render_texture_ptr)->render((ts::Shape*) shape_ptr, *((ts::Transform*) transform_ptr));
 }
 
 void ts_shape_move(void* shape_ptr, float x, float y)
