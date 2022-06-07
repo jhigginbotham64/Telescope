@@ -15,7 +15,7 @@ namespace ts
         _shape.SetTwoSided(b2Vec2(a.x, a.y), b2Vec2(b.x, b.y));
     }
 
-    b2Shape* CollisionLine::get_shape()
+    b2Shape* CollisionLine::get_native_shape()
     {
         return &_shape;
     }

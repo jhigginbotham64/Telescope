@@ -19,7 +19,7 @@ namespace ts
             CollisionLine(Vector2f a, Vector2f b);
 
         protected:
-            b2Shape* get_shape() override;
+            b2Shape* get_native_shape() override;
 
         private:
             b2EdgeShape _shape;

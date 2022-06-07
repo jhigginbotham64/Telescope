@@ -18,7 +18,7 @@ namespace ts
             CollisionWireFrame(const std::vector<Vector2f>&);
 
         protected:
-            b2Shape* get_shape() override;
+            b2Shape* get_native_shape() override;
 
         private:
             b2ChainShape _shape;

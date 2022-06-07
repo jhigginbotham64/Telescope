@@ -9,7 +9,7 @@
 
 namespace ts
 {
-    b2Shape* CollisionWireFrame::get_shape()
+    b2Shape* CollisionWireFrame::get_native_shape()
     {
         return &_shape;
     }

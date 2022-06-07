@@ -16,7 +16,7 @@ namespace ts
 
     void CollisionShape::attach_to(PhysicsObject& object, AttachmentConfig config)
     {
-        _fixture = _body->CreateFixture(get_shape(), config.density);
+        _fixture = _body->CreateFixture(get_native_shape(), config.density);
 
         _fixture->SetFriction(config.friction);
         _fixture->SetRestitution(config.restitution);
@@ -68,5 +68,10 @@ namespace ts
     {
         auto center = _fixture->GetAABB(0).GetCenter();
         Vector2f{center.x, center.y};
+    }
+
+    b2Fixture* CollisionShape::get_native_fixture()
+    {
+        return _fixture;
     }
 }

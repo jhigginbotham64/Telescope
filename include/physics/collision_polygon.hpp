@@ -38,7 +38,7 @@ namespace ts
             CollisionPolygon(Rectangle);
 
         protected:
-            b2Shape* get_shape() override;
+            b2Shape* get_native_shape() override;
 
         private:
             b2PolygonShape _shape;

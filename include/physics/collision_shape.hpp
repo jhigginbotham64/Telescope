@@ -71,10 +71,16 @@ namespace ts
             /// \returns world coordinates of the center of mass
             Vector2f get_centroid() const;
 
+            /// \brief get the native box2d shape
+            /// \returns pointer to shape
+            virtual b2Shape* get_native_shape() = 0;
+
+            /// \brief get the native box2d fixture
+            /// \returns pointer to fixture
+            b2Fixture* get_native_fixture();
+
         protected:
             b2Body* _body;
             b2Fixture* _fixture;
-
-            virtual b2Shape* get_shape() = 0;
     };
 }

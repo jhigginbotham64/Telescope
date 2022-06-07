@@ -30,7 +30,7 @@ namespace ts
         _shape.m_radius = shape.get_radius();
     }
 
-    b2Shape* CollisionCircle::get_shape()
+    b2Shape* CollisionCircle::get_native_shape()
     {
         return &_shape;
     }

@@ -13,7 +13,7 @@
 
 namespace ts
 {
-    b2Shape *CollisionPolygon::get_shape()
+    b2Shape *CollisionPolygon::get_native_shape()
     {
         return &_shape;
     }

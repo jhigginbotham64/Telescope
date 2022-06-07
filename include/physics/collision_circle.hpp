@@ -28,7 +28,7 @@ namespace ts
             CollisionCircle(const CircleShape&);
 
         protected:
-            b2Shape* get_shape() override;
+            b2Shape* get_native_shape() override;
 
         private:
             b2CircleShape _shape;
