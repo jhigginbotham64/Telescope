@@ -76,7 +76,7 @@ namespace ts
             /// \brief get panning of channel
             /// \param channel: channel index, [0, 255]
             /// \returns angle in degree, clockwise: 0° is no panning, +90° is full right, 180° is no panning, +270° is full left
-            static size_t get_panning(size_t channel);
+            static Angle get_panning(size_t channel);
 
         private:
             static int32_t forward_index(size_t channel, const std::string function_name);

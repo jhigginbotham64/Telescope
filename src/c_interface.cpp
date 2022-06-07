@@ -225,6 +225,11 @@ void ts_window_flush(size_t id)
     detail::_windows.at(id).flush();
 }
 
+void ts_window_render(size_t id, void* renderable_ptr, void* transform_ptr)
+{
+    detail::_windows.at(id).render((ts::Renderable*) renderable_ptr, *((ts::Transform*) transform_ptr));
+}
+
 // ### CAMERA ##################################################
 
 void ts_window_camera_center_on(size_t window_id, float x, float y)
@@ -255,6 +260,11 @@ void ts_window_camera_set_zoom(size_t window_id, float factor)
 void ts_window_camera_rotate(size_t window_id, float degrees)
 {
     detail::_cameras.at(window_id).rotate(ts::degrees(degrees));
+}
+
+void* ts_window_camera_get_transform(size_t window_id)
+{
+    return (void*) &detail::_cameras.at(window_id).get_transform();
 }
 
 void ts_window_camera_set_rotation(size_t window_id, float degrees)
@@ -398,6 +408,42 @@ void* ts_texture_create_render_texture(size_t window_id, size_t width, size_t he
     return out;
 }
 
+void ts_texture_set_color(void* texture, float r, float g, float b, float a)
+{
+    ((ts::Texture*) texture)->set_color(ts::RGBA(r, g, b, a));
+}
+
+void ts_texture_get_color(void* texture, float* out_r, float* out_g, float* out_b, float* out_a)
+{
+    auto color = ((ts::Texture*) texture)->get_color();
+    *out_r = color.red;
+    *out_g = color.green;
+    *out_b = color.blue;
+    *out_a = color.alpha;
+}
+
+
+void ts_texture_set_blend_mode(void* texture, int32_t blend_mode)
+{
+    ((ts::Texture*) texture)->set_blend_mode(ts::TextureBlendMode(blend_mode));
+}
+
+int32_t ts_texture_get_blend_mode(void* texture)
+{
+    return (int32_t) ((ts::Texture*) texture)->get_blend_mode();
+}
+
+void ts_texture_set_filtering_mode(void* texture, int32_t filtering_mode)
+{
+    ((ts::Texture*) texture)->set_filtering_mode(ts::TextureFilteringMode(filtering_mode));
+}
+
+int32_t ts_texture_get_filtering_mode(void* texture)
+{
+    return (int32_t) ((ts::Texture*) texture)->get_filtering_mode();
+}
+
+
 // ### TRANSFORMS ##################################################
 
 void* ts_transform_create()
@@ -491,25 +537,6 @@ size_t ts_shape_get_n_vertices(void* shape_ptr)
     return ((ts::Shape*) shape_ptr)->get_n_vertices();
 }
 
-void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index,
-                         float* out_pos_x, float* out_pos_y,
-                         float* out_tex_coord_x, float * out_tex_coord_y,
-                         float* out_r, float* out_g, float* out_b, float* out_a)
-{
-    auto* shape = (ts::Shape*) shape_ptr;
-
-    *out_pos_x = shape->get_vertex_position(vertex_index).x;
-    *out_pos_y = shape->get_vertex_position(vertex_index).y;
-    *out_tex_coord_x = shape->get_vertex_texture_coordinates(vertex_index).x;
-    *out_tex_coord_y = shape->get_vertex_texture_coordinates(vertex_index).y;
-
-    auto color = shape->get_vertex_color(vertex_index);
-    *out_r = color.red;
-    *out_g = color.green;
-    *out_b = color.blue;
-    *out_a = color.alpha;
-}
-
 void ts_shape_set_color(void* shape_ptr, float r, float g, float b, float a)
 {
     ((ts::Shape*) shape_ptr)->set_color(ts::RGBA(r, g, b, a));
@@ -553,6 +580,29 @@ void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* o
     *out_y = pos.y;
 }
 
+void ts_shape_set_texture_rectangle(void* shape_ptr, float top_left_x, float top_left_y, float width, float height)
+{
+    ((ts::Shape*) shape_ptr)->set_texture_rectangle(ts::Rectangle{{top_left_x, top_left_y}, {width, height}});
+}
+
+void ts_shape_get_texture_rectangle(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height)
+{
+    auto out = ((ts::Shape*) shape_ptr)->get_texture_rectangle();
+    *out_top_left_x = out.top_left.x;
+    *out_top_left_y = out.top_left.y;
+    *out_width = out.size.x;
+    *out_height = out.size.y;
+}
+
+void ts_shape_get_bounding_box(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height)
+{
+    auto out = ((ts::Shape*) shape_ptr)->get_bounding_box();
+    *out_top_left_x = out.top_left.x;
+    *out_top_left_y = out.top_left.y;
+    *out_width = out.size.x;
+    *out_height = out.size.y;
+}
+
 void ts_shape_set_texture(void* shape_ptr, void* texture)
 {
     ((ts::Shape*) shape_ptr)->set_texture((ts::Texture*) texture);
@@ -563,7 +613,7 @@ void* ts_shape_get_texture(void* shape_ptr)
     return ((ts::Shape*) shape_ptr)->get_texture();
 }
 
-void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)
+void* ts_shape_create_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)
 {
     return new ts::TriangleShape({a_x, a_y}, {b_x, b_y}, {c_x, c_y});
 }
@@ -587,7 +637,7 @@ void ts_shape_destroy_triangle(void* triangle_ptr)
     delete ((ts::TriangleShape*) triangle_ptr);
 }
 
-void* ts_shape_new_rectangle(float top_left_x, float top_left_y, float width, float height)
+void* ts_shape_create_rectangle(float top_left_x, float top_left_y, float width, float height)
 {
     return new ts::RectangleShape(ts::Vector2f{top_left_x, top_left_y}, ts::Vector2f{width, height});
 }
@@ -597,7 +647,31 @@ void ts_shape_destroy_rectangle(void* rectangle_ptr)
     delete ((ts::TriangleShape*) rectangle_ptr);
 }
 
-void* ts_shape_new_circle(float center_x, float center_y, float radius, size_t n_vertices)
+void ts_shape_rectangle_set_top_left(void* rectangle_ptr, float top_left_x, float top_left_y)
+{
+    ((ts::RectangleShape*) rectangle_ptr)->set_top_left(ts::Vector2f{top_left_x, top_left_y});
+}
+
+void ts_shape_rectangle_get_top_left(void* rectangle_ptr, float* out_top_left_x, float* out_top_left_y)
+{
+    auto out = ((ts::RectangleShape*) rectangle_ptr)->get_top_left();
+    *out_top_left_x = out.x;
+    *out_top_left_y = out.y;
+}
+
+void ts_shape_rectangle_set_size(void* rectangle_ptr, float width, float height)
+{
+    ((ts::RectangleShape*) rectangle_ptr)->set_size(ts::Vector2f{width, height});
+}
+
+void ts_shape_rectangle_get_size(void* rectangle_ptr, float* out_width, float* out_height)
+{
+    auto out = ((ts::RectangleShape*) rectangle_ptr)->get_top_left();
+    *out_width = out.x;
+    *out_height = out.y;
+}
+
+void* ts_shape_create_circle(float center_x, float center_y, float radius, size_t n_vertices)
 {
     return new ts::CircleShape(ts::Vector2f{center_x, center_y}, radius, n_vertices);
 }
@@ -607,12 +681,17 @@ float ts_shape_circle_get_radius(void* circle_ptr)
     return ((ts::CircleShape*) circle_ptr)->get_radius();
 }
 
+void ts_shape_circle_set_radius(void* circle_ptr, float radius)
+{
+    ((ts::CircleShape*) circle_ptr)->set_radius(radius);
+}
+
 void ts_shape_destroy_circle(void* circle_ptr)
 {
     delete ((ts::Circle*) circle_ptr);
 }
 
-void* ts_shape_new_polygon(float* vertices_x, float* vertices_y, size_t n_vertices)
+void* ts_shape_create_polygon(float* vertices_x, float* vertices_y, size_t n_vertices)
 {
     std::vector<ts::Vector2f> vertices;
     for (size_t i = 0; i < n_vertices; ++i)
@@ -822,7 +901,7 @@ void ts_music_unpause()
     ts::MusicHandler::unpause();
 }
 
-void ts_music_skip_to(int ms)
+void ts_music_skip_to(double ms)
 {
     ts::MusicHandler::skip_to(ts::milliseconds(ms));
 }
@@ -932,12 +1011,12 @@ float ts_sound_get_volume(size_t channel)
     return ts::SoundHandler::get_volume(channel);
 }
 
-void ts_sound_set_panning(size_t channel, size_t zero_to_360_degree)
+void ts_sound_set_panning(size_t channel, float zero_to_360_degree)
 {
     ts::SoundHandler::set_panning(channel, ts::degrees(zero_to_360_degree));
 }
 
-size_t ts_sound_get_panning(size_t channel)
+float ts_sound_get_panning(size_t channel)
 {
     return ts::SoundHandler::get_panning(channel);
 }

@@ -13,6 +13,7 @@ module ts
     `initialize() -> Bool`
     """
     function initialize() ::Bool
+        return ccall((:ts_initialize, _lib), Bool, ())
     end
     export initialize
 
@@ -710,6 +711,9 @@ module ts
         `play!(::ChannelID, ::Sound, ::Integer, ::Time) -> Nothing`
         """
         function play!(channel::ChannelID, sound::Sound, n_loops::Integer, fade_in_duration::Time) ::Nothing
+            ccall((:ts_sound_play, _lib), Cvoid,
+                (Csize_t, Csize_t, Csize_t, Cdouble),
+                sound._native_id, channel, n_loops, as_milliseconds(fade_in_duration))
         end
         export play
         
@@ -717,6 +721,9 @@ module ts
         `stop!(::ChannelID, ::Time) -> Nothing`
         """
         function stop!(channel::ChannelID, fade_out_duration::Time) ::Nothing
+            ccall((:ts_sound_stop, _lib), Cvoid,
+                (Csize_t, Cdouble),
+                channel, as_milliseconds(fade_out_duration))
         end
         export stop
         
@@ -724,6 +731,7 @@ module ts
         `pause!(::ChannelID) -> Nothing`
         """
         function pause!(channel::ChannelID) ::Nothing
+            ccall((:ts_sound_pause, _lib), Cvoid, (Csize_t,), channel)
         end
         export pause
         
@@ -731,6 +739,7 @@ module ts
         `unpause!(::ChannelID) -> Nothing`
         """
         function unpause!(channel::ChannelID) ::Nothing
+            ccall((:ts_sound_unpause, _lib), Cvoid, (Csize_t,), channel)
         end
         export unpause
 
@@ -738,6 +747,7 @@ module ts
         `force_stop!(::ChannelID) -> Nothing`
         """
         function force_stop!(channel::ChannelID) ::Nothing
+            ccall((:ts_sound_force_stop, _lib), Cvoid, (Csize_t,), channel)
         end
         export force_stop
 
@@ -745,6 +755,7 @@ module ts
         `is_playing(::ChannelID) -> Bool`
         """
         function is_playing(channel::ChannelID) ::Bool
+            return ccall((:ts_sound_is_playing, _lib), Bool, (Csize_t,), channel)
         end
         export is_playing
 
@@ -752,6 +763,7 @@ module ts
         `is_paused(::ChannelID) -> Bool`
         """
         function is_paused(channel::ChannelID) ::Bool
+            return ccall((:ts_sound_is_paused, _lib), Bool, (Csize_t,), channel)
         end
         export is_paused
 
@@ -759,6 +771,7 @@ module ts
         `is_stopped(::ChannelID) -> Bool`
         """
         function is_stopped(channel::ChannelID) ::Bool
+            return ccall((:ts_sound_is_stopped, _lib), Bool, channel)
         end
         export is_stopped
 
@@ -766,6 +779,7 @@ module ts
         `set_volume!(::ChannelID, ::Float32) -> Nothing`
         """
         function set_volume!(channel::ChannelID, zero_to_one::Float32) ::Nothing
+            ccall((:ts_sound_set_volume, _lib), Cvoid, (Csize_t, Cfloat), channel, zero_to_one)
         end
         export set_volume
 
@@ -773,6 +787,7 @@ module ts
         `get_volume(::ChannelID) -> Float32`
         """
         function get_volume(channel::ChannelID) ::Float32
+            return ccall((:ts_sound_get_volume, _lib), Cvoid, (Csize_t,), channel)
         end
         export get_volume
 
@@ -780,6 +795,7 @@ module ts
         `set_panning!(::ChannelID, ::Angle) -> Nothing`
         """
         function set_panning!(channel::ChannelID, angle::Angle) ::Nothing
+            return ccall((:ts_sound_set_panning, _lib), Cvoid, (Csize_t, Cfloat), channel, as_degrees(angle))
         end
         export set_panning
 
@@ -787,6 +803,7 @@ module ts
         `get_panning(::ChannelID) -> Angle`
         """
         function get_panning(channel::ChannelID) ::Angle
+            return degrees(ccall((:ts_sound_get_panning, _lib), Cfloat, (Csize_t,), channel))
         end
         export get_panning
     end
@@ -825,6 +842,7 @@ module ts
         `set_volume!(::Float32) -> Nothing`
         """
         function set_volume!(zero_to_one::Float32) ::Nothing
+            ccall((:ts_music_set_volume, _lib), Cvoid, (Cfloat,), zero_to_one)
         end
         export set_volume
 
@@ -832,6 +850,7 @@ module ts
         `get_volume() -> Float32`
         """
         function get_volume() ::Float32
+            ccall((:ts_music_get_volume, _lib), Cfloat, ())
         end
         export get_volume
 
@@ -839,6 +858,9 @@ module ts
         `play!(::Music, ::Bool, ::Time) -> Nothing`
         """
         function play!(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+            ccall((:ts_music_play, _lib), Cvoid,
+                (Csize_t, Bool, Cdouble),
+                music._native_id, should_loop, as_milliseconds(fade_in_duration))
         end
         export play
 
@@ -846,6 +868,9 @@ module ts
         `play_next!(::Music, ::Bool, ::Time) -> Nothing
         """
         function play_next!(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+            ccall((:ts_music_play_next, _lib), Cvoid,
+                (Csize_t, Bool, Cdouble),
+                music._native_id, should_loop, as_milliseconds(fade_in_duration))
         end
         export play_next
 
@@ -853,6 +878,7 @@ module ts
         `stop!(::Time) -> Nothing`
         """
         function stop!(fade_out_duration::Time) ::Nothing
+            ccall((:ts_music_stop, _lib), Cvoid, (Cdouble,), as_milliseconds(fade_out_duration))
         end
         export stop
 
@@ -860,6 +886,7 @@ module ts
         `next!(::Time) -> Nothing`
         """
         function next!(fade_out_duration::Time) ::Nothing
+            ccall((:ts_music_next, _lib), Cvoid, (Cdouble,), as_milliseconds(fade_out_duration))
         end
         export next
 
@@ -867,6 +894,7 @@ module ts
         `clear_next!() -> Nothing`
         """
         function clear_next!() ::Nothing
+            ccall((:ts_music_clear_next, _lib), Cvoid, ())
         end
         export clear_next
 
@@ -874,6 +902,7 @@ module ts
         `force_stop!() -> Nothing`
         """
         function force_stop!() ::Nothing
+            ccall((:ts_music_force_stop, _lib), Cvoid, ())
         end
         export force_stop
 
@@ -881,6 +910,7 @@ module ts
         `pause!() -> Nothing`
         """
         function pause!() ::Nothing
+            ccall((:ts_music_pause, _lib), Cvoid, ())
         end
         export pause
 
@@ -888,6 +918,7 @@ module ts
         `unpause!() -> Nothing`
         """
         function unpause!() ::Nothing
+            ccall((:ts_music_unpause, _lib), Cvoid, ())
         end
         export unpause
 
@@ -895,6 +926,7 @@ module ts
         `skip_to!(::Time) -> Nothing`
         """
         function skip_to!(timestamp::Time) ::Nothing
+            ccall((:ts_music_skip_to, _lib), Cvoid, (Cdouble,), as_milliseconds(timestamp))
         end
         export skip_to
 
@@ -902,6 +934,7 @@ module ts
         `is_playing() -> Bool`
         """
         function is_playing() ::Bool
+            return ccall((:ts_music_is_playing, _lib), Cbool, ())
         end
         export is_playing
 
@@ -909,6 +942,7 @@ module ts
         `is_paused() -> Bool`
         """
         function is_paused() ::Bool
+            return ccall((:ts_music_is_paused, _lib), Cbool, ())
         end
         export is_paused
 
@@ -916,6 +950,7 @@ module ts
         `is_stopped() -> Bool`
         """
         function is_stopped() ::Bool
+            return ccall((:ts_music_is_stopped, _lib), Cbool, ())
         end
         export is_stopped
     end
@@ -956,6 +991,7 @@ module ts
     `close!(::Window) -> Nothing`
     """
     function close!(window::Window) ::Nothing
+        ccall((:ts_window_close, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export close
 
@@ -963,6 +999,7 @@ module ts
     `is_open(::Window) -> Bool`
     """
     function is_open(window::Window) ::Bool
+        ccall((:ts_window_is_open, _lib), Bool, (Csize_t,), window._native_id)
     end
     export is_open
 
@@ -970,6 +1007,11 @@ module ts
     `get_size(::Window) -> Vector2ui`
     """
     function get_size(window::Window) ::Vector2ui
+
+        x = Ref{Csize_t}(-1)
+        y = Ref{Csize_t}(-1)
+        ccall((:ts_window_get_size, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
+        return Vector2ui(x[], y[])
     end
     export get_size
 
@@ -977,6 +1019,11 @@ module ts
     `get_position(::Window) -> Vector2ui`
     """
     function get_position(window::Window) ::Vector2ui
+
+        x = Ref{Csize_t}(-1)
+        y = Ref{Csize_t}(-1)
+        ccall((:ts_window_get_position, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
+        return Vector2ui(x[], y[])
     end
     export get_position
 
@@ -984,6 +1031,7 @@ module ts
     `set_hidden!(::Window, ::Bool) -> Nothing
     """
     function set_hidden!(window::Window, hidden::Bool) ::Nothing
+        ccall((:ts_window_set_hidden, _lib), Cvoid, (Csize_t, Bool), window._native_id, hidden)
     end
     export set_hidden
 
@@ -991,6 +1039,7 @@ module ts
     `is_hidden(::Window) -> Bool`
     """
     function is_hidden(window::Window) ::Bool
+        return ccall((:ts_window_is_hidden, _lib), Cbool, (Csize_t,), window._native_id)
     end
     export is_hidden
 
@@ -998,6 +1047,7 @@ module ts
     `minimize!(::Window) -> Nothing`
     """
     function minimize!(window::Window) ::Nothing
+        ccall((:ts_window_minimize, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export minimize
 
@@ -1005,6 +1055,7 @@ module ts
     `is_minimized(::Window) -> Bool`
     """
     function is_minimized(window::Window) ::Bool
+        return ccall((:ts_window_is_minimized, _lib), Bool, (Csize_t,), window._native_id)
     end
     export is_minimizedd
 
@@ -1012,6 +1063,7 @@ module ts
     `maximize!(::Window) -> Nothing`
     """
     function maximize!(window::Window) ::Nothing
+        ccall((:ts_window_maximize, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export maximize
 
@@ -1019,6 +1071,7 @@ module ts
     `is_maximized(::Window) -> Bool`
     """
     function is_maximized(window::Window) ::Bool
+        return ccall((:ts_window_is_maximized, _lib), Bool, (Csize_t,), window._native_id)
     end
     export is_maximized
 
@@ -1026,6 +1079,7 @@ module ts
     `has_focus(::Window) -> Bool``
     """
     function has_focus(window::Window) ::Bool
+        return ccall((:ts_window_has_focus, _lib), Bool, (Csize_t,), window._native_id)
     end
     export has_focus
 
@@ -1033,6 +1087,7 @@ module ts
     `has_mouse_focus(::Window) -> Bool`
     """
     function has_mouse_focus(window::Window) ::Bool
+        return ccall((:ts_window_has_mouse_focus, _lib), Bool, (Csize_t,), window._native_id)
     end
     export has_mouse_focus
 
@@ -1040,6 +1095,7 @@ module ts
     `clear!(::Window) -> Nothing`
     """
     function clear!(window::Window) ::Nothing
+        ccall((:ts_window_clear, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export clear
 
@@ -1047,6 +1103,9 @@ module ts
     `render!(::Window, ::AbstractShape, ::Transform) ::Nothing`
     """
     function render!(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: AbstractShape
+        ccall((:ts_window_render, _lib), Cvoid, 
+            (Csize_t, Ptr{Cvoid}, Ptr{Cvoid}), 
+            window._native_id, shape._native, transform._native)
     end
     export render
 
@@ -1054,6 +1113,7 @@ module ts
     `flush!(::Window) -> Nothing`
     """
     function flush!(window::Window) ::Nothing
+        ccall((:ts_window_flush, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export flush
 
@@ -1061,6 +1121,7 @@ module ts
     `set_framerate_limit!(::Integer) -> Nothing`
     """
     function set_framerate_limit!(n_fps::Integer) ::Nothing
+        ccall((:ts_set_framerate_limit, _lib), Cvoid, (Csize_t,), convert(Csize_t, n_fps))
     end
     export set_framerate_limit
 
@@ -1068,6 +1129,7 @@ module ts
     `start_frame!(::Window) -> Nothing`
     """
     function start_frame!(window::Window) ::Nothing
+        ccall((:ts_start_frame, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export start_frame
 
@@ -1075,6 +1137,7 @@ module ts
     `end_frame!(::Window) -> Nothing`
     """
     function end_frame!(window::Window) ::Nothing
+        ccall((:ts_end_frame, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export end_frame
 
@@ -1096,6 +1159,9 @@ module ts
     `center_on!(::Camera, ::Vector2f) -> Nothing`
     """
     function center_on!(camera::Camera, point::Vector2f) ::Nothing
+        ccall((:ts_window_camera_center_on, _lib), Cvoid, 
+            (Csize_t, Cfloat, Cfloat),
+            camera._native_window_id, point.x, point.y)
     end
     export center_on!
 
@@ -1103,6 +1169,9 @@ module ts
     `move!(::Camera, ::Float32, Float32) -> Nothing`
     """
     function move!(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
+        ccall((:ts_window_camera_move, _lib), Cvoid, 
+            (Csize_t, Cfloat, Cfloat),
+            camera._native_window_id, x_offset, y_offset)
     end
     export move!
 
@@ -1110,6 +1179,9 @@ module ts
     `zoom_in!(::Camera, ::Float32) -> Nothing`
     """
     function zoom_in!(camera::Camera, factor::Float32) ::Nothing
+        ccall((:ts_window_camera_zoom_in, _lib), Cvoid, 
+            (Csize_t, Cfloat), 
+            camera._native_window_id, factor)
     end
     export zoom_in!
 
@@ -1117,6 +1189,9 @@ module ts
     `zoom_out!(::Camera, ::Float32) -> Nothing`
     """
     function zoom_out!(camera::Camera, factor::Float32) ::Nothing
+        ccall((:ts_window_camera_zoom_out, _lib), Cvoid, 
+            (Csize_t, Cfloat), 
+            camera._native_window_id, factor)
     end
     export zoom_out!
 
@@ -1124,6 +1199,9 @@ module ts
     `set_zoom!(::Camera, ::Float32) -> Nothing`
     """
     function set_zoom!(camera::Camera, factor::Float32) ::Nothing
+        ccall((:ts_window_camera_set_zoom, _lib), Cvoid, 
+            (Csize_t, Cfloat), 
+            camera._native_window_id, factor)
     end
     export set_zoom!
 
@@ -1131,6 +1209,9 @@ module ts
     `rotate!(::Camera, ::Angle) -> Nothing`
     """
     function rotate!(camera::Camera, angle::Angle) ::Nothing
+        ccall((:ts_window_camera_rotate, _lib), Cvoid, 
+            (Csize_t, Cfloat), 
+            camera._native_window_id, as_degrees(angle))
     end
     export rotate!
 
@@ -1138,6 +1219,9 @@ module ts
     `set_rotation!(::Camera, ::Angle) -> Nothing`
     """
     function set_rotation!(camera::Camera, angle::Angle) ::Nothing
+        ccall((:ts_window_camera_set_rotation, _lib), Cvoid, 
+            (Csize_t, Cfloat), 
+            camera._native_window_id, as_degrees(angle))
     end
     export set_rotation!
 
@@ -1145,6 +1229,8 @@ module ts
     `get_transform(::Camera) -> Transform`
     """
     function get_transform(camera::Camera) ::Transform
+        return Transform(ccall((:ts_window_camera_get_transform, _lib), Ptr{Cvoid}, 
+            (Csize_t,), camera._native_window_id))
     end
     export get_transform
 
@@ -1152,6 +1238,14 @@ module ts
     `get_center(::Camera) -> Vector2f`
     """
     function get_center(camera::Camera) ::Vector2f
+        
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+        ccall((:ts_window_camera_get_center, _lib), 
+            (Csize_t, Ref{Cfloat}, Ref{Cfloat}), x, y),
+            (camera._native_window_id, x, y)
+            
+        return Vector2f(x[], y[])
     end
     export get_center
 
@@ -1159,6 +1253,19 @@ module ts
     `get_view_area(::Camera) -> Trapezoid`
     """
     function get_view_area(camera::Camera) ::Trapezoid
+
+        top_left_x = Ref{Cfloat}(-1)
+        top_left_y = Ref{Cfloat}(-1)
+        top_right_x = Ref{Cfloat}(-1)
+        top_right_y = Ref{Cfloat}(-1)
+        bottom_left_x = Ref{Cfloat}(-1)
+        bottom_left_y  = Ref{Cfloat}(-1)
+        bottom_right_x =  Ref{Cfloat}(-1)
+        bottom_right_y = Ref{Cfloat}(-1)
+
+        ccall((:ts_window_camera_get_view_area, _lib), Cvoid,
+            (Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y)
     end
     export get_view_area
 
@@ -1187,26 +1294,23 @@ module ts
     abstract type Texture end
     export Texture
 
-    const TextureID = UInt64
-    export TextureID
-
     """
     TODO
     """
     struct RenderTexture <: Texture
 
-        _native_id::TextureID
+        _native::Ptr{Cvoid}
 
         # equivalent to ts::RenderTexture::create
         function RenderTexture(window::Window, width::Unsigned, height::Unsigned)
 
-            id = ccall((:ts_texture_create_render_texture, _lib),
-                    Csize_t, (Csize_t, Csize_t, Csize_t),
+            native = ccall((:ts_texture_create_render_texture, _lib),
+                    Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
                     window._native_id, width, height)
 
-            out = new(id)
+            out = new(native)
             finalizer(out) do x::RenderTexture
-                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Csize_t,), x._native_id)
+                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
     end
@@ -1222,24 +1326,26 @@ module ts
         # equivalent to ts::StaticTexture::load
         function StaticTexture(window::Window, path::String)
 
-            id = ccall((:ts_texture_load_static_texture, _lib), Csize_t, (Csize_t, Cstring), window._native_id, path)
+            native = ccall((:ts_texture_load_static_texture, _lib),
+                Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
+                window._native_id, width, height)
 
-            out = new(id)
-            finalizer(out) do x::StaticTexture
-                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Csize_t,), x._native_id)
+            out = new(native)
+            finalizer(out) do x::RenderTexture
+                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
 
         # equivalent to ts::StaticTexture::create
         function StaticTexture(window::Window, width::Unsigned, height::Unsigned, color::RGBA)
 
-            id = ccall((:ts_texture_create_static_texture, _lib), Csize_t,
-                    (Csize_t, Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
-                    window._native_id, width, height, color.red, color.green, color.blue, color.alpha)
+            native = ccall((:ts_texture_create_static_texture, _lib),
+                Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
+                window._native_id, width, height)
 
-            out = new(id)
-            finalizer(out) do x::StaticTexture
-                ccall((ts_texture_destroy_texture, _lib), Cvoid, (Csize_t,), x._native_id)
+            out = new(native)
+            finalizer(out) do x::RenderTexture
+                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
     end
@@ -1249,13 +1355,16 @@ module ts
     `unload!(::Texture) -> Nothing`
     """
     function unload!(texture::Texture) ::Nothing
+
     end
-    export unload!
-    
+
     """
     `set_color!(::Texture) -> Nothing`
     """
-    function set_color!(texture::Texture) ::Nothing
+    function set_color!(texture::Texture, color::RGBA) ::Nothing
+        ccall((:ts_texture_set_color, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat),
+            texture._native, color.red, color.green, color.blue, color.alpha)
     end
     export set_color!
     
@@ -1263,6 +1372,17 @@ module ts
     `get_color(::Texture) -> RGBA`
     """
     function get_color(texture::Texture) ::RGBA
+
+        r = Ref{Cfloat}(-1)
+        g = Ref{Cfloat}(-1)
+        b = Ref{Cfloat}(-1)
+        a = Ref{Cfloat}(-1)
+
+        ccall((:ts_texture_get_color, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            texture._native, r, g, b, a)
+
+        return RGBA(r[], g[], b[], a[])
     end
     export get_color
     
@@ -1270,6 +1390,10 @@ module ts
     `set_blend_mode!(::Texture, ::TextureBlendMode) -> RGBA`
     """
     function set_blend_mode!(texture::Texture, mode::TextureBlendMode) ::Nothing
+        ccall((:ts_texture_set_blend_mode, _lib), Cvoid,
+            (Ptr{Cvoid}, Cint),
+            texture._native,
+            convert(Cint, mode))
     end
     export set_blend_mode!
 
@@ -1277,6 +1401,8 @@ module ts
     `get_blend_mode(::Texture) -> TextureBlendMode`
     """
     function get_blend_mode(texture::Texture) ::TextureBlendMode
+        out::Cint = ccall((:ts_texture_get_blend_mode, _lib), Cint, (Ptr{Cvoid},), texture._native)
+        return convert(TextureBlendMode, out)
     end
     export get_blend_mode
 
@@ -1284,6 +1410,10 @@ module ts
     `set_filtering_mode!(::Texture, ::TextureFilteringMode) -> Nothing`
     """
     function set_filtering_mode!(texture::Texture, mode::TextureFilteringMode) ::Nothing
+        ccall((:ts_texture_set_filtering_mode, _lib), Cvoid,
+            (Ptr{Cvoid}, Cint),
+            texture._native,
+            convert(Cint, mode))
     end
     export set_filtering_mode!
 
@@ -1291,6 +1421,8 @@ module ts
     `get_filtering_mode(::Texture) -> TextureFilteringMode`
     """
     function get_filtering_mode(texture::Texture) ::TextureFilteringMode
+        out::Cint = ccall((:ts_texture_get_filtering_mode, _lib), Cint, (Ptr{Cvoid},), texture._native)
+        return convert(TextureBlendMode, out)
     end
     export get_filtering_mode
 
@@ -1298,6 +1430,16 @@ module ts
     `get_size(::Texture) -> Vector2ui`
     """
     function get_size(texture::Texture) ::Vector2ui
+
+        x = Ref{Csize_t}(0)
+        y = Ref{Csize_t}(0)
+
+        ccall((:ts_texture_get_size, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
+            texture._native, x, y)
+
+        return Vector2f(x[], y[])
+
     end
     export get_size
 
@@ -1535,6 +1677,62 @@ module ts
     export get_color
 
     """
+    `set_texture!(::Shape, ::Texture) -> Nothing`
+    """
+    function set_texture!(shape::Shape, texture::Texture) ::Nothing
+        ccall((:ts_shape_set_texture, _lib), Cvoid,
+            (Ptr{Cvoid}, Ptr{Cvoid}),
+            shape._native, texture._native)
+    end
+    export set_texture!
+
+    """
+    `set_texture_rectangle!(::Shape, ::Rectangle) -> Nothing`
+    """
+    function set_texture_rectangle!(shape::Shape, rect::Rectangle) ::Nothing
+        ccall((:ts_shape_set_texture_rectangle, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
+            shape._native, rect.top_left.x, rect.top_left.y, rect.size.x, rect.size.y)
+    end
+    export set_texture_rectangle!
+
+    """
+    `get_texture_rectangle(::Shape) -> Rectangle`
+    """
+    function get_texture_rectangle(shape::Shape) ::Rectangle
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+        width = Ref{Cfloat}(-1)
+        height = Ref{Cfloat}(-1)
+
+        ccall((:ts_shape_get_texture_rectangle, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            x, y, width, height)
+
+        return Rectangle(Vector2f(x[], y[]), Vector2f(width[], height[]))
+    end
+    export get_texture_rectangle
+
+    """
+    `get_bounding_box(::Shape) -> Rectangle`
+    """
+    function get_bounding_box(shape::Shape) ::Rectangle
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+        width = Ref{Cfloat}(-1)
+        height = Ref{Cfloat}(-1)
+
+        ccall((:ts_shape_get_texture_rectangle, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            x, y, width, height)
+
+        return Rectangle(Vector2f(x[], y[]), Vector2f(width[], height[]))
+    end
+    export get_bounding_box
+
+    """
     `get_n_vertices(::Shape) -> UInt64`
     """
     function get_n_vertices(shape::Shape) ::UInt64
@@ -1543,45 +1741,12 @@ module ts
     export get_n_vertices
 
     """
-    `get_texture(::Shape) -> Ref{Texture}`
-    """
-    function get_texture(shape::Shape) ::Texture
-        out::Ptr{Cvoid} = ccall((:ts_shape_get_texture))
-    end
-    export get_texture
-
-    """
-    `set_texture!(::Shape, ::Texture) -> Nothing`
-    """
-    function set_texture!(shape::Shape, texture::Texture) ::Nothing
-    end
-    export set_texture!
-
-    """
-    `set_texture_rectangle!(::Shape, ::Rectangle) -> Nothing`
-    """
-    function set_texture_rectangle!(shape::Shape, rect::Rectangle) ::Nothing
-    end
-    export set_texture_rectangle!
-
-    """
-    `get_texture_rectangle(::Shape) -> Rectangle`
-    """
-    function get_texture_rectangle(shape::Shape) ::Rectangle
-    end
-    export get_texture_rectangle
-
-    """
-    `get_bounding_box(::Shape) -> Rectangle`
-    """
-    function get_bounding_box(shape::Shape) ::Rectangle
-    end
-    export get_bounding_box
-
-    """
     `set_vertex_position!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
     function set_vertex_position!(shape::Shape, index::Integer, position::Vector2f) ::Nothing
+        ccall((:ts_shape_set_vertex_position, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
+            shape._native, convert(Csize_t, index), position.x, position.y)
     end
     export set_vertex_position!
 
@@ -1589,6 +1754,9 @@ module ts
     `set_vertex_color!(::Shape, ::Integer, ::RGBA) -> Nothing`
     """
     function set_vertex_color!(shape::Shape, index::Integer, color::RGBA) ::Nothing
+        ccall((:ts_shape_set_vertex_color, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
+            shape._native, convert(Csize_t, index), color.red, color.green, color.blue, color.alpha)
     end
     export set_vertex_color!
 
@@ -1596,6 +1764,9 @@ module ts
     `set_vertex_texture_coordinate!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
     function set_vertex_texture_coordinate!(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
+        ccall((:ts_shape_set_vertex_texture_coordinate, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
+            shape._native, convert(Csize_t, index), coordinate.x, coordinate.y)
     end
     export set_Vertex_texture_coordinate!
 
@@ -1603,6 +1774,15 @@ module ts
     `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
     """
     function get_vertex_position(shape::Shape, index::Integer) ::Vector2f
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+
+        ccall((:ts_shape_get_vertex_position, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}),
+            shape._native, convert(Csize_t, index), x, y)
+
+        return Vector2f(x[], y[])
     end
     export get_vertex_position
 
@@ -1610,6 +1790,17 @@ module ts
     `get_vertex_color(shape::Shape, index::Integer) -> RGBA`
     """
     function get_vertex_color(shape::Shape, index::Integer) ::RGBA
+
+        r = Ref{Cfloat}(-1)
+        g = Ref{Cfloat}(-1)
+        b = Ref{Cfloat}(-1)
+        a = Ref{Cfloat}(-1)
+
+        ccall((:ts_get_vertex_color, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            shape._native, convert(Csize_t, index), r, g, b, a)
+
+        return RGBA(r[], g[], b[], a[])
     end
     export get_vertex_color
 
@@ -1617,6 +1808,15 @@ module ts
     `get_vertex_texture_coordinate(shape::Shape, index::Integer) -> Vector2f`
     """
     function get_vertex_texture_coordinate(shape::Shape, index::Integer) ::Vector2f
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+
+        ccall((:ts_shape_get_vertex_texture_coordinate, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}),
+            shape._native, convert(Csize_t, index), x, y)
+
+        return Vector2f(x[], y[])
     end
     export get_vertex_texture_coordinate
 
@@ -1630,6 +1830,17 @@ module ts
         _native::Ptr{Cvoid}
 
         function TriangleShape(a::Vector2f, b::Vector2f, c::Vector2f)
+
+            native = ccall((:ts_shape_create_triangle, _lib), Ptr{Cvoid},
+                (Cfloat, Cfloat, Cfloat, Cfloat, Cfloat, Cfloat),
+                a.x, a.y, b.x, b.y, c.x, c.y)
+
+            out = new(native)
+            finalizer(out) do x::TriangleShape
+                ccall((:ts_shape_destroy_triangle, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+            end
+
+            return out
         end
     end
     export TriangleShape
@@ -1644,6 +1855,15 @@ module ts
         _native::Ptr{Cvoid}
 
         function RectangleShape(top_left::Vector2f, size::Vector2f)
+
+            native = ccall((:ts_shape_create_rectangle, _lib), Ptr{Cvoid},
+                (Cfloat, Cfloat, Cfloat, Cfloat),
+                top_left.x, top_left.y, size.x, size.y)
+
+            out = new(native)
+            finalize(out) do x::RectangleShape
+                ccall((:ts_shape_destroy_rectangle, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+            end
         end
     end
     export RectangleShape
@@ -1652,6 +1872,9 @@ module ts
     `set_top_left!(::RectangleShape, ::Vector2f) -> Nothing`
     """
     function set_top_left!(rect::RectangleShape, position::Vector2f) ::Nothing
+        ccall((:ts_shape_rectangle_set_top_left, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat),
+             rect._native, position.x, position.y)
     end
     export set_top_left!
 
@@ -1659,22 +1882,79 @@ module ts
     `get_top_left(::RectangleShape) -> Vector2f`
     """
     function get_top_left(rect::RectangleShape) ::Vector2f
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+        ccall((:ts_shape_rectangle_get_top_left, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
+            rect._native, x, y)
+
+        return Vector2f(x[], y[])
     end
     export get_top_left
+
+     """
+    `set_size!(::RectangleShape, ::Vector2f) -> Nothing`
+    """
+    function set_size!(rect::RectangleShape, size::Vector2f) ::Nothing
+        ccall((:ts_shape_rectangle_set_size, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat),
+            rect._native, size.x, size.y)
+    end
+    export set_size!
 
     """
     `get_size(::RectangleShape) -> Vector2f`
     """
     function get_size(rect::RectangleShape) ::Vector2f
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+        ccall((:ts_shape_rectangle_get_size, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
+            rect._native, x, y)
     end
     export get_size
 
+    ### CIRCLE SHAPE ##########################################################
+
     """
-    `set_size!(::RectangleShape, ::Vector2f) -> Nothing`
+    TODO
     """
-    function set_size!(rect::RectangleShape, size::Vector2f) ::Nothing
+    struct CircleShape
+
+        _native::Ptr{Cvoid}
+
+        function CircleShape(center::Vector2f, radius::Float32, n_vertices::Csize_t = 32)
+
+            native = ccall((:ts_shape_create_circle, _lib), Ptr{Cvoid},
+                (Cfloat, Cfloat, Cfloat, Csize_t),
+                center.x, center.y, radius, n_vertices)
+
+            out = new(native)
+            finalizer(out) do x::CircleShape
+                ccall((:ts_shape_destroy_circle, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+            end
+        end
     end
-    export set_size!
+    export CircleShape
+
+    """
+    `get_radius(::CircleShape) -> Float32`
+    """
+    function get_radius(circle::CircleShape) ::Float32
+        return ccall((:ts_shape_circle_get_radius, _lib), Cfloat, (Ptr{Cvoid},), circle._native)
+    end
+    export get_radius
+
+    """
+    `set_radius(::CircleShape) -> Float32`
+    """
+    function set_radius(circle::CircleShape, radius::Float32) ::Nothing
+       ccall((:ts_shape_circle_set_radius, _lib), Cvoid,
+        (Ptr{Cvoid}, Cfloat), circle._native, radius)
+    end
+    export set_radius
 
     ### POLYGON SHAPE #########################################################
 
@@ -1686,6 +1966,28 @@ module ts
         _native::Ptr{Cvoid}
 
         function PolygonShape(positions::Vector2f...)
+
+            n = length(positions)
+
+            xs = Cfloat[]
+            ys = Cfloat[]
+
+            sizehint!(xs, n)
+            sizehint!(ys, n)
+
+            for pos in positions
+                push!(xs, pos.x)
+                push!(ys, pos.y)
+            end
+
+            native = ccall((:ts_shape_create_polygon, _lib), Ptr{Cvoid},
+                (Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
+                pointer_from_objret(xs), pointer_from_objref(ys), n)
+
+            out = new(native)
+            finalize(out) do x::PolygonShape
+                ccall((:ts_shape_destroy_polygon, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+            end
         end
     end
     export PolygonShape

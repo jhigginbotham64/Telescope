@@ -112,9 +112,9 @@ namespace ts
         Mix_SetPosition(channel, angle.as_degrees(), 0);
     }
 
-    size_t SoundHandler::get_panning(size_t channel)
+    Angle SoundHandler::get_panning(size_t channel)
     {
-        return _volume[forward_index(channel, "get_panning")];
+        return ts::degrees(_panning[forward_index(channel, "get_panning")]);
     }
 }
 

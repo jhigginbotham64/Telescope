@@ -59,7 +59,7 @@ namespace ts
             void set_texture_rectangle(Rectangle rect);
 
             /// \brief get the texture rectangle
-            Rectangle get_texture_rectangle(Rectangle rect);
+            Rectangle get_texture_rectangle();
 
             /// \brief get the axis-aligned bounding box of the shape
             /// \returns rectangle

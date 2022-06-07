@@ -86,6 +86,8 @@ bool ts_window_has_focus(size_t id);
 
 bool ts_window_has_mouse_focus(size_t id);
 
+void ts_window_render(size_t id, void* renderable_ptr, void* transform_ptr);
+
 void ts_window_clear(size_t id);
 
 void ts_window_flush(size_t id);
@@ -103,6 +105,8 @@ void ts_window_camera_zoom_out(size_t window_id, float factor);
 void ts_window_camera_set_zoom(size_t window_id, float factor);
 
 void ts_window_camera_rotate(size_t window_id, float degrees);
+
+void* ts_window_camera_get_transform(size_t window_id);
 
 void ts_window_camera_set_rotation(size_t window_id, float degrees);
 
@@ -140,6 +144,14 @@ int32_t ts_texture_blend_mode_add();
 
 int32_t ts_texture_blend_mode_multiply();
 
+void ts_texture_set_blend_mode(void* texture, int32_t blend_mode);
+
+int32_t ts_texture_get_blend_mode(void* texture);
+
+void ts_texture_set_filtering_mode(void* texture, int32_t filtering_mode);
+
+int32_t ts_texture_get_filtering_mode(void* texture);
+
 void* ts_texture_create_static_texture(size_t window_id,
                                         size_t width, size_t height,
                                         float r, float g, float b, float a);
@@ -147,6 +159,10 @@ void* ts_texture_create_static_texture(size_t window_id,
 void* ts_texture_load_static_texture(size_t window_id, const char* path);
 
 void ts_texture_get_size(void* texture, size_t* out_x, size_t* out_y);
+
+void ts_texture_set_color(void* texture, float r, float g, float b, float a);
+
+void ts_texture_get_color(void* texture, float* out_r, float* out_g, float* out_b, float* out_a);
 
 void ts_texture_destroy_texture(void* texture);
 
@@ -190,11 +206,6 @@ void ts_shape_move(void* shape_ptr, float x, float y);
 
 size_t ts_shape_get_n_vertices(void* shape_ptr);
 
-void ts_shape_get_vertex(void* shape_ptr, size_t vertex_index,
-                         float* out_pos_x, float* out_pos_y,
-                         float* out_tex_coord_x, float * out_tex_coord_y,
-                         float* out_r, float* out_g, float* out_b, float* out_a);
-
 void ts_shape_set_color(void* shape_ptr, float r, float g, float b, float a);
 
 void ts_shape_set_vertex_color(void* shape_ptr, size_t vertex_index, float r, float g, float b, float a);
@@ -213,7 +224,13 @@ void ts_shape_set_texture(void* shape_ptr, void* texture);
 
 void* ts_shape_get_texture(void* shape_ptr);
 
-void* ts_shape_new_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y);
+void ts_shape_set_texture_rectangle(void* shape_ptr, float top_left_x, float top_left_y, float width, float height);
+
+void ts_shape_get_texture_rectangle(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height);
+
+void ts_shape_get_bounding_box(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height);
+
+void* ts_shape_create_triangle(float a_x, float a_y, float b_x, float b_y, float c_x, float c_y);
 
 void ts_shape_triangle_get_vertices(void* triangle_ptr,
                                     float* out_a_x, float* out_a_y,
@@ -222,17 +239,27 @@ void ts_shape_triangle_get_vertices(void* triangle_ptr,
 
 void ts_shape_destroy_triangle(void* triangle_ptr);
 
-void* ts_shape_new_rectangle(float top_left_x, float top_left_y, float width, float height);
+void* ts_shape_create_rectangle(float top_left_x, float top_left_y, float width, float height);
 
 void ts_shape_destroy_rectangle(void* rectangle_ptr);
 
-void* ts_shape_new_circle(float center_x, float center_y, float radius, size_t n_vertices);
+void ts_shape_rectangle_set_top_left(void* rectangle_ptr, float top_left_x, float top_left_y);
 
-float ts_shape_circle_get_radius(void* circle_ptr);
+void ts_shape_rectangle_get_top_left(void* rectangle_ptr, float* out_top_left_x, float* out_top_left_y);
+
+void ts_shape_rectangle_set_size(void* rectangle_ptr, float width, float height);
+
+void ts_shape_rectangle_get_size(void* rectangle_ptr, float* out_width, float* out_height);
+
+void* ts_shape_create_circle(float center_x, float center_y, float radius, size_t n_vertices);
 
 void ts_shape_destroy_circle(void* circle_ptr);
 
-void* ts_shape_new_polygon(float* vertices_x, float* vertices_y, size_t n_vertices);
+float ts_shape_circle_get_radius(void* circle_ptr);
+
+void ts_shape_circle_set_radius(void* circle_ptr, float);
+
+void* ts_shape_create_polygon(float* vertices_x, float* vertices_y, size_t n_vertices);
 
 void ts_shape_destroy_polygon(void* polygon_ptr);
 
@@ -308,7 +335,7 @@ void ts_music_pause();
 
 void ts_music_unpause();
 
-void ts_music_skip_to(int ms);
+void ts_music_skip_to(double ms);
 
 bool ts_music_is_playing();
 
@@ -350,9 +377,9 @@ void ts_sound_set_volume(size_t channel, float zero_to_one);
 
 float ts_sound_get_volume(size_t channel);
 
-void ts_sound_set_panning(size_t channel, size_t zero_to_360_degree);
+void ts_sound_set_panning(size_t channel, float zero_to_360_degree);
 
-size_t ts_sound_get_panning(size_t channel);
+float ts_sound_get_panning(size_t channel);
 
 #ifdef _cplusplus
 }

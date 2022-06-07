@@ -135,7 +135,7 @@ namespace ts
         apply_texture_rectangle();
     }
 
-    Rectangle Shape::get_texture_rectangle(Rectangle rect)
+    Rectangle Shape::get_texture_rectangle()
     {
         return _texture_rect;
     }
