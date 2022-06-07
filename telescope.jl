@@ -8,6 +8,7 @@ module ts
     ### COMMON ################################################################
 
     const _lib = "./libtelescope.so"
+    export _lib
 
     """
     `initialize() -> Bool`
@@ -20,7 +21,14 @@ module ts
     ### VECTOR ################################################################
 
     """
-    TODO
+    Vector2{<: Any}
+
+    ## Members
+    + x::T
+    + y::T
+
+    ## Constructors
+    `Vector2{T}(::T, ::T)`
     """
     struct Vector2{T}
         x::T
@@ -35,7 +43,15 @@ module ts
     export Vector2f, Vector2i, Vector2ui
 
     """
-    TODO
+     Vector3{<: Any}
+
+    ## Members
+    + x::T
+    + y::T
+    + z::T
+
+    ## Constructors
+    `Vector3{T}(::T, ::T, ::T)`
     """
     struct Vector3{T}
         x::T
@@ -53,7 +69,16 @@ module ts
     ### COLOR #################################################################
     
     """
-    TODO
+    RGBA
+
+    ## Members
+    + red::Float32
+    + green::Float32
+    + blue::Float32
+    + alpha::Float32
+
+    ## Constructors
+    `RGBA(r::Float32, g::Float32, b::Float32, a::Float32)`
     """
     struct RGBA
         red::Float32
@@ -64,7 +89,16 @@ module ts
     export RGBA
     
     """
-    TODO
+    HSVA
+
+    ## Members
+    + hue::Float32
+    + saturation::Float32
+    + value::Float32
+    + alpha::Float32
+
+    ## Constructors
+    `RGBA(h::Float32, s::Float32, v::Float32, a::Float32)`
     """
     struct HSVA
         hue::Float32
@@ -112,7 +146,13 @@ module ts
     ### TIME #################################################################
 
     """
-    TODO
+    Time
+
+    ## Members
+    (no public member)
+
+    ## Constructors
+    (no public constructors)
     """
     struct Time
         _count_ns::Int64
@@ -205,7 +245,13 @@ module ts
     export nanoseconds
 
     """
-    TODO
+    Clock
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `Clock()`
     """
     struct Clock
 
@@ -243,7 +289,13 @@ module ts
     ### ANGLE ################################################################
 
     """
-    TODO
+    Angle
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    (no public constructors)
     """
     struct Angle
         _degrees::Float32
@@ -270,7 +322,7 @@ module ts
     `as_degrees(::Angle) -> Float32`
     """
     function as_degrees(angle::Angle) ::Float32
-        return angle._degrees % 360.f;
+        return angle._degrees % 360.0;
     end
     export as_degrees
 
@@ -299,21 +351,18 @@ module ts
     end
     # no export
 
-    function export_enum(enum::Enum) ::Nothing
+    macro export_enum(enum_symbol::Symbol)
 
-        this_module = @__MODULE__
-        this_module.eval(:(export $(enum.name)))
-
-        for x in instances(this_module.eval(name))
-            this_module.eval(:(export $x))
+        enum = __module__.eval(enum_symbol)
+        __module__.eval(Expr(:export, Symbol(enum_symbol)))
+        for e in instances(enum)
+            __module__.eval(Expr(:export, Symbol(e)))
         end
-
-        return nothing
     end
-    # no export
+    export @export_enum
 
     """
-    TODO
+    enum KeyboardKey <: Int32
     """
     @enum KeyboardKey begin
     
@@ -437,10 +486,10 @@ module ts
         PRINTSCREEN = get_keyboard_key_enum_value("PRINTSCREEN")
         DELETE = get_keyboard_key_enum_value("DELETE")
     end
-    export_enum(KeyboardKey)
+    @export_enum(KeyboardKey)
 
     """
-    TODO
+    enum MouseButton <: Int32
     """
     @enum MouseButton begin
     
@@ -451,10 +500,10 @@ module ts
         MOUSE_X1 = get_mouse_button_enum_value("MOUSE_X1")
         MOUSE_X2 = get_mouse_button_enum_value("MOUSE_X2")
     end
-    export_enum(MouseButton)
+    @export_enum(MouseButton)
 
     """
-    TODO
+    enum ControllerButton <: Int32
     """
     @enum ControllerButton begin
 
@@ -482,8 +531,8 @@ module ts
         CONTROLLER_MAX = get_controller_button_enum_value("CONTROLLER_MAX")
 
         CONTROLLER_XBOX_X_SHARE = get_controller_button_enum_value("CONTROLLER_XBOX_X_SHARE")
-        CONTROLLER_PS5_MIC = get_controller_button_enum_value("CONTROLLER_PS5_MIC")
-        CONTROLLER_SWITCH_CAPTURE = get_controller_button_enum_value("CONTROLLER_SWITCH_CAPTURE")
+        # CONTROLLER_PS5_MIC = CONTROLLER_XBOX_X_SHARE
+        # CONTROLLER_SWITCH_CAPTURE = CONTROLLER_XBOX_X_SHARE
 
         CONTROLLER_PADDLE_01 = get_controller_button_enum_value("CONTROLLER_PADDLE_01")
         CONTROLLER_PADDLE_02 = get_controller_button_enum_value("CONTROLLER_PADDLE_02")
@@ -492,7 +541,7 @@ module ts
 
         CONTROLLER_PS5_TOUCHPAD = get_controller_button_enum_value("CONTROLLER_PS5_TOUCHPAD")
     end
-    export_enum(ControllerButton)
+    @export_enum(ControllerButton)
 
     """
     InputHandler: query the global state of the keyboard, mouse and any controller
@@ -676,7 +725,13 @@ module ts
     ### SOUND ################################################################
 
     """
-    TODO
+    Sound
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `Sound(file_path::String, volume::Cfloat)`
     """
     struct Sound
 
@@ -698,12 +753,15 @@ module ts
     export ChannelID
 
     """
-    TODO
+    SoundHandler: control shorter sound clips by playing them in designated channels
     """
     module SoundHandler
 
         import Main.ts; using Main.ts
 
+        """
+        maximum channel index
+        """
         const n_channels = ccall((:ts_sound_get_max_n_channels, _lib), Csize_t, ())
         export n_channels
 
@@ -771,7 +829,7 @@ module ts
         `is_stopped(::ChannelID) -> Bool`
         """
         function is_stopped(channel::ChannelID) ::Bool
-            return ccall((:ts_sound_is_stopped, _lib), Bool, channel)
+            return ccall((:ts_sound_is_stopped, _lib), Bool, (Csize_t,), channel)
         end
         export is_stopped
 
@@ -811,7 +869,13 @@ module ts
     ### MUSIC ################################################################
 
     """
-    TODO
+    Music
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `Music(path::String)`
     """
     struct Music
 
@@ -829,12 +893,15 @@ module ts
     export Music
 
     """
-    TODO
+    MusicHandler: control playback of longer sound files, only one can be active at a time
     """
     module MusicHandler
 
         import Main.ts; using Main.ts
 
+        """
+        sample rate of music sound files
+        """
         const sample_rate = ccall((:ts_music_sample_rate, _lib), Csize_t, ())
         export sample_rate
 
@@ -934,7 +1001,7 @@ module ts
         `is_playing() -> Bool`
         """
         function is_playing() ::Bool
-            return ccall((:ts_music_is_playing, _lib), Cbool, ())
+            return ccall((:ts_music_is_playing, _lib), Bool, ())
         end
         export is_playing
 
@@ -942,7 +1009,7 @@ module ts
         `is_paused() -> Bool`
         """
         function is_paused() ::Bool
-            return ccall((:ts_music_is_paused, _lib), Cbool, ())
+            return ccall((:ts_music_is_paused, _lib), Bool, ())
         end
         export is_paused
 
@@ -950,359 +1017,63 @@ module ts
         `is_stopped() -> Bool`
         """
         function is_stopped() ::Bool
-            return ccall((:ts_music_is_stopped, _lib), Cbool, ())
+            return ccall((:ts_music_is_stopped, _lib), Bool, ())
         end
         export is_stopped
     end
 
-    ### WINDOW ################################################################
-
-    const WindowID = UInt64
-    export WindowID
-
-    @enum WindowOptions begin
-
-        DEFAULT = 0
-        FULLSCREEN = 1 << 1
-        BORDERLESS = 1 << 2
-        RESIZABLE  = 1 << 3
-    end
-    export_enum(WindowOptions)
-
-    """
-    TODO
-    """
-    struct Window
-
-        _native_id::WindowID
-
-        function Window(width::Integer, height::Integer, title::Cstring, options::UInt32 = DEFAULT)
-            id = ccall((:ts_window_create, _lib), Csize_t, (Csize_t, Csize_t, Cstring, UInt32), width, height, title, options)
-            out = new(id)
-            finalizer(out) do x::Window
-                ccall((:ts_window_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
-            end
-            return out
-        end
-    end
-    export Window
-
-    """
-    `close!(::Window) -> Nothing`
-    """
-    function close!(window::Window) ::Nothing
-        ccall((:ts_window_close, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export close
-
-    """
-    `is_open(::Window) -> Bool`
-    """
-    function is_open(window::Window) ::Bool
-        ccall((:ts_window_is_open, _lib), Bool, (Csize_t,), window._native_id)
-    end
-    export is_open
-
-    """
-    `get_size(::Window) -> Vector2ui`
-    """
-    function get_size(window::Window) ::Vector2ui
-
-        x = Ref{Csize_t}(-1)
-        y = Ref{Csize_t}(-1)
-        ccall((:ts_window_get_size, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
-        return Vector2ui(x[], y[])
-    end
-    export get_size
-
-    """
-    `get_position(::Window) -> Vector2ui`
-    """
-    function get_position(window::Window) ::Vector2ui
-
-        x = Ref{Csize_t}(-1)
-        y = Ref{Csize_t}(-1)
-        ccall((:ts_window_get_position, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
-        return Vector2ui(x[], y[])
-    end
-    export get_position
-
-    """
-    `set_hidden!(::Window, ::Bool) -> Nothing
-    """
-    function set_hidden!(window::Window, hidden::Bool) ::Nothing
-        ccall((:ts_window_set_hidden, _lib), Cvoid, (Csize_t, Bool), window._native_id, hidden)
-    end
-    export set_hidden
-
-    """
-    `is_hidden(::Window) -> Bool`
-    """
-    function is_hidden(window::Window) ::Bool
-        return ccall((:ts_window_is_hidden, _lib), Cbool, (Csize_t,), window._native_id)
-    end
-    export is_hidden
-
-    """
-    `minimize!(::Window) -> Nothing`
-    """
-    function minimize!(window::Window) ::Nothing
-        ccall((:ts_window_minimize, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export minimize
-
-    """
-    `is_minimized(::Window) -> Bool`
-    """
-    function is_minimized(window::Window) ::Bool
-        return ccall((:ts_window_is_minimized, _lib), Bool, (Csize_t,), window._native_id)
-    end
-    export is_minimizedd
-
-    """
-    `maximize!(::Window) -> Nothing`
-    """
-    function maximize!(window::Window) ::Nothing
-        ccall((:ts_window_maximize, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export maximize
-
-    """
-    `is_maximized(::Window) -> Bool`
-    """
-    function is_maximized(window::Window) ::Bool
-        return ccall((:ts_window_is_maximized, _lib), Bool, (Csize_t,), window._native_id)
-    end
-    export is_maximized
-
-    """
-    `has_focus(::Window) -> Bool``
-    """
-    function has_focus(window::Window) ::Bool
-        return ccall((:ts_window_has_focus, _lib), Bool, (Csize_t,), window._native_id)
-    end
-    export has_focus
-
-    """
-    `has_mouse_focus(::Window) -> Bool`
-    """
-    function has_mouse_focus(window::Window) ::Bool
-        return ccall((:ts_window_has_mouse_focus, _lib), Bool, (Csize_t,), window._native_id)
-    end
-    export has_mouse_focus
-
-    """
-    `clear!(::Window) -> Nothing`
-    """
-    function clear!(window::Window) ::Nothing
-        ccall((:ts_window_clear, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export clear
-
-    """
-    `render!(::Window, ::AbstractShape, ::Transform) ::Nothing`
-    """
-    function render!(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: AbstractShape
-        ccall((:ts_window_render, _lib), Cvoid, 
-            (Csize_t, Ptr{Cvoid}, Ptr{Cvoid}), 
-            window._native_id, shape._native, transform._native)
-    end
-    export render
-
-    """
-    `flush!(::Window) -> Nothing`
-    """
-    function flush!(window::Window) ::Nothing
-        ccall((:ts_window_flush, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export flush
-
-    """
-    `set_framerate_limit!(::Integer) -> Nothing`
-    """
-    function set_framerate_limit!(n_fps::Integer) ::Nothing
-        ccall((:ts_set_framerate_limit, _lib), Cvoid, (Csize_t,), convert(Csize_t, n_fps))
-    end
-    export set_framerate_limit
-
-    """
-    `start_frame!(::Window) -> Nothing`
-    """
-    function start_frame!(window::Window) ::Nothing
-        ccall((:ts_start_frame, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export start_frame
-
-    """
-    `end_frame!(::Window) -> Nothing`
-    """
-    function end_frame!(window::Window) ::Nothing
-        ccall((:ts_end_frame, _lib), Cvoid, (Csize_t,), window._native_id)
-    end
-    export end_frame
-
-    ### CAMERA ################################################################
-
-    """
-    TODO
-    """
-    struct Camera
-
-        _native_window_id::WindowID
-
-        function Camera(window::Window)
-        end
-    end
-    export Camera
-
-    """
-    `center_on!(::Camera, ::Vector2f) -> Nothing`
-    """
-    function center_on!(camera::Camera, point::Vector2f) ::Nothing
-        ccall((:ts_window_camera_center_on, _lib), Cvoid, 
-            (Csize_t, Cfloat, Cfloat),
-            camera._native_window_id, point.x, point.y)
-    end
-    export center_on!
-
-    """
-    `move!(::Camera, ::Float32, Float32) -> Nothing`
-    """
-    function move!(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
-        ccall((:ts_window_camera_move, _lib), Cvoid, 
-            (Csize_t, Cfloat, Cfloat),
-            camera._native_window_id, x_offset, y_offset)
-    end
-    export move!
-
-    """
-    `zoom_in!(::Camera, ::Float32) -> Nothing`
-    """
-    function zoom_in!(camera::Camera, factor::Float32) ::Nothing
-        ccall((:ts_window_camera_zoom_in, _lib), Cvoid, 
-            (Csize_t, Cfloat), 
-            camera._native_window_id, factor)
-    end
-    export zoom_in!
-
-    """
-    `zoom_out!(::Camera, ::Float32) -> Nothing`
-    """
-    function zoom_out!(camera::Camera, factor::Float32) ::Nothing
-        ccall((:ts_window_camera_zoom_out, _lib), Cvoid, 
-            (Csize_t, Cfloat), 
-            camera._native_window_id, factor)
-    end
-    export zoom_out!
-
-    """
-    `set_zoom!(::Camera, ::Float32) -> Nothing`
-    """
-    function set_zoom!(camera::Camera, factor::Float32) ::Nothing
-        ccall((:ts_window_camera_set_zoom, _lib), Cvoid, 
-            (Csize_t, Cfloat), 
-            camera._native_window_id, factor)
-    end
-    export set_zoom!
-
-    """
-    `rotate!(::Camera, ::Angle) -> Nothing`
-    """
-    function rotate!(camera::Camera, angle::Angle) ::Nothing
-        ccall((:ts_window_camera_rotate, _lib), Cvoid, 
-            (Csize_t, Cfloat), 
-            camera._native_window_id, as_degrees(angle))
-    end
-    export rotate!
-
-    """
-    `set_rotation!(::Camera, ::Angle) -> Nothing`
-    """
-    function set_rotation!(camera::Camera, angle::Angle) ::Nothing
-        ccall((:ts_window_camera_set_rotation, _lib), Cvoid, 
-            (Csize_t, Cfloat), 
-            camera._native_window_id, as_degrees(angle))
-    end
-    export set_rotation!
-
-    """
-    `get_transform(::Camera) -> Transform`
-    """
-    function get_transform(camera::Camera) ::Transform
-        return Transform(ccall((:ts_window_camera_get_transform, _lib), Ptr{Cvoid}, 
-            (Csize_t,), camera._native_window_id))
-    end
-    export get_transform
-
-    """
-    `get_center(::Camera) -> Vector2f`
-    """
-    function get_center(camera::Camera) ::Vector2f
-        
-        x = Ref{Cfloat}(-1)
-        y = Ref{Cfloat}(-1)
-        ccall((:ts_window_camera_get_center, _lib), 
-            (Csize_t, Ref{Cfloat}, Ref{Cfloat}), x, y),
-            (camera._native_window_id, x, y)
-            
-        return Vector2f(x[], y[])
-    end
-    export get_center
-
-    """
-    `get_view_area(::Camera) -> Trapezoid`
-    """
-    function get_view_area(camera::Camera) ::Trapezoid
-
-        top_left_x = Ref{Cfloat}(-1)
-        top_left_y = Ref{Cfloat}(-1)
-        top_right_x = Ref{Cfloat}(-1)
-        top_right_y = Ref{Cfloat}(-1)
-        bottom_left_x = Ref{Cfloat}(-1)
-        bottom_left_y  = Ref{Cfloat}(-1)
-        bottom_right_x =  Ref{Cfloat}(-1)
-        bottom_right_y = Ref{Cfloat}(-1)
-
-        ccall((:ts_window_camera_get_view_area, _lib), Cvoid,
-            (Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
-            top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y)
-    end
-    export get_view_area
-
     ### TEXTURES ##############################################################
 
+    """
+    enum TextureFilteringMode <: Int32
+    """
     @enum TextureFilteringMode begin
 
-        NEAREST_NEIGHBOUR = ccall((:ts_texture_filtering_mode_nearest_neighbour), Cint, ())
-        LINEAR = ccall((:ts_texture_filtering_mode_linear), Cint, ())
-        ANISOTROPIC = ccall((:ts_texture_filtering_mode_anisotropic), Cint, ())
+        NEAREST_NEIGHBOUR = ccall((:ts_texture_filtering_mode_nearest_neighbour, _lib), Cint, ())
+        LINEAR = ccall((:ts_texture_filtering_mode_linear, _lib), Cint, ())
+        ANISOTROPIC = ccall((:ts_texture_filtering_mode_anisotropic, _lib), Cint, ())
     end
-    export_enum(TextureFilteringMode)
-
-    @enum TextureBlendMode begin
-
-        NONE = ccall((:ts_texture_blend_mode_none), Cint, ())
-        ALPHA = ccall((:ts_texture_blend_mode_alpha), Cint, ())
-        ADD = ccall((:ts_texture_blend_mode_add), Cint, ())
-        MULTIPLY = ccall((:ts_texture_blend_mode_multiply), Cint, ())
-    end
-    export_enum(TextureBlendMode)
+    @export_enum(TextureFilteringMode)
 
     """
-    TODO
+    enum TextureBlendMode <: Int32
+    """
+    @enum TextureBlendMode begin
+
+        NONE = ccall((:ts_texture_blend_mode_none, _lib), Cint, ())
+        ALPHA = ccall((:ts_texture_blend_mode_alpha, _lib), Cint, ())
+        ADD = ccall((:ts_texture_blend_mode_add, _lib), Cint, ())
+        MULTIPLY = ccall((:ts_texture_blend_mode_multiply, _lib), Cint, ())
+    end
+    @export_enum(TextureBlendMode)
+
+    """
+    Texture (Abstract Interface)
+
+    ## Expected Members
+    + _native::Ptr{Cvoid}
     """
     abstract type Texture end
     export Texture
 
+    # forward declaration
+    abstract type AbstractWindow end
+
     """
-    TODO
+    RenderTexture
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `RenderTexture(::Window, width::Unsigned, height::Unsigned)`
     """
     struct RenderTexture <: Texture
 
         _native::Ptr{Cvoid}
 
         # equivalent to ts::RenderTexture::create
-        function RenderTexture(window::Window, width::Unsigned, height::Unsigned)
+        function RenderTexture(window::AbstractWindow, width::Unsigned, height::Unsigned)
 
             native = ccall((:ts_texture_create_render_texture, _lib),
                     Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
@@ -1317,14 +1088,21 @@ module ts
     export RenderTexture
 
     """
-    TODO
+    StaticTexture
+
+    ## Members
+    (no public members)
+
+    ##
+    `StaticTexture(::Window, path::String)`
+    `StaticTexture(::Window, width::Unsigned, height::Unsigned, ::RGBA)`
     """
     struct StaticTexture <: Texture
 
-        _native_id::TextureID
+        _native::Ptr{Cvoid}
 
         # equivalent to ts::StaticTexture::load
-        function StaticTexture(window::Window, path::String)
+        function StaticTexture(window::AbstractWindow, path::String)
 
             native = ccall((:ts_texture_load_static_texture, _lib),
                 Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
@@ -1337,7 +1115,7 @@ module ts
         end
 
         # equivalent to ts::StaticTexture::create
-        function StaticTexture(window::Window, width::Unsigned, height::Unsigned, color::RGBA)
+        function StaticTexture(window::AbstractWindow, width::Unsigned, height::Unsigned, color::RGBA)
 
             native = ccall((:ts_texture_create_static_texture, _lib),
                 Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
@@ -1363,7 +1141,7 @@ module ts
     """
     function set_color!(texture::Texture, color::RGBA) ::Nothing
         ccall((:ts_texture_set_color, _lib), Cvoid,
-            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat),
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
             texture._native, color.red, color.green, color.blue, color.alpha)
     end
     export set_color!
@@ -1446,6 +1224,13 @@ module ts
     ### TRANSFORM #############################################################
 
     """
+    Transform
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `Transform()`
     """
     struct Transform
 
@@ -1502,7 +1287,7 @@ module ts
     `reset!(::Transform) -> Nothing`
     """
     function reset!(transform::Transform) ::Nothing
-        ccall((:ts_transform_reset, _lib), Cvoid, (Ptr{Cvoid}, transform._native))
+        ccall((:ts_transform_reset, _lib), Cvoid, (Ptr{Cvoid},), transform._native)
     end
     export reset!
 
@@ -1510,7 +1295,7 @@ module ts
     `combine!(::Transform, ::Transform) -> Nothing`
     """
     function combine!(left::Transform, right::Transform) ::Nothing
-        ccall((:ts_transform_combin, _lib), Cvoid, (Ptr{Cvoid}, Ptr{Cvoid}, left._native, right._native))
+        ccall((:ts_transform_combin, _lib), Cvoid, (Ptr{Cvoid}, Ptr{Cvoid}), left._native, right._native)
     end
     export combine!
 
@@ -1565,7 +1350,15 @@ module ts
     ### GEOMETRY ##############################################################
 
     """
-    TODO
+    Triangle
+
+    ## Members
+    + a::Vector2f
+    + b::Vector2f
+    + c::Vector2f
+
+    ## Constructors
+    `Triangle(::Vector2f, ::Vector2f, ::Vector2f)`
     """
     struct Triangle
 
@@ -1576,7 +1369,14 @@ module ts
     export Triangle
 
     """
-    TODO
+    Rectangle
+
+    ## Members
+    + top_left::Vector2f
+    + size::Vector2f
+
+    ## Constructors
+    `Rectangle(::Vector2f, ::Vector2f)`
     """
     struct Rectangle
 
@@ -1586,7 +1386,16 @@ module ts
     export Rectangle
 
     """
-    TODO
+    Trapezoid
+
+    ## Members
+    + top_left::Vector2f
+    + top_right::Vector2f
+    + bottom_left::Vector2f
+    + bottom_right::Vector2f
+
+    ## Constructors
+    `Trapezoid(::Vector2f, ::Vector2f, ::Vector2f, ::Vector2f)`
     """
     struct Trapezoid
 
@@ -1598,7 +1407,14 @@ module ts
     export Trapezoid
 
     """
-    TODO
+    Circle
+
+    ## Members
+    + center::Vector2f
+    + radius::Float32
+
+    ## Constructors
+    `Circle(::Vector2f, ::Float32)`
     """
     struct Circle
 
@@ -1610,6 +1426,10 @@ module ts
     ### SHAPE #################################################################
 
     """
+    Shape (Abstract Interface)
+
+    ## Expected Members
+    + _native::Ptr{Cvoid}
     """
     abstract type Shape end
     export Shape
@@ -1708,7 +1528,7 @@ module ts
 
         ccall((:ts_shape_get_texture_rectangle, _lib), Cvoid,
             (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
-            x, y, width, height)
+            shape._native, x, y, width, height)
 
         return Rectangle(Vector2f(x[], y[]), Vector2f(width[], height[]))
     end
@@ -1726,7 +1546,7 @@ module ts
 
         ccall((:ts_shape_get_texture_rectangle, _lib), Cvoid,
             (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
-            x, y, width, height)
+            shape._native, x, y, width, height)
 
         return Rectangle(Vector2f(x[], y[]), Vector2f(width[], height[]))
     end
@@ -1823,7 +1643,13 @@ module ts
     ### TRIANGLE SHAPE ########################################################
 
     """
-    TODO
+    TriangleShape
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `TriangleShape(::Vector2f, ::Vector2f, ::Vector2f)`
     """
     struct TriangleShape
 
@@ -1848,7 +1674,13 @@ module ts
     ### RECTANGLE SHAPE #######################################################
 
     """
-    TODO
+    RectangleShape
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `RectangleShape(top_left::Vector2f, size::Vector2f)`
     """
     struct RectangleShape
 
@@ -1919,7 +1751,13 @@ module ts
     ### CIRCLE SHAPE ##########################################################
 
     """
-    TODO
+    CircleShape
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `CircleShape(center::Vector2f, radius::Float32, [n_vertices::UInt64])
     """
     struct CircleShape
 
@@ -1959,7 +1797,13 @@ module ts
     ### POLYGON SHAPE #########################################################
 
     """
-    TODO
+    PolygonShape
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `PolygonShape(points::Vector2f...)`
     """
     struct PolygonShape
 
@@ -1991,4 +1835,333 @@ module ts
         end
     end
     export PolygonShape
+
+    ### WINDOW ################################################################
+
+    const WindowID = UInt64
+    export WindowID
+
+    """
+    enum WindowOptions <: UInt32
+    """
+    @enum WindowOptions begin
+
+        DEFAULT = 0
+        FULLSCREEN = 1 << 1
+        BORDERLESS = 1 << 2
+        RESIZABLE  = 1 << 3
+    end
+    @export_enum(WindowOptions)
+
+    """
+    Window
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `Window(width::Integer, height::Integer, title::String, [options::UInt32])`
+    """
+    struct Window <: AbstractWindow
+
+        _native_id::WindowID
+
+        function Window(width::Integer, height::Integer, title::Cstring, options::UInt32 = DEFAULT)
+            id = ccall((:ts_window_create, _lib), Csize_t, (Csize_t, Csize_t, Cstring, UInt32), width, height, title, options)
+            out = new(id)
+            finalizer(out) do x::Window
+                ccall((:ts_window_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+            return out
+        end
+    end
+    export Window
+
+    """
+    `close!(::Window) -> Nothing`
+    """
+    function close!(window::Window) ::Nothing
+        ccall((:ts_window_close, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export close
+
+    """
+    `is_open(::Window) -> Bool`
+    """
+    function is_open(window::Window) ::Bool
+        ccall((:ts_window_is_open, _lib), Bool, (Csize_t,), window._native_id)
+    end
+    export is_open
+
+    """
+    `get_size(::Window) -> Vector2ui`
+    """
+    function get_size(window::Window) ::Vector2ui
+
+        x = Ref{Csize_t}(-1)
+        y = Ref{Csize_t}(-1)
+        ccall((:ts_window_get_size, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
+        return Vector2ui(x[], y[])
+    end
+    export get_size
+
+    """
+    `get_position(::Window) -> Vector2ui`
+    """
+    function get_position(window::Window) ::Vector2ui
+
+        x = Ref{Csize_t}(-1)
+        y = Ref{Csize_t}(-1)
+        ccall((:ts_window_get_position, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
+        return Vector2ui(x[], y[])
+    end
+    export get_position
+
+    """
+    `set_hidden!(::Window, ::Bool) -> Nothing
+    """
+    function set_hidden!(window::Window, hidden::Bool) ::Nothing
+        ccall((:ts_window_set_hidden, _lib), Cvoid, (Csize_t, Bool), window._native_id, hidden)
+    end
+    export set_hidden
+
+    """
+    `is_hidden(::Window) -> Bool`
+    """
+    function is_hidden(window::Window) ::Bool
+        return ccall((:ts_window_is_hidden, _lib), Bool, (Csize_t,), window._native_id)
+    end
+    export is_hidden
+
+    """
+    `minimize!(::Window) -> Nothing`
+    """
+    function minimize!(window::Window) ::Nothing
+        ccall((:ts_window_minimize, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export minimize
+
+    """
+    `is_minimized(::Window) -> Bool`
+    """
+    function is_minimized(window::Window) ::Bool
+        return ccall((:ts_window_is_minimized, _lib), Bool, (Csize_t,), window._native_id)
+    end
+    export is_minimizedd
+
+    """
+    `maximize!(::Window) -> Nothing`
+    """
+    function maximize!(window::Window) ::Nothing
+        ccall((:ts_window_maximize, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export maximize
+
+    """
+    `is_maximized(::Window) -> Bool`
+    """
+    function is_maximized(window::Window) ::Bool
+        return ccall((:ts_window_is_maximized, _lib), Bool, (Csize_t,), window._native_id)
+    end
+    export is_maximized
+
+    """
+    `has_focus(::Window) -> Bool``
+    """
+    function has_focus(window::Window) ::Bool
+        return ccall((:ts_window_has_focus, _lib), Bool, (Csize_t,), window._native_id)
+    end
+    export has_focus
+
+    """
+    `has_mouse_focus(::Window) -> Bool`
+    """
+    function has_mouse_focus(window::Window) ::Bool
+        return ccall((:ts_window_has_mouse_focus, _lib), Bool, (Csize_t,), window._native_id)
+    end
+    export has_mouse_focus
+
+    """
+    `clear!(::Window) -> Nothing`
+    """
+    function clear!(window::Window) ::Nothing
+        ccall((:ts_window_clear, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export clear
+
+    """
+    `render!(::Window, ::Shape, ::Transform) ::Nothing`
+    """
+    function render!(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: Shape
+        ccall((:ts_window_render, _lib), Cvoid,
+            (Csize_t, Ptr{Cvoid}, Ptr{Cvoid}),
+            window._native_id, shape._native, transform._native)
+    end
+    export render
+
+    """
+    `flush!(::Window) -> Nothing`
+    """
+    function flush!(window::Window) ::Nothing
+        ccall((:ts_window_flush, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export flush
+
+    """
+    `set_framerate_limit!(::Integer) -> Nothing`
+    """
+    function set_framerate_limit!(n_fps::Integer) ::Nothing
+        ccall((:ts_set_framerate_limit, _lib), Cvoid, (Csize_t,), convert(Csize_t, n_fps))
+    end
+    export set_framerate_limit
+
+    """
+    `start_frame!(::Window) -> Nothing`
+    """
+    function start_frame!(window::Window) ::Nothing
+        ccall((:ts_start_frame, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export start_frame
+
+    """
+    `end_frame!(::Window) -> Nothing`
+    """
+    function end_frame!(window::Window) ::Nothing
+        ccall((:ts_end_frame, _lib), Cvoid, (Csize_t,), window._native_id)
+    end
+    export end_frame
+
+    ### CAMERA ################################################################
+
+    """
+    Camera
+
+    ## Members
+    (no public members)
+
+    ## Constructors
+    `Camera(::Window)`
+    """
+    struct Camera
+
+        _native_window_id::WindowID
+
+        function Camera(window::Window)
+        end
+    end
+    export Camera
+
+    """
+    `center_on!(::Camera, ::Vector2f) -> Nothing`
+    """
+    function center_on!(camera::Camera, point::Vector2f) ::Nothing
+        ccall((:ts_window_camera_center_on, _lib), Cvoid,
+            (Csize_t, Cfloat, Cfloat),
+            camera._native_window_id, point.x, point.y)
+    end
+    export center_on!
+
+    """
+    `move!(::Camera, ::Float32, Float32) -> Nothing`
+    """
+    function move!(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
+        ccall((:ts_window_camera_move, _lib), Cvoid,
+            (Csize_t, Cfloat, Cfloat),
+            camera._native_window_id, x_offset, y_offset)
+    end
+    export move!
+
+    """
+    `zoom_in!(::Camera, ::Float32) -> Nothing`
+    """
+    function zoom_in!(camera::Camera, factor::Float32) ::Nothing
+        ccall((:ts_window_camera_zoom_in, _lib), Cvoid,
+            (Csize_t, Cfloat),
+            camera._native_window_id, factor)
+    end
+    export zoom_in!
+
+    """
+    `zoom_out!(::Camera, ::Float32) -> Nothing`
+    """
+    function zoom_out!(camera::Camera, factor::Float32) ::Nothing
+        ccall((:ts_window_camera_zoom_out, _lib), Cvoid,
+            (Csize_t, Cfloat),
+            camera._native_window_id, factor)
+    end
+    export zoom_out!
+
+    """
+    `set_zoom!(::Camera, ::Float32) -> Nothing`
+    """
+    function set_zoom!(camera::Camera, factor::Float32) ::Nothing
+        ccall((:ts_window_camera_set_zoom, _lib), Cvoid,
+            (Csize_t, Cfloat),
+            camera._native_window_id, factor)
+    end
+    export set_zoom!
+
+    """
+    `rotate!(::Camera, ::Angle) -> Nothing`
+    """
+    function rotate!(camera::Camera, angle::Angle) ::Nothing
+        ccall((:ts_window_camera_rotate, _lib), Cvoid,
+            (Csize_t, Cfloat),
+            camera._native_window_id, as_degrees(angle))
+    end
+    export rotate!
+
+    """
+    `set_rotation!(::Camera, ::Angle) -> Nothing`
+    """
+    function set_rotation!(camera::Camera, angle::Angle) ::Nothing
+        ccall((:ts_window_camera_set_rotation, _lib), Cvoid,
+            (Csize_t, Cfloat),
+            camera._native_window_id, as_degrees(angle))
+    end
+    export set_rotation!
+
+    """
+    `get_transform(::Camera) -> Transform`
+    """
+    function get_transform(camera::Camera) ::Transform
+        return Transform(ccall((:ts_window_camera_get_transform, _lib), Ptr{Cvoid},
+            (Csize_t,), camera._native_window_id))
+    end
+    export get_transform
+
+    """
+    `get_center(::Camera) -> Vector2f`
+    """
+    function get_center(camera::Camera) ::Vector2f
+
+        x = Ref{Cfloat}(-1)
+        y = Ref{Cfloat}(-1)
+        ccall((:ts_window_camera_get_center, _lib), Cvoid,
+            (Csize_t, Ref{Cfloat}, Ref{Cfloat}),
+            camera._native_window_id, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_center
+
+    """
+    `get_view_area(::Camera) -> Trapezoid`
+    """
+    function get_view_area(camera::Camera) ::Trapezoid
+
+        top_left_x = Ref{Cfloat}(-1)
+        top_left_y = Ref{Cfloat}(-1)
+        top_right_x = Ref{Cfloat}(-1)
+        top_right_y = Ref{Cfloat}(-1)
+        bottom_left_x = Ref{Cfloat}(-1)
+        bottom_left_y  = Ref{Cfloat}(-1)
+        bottom_right_x =  Ref{Cfloat}(-1)
+        bottom_right_y = Ref{Cfloat}(-1)
+
+        ccall((:ts_window_camera_get_view_area, _lib), Cvoid,
+            (Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            camera._native_window_id, top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y)
+    end
+    export get_view_area
 end

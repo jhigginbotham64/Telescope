@@ -66,6 +66,7 @@ find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
 find_library(SDL2_net REQUIRED NAMES SDL2_net)
 
 find_library(vulkan REQUIRED NAMES vulkan)
+find_library(box2d REQUIRED NAMES box2d)
 
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX("glm/glm.hpp" GLM_FOUND)
@@ -178,8 +179,11 @@ add_library(telescope SHARED
 
     include/physics.hpp
 
-    include/physics/world.hpp
+    include/physics/physics_world.hpp
     src/physics_world.cpp
+
+    include/physics/physics_object.hpp
+    src/physics_object.cpp
 
     include/physics/collision_shape.hpp
     src/collision_shape.cpp
@@ -225,6 +229,7 @@ target_link_libraries(telescope PUBLIC
     ${SDL2_net}
     ${SDL2_ttf}
     ${vulkan}
+    ${box2d}
     #${BULLET_LIBRARIES} #TODO
     #${shader_c_shared}  #TODO
 )

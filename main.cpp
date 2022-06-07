@@ -38,20 +38,12 @@
 
 #include <glm/gtx/transform.hpp>
 
-#include <bullet/btBulletCollisionCommon.h>
-
 #include <include/physics.hpp>
 
 using namespace ts;
 
 int main()
 {
-    auto world = ts::PhysicsWorld();
-    world.set_gravity({0, -10});
-
-
-
-    return 0;
     initialize();
 
     auto window = ts::Window();

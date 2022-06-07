@@ -130,6 +130,8 @@ namespace ts::detail
         if (str == "VOLUME_UP") return VOLUME_UP;
         if (str == "VOLUME_DOWN") return VOLUME_DOWN;
 
+        if (str == "KEY_UNKNOWN") return KEY_UNKNOWN;
+
         std::stringstream stream;
         stream << "In string_to_keyboard_key: Key with id \"" << str << "\" unrecognized" << std::endl;
         throw std::invalid_argument(stream.str());

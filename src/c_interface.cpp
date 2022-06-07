@@ -1018,7 +1018,7 @@ void ts_sound_set_panning(size_t channel, float zero_to_360_degree)
 
 float ts_sound_get_panning(size_t channel)
 {
-    return ts::SoundHandler::get_panning(channel);
+    return ts::SoundHandler::get_panning(channel).as_degrees();
 }
 
 }
