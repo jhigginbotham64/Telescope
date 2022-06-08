@@ -182,9 +182,6 @@ add_library(telescope SHARED
     include/physics/physics_world.hpp
     src/physics_world.cpp
 
-    include/physics/physics_object.hpp
-    src/physics_object.cpp
-
     include/physics/collision_shape.hpp
     src/collision_shape.cpp
 
@@ -199,9 +196,6 @@ add_library(telescope SHARED
 
     include/physics/collision_wireframe.hpp
     src/collision_line.cpp
-
-    include/physics/physics_object.hpp
-    src/physics_object.cpp
 
     include/physics/collision_handler.hpp
     src/collision_handler.cpp

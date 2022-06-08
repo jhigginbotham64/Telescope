@@ -16,6 +16,7 @@ namespace ts
         return &_shape;
     }
 
+    /*
     CollisionPolygon::CollisionPolygon(Triangle tri)
     {
         _shape = b2PolygonShape();
@@ -91,19 +92,35 @@ namespace ts
 
         _shape.Set(points.data(), points.size());
     }
+     */
 
-    CollisionPolygon::CollisionPolygon(const RectangleShape& rect)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, const RectangleShape& rect)
+        : CollisionShape(world, type, rect.get_centroid())
     {
         _shape = b2PolygonShape();
 
         std::vector<b2Vec2> points;
         points.reserve(4);
 
-        for (size_t i = 0; i < 4; ++i)
-            points.emplace_back(rect.get_vertex_position(i).x, rect.get_vertex_position(i).y);
+        // local coordinates, origin is center at (0, 0)
+
+        auto center = rect.get_centroid();
+        auto size = rect.get_size() * Vector2f(0.5, 0.5);
+
+        points.emplace_back(-size.x, -size.y);
+        points.emplace_back( size.x, -size.y);
+        points.emplace_back( size.x,  size.y);
+        points.emplace_back(-size.x,  size.y);
 
         _shape.Set(points.data(), points.size());
+
+        auto def = default_fixture_def;
+        def.shape = &_shape;
+
+        _fixture = _body->CreateFixture(&def);
     }
+
+    /*
 
     CollisionPolygon::CollisionPolygon(const PolygonShape & poly)
     {
@@ -116,4 +133,5 @@ namespace ts
 
         _shape.Set(points.data(), points.size());
     }
+     */
 }

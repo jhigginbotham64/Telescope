@@ -7,6 +7,7 @@
 
 namespace ts
 {
+    /*
     CollisionLine::CollisionLine(Vector2f a, Vector2f b)
     {
         _shape = b2EdgeShape();
@@ -17,4 +18,5 @@ namespace ts
     {
         return &_shape;
     }
+     */
 }

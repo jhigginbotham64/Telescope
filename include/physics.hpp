@@ -6,7 +6,6 @@
 #pragma once
 
 #include <include/physics/physics_world.hpp>
-#include <include/physics/physics_object.hpp>
 #include <include/physics/collision_shape.hpp>
 #include <include/physics/collision_line.hpp>
 #include <include/physics/collision_wireframe.hpp>

@@ -42,7 +42,7 @@ module ts
     export apply_to, reset!, combine!, translate!, rotate!, scale!, shear!, reflect!
 
     export Triangle, Rectangle, Trapezoid, Circle
-    export Shape, TriangleShape, RectangleShape, CircleShape, PolygonShape
+    export Shape, TriangleShape, RectangleShape, CircleShape, PolygonShape,
         set_centroid!, get_centroid, move!, set_color!, get_color, set_texture!,
         set_texture_rectangle!, get_texture_rectangle, get_bounding_box, get_n_vertices,
         set_vertex_position!, set_vertex_color!, set_vertex_texture_coordinate!,
@@ -2320,6 +2320,3 @@ module ts
         # no export
     end
 end
-
-
-

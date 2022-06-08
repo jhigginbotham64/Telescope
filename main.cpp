@@ -42,85 +42,87 @@
 
 using namespace ts;
 
+float rng()
+{
+    return rand() / float(RAND_MAX);
+}
+
+struct Ball
+{
+    CircleShape _shape;
+    CollisionCircle _hitbox;
+
+    Ball(PhysicsWorld* world, Vector2f center, float radius)
+        : _shape(center, radius, 16), _hitbox(world, DYNAMIC, center, radius)
+    {
+        _shape.set_color(HSVA(rng(), 1, 1, 1).as_rgb());
+        _hitbox.set_restitution(10);
+        update();
+    }
+
+    void update()
+    {
+        auto pos = _hitbox.get_native_body()->GetPosition();
+        _shape.set_centroid(Vector2f(pos.x, pos.y));
+    }
+};
+
 int main()
 {
     initialize();
 
+    size_t ll = 5;
+    size_t h = 600;
+    size_t w = 800;
+
     auto window = ts::Window();
-    window.create("", 0, 0, ts::DEFAULT);
+    window.create("", 800, 600, ts::DEFAULT);
 
-    auto render_texture = ts::RenderTexture(&window);
-    render_texture.create(800, 600);
-
-    auto clock = ts::Clock();
-    auto target_frame_duration = ts::seconds(1 / 60.f);
-    auto tri = ts::TriangleShape(Vector2f(400, 150), Vector2f(200, 450), Vector2f(600, 450));
-    auto rect = ts::RectangleShape(50, 50, 400, 200);
-    auto circ = ts::CircleShape({400, 300}, 100, 64);
-
-    SDL_Rect port;
-    port.x = -400;//-800;
-    port.y = -300;//-600;
-    port.h = 800;
-    port.w = 600;
-
-    SDL_RenderSetViewport(window.get_renderer(), &port);
-    auto center = Vector2f(800, 600) / Vector2f(2, 2);
-
-    std::vector<Vector2f> poly_v =
-    {
-        center + Vector2f(-100, -100),
-        center + Vector2f(-50, -150),
-        center + Vector2f(100, -100),
-        center + Vector2f(70, 200),
-        center + Vector2f(150, 130),
-        center + Vector2f(-230, 75)
-    };
-    auto poly = ts::PolygonShape(poly_v);
-    render_texture.set_color(RGBA(1, 0, 0, 1));
-
-    assert(render_texture.get_native() != nullptr);
-    render_texture.render(&poly);
-
-    rect.set_texture(&render_texture);
-
-    auto transform = ts::Transform();
-    auto centroid = poly.get_centroid();
+    auto world = PhysicsWorld();
+    world.set_gravity({0, 100});
 
     auto camera = Camera(&window);
 
+    auto down_shape = RectangleShape(0, h - ll, w, ll);
+    down_shape.set_color(RGBA(1, 1, 1, 1));
+    auto down_hb = CollisionPolygon(&world, ts::STATIC, down_shape);
+
+    std::cout << down_hb.get_native_body()->GetPosition().x << " " << down_hb.get_native_body()->GetPosition().y  << std::endl;
+
+    auto left_shape = RectangleShape(0, 0, ll, h);
+    left_shape.set_color(RGBA(1, 1, 1, 1));
+    auto left_hb = CollisionPolygon(&world, ts::STATIC, left_shape);
+
+    auto right_shape = RectangleShape(w - ll, 0, ll, h);
+    right_shape.set_color(RGBA(1, 1, 1, 1));
+    auto right_hb = CollisionPolygon(&world, ts::STATIC, right_shape);
+
+    std::vector<Ball> balls;
+    auto spawn_ball = [&](){
+        balls.emplace_back(&world, Vector2f{rng() * 800, 0}, std::max<float>(10, rng() * 50));
+    };
+
+    spawn_ball();
+
     while (window.is_open())
     {
-        ts::start_frame(&window);
+        auto time = ts::start_frame(&window);
         window.clear();
 
-        if (InputHandler::was_pressed(KeyboardKey::SPACE))
-            std::cout << "space" << std::endl;
+        world.step(time);
 
-        if (InputHandler::is_down(KeyboardKey::RIGHT))
-            camera.move(+10, 0);
-
-        if (InputHandler::is_down(KeyboardKey::LEFT))
-            camera.move(-10, 0);
-
-        if (InputHandler::is_down(KeyboardKey::UP))
-            camera.move(0, -10);
-
-        if (InputHandler::is_down(KeyboardKey::DOWN))
-            camera.move(0, +10);
-
-        if (InputHandler::is_down(V))
-            camera.rotate(ts::degrees(-5));
-
-        if (InputHandler::was_pressed(B))
-            camera.rotate(ts::degrees(+5));
+        window.render(&left_shape);
+        window.render(&right_shape);
+        window.render(&down_shape);
 
         if (InputHandler::was_pressed(SPACE))
-        {
-            camera.center_on(poly.get_centroid());
-        }
+            spawn_ball();
 
-        window.render(&poly, transform);
+        for (auto& ball : balls)
+        {
+            ball.update();
+            window.render(&ball._shape);
+        }
 
         ts::end_frame(&window);
     }
