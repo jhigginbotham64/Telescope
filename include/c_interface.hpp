@@ -281,9 +281,9 @@ void ts_physics_world_set_gravity(size_t world_id, float x, float y);
 
 void ts_physics_world_get_gravity(size_t world_id, float* out_x, float* out_y);
 
-size_t ts_physics_object_type_static();
-size_t ts_physics_object_type_kinematic();
-size_t ts_physics_object_type_dynamic();
+size_t ts_collision_type_static();
+size_t ts_collision_type_dynamic();
+size_t ts_collision_type_kinematic();
 
 void* ts_collision_circle_create(size_t world_id, size_t type, float center_x, float center_y, float radius);
 
@@ -295,7 +295,7 @@ void* ts_collision_polygon_create(size_t world_id, size_t type, float* xs, float
 
 void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices);
 
-void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y);
+void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, bool two_sided);
 
 void ts_collision_shape_destroy(void* shape);
 

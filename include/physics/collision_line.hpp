@@ -14,7 +14,7 @@ namespace ts
     {
         public:
             //
-            CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b);
+            CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b, bool two_sided = true);
 
         protected:
             b2Shape* get_native_shape() override;

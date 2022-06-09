@@ -760,18 +760,18 @@ void ts_physics_world_get_gravity(size_t id, float* out_x, float* out_y)
     *out_y = out.y;
 }
 
-size_t ts_physics_object_type_static()
+size_t ts_collision_type_static()
 {
     return (size_t) ts::STATIC;
 }
 
-size_t ts_physics_object_type_kinematic()
-{
-    return (size_t) ts::STATIC;
-}
-size_t ts_physics_object_type_dynamic()
+size_t ts_collision_type_dynamic()
 {
     return (size_t) ts::DYNAMIC;
+}
+size_t ts_collision_type_kinematic()
+{
+    return (size_t) ts::KINEMATIC;
 }
 
 void* ts_collision_circle_create(size_t world_id, size_t type, float center_x, float center_y, float radius)
@@ -821,12 +821,12 @@ void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, fl
     return new ts::CollisionWireFrame(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
 }
 
-void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y)
+void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, bool two_sided)
 {
     return new ts::CollisionLine(
         &detail::_worlds.at(world_id), 
         (ts::CollisionType) type,
-        ts::Vector2f(a_x, a_y), ts::Vector2f(b_x, b_y));
+        ts::Vector2f(a_x, a_y), ts::Vector2f(b_x, b_y), two_sided);
 }
 
 void ts_collision_shape_destroy(void* shape)
