@@ -7,7 +7,7 @@
 
 namespace ts
 {
-    CollisionCircle::CollisionCircle(PhysicsWorld* world, PhysicsObjectType type, Vector2f center, float radius)
+    CollisionCircle::CollisionCircle(PhysicsWorld* world, CollisionType type, Vector2f center, float radius)
         : CollisionShape(world, type, center - Vector2f(radius, radius))
     {
         // local coordinates, origin is center at (0, 0)
@@ -22,7 +22,7 @@ namespace ts
         _fixture = _body->CreateFixture(&def);
     }
 
-    CollisionCircle::CollisionCircle(PhysicsWorld* world, PhysicsObjectType type, ts::Circle circle)
+    CollisionCircle::CollisionCircle(PhysicsWorld* world, CollisionType type, ts::Circle circle)
         : CollisionShape(world, type, circle.center - Vector2f(circle.radius, circle.radius))
     {
         _shape = b2CircleShape();
@@ -35,7 +35,7 @@ namespace ts
         _fixture = _body->CreateFixture(&def);
     }
 
-    CollisionCircle::CollisionCircle(PhysicsWorld* world, PhysicsObjectType type, const CircleShape& shape)
+    CollisionCircle::CollisionCircle(PhysicsWorld* world, CollisionType type, const CircleShape& shape)
         : CollisionShape(world, type, shape.get_centroid() - Vector2f(shape.get_radius(), shape.get_radius()))
     {
         _shape = b2CircleShape();

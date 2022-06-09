@@ -25,7 +25,7 @@ namespace ts
     class PhysicsWorld;
 
     /// \brief physic object types, governs how it respond to different forces
-    enum PhysicsObjectType : size_t
+    enum CollisionType : size_t
     {
         /// \brief static: never moves
         STATIC = b2BodyType::b2_staticBody,
@@ -94,11 +94,11 @@ namespace ts
 
             /// \brief set the type of this object
             /// \param type: simulation type
-            void set_type(PhysicsObjectType);
+            void set_type(CollisionType);
 
             /// \brief get the type of this object
             /// \returns type
-            PhysicsObjectType get_type() const;
+            CollisionType get_type() const;
 
             /// \brief enable this object, it will take part in collision detection and, if it is kinematic or dynamic, it will no respond to forces
             void enable();
@@ -199,11 +199,14 @@ namespace ts
             /// \param world: world the object is created in
             /// \param initial_center: initial position of the shape
             /// \param type: simulation type of object
-            CollisionShape(PhysicsWorld*, PhysicsObjectType, Vector2f initial_center);
+            CollisionShape(PhysicsWorld*, CollisionType, Vector2f initial_center);
 
             PhysicsWorld* _world;
             b2Body* _body;
             b2Fixture* _fixture;
+
+            static inline std::atomic<bool> _current_id;
+            size_t _id;
 
             static inline const b2BodyDef default_body_def = []() -> b2BodyDef
             {

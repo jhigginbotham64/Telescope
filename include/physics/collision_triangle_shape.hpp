@@ -15,7 +15,7 @@ namespace ts
     {
         public:
             //
-            CollisionTriangleShape(PhysicsWorld*, PhysicsObjectType, Vector2f a, Vector2f b, Vector2f c);
+            CollisionTriangleShape(PhysicsWorld*, CollisionType, Vector2f a, Vector2f b, Vector2f c);
 
             //
             void update();

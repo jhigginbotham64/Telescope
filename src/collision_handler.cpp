@@ -60,7 +60,7 @@ namespace ts
         return RayCastInformation {
             hit,
             Vector2f(out.normal.x, out.normal.y),
-            {Vector2f(hit_point.x, hit_point.y)}
+            Vector2f(hit_point.x, hit_point.y)
         };
     }
 

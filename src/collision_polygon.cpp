@@ -32,7 +32,7 @@ namespace ts
         return &_shape;
     }
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, Triangle tri)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, Triangle tri)
         : CollisionShape(world, type, (tri.a + tri.b + tri.c) / Vector2f(3, 3))
     {
         _shape = b2PolygonShape();
@@ -53,13 +53,13 @@ namespace ts
         _fixture = _body->CreateFixture(&def);
     }
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, const TriangleShape& tri)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, const TriangleShape& tri)
         : CollisionPolygon(world, type, [&]() -> Triangle {
             return Triangle{tri.get_vertex_position(0), tri.get_vertex_position(1), tri.get_vertex_position(2)};
         }())
     {}
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, Rectangle rect)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, Rectangle rect)
         : CollisionShape(world, type, rect.top_left + rect.size * Vector2f(0.5, 0.5))
     {
         _shape = b2PolygonShape();
@@ -81,13 +81,13 @@ namespace ts
         _fixture = _body->CreateFixture(&def);
     }
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, const RectangleShape& rect)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, const RectangleShape& rect)
         : CollisionPolygon(world, type, [&]() -> Rectangle {
             return Rectangle{rect.get_top_left(), rect.get_size()};
         }())
     {}
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, const std::vector<Vector2f>& vec)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>& vec)
         : CollisionShape(world, type, [&]() -> Vector2f {
 
            auto out = Vector2f(0, 0);
@@ -129,7 +129,7 @@ namespace ts
         _fixture = _body->CreateFixture(&def);
     }
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, PhysicsObjectType type, const PolygonShape & poly)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, const PolygonShape & poly)
         : CollisionPolygon(world, type, [&]() -> std::vector<Vector2f> {
 
             auto out = std::vector<Vector2f>();

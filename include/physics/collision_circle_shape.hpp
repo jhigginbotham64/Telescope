@@ -15,7 +15,7 @@ namespace ts
     {
         public:
             //
-            CollisionCircleShape(PhysicsWorld*, PhysicsObjectType, Vector2f center, float radius);
+            CollisionCircleShape(PhysicsWorld*, CollisionType, Vector2f center, float radius);
 
             //
             void update();

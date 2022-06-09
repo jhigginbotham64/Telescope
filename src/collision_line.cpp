@@ -7,16 +7,20 @@
 
 namespace ts
 {
-    /*
-    CollisionLine::CollisionLine(Vector2f a, Vector2f b)
+    CollisionLine::CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b)
+        : CollisionShape(world, type, (a + b) / Vector2f(2, 2))
     {
         _shape = b2EdgeShape();
         _shape.SetTwoSided(b2Vec2(a.x, a.y), b2Vec2(b.x, b.y));
+
+        auto def = default_fixture_def;
+        def.shape = &_shape;
+
+        _fixture = _body->CreateFixture(&def);
     }
 
     b2Shape* CollisionLine::get_native_shape()
     {
         return &_shape;
     }
-     */
 }

@@ -16,16 +16,16 @@ namespace ts
             /// \brief construct from center and radius
             /// \param center: world coordinates of the center
             /// \param radius: radius of the circle
-            CollisionCircle(PhysicsWorld* world, PhysicsObjectType, Vector2f center, float radius);
+            CollisionCircle(PhysicsWorld* world, CollisionType, Vector2f center, float radius);
 
             /// \brief construct from ts::Circle
             /// \param circle: provides center and radius
-            CollisionCircle(PhysicsWorld* world, PhysicsObjectType, Circle);
+            CollisionCircle(PhysicsWorld* world, CollisionType, Circle);
 
             /// \brief construct from ts::CircleShape
             /// \param circle: provides center and radius
             /// \note unlike ts::CircleShape, ts::CollisionShape is simulated as if it had an infinite number of outer vertices
-            CollisionCircle(PhysicsWorld* world, PhysicsObjectType, const CircleShape&);
+            CollisionCircle(PhysicsWorld* world, CollisionType, const CircleShape&);
 
         protected:
             b2Shape* get_native_shape() override;

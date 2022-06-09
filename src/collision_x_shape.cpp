@@ -11,7 +11,7 @@ namespace ts
 {
     CollisionRectangleShape::CollisionRectangleShape(
         PhysicsWorld* world,
-        PhysicsObjectType type,
+        CollisionType type,
         Vector2f top_left,
         Vector2f size)
         : CollisionPolygon(world, type, Rectangle{top_left, size}), RectangleShape(top_left, size)
@@ -25,7 +25,7 @@ namespace ts
 
     CollisionTriangleShape::CollisionTriangleShape(
         PhysicsWorld* world,
-        PhysicsObjectType type,
+        CollisionType type,
         Vector2f a,
         Vector2f b,
         Vector2f c)
@@ -40,7 +40,7 @@ namespace ts
 
     CollisionCircleShape::CollisionCircleShape(
         PhysicsWorld* world,
-        PhysicsObjectType type,
+        CollisionType type,
         Vector2f center,
         float radius)
         : CollisionCircle(world, type, Circle{center, radius}), CircleShape(center, radius, 32)

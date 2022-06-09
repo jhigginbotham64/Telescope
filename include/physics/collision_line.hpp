@@ -13,10 +13,8 @@ namespace ts
     class CollisionLine : public CollisionShape
     {
         public:
-            /// \brief construct from 2 points
-            /// \param a: first point
-            /// \param b: second point
-            CollisionLine(Vector2f a, Vector2f b);
+            //
+            CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b);
 
         protected:
             b2Shape* get_native_shape() override;

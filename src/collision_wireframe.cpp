@@ -14,7 +14,15 @@ namespace ts
         return &_shape;
     }
 
-    CollisionWireFrame::CollisionWireFrame(const std::vector<Vector2f>& vec)
+    CollisionWireFrame::CollisionWireFrame(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>& vec)
+        : CollisionShape(world, type, [&]() -> Vector2f {
+
+            auto sum = Vector2f(0, 0);
+            for (auto& v : vec)
+                sum += v;
+
+            return sum / Vector2f(vec.size(), vec.size());
+        }())
     {
         _shape = b2ChainShape();
 
@@ -25,5 +33,10 @@ namespace ts
             points.emplace_back(v.x, v.y);
 
         _shape.CreateLoop(points.data(), points.size());
+
+        auto def = default_fixture_def;
+        def.shape = &_shape;
+
+        _fixture = _body->CreateFixture(&def);
     }
 }

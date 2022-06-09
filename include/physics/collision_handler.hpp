@@ -24,7 +24,7 @@ namespace ts
         Vector2f normal_vector; // from a to b
 
         //
-        std::vector<Vector2f> contact_points;
+        Vector2f contact_point;
     };
 
     //
@@ -35,25 +35,6 @@ namespace ts
 
         //
         std::pair<Vector2f, Vector2f> closest_points;
-    };
-
-    //
-    struct CollisionEvent
-    {
-        //
-        CollisionShape* shape_a;
-
-        //
-        CollisionShape* shape_b;
-
-        //
-        bool overlap;
-
-        //
-        Vector2f normal_vector;
-
-        //
-        std::vector<Vector2f> contact_points;
     };
 
     //
@@ -72,9 +53,6 @@ namespace ts
             // geometric query: does line overlap with shape
             RayCastInformation ray_cast(CollisionShape* a, Vector2f ray_start, Vector2f ray_end);
 
-            // get next collision event
-            bool next_collision_event(CollisionEvent* event);
-
         private:
             PhysicsWorld* _world;
 
@@ -88,8 +66,6 @@ namespace ts
                 void PostSolve(b2Contact*, const b2ContactImpulse*) override;
 
                 CollisionHandler* _handler;
-
-                std::deque<CollisionEvent> _contacts;
             };
 
             CollisionShape* fixture_to_shape(b2Fixture*);

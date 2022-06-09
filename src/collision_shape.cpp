@@ -9,8 +9,8 @@
 
 namespace ts
 {
-    CollisionShape::CollisionShape(PhysicsWorld* world, PhysicsObjectType type, Vector2f initial_center)
-        : _world(world)
+    CollisionShape::CollisionShape(PhysicsWorld* world, CollisionType type, Vector2f initial_center)
+        : _world(world), _id(_current_id++)
     {
         auto bodydef = default_body_def;
         bodydef.position.Set(initial_center.x, initial_center.y);
@@ -21,8 +21,11 @@ namespace ts
 
     CollisionShape::~CollisionShape()
     {
-        //if (_body != nullptr)
-            //_body->DestroyFixture(_fixture);
+        if (_fixture != nullptr)
+            _body->DestroyFixture(_fixture);
+
+        if (_world != nullptr)
+            _world->get_native()->DestroyBody(_body);
     }
 
     void CollisionShape::set_density(float density)
@@ -73,14 +76,14 @@ namespace ts
         return _fixture;
     }
 
-    void CollisionShape::set_type(PhysicsObjectType type)
+    void CollisionShape::set_type(CollisionType type)
     {
         _body->SetType((b2BodyType) type);
     }
 
-    PhysicsObjectType CollisionShape::get_type() const
+    CollisionType CollisionShape::get_type() const
     {
-        return (PhysicsObjectType) _body->GetType();
+        return (CollisionType) _body->GetType();
     }
 
     void CollisionShape::enable()

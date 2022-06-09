@@ -15,27 +15,27 @@ namespace ts
         public:
             /// \brief construct from list of vertices
             /// \param vertices: vector of world vertex positions
-            CollisionPolygon(PhysicsWorld*, PhysicsObjectType, const std::vector<Vector2f>&);
+            CollisionPolygon(PhysicsWorld*, CollisionType, const std::vector<Vector2f>&);
 
             /// \brief construct from ts::TriangleShape
             /// \param triangle: supplies 3 vertices
-            CollisionPolygon(PhysicsWorld*, PhysicsObjectType, const TriangleShape&);
+            CollisionPolygon(PhysicsWorld*, CollisionType, const TriangleShape&);
 
             /// \brief construct from ts::RectangleShape
             /// \param rectangle: supplies 4 vertices
-            CollisionPolygon(PhysicsWorld*, PhysicsObjectType, const RectangleShape&);
+            CollisionPolygon(PhysicsWorld*, CollisionType, const RectangleShape&);
 
             /// \brief constructo from ts::PolygonShape
             /// \param polygon: supplies vertices, outer convex hull will be computed independently of the polygons total number of vertices
-            CollisionPolygon(PhysicsWorld*, PhysicsObjectType, const PolygonShape&);
+            CollisionPolygon(PhysicsWorld*, CollisionType, const PolygonShape&);
 
             /// \brief construct from ts::Triangle
             /// \param triangle: supplies 3 vertex positions
-            CollisionPolygon(PhysicsWorld*, PhysicsObjectType, Triangle);
+            CollisionPolygon(PhysicsWorld*, CollisionType, Triangle);
 
             /// \brief construct from ts::Rectangle
             /// \param rectangle: supplies 4 vertex positions
-            CollisionPolygon(PhysicsWorld*, PhysicsObjectType, Rectangle);
+            CollisionPolygon(PhysicsWorld*, CollisionType, Rectangle);
 
         protected:
             b2Shape* get_native_shape() override;
