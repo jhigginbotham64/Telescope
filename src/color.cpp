@@ -21,6 +21,11 @@ namespace ts
           alpha(glm::clamp<float>(a, 0, 1))
     {}
 
+    RGBA::operator HSVA()
+    {
+        return as_hsv();
+    }
+
     RGBA::operator Vector4f()
     {
         return Vector4f(red, green, blue, alpha);
@@ -51,6 +56,11 @@ namespace ts
           value(glm::clamp<float>(v, 0, 1)),
           alpha(glm::clamp<float>(a, 0, 1))
     {}
+
+    HSVA::operator RGBA()
+    {
+        return as_rgb();
+    }
 
     HSVA::operator Vector4f()
     {

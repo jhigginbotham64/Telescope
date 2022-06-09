@@ -65,7 +65,7 @@ namespace ts
 
     Angle CollisionShape::get_rotation() const
     {
-        return ts::radians(_body->GetAngle());
+        return ts::radians(-1 * _body->GetAngle());
     }
 
     b2Fixture* CollisionShape::get_native_fixture()

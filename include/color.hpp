@@ -33,6 +33,9 @@ namespace ts
         /// \brief cast to SDL color
         operator SDL_Color();
 
+        /// \brief cast to RGBA
+        operator HSVA();
+
         /// \brief construct from SDL color
         RGBA(SDL_Color);
 
@@ -67,6 +70,9 @@ namespace ts
 
         /// \brief cast to vector
         operator Vector4f();
+
+        /// \brief cast to RGBA
+        operator RGBA();
 
         /// \brief convert to RGBA
         RGBA as_rgb() const;

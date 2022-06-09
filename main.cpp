@@ -39,6 +39,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include <include/physics.hpp>
+#include <include/physics/collision_rectangle_shape.hpp>
 
 using namespace ts;
 
@@ -94,12 +95,45 @@ struct Tri
 
     void update()
     {
-        static float previous_rotation = 0;
-
         auto pos = _hitbox.get_native_body()->GetPosition();
         auto rotation = _hitbox.get_native_body()->GetAngle();
         _shape.set_centroid(Vector2f(pos.x, pos.y));
         _shape.rotate(ts::radians(-rotation));
+    }
+};
+
+struct Poly
+{
+    PolygonShape _shape;
+    //CollisionPolygon _hitbox;
+
+    static std::vector<Vector2f> create_polygon(Vector2f center, float radius)
+    {
+        std::vector<Vector2f> out;
+
+        for (size_t i = 0; i < 8; ++i)
+            out.push_back(Vector2f(
+                center.x + cos(ts::degrees(i / 8.f * 360).as_radians() * radius),
+                center.y + sin(ts::degrees(i / 8.f * 360).as_radians() * radius)
+        ));
+
+        return out;
+    }
+
+    Poly(PhysicsWorld* world, Vector2f center, float radius)
+        : _shape(create_polygon(center, radius))//, _hitbox(world, ts::DYNAMIC, create_polygon(center, radius))
+    {
+        _shape.set_color(HSVA(rng(), rng(), 1, 1));
+    }
+
+    void update()
+    {
+        /*
+        auto pos = _hitbox.get_native_body()->GetPosition();
+        auto rotation = _hitbox.get_native_body()->GetAngle();
+        _shape.set_centroid(Vector2f(pos.x, pos.y));
+        _shape.rotate(ts::radians(-rotation));
+         */
     }
 };
 
@@ -135,17 +169,30 @@ int main()
 
     std::vector<Ball> balls;
     std::vector<Tri> tris;
+    std::vector<CollisionRectangleShape> rects;
+    std::vector<Poly> polys;
 
     auto spawn = [&](){
 
         auto center = Vector2f{rng() * 800, 0};
         auto radius = std::max<float>(10, rng() * 40);
 
-        //if (rng() < 0.33)
-          //  balls.emplace_back(&world, center, radius);
-        //else if (rng() > 0.66)
+        auto val = rng() * 4;
+
+        /*
+        if (val > 0 and val < 1)
+            balls.emplace_back(&world, center, radius);
+        else if (val > 1 and val < 2)
             tris.emplace_back(&world, center, radius);
-        //else
+        else if (val > 2 and val < 3)
+        {
+            rects.emplace_back(&world, ts::DYNAMIC, center - Vector2f(radius, radius), Vector2f(2 * radius, 2 * radius));
+            rects.back().set_color(HSVA(rng(), rng(), 1, 1));
+        }
+        else if (val > 3 and val < 4)
+        {*/
+            polys.emplace_back(&world, center, radius);
+        //}
     };
 
     for (size_t i = 0; i < 10; ++i)
@@ -187,6 +234,18 @@ int main()
         {
             tri.update();
             window.render(&tri._shape);
+        }
+
+        for (auto& rect : rects)
+        {
+            rect.update();
+            window.render(&rect);
+        }
+
+        for (auto& poly : polys)
+        {
+            poly.update();
+            window.render(&poly._shape);
         }
 
         ts::end_frame(&window);
