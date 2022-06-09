@@ -95,6 +95,10 @@ namespace ts
             /// \returns relative coordinates, each element in [0, 1]
             Vector2f get_vertex_texture_coordinates(size_t index);
 
+            void set_origin(Vector2f relative_to_centroid);
+
+            void rotate(Angle);
+
         protected:
             /// \brief default constructor
             Shape() = default;
@@ -109,6 +113,8 @@ namespace ts
             void signal_vertices_updated();
 
         private:
+            Vector2f _origin = {0, 0};
+
             Texture* _texture = nullptr;
             Rectangle _texture_rect = Rectangle{{0, 0}, {1, 1}};
             void apply_texture_rectangle();

@@ -198,5 +198,26 @@ namespace ts
     {
         return RGBA(_vertices.at(index).color);
     }
+
+    void Shape::set_origin(Vector2f relative_to_centroid)
+    {
+        _origin = relative_to_centroid;
+    }
+
+    void Shape::rotate(Angle angle)
+    {
+        auto transform = Transform();
+        transform.rotate(angle, get_centroid());
+
+        for (auto& v : _vertices)
+        {
+            auto pos = Vector2f(v.position.x, v.position.y);
+            pos = transform.apply_to(pos);
+            v.position.x = pos.x;
+            v.position.y = pos.y;
+        }
+
+        update_xy();
+    }
 }
 

@@ -25,6 +25,10 @@ namespace ts
             /// \param size: size of the rectangle
             RectangleShape(Vector2f top_left, Vector2f size);
 
+            /// \brief construct from geometric rectangle
+            /// \param rectangle
+            RectangleShape(Rectangle);
+
             /// \brief set the centroid, moves all vertices accordingly
             /// \param new_position: new position of the centroid
             void set_centroid(Vector2f) override;

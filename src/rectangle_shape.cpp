@@ -57,6 +57,10 @@ namespace ts
         : RectangleShape(Vector2f(top_left_x, top_left_y), Vector2f(width, height))
     {}
 
+    RectangleShape::RectangleShape(Rectangle rectangle)
+        : RectangleShape(rectangle.top_left, rectangle.size)
+    {}
+
     void RectangleShape::set_size(Vector2f size)
     {
         _size = size;

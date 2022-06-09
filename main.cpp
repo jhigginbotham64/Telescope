@@ -55,8 +55,8 @@ struct Ball
     Ball(PhysicsWorld* world, Vector2f center, float radius)
         : _shape(center, radius, 16), _hitbox(world, DYNAMIC, center, radius)
     {
-        _shape.set_color(HSVA(rng(), 1, 1, 1).as_rgb());
-        _hitbox.set_restitution(10);
+        _shape.set_color(HSVA(rng(), std::max<float>(0.5, rng()), 1, 1).as_rgb());
+        _hitbox.set_restitution(0.2);
         update();
     }
 
@@ -64,6 +64,42 @@ struct Ball
     {
         auto pos = _hitbox.get_native_body()->GetPosition();
         _shape.set_centroid(Vector2f(pos.x, pos.y));
+    }
+};
+
+struct Tri
+{
+    TriangleShape _shape;
+    CollisionPolygon _hitbox;
+
+    static Triangle create_triangle(Vector2f center, float radius)
+    {
+        auto angle_to_point = [&](float degrees) -> Vector2f
+        {
+            return Vector2f(
+                    center.x + cos(ts::degrees(degrees).as_radians()) * radius,
+                    center.y + sin(ts::degrees(degrees).as_radians()) * radius);
+        };
+
+        return Triangle{angle_to_point(0), angle_to_point(1/3.f * 360), angle_to_point(2/3.f * 360)};
+    }
+
+    Tri(PhysicsWorld* world, Vector2f center, float radius)
+        : _shape(create_triangle(center, radius)), _hitbox(world, ts::DYNAMIC, create_triangle(center, radius))
+    {
+        _shape.set_color(HSVA(rng(), std::max<float>(0.5, rng()), 1, 1).as_rgb());
+        _hitbox.set_restitution(0.2);
+        update();
+    }
+
+    void update()
+    {
+        static float previous_rotation = 0;
+
+        auto pos = _hitbox.get_native_body()->GetPosition();
+        auto rotation = _hitbox.get_native_body()->GetAngle();
+        _shape.set_centroid(Vector2f(pos.x, pos.y));
+        _shape.rotate(ts::radians(-rotation));
     }
 };
 
@@ -98,30 +134,59 @@ int main()
     auto right_hb = CollisionPolygon(&world, ts::STATIC, right_shape);
 
     std::vector<Ball> balls;
-    auto spawn_ball = [&](){
-        balls.emplace_back(&world, Vector2f{rng() * 800, 0}, std::max<float>(10, rng() * 50));
+    std::vector<Tri> tris;
+
+    auto spawn = [&](){
+
+        auto center = Vector2f{rng() * 800, 0};
+        auto radius = std::max<float>(10, rng() * 40);
+
+        //if (rng() < 0.33)
+          //  balls.emplace_back(&world, center, radius);
+        //else if (rng() > 0.66)
+            tris.emplace_back(&world, center, radius);
+        //else
     };
 
-    spawn_ball();
+    for (size_t i = 0; i < 10; ++i)
+        spawn();
 
     while (window.is_open())
     {
         auto time = ts::start_frame(&window);
         window.clear();
 
-        world.step(time);
+        world.step(ts::seconds(time.as_seconds() * 2));
 
         window.render(&left_shape);
         window.render(&right_shape);
         window.render(&down_shape);
 
+        if (InputHandler::is_down(KeyboardKey::RIGHT))
+            camera.move(+10, 0);
+
+        if (InputHandler::is_down(KeyboardKey::LEFT))
+            camera.move(-10, 0);
+
+        if (InputHandler::is_down(KeyboardKey::UP))
+            camera.move(0, -10);
+
+        if (InputHandler::is_down(KeyboardKey::DOWN))
+            camera.move(0, +10);
+
         if (InputHandler::was_pressed(SPACE))
-            spawn_ball();
+            spawn();
 
         for (auto& ball : balls)
         {
             ball.update();
             window.render(&ball._shape);
+        }
+
+        for (auto& tri : tris)
+        {
+            tri.update();
+            window.render(&tri._shape);
         }
 
         ts::end_frame(&window);

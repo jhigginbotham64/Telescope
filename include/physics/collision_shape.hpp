@@ -76,6 +76,10 @@ namespace ts
             /// \returns world coordinates of the center of mass
             Vector2f get_centroid() const;
 
+            /// \brief get the rotation of the shape
+            /// \returns rotation, respective the the normal the shape spawned with
+            Angle get_rotation() const;
+
             /// \brief get the native box2d shape
             /// \returns pointer to shape
             virtual b2Shape* get_native_shape() = 0;

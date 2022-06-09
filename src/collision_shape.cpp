@@ -63,6 +63,11 @@ namespace ts
         return Vector2f{center.x, center.y};
     }
 
+    Angle CollisionShape::get_rotation() const
+    {
+        return ts::radians(_body->GetAngle());
+    }
+
     b2Fixture* CollisionShape::get_native_fixture()
     {
         return _fixture;

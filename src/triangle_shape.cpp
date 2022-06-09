@@ -13,6 +13,10 @@ namespace ts
         update();
     }
 
+    TriangleShape::TriangleShape(Triangle triangle)
+        : TriangleShape(triangle.a, triangle.b, triangle.c)
+    {}
+
     void TriangleShape::update()
     {
         auto& a = _coordinates.at(0);
@@ -70,7 +74,7 @@ namespace ts
 
     void TriangleShape::set_centroid(Vector2f position)
     {
-        auto offset = _centroid - position;
+        auto offset = position - _centroid;
 
         for (auto& v : _coordinates)
             v += offset;

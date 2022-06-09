@@ -8,20 +8,30 @@
 #include <array>
 
 #include <include/shape.hpp>
+#include <include/geometric_shapes.hpp>
 
 namespace ts
 {
-    //
+    /// \brief shape with 3 vertices
     class TriangleShape : public Shape
     {
         public:
-            //
+            /// \brief construct from vertex positions
+            /// \param a: position of the first vertex
+            /// \param b: position of the second vertex
+            /// \param c: position of the third vertex
             TriangleShape(Vector2f a, Vector2f b, Vector2f c);
 
-            //
+            /// \brief construct from geometric triangle
+            /// \param triangle
+            TriangleShape(Triangle);
+
+            /// \brief set position of the centroid
+            /// \param position
             void set_centroid(Vector2f) override;
 
-            //
+            /// \brief get the centroid
+            /// \returns centroid
             Vector2f get_centroid() const override;
 
         private:
