@@ -230,6 +230,11 @@ void ts_window_render(size_t id, void* renderable_ptr, void* transform_ptr)
     detail::_windows.at(id).render((ts::Renderable*) renderable_ptr, *((ts::Transform*) transform_ptr));
 }
 
+void ts_window_set_icon(size_t id, const char* path)
+{
+    detail::_windows.at(id).set_icon(path);
+}
+
 // ### CAMERA ##################################################
 
 void ts_window_camera_center_on(size_t window_id, float x, float y)

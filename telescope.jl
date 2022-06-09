@@ -57,6 +57,7 @@ module ts
     export center_on!, move!, zoom_in!, zoom_out!, rotate!, set_rotation!, get_transform,
         get_center, get_view_area
 
+
     ### COMMON ################################################################
 
     const _lib = "./libtelescope.so"
@@ -2082,6 +2083,13 @@ module ts
         ccall((:ts_window_flush, _lib), Cvoid, (Csize_t,), window._native_id)
     end
     export flush!
+
+    """
+    `set_icon(::Window, ::String) -> Nothing`
+    """
+    function set_icon!(window::Window, path::String) ::Nothing
+        ccall((:ts_window_set_icon, _lib), Cvoid, (Csize_t, Cstring), window._native_id, path)
+    end
 
     """
     `set_framerate_limit!(::Integer) -> Nothing`

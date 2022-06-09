@@ -4,6 +4,7 @@
 //
 
 #include <include/window.hpp>
+#include <SDL2/SDL_image.h>
 
 namespace ts
 {
@@ -21,6 +22,7 @@ namespace ts
     Window::~Window()
     {
         close();
+        SDL_FreeSurface(_icon);
     }
 
     void Window::render(const Renderable * object, Transform transform)
@@ -176,6 +178,14 @@ namespace ts
         return SDL_GetWindowID(_window);
     }
 
+    void Window::set_icon(const std::string& path)
+    {
+        if (_icon != nullptr)
+            SDL_FreeSurface(_icon);
+
+        _icon = IMG_Load(path.c_str());
+        SDL_SetWindowIcon(_window, _icon);
+    }
 
     void Window::clear()
     {

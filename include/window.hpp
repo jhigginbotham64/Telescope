@@ -96,6 +96,9 @@ namespace ts
             WindowID get_id() const;
 
             //
+            void set_icon(const std::string& path);
+
+            //
             void clear();
 
             //
@@ -110,6 +113,8 @@ namespace ts
         private:
             SDL_Window* _window = nullptr;
             SDL_Renderer* _renderer;
+
+            SDL_Surface* _icon = nulltpr;
 
             Transform _global_transform; // camera state
 

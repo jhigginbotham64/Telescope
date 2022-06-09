@@ -92,6 +92,8 @@ void ts_window_clear(size_t id);
 
 void ts_window_flush(size_t id);
 
+void ts_window_set_icon(size_t id, const char* path);
+
 // ### CAMERA ##################################################
 
 void ts_window_camera_center_on(size_t window_id, float x, float y);
