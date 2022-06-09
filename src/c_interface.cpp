@@ -24,6 +24,7 @@
 #include <include/render_texture.hpp>
 #include <include/camera.hpp>
 #include <include/angle.hpp>
+#include <include/physics.hpp>
 
 extern "C" {
 
@@ -713,6 +714,341 @@ void* ts_shape_create_polygon(float* vertices_x, float* vertices_y, size_t n_ver
 void ts_shape_destroy_polygon(void* polygon_ptr)
 {
     delete ((ts::PolygonShape*) polygon_ptr);
+}
+
+// ### COLLISION ###################################################
+
+namespace detail
+{
+    size_t _id = 1;
+    std::unordered_map<size_t, ts::PhysicsWorld> _worlds;
+    std::unordered_map<size_t, ts::CollisionHandler> _collision_handlers;
+}
+
+size_t ts_physics_world_create()
+{
+    auto id = detail::_id++;
+    detail::_worlds.emplace(id, ts::PhysicsWorld());
+    detail::_collision_handlers.emplace(id, ts::CollisionHandler(&detail::_worlds.at(id)));
+}
+
+void ts_physics_world_destroy(size_t id)
+{
+    detail::_worlds.erase(id);
+    detail::_collision_handlers.erase(id);
+}
+
+void ts_physics_world_step(size_t id, float time_ms, int32_t velocity_iterations, int32_t position_iterations)
+{
+    detail::_worlds.at(id).step(ts::milliseconds(time_ms), velocity_iterations, position_iterations);
+}
+
+void ts_physics_world_clear_forces(size_t world)
+{
+    detail::_worlds.at(world).clear_forces();
+}
+
+void ts_physics_world_set_gravity(size_t id, float x, float y)
+{
+    detail::_worlds.at(id).set_gravity(ts::Vector2f(x, y));
+}
+
+void ts_physics_world_get_gravity(size_t id, float* out_x, float* out_y)
+{
+    auto out = detail::_worlds.at(id).get_gravity();
+    *out_x = out.x;
+    *out_y = out.y;
+}
+
+size_t ts_physics_object_type_static()
+{
+    return (size_t) ts::STATIC;
+}
+
+size_t ts_physics_object_type_kinematic()
+{
+    return (size_t) ts::STATIC;
+}
+size_t ts_physics_object_type_dynamic()
+{
+    return (size_t) ts::DYNAMIC;
+}
+
+void* ts_collision_circle_create(size_t world_id, size_t type, float center_x, float center_y, float radius)
+{
+    return new ts::CollisionCircle(
+        &detail::_worlds.at(world_id),
+        (ts::CollisionType) type,
+        ts::Vector2f(center_x, center_y),
+        radius);
+}
+
+void* ts_collision_rectangle_create(size_t world_id, size_t type, float top_left_x, float top_left_y, float width, float height)
+{
+    return new ts::CollisionPolygon(
+        &detail::_worlds.at(world_id),
+        (ts::CollisionType) type,
+        ts::Rectangle{{top_left_x, top_left_y}, {width, height}});
+}
+
+void* ts_collision_triangle_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, float c_x, float c_y)
+{
+    return new ts::CollisionPolygon(
+        &detail::_worlds.at(world_id),
+        (ts::CollisionType) type,
+        ts::Triangle{{a_x, a_y}, {b_x, b_y}, {c_x, c_y}});
+}
+
+void* ts_collision_polygon_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices)
+{
+    std::vector<ts::Vector2f> vertices;
+    vertices.reserve(n_vertices);
+
+    for (size_t i = 0; i < n_vertices; ++i)
+        vertices.emplace_back(xs[i], ys[i]);
+
+    return new ts::CollisionPolygon(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
+}
+
+void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices)
+{
+    std::vector<ts::Vector2f> vertices;
+    vertices.reserve(n_vertices);
+
+    for (size_t i = 0; i < n_vertices; ++i)
+        vertices.emplace_back(xs[i], ys[i]);
+
+    return new ts::CollisionWireFrame(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
+}
+
+void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y)
+{
+    return new ts::CollisionLine(
+        &detail::_worlds.at(world_id), 
+        (ts::CollisionType) type,
+        ts::Vector2f(a_x, a_y), ts::Vector2f(b_x, b_y));
+}
+
+void ts_collision_shape_destroy(void* shape)
+{
+    delete ((ts::CollisionShape*) shape);
+}
+
+void ts_collision_shape_set_density(void* shape, float v)
+{
+    ((ts::CollisionShape*) shape)->set_density(v);
+}
+
+float ts_collision_shape_get_density(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_density();
+}
+
+void ts_collision_shape_set_friction(void* shape, float v)
+{
+    ((ts::CollisionShape*) shape)->set_friction(v);
+}
+
+float ts_collision_shape_get_friction(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_friction();
+}
+
+void ts_collision_shape_set_restitution(void* shape, float v)
+{
+    ((ts::CollisionShape*) shape)->set_restitution(v);
+}
+
+float ts_collision_shape_get_restitution(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_restitution();
+}
+
+void ts_collision_shape_get_centroid(void* shape, float* out_x, float* out_y)
+{
+    auto centroid = ((ts::CollisionShape*) shape)->get_centroid();
+    *out_x = centroid.x;
+    *out_y = centroid.y;
+}
+
+void ts_collision_shape_get_bounding_box(void* shape, float* out_x, float* out_y, float* out_width, float* out_height)
+{
+    auto aabb = ((ts::CollisionShape*) shape)->get_bounding_box();
+    *out_x = aabb.top_left.x;
+    *out_y = aabb.top_left.y;
+    *out_width = aabb.size.x;
+    *out_height = aabb.size.y;
+}
+
+float ts_collision_shape_get_rotation(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_rotation().as_degrees();
+}
+
+void ts_collision_shape_set_type(void* shape, size_t type)
+{
+    ((ts::CollisionShape*) shape)->set_type((ts::CollisionType) type);
+}
+
+size_t ts_collision_shape_get_type(void* shape)
+{
+    return (size_t) ((ts::CollisionShape*) shape)->get_type();
+}
+
+void ts_collision_shape_enable(void* shape)
+{
+    ((ts::CollisionShape*) shape)->enable();
+}
+
+void ts_collision_shape_disable(void* shape)
+{
+    ((ts::CollisionShape*) shape)->disable();
+}
+
+bool ts_collision_shape_is_enabled(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->is_enabled();
+}
+
+void ts_collision_shape_get_origin(void* shape, float* out_x, float* out_y)
+{
+    auto out = ((ts::CollisionShape*) shape)->get_origin();
+    *out_x = out.x;
+    *out_y = out.y;
+}
+
+void ts_collision_shape_get_center_of_mass_global(void* shape, float* out_x, float* out_y)
+{
+    auto out = ((ts::CollisionShape*) shape)->get_center_of_mass_global();
+    *out_x = out.x;
+    *out_y = out.y;
+}
+
+void ts_collision_shape_get_center_of_mass_local(void* shape, float* out_x, float* out_y)
+{
+    auto out = ((ts::CollisionShape*) shape)->get_center_of_mass_local();
+    *out_x = out.x;
+    *out_y = out.y;
+}
+
+void ts_collision_shape_set_linear_velocity(void* shape, float x, float y)
+{
+    ((ts::CollisionShape*) shape)->set_linear_velocity(ts::Vector2f(x, y));
+}
+
+void ts_collision_shape_get_linear_velocity(void* shape, float* out_x, float* out_y)
+{
+    auto out = ((ts::CollisionShape*) shape)->get_linear_velocity();
+    *out_x = out.x;
+    *out_y = out.y;
+}
+
+void ts_collision_shape_set_angular_velocity(void* shape, float v)
+{
+    ((ts::CollisionShape*) shape)->set_angular_veloctiy(v);
+}
+
+float ts_collision_shape_get_angular_velocity(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_angular_velocity();
+}
+
+void ts_collision_shape_apply_force_to(void* shape, float force_x, float force_y, float point_x, float point_y)
+{
+    ((ts::CollisionShape*) shape)->apply_force_to(ts::Vector2f(force_x, force_y), ts::Vector2f(point_x, point_y));
+}
+
+void ts_collision_shape_apply_force_to_center(void* shape, float force_x, float force_y)
+{
+    ((ts::CollisionShape*) shape)->apply_force_to_center(ts::Vector2f(force_x, force_y));
+}
+
+void ts_collision_shape_apply_torque(void* shape, float torque)
+{
+    ((ts::CollisionShape*) shape)->apply_torque(torque);
+}
+
+void ts_collision_shape_apply_linear_impulse_to(void* shape, float impulse_x, float impulse_y, float point_x, float point_y)
+{
+    ((ts::CollisionShape*) shape)->apply_linear_impulse_to(ts::Vector2f(impulse_x, impulse_y), ts::Vector2f(point_x, point_y));
+}
+
+void ts_collision_shape_apply_linear_impulse_to_center(void* shape, float force_x, float force_y)
+{
+    ((ts::CollisionShape*) shape)->apply_linear_impulse_to_center(ts::Vector2f(force_x, force_y));
+}
+
+float ts_collision_shape_get_mass(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_mass();
+}
+
+float ts_collision_shape_get_inertia(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_inertia();
+}
+
+void ts_collision_shape_set_is_bullet(void* shape, bool b)
+{
+    ((ts::CollisionShape*) shape)->set_is_bullet(b);
+}
+
+bool ts_collision_shape_is_bullet(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->is_bullet();
+}
+
+bool ts_collision_shape_is_rotation_fixed(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->is_rotation_fixed();
+}
+
+bool ts_collision_shape_set_rotation_fixed(void* shape, bool b)
+{
+    ((ts::CollisionShape*) shape)->set_rotation_fixed(b);
+}
+
+size_t ts_collision_shape_get_id(void* shape)
+{
+    return ((ts::CollisionShape*) shape)->get_id();
+}
+
+void ts_collision_handler_distance_between(
+    size_t id,
+    void* shape_a, void* shape_b,
+    float* out_distance,
+    float* out_point_a_x, float* out_point_a_y,
+    float* out_point_b_x, float* out_point_b_y)
+{
+    auto out = detail::_collision_handlers.at(id).distance_between(((ts::CollisionShape*) shape_a), ((ts::CollisionShape*) shape_b));
+    *out_point_a_x = out.closest_points.first.x;
+    *out_point_a_y = out.closest_points.first.y;
+    *out_point_b_x = out.closest_points.second.x;
+    *out_point_b_y = out.closest_points.second.y;
+    *out_distance = out.distance;
+}
+
+bool ts_collision_handler_is_point_in_shape(size_t id, void* shape, float point_x, float point_y)
+{
+    return detail::_collision_handlers.at(id).is_point_in_shape((ts::CollisionShape*) shape, ts::Vector2f(point_x, point_y));
+}
+
+bool ts_collision_handler_ray_cast(
+        size_t id, void* shape,
+        float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
+        float* out_normal_x, float* out_normal_y,
+        float* out_hit_x, float* out_hit_y)
+{
+    auto out = detail::_collision_handlers.at(id).ray_cast(
+        (ts::CollisionShape*) shape,
+        ts::Vector2f(ray_start_x, ray_start_y),
+        ts::Vector2f(ray_end_x, ray_end_y));
+
+    *out_normal_x = out.normal_vector.x;
+    *out_normal_y = out.normal_vector.y;
+    *out_hit_x = out.contact_point.x;
+    *out_hit_y = out.contact_point.y;
+    return out.are_colliding;
 }
 
 // ### INPUT ###################################################

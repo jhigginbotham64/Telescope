@@ -267,6 +267,114 @@ void* ts_shape_create_polygon(float* vertices_x, float* vertices_y, size_t n_ver
 
 void ts_shape_destroy_polygon(void* polygon_ptr);
 
+// ### COLLISION ###################################################
+
+size_t ts_physics_world_create();
+
+void ts_physics_world_destroy(size_t world_id);
+
+void ts_physics_world_step(size_t world_id, float time_ms, int32_t velocity_iterations, int32_t position_iterations);
+
+void ts_physics_world_clear_forces(size_t world);
+
+void ts_physics_world_set_gravity(size_t world_id, float x, float y);
+
+void ts_physics_world_get_gravity(size_t world_id, float* out_x, float* out_y);
+
+size_t ts_physics_object_type_static();
+size_t ts_physics_object_type_kinematic();
+size_t ts_physics_object_type_dynamic();
+
+void* ts_collision_circle_create(size_t world_id, size_t type, float center_x, float center_y, float radius);
+
+void* ts_collision_rectangle_create(size_t world_id, size_t type, float top_left_x, float top_left_y, float width, float height);
+
+void* ts_collision_triangle_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, float c_x, float c_y);
+
+void* ts_collision_polygon_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices);
+
+void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices);
+
+void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y);
+
+void ts_collision_shape_destroy(void* shape);
+
+void ts_collision_shape_set_density(void* shape, float);
+
+float ts_collision_shape_get_density(void* shape);
+
+void ts_collision_shape_set_friction(void* shape, float);
+
+float ts_collision_shape_get_friction(void* shape);
+
+void ts_collision_shape_set_restitution(void* shape, float);
+
+float ts_collision_shape_get_restitution(void* shape);
+
+void ts_collision_shape_get_centroid(void* shape, float* out_x, float* out_y);
+
+void ts_collision_shape_get_bounding_box(void* shape, float* out_x, float* out_y, float* out_width, float* out_height);
+
+float ts_collision_shape_get_rotation(void* shape);
+
+void ts_collision_shape_set_type(void* shape, size_t);
+
+size_t ts_collision_shape_get_type(void* shape);
+
+void ts_collision_shape_enable(void*);
+
+void ts_collision_shape_disable(void*);
+
+bool ts_collision_shape_is_enabled(void*);
+
+void ts_collision_shape_get_origin(void*, float* out_x, float* out_y);
+
+void ts_collision_shape_get_center_of_mass_global(void*, float* out_x, float* out_y);
+
+void ts_collision_shape_get_center_of_mass_local(void*, float* out_x, float* out_y);
+
+void ts_collision_shape_set_linear_velocity(void*, float x, float y);
+
+void ts_collision_shape_set_linear_velocity(void*, float* out_x, float* out_y);
+
+void ts_collision_shape_set_angular_velocity(void*, float);
+
+float ts_collision_shape_get_angular_velocity(void*);
+
+void ts_collision_shape_apply_force_to(void*, float force_x, float force_y, float point_x, float point_y);
+
+void ts_collision_shape_apply_force_to_center(void*, float force_x, float force_y);
+
+void ts_collision_shape_apply_torque(void*, float torque);
+
+void ts_collision_shape_apply_linear_impulse_to(void*, float impulse_x, float impulse_y, float point_x, float point_y);
+
+void ts_collision_shape_apply_linear_impulse_to_center(void*, float force_x, float force_y);
+
+float ts_collision_shape_get_mass(void*);
+
+float ts_collision_shape_get_inertia(void*);
+
+void ts_collision_shape_set_is_bullet(void*, bool);
+
+bool ts_collision_shape_is_bullet(void*);
+
+bool ts_collision_shape_is_rotation_fixed(void*);
+
+bool ts_collision_shape_set_rotation_fixed(void*, bool);
+
+size_t ts_collision_shape_get_id(void*);
+
+void ts_collision_handler_distance_between(size_t world_id, void* shape_a, void* shape_b, float* out_distance, float* out_point_a_x, float* out_point_a_y, float* out_point_b_x, float* out_point_b_y);
+
+bool ts_collision_handler_is_point_in_shape(size_t world_id, void* shape, float point_x, float point_y);
+
+bool ts_collision_handler_ray_cast(
+    size_t world_id, void* shape,
+    float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
+    float* out_normal_x, float* out_normal_y,
+    float* out_hit_x, float* out_hit_y);
+
 // ### INPUT ###################################################
 
 void ts_input_update();
