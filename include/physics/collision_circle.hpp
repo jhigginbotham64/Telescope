@@ -14,7 +14,7 @@ namespace ts
     {
         public:
             /// \brief virtual destructor
-            virtual CollisionCircle = default;
+            virtual ~CollisionCircle() = default;
 
             /// \brief construct from center and radius
             /// \param center: world coordinates of the center
