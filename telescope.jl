@@ -1,6 +1,6 @@
 #
-# Copyright 2022 Clemens Cords
-# Created on 6/3/22 by clem (mail@clemens-cords.com)
+# Copyright 2022 Joshua Higginbotham
+# Created on 6/3/22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 #
 
 module ts
@@ -222,7 +222,6 @@ module ts
         return RGBA(r[], g[], b[], hsva.alpha)
     end
     export as_rgb
-
 
     ### TIME #################################################################
 
@@ -840,6 +839,8 @@ module ts
     module SoundHandler
 
         import Main.ts; using Main.ts
+        # SoundHandler is its own module for syntactic consistency with C++
+        # singleton of the same name, all names are imported into ts. scope
 
         """
         maximum channel index
@@ -1175,10 +1176,6 @@ module ts
         end
     end
     export RenderTexture
-
-    """
-    `render(::`
-    """
 
     """
     StaticTexture
@@ -2923,7 +2920,7 @@ module ts
     end
 
     """
-    `distance_between(::PhysicsWorld, ::Shape, ::Shape) -> DistanceInformation
+    `distance_between(::PhysicsWorld, ::Shape, ::Shape) -> DistanceInformation`
     """
     function distance_between(world::PhysicsWorld, shape_a::CollisionShape, shape_b::CollisionShape) ::DistanceInformation
 
@@ -2958,7 +2955,7 @@ module ts
     end
 
     """
-    `ray_cast(::PhysicsWorld, ::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) -> RayCastInformation
+    `ray_cast(::PhysicsWorld, ::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) -> RayCastInformation`
     """
     function ray_cast(world::PhysicsWorld, shape::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) ::RayCastInformation
 

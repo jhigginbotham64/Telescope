@@ -1,6 +1,6 @@
 // 
-// Copyright 2022 Clemens Cords
-// Created on 27.05.22 by clem (mail@clemens-cords.com)
+// Copyright 2022 Joshua Higginbotham
+// Created on 27.05.22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
 #include <SDL2/SDL_render.h>

@@ -1,6 +1,6 @@
 // 
 // Copyright 2022 Joshua Higginbotham
-// Created on 20.05.22 by clem (mail@clemens-cords.com)
+// Created on 20.05.22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
 #pragma once
