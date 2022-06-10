@@ -38,7 +38,18 @@
 #include <include/circle_shape.hpp>
 #include <include/polygon_shape.hpp>
 
-// sic, do not include unless you know what you're doing
+#include <include/physics/physics_world.hpp>
+#include <include/physics/collision_circle.hpp>
+#include <include/physics/collision_circle_shape.hpp>
+#include <include/physics/collision_handler.hpp>
+#include <include/physics/collision_line.hpp>
+#include <include/physics/collision_polygon.hpp>
+#include <include/physics/collision_rectangle_shape.hpp>
+#include <include/physics/collision_shape.hpp>
+#include <include/physics/collision_triangle_shape.hpp>
+#include <include/physics/collision_wireframe.hpp>
+
+// do not include unless you know what you're doing:
 
 // #include <include/logging.hpp>
 // #include <include/c_interface.hpp>

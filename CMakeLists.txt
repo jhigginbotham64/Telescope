@@ -51,22 +51,23 @@ This will run all tests, printing their output to the console.
 
 cmake_minimum_required(VERSION 3.13)
 
-project(telescope VERSION 0.2.0 LANGUAGES C CXX)
+project(telescope VERSION 0.3.0 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
-
 include(CTest)
 
 ### FIND DEPENDENCIES ###
 
+find_library(box2d REQUIRED NAMES box2d)   # unused
+
 find_library(SDL2 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
-find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
-find_library(SDL2_net REQUIRED NAMES SDL2_net)
+find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf) # unused
+find_library(SDL2_net REQUIRED NAMES SDL2_net) # unused
 
 find_library(vulkan REQUIRED NAMES vulkan)
-find_library(box2d REQUIRED NAMES box2d)
+# find_package(shaderc_shared REQUIRED)      # unused
 
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX("glm/glm.hpp" GLM_FOUND)
@@ -77,12 +78,6 @@ endif()
 CHECK_INCLUDE_FILE_CXX("box2d/box2d.h" BOX2D_FOUND)
 if(NOT BOX2D_FOUND)
     message(FATAL_ERROR "Missing Dependency: box2d")
-endif()
-
-if (FALSE) # TODO
-    find_package(Bullet REQUIRED)
-    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-    find_package(shaderc_shared REQUIRED)
 endif()
 
 ### TELESCOPE ###
@@ -199,7 +194,12 @@ add_library(telescope SHARED
 
     include/physics/collision_handler.hpp
     src/collision_handler.cpp
-        include/physics/collision_circle_shape.hpp include/physics/collision_rectangle_shape.hpp include/physics/collision_triangle_shape.hpp src/collision_x_shape.cpp)
+
+    include/physics/collision_circle_shape.hpp
+    include/physics/collision_rectangle_shape.hpp
+    include/physics/collision_triangle_shape.hpp
+
+    src/collision_x_shape.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
@@ -211,21 +211,16 @@ set_target_properties(telescope PROPERTIES
 
 target_include_directories(telescope PUBLIC
   "${CMAKE_SOURCE_DIR}"
-  #"${BULLET_INCLUDE_DIRS}" #TODO
-  #"${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp" #TODO
-  #"${SHADERC_INCLUDE_DIRS}" #TODO
 )
 
 target_link_libraries(telescope PUBLIC
     ${SDL2}
     ${SDL2_image}
     ${SDL2_mixer}
-    ${SDL2_net}
-    ${SDL2_ttf}
-    ${vulkan}
+    # ${SDL2_net} # unused
+    # ${SDL2_ttf} # unused
+    # ${vulkan}   # unused
     ${box2d}
-    #${BULLET_LIBRARIES} #TODO
-    #${shader_c_shared}  #TODO
 )
 
 # TODO: REMOVE THIS vvv

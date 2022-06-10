@@ -35,7 +35,7 @@ module ts
         force_stop!, pause!, unpause!, skip_to!, is_playing, is_paused, is_stopped
 
     export Texture, RenderTexture, StaticTexture, TextureFilteringMode, TextureBlendMode
-    export set_color!, get_color, set_blend_mode!, get_blend_mode, set_filtering_mode!,
+    export set_color!, set_blend_mode!, get_blend_mode, set_filtering_mode!,
         get_filtering_mode, get_size
 
     export Transform
@@ -57,6 +57,22 @@ module ts
     export center_on!, move!, zoom_in!, zoom_out!, rotate!, set_rotation!, get_transform,
         get_center, get_view_area
 
+    export PhysicsWorld
+    export step!, clear_forces!, get_gravity, set_gravity!
+
+    export CollisionShape, CollisionType
+    export CollisionTriangle, CollisionRectangle, CollisionCircle, CollisionPolygon,
+        CollisionLine, CollisionWireframe
+    export set_density!, get_density, set_restitution!, get_restitution, get_centroid,
+        get_bounding_box, get_rotation, set_type!, get_type, enable!, disable!,
+        is_enabled, get_origin, get_center_of_mass_local, get_center_of_mass_global,
+        set_linear_velocity!, get_linear_velocity, set_angular_velocity!, get_angular_velocity,
+        apply_force_to!, apply_force_to_center!, apply_torque!, apply_linear_impulse_to!,
+        apply_linear_impulse_to_center!, get_mass, get_inertia, set_is_bullet!, is_bullet,
+        is_rotation_fixed, set_rotation_fixed!, get_id
+
+    export DistanceInformation, RayCastInformation
+    export distance_between, ray_cast, is_point_in_shape
 
     ### COMMON ################################################################
 
@@ -2266,7 +2282,7 @@ module ts
     ### Constructors
     `PhysicsWorld()`
     """
-    struct PhysicsWorld
+    mutable struct PhysicsWorld
 
         _native_id::Csize_t
 
@@ -2343,7 +2359,7 @@ module ts
         KINEMATIC = ccall((:ts_collision_type_kinematic, _lib), Csize_t, ())
         DYNAMIC = ccall((:ts_collision_type_dynamic, _lib), Csize_t, ())
     end
-    export_enum(CollisionType)
+    @export_enum(CollisionType)
 
     """
     CollisionTriangle
@@ -2356,7 +2372,7 @@ module ts
     `CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::Triangle)`
     `CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape)`
     """
-    struct CollisionTriangle <: CollisionShape
+    mutable struct CollisionTriangle <: CollisionShape
 
         _native::Ptr{Cvoid}
 
@@ -2399,7 +2415,7 @@ module ts
     `CollisionRectangle(::PhysicsWorld, ::CollisionType, ::Rectangle)`
     `CollisionRectangle(::PhysicsWorld, ::CollisionType, ::RectangleShape)`
     """
-    struct CollisionRectangle <: CollisionShape
+    mutable struct CollisionRectangle <: CollisionShape
 
         _native::Ptr{Cvoid}
 
@@ -2436,7 +2452,7 @@ module ts
     `CollisionCircle(::PhysicsWorld, ::CollisionType, ::Circle)`
     `CollisionCircle(::PhysicsWorld, ::CollisionType, ::CircleShape)`
     """
-    struct CollisionCircle <: CollisionShape
+    mutable struct CollisionCircle <: CollisionShape
 
         _native::Ptr{Cvoid}
 
@@ -2472,7 +2488,7 @@ module ts
     ### Constructors
     `CollisionLine(::PhysicsWorld, ::CollisionType, ::Vector2f, ::Vector2f, [is_two_sided::Bool])`
     """
-    struct CollisionLine <: CollisionShape
+    mutable struct CollisionLine <: CollisionShape
 
         _native::Ptr{Cvoid}
         is_two_sided::Bool
@@ -2500,7 +2516,7 @@ module ts
     ### Constructors
     `CollisionWireFrame(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
     """
-    struct CollisionWireFrame <: CollisionShape
+    mutable struct CollisionWireFrame <: CollisionShape
 
         _native::Ptr{Cvoid}
 
@@ -2536,7 +2552,7 @@ module ts
     ### Constructors
     `CollisionPolygon(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
     """
-    struct CollisionPolygon <: CollisionShape
+    mutable struct CollisionPolygon <: CollisionShape
 
         _native::Ptr{Cvoid}
 
@@ -2575,7 +2591,7 @@ module ts
     `get_density(::CollisionShape) -> Float32`
     """
     function get_density(shape::CollisionShape) ::Float32
-        return ccall((:ts_collision_shape_get_density, _lib), Cfloat, (Ptr{Cvoid}), shape._native)
+        return ccall((:ts_collision_shape_get_density, _lib), Cfloat, (Ptr{Cvoid},), shape._native)
     end
     export get_density
 
@@ -2750,7 +2766,7 @@ module ts
         ccall((:ts_collision_shape_set_linear_velocity, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, velocity.x, velocity.y)
     end
-    export set_lienar_velocity!
+    export set_linear_velocity!
 
     """
     `get_linear_velocity(::CollisionShape) -> Vector2f`

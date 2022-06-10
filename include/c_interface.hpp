@@ -10,6 +10,15 @@ extern "C"
 {
 #endif
 
+// NOTE
+//
+// This file is **not intended for end-users**. No function in this file
+// should be called during normal usage of telescope. Misuse of these
+// functions will trigger silent data corruption and memory leaks.
+// Only proceed if you're a developer of telescope and know
+// what you are doing
+//
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
