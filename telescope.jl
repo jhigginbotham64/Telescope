@@ -1549,24 +1549,6 @@ module ts
     export set_color!
 
     """
-    `get_color(::Shape) -> RGBA`
-    """
-    function get_color(shape::Shape, vertex_index::UInt64) ::RGBA
-
-        r = Ref{Cfloat}(-1)
-        g = Ref{Cfloat}(-1)
-        b = Ref{Cfloat}(-1)
-        a = Ref{Cfloat}(-1)
-
-        ccall((:ts_shape_get_vertex_color, _lib), Cvoid,
-            (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
-            shape._native, vertex_index, r, g, b, a)
-
-        return RGBA(r[], g[], b[], a[])
-    end
-    export get_color
-
-    """
     `set_texture!(::Shape, ::Texture) -> Nothing`
     """
     function set_texture!(shape::Shape, texture::Texture) ::Nothing
@@ -1634,6 +1616,9 @@ module ts
     `set_vertex_position!(::Shape, ::Integer, ::Vector2f) -> Nothing`
     """
     function set_vertex_position!(shape::Shape, index::Integer, position::Vector2f) ::Nothing
+
+        index -= 1;
+
         ccall((:ts_shape_set_vertex_position, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), position.x, position.y)
@@ -1642,8 +1627,13 @@ module ts
 
     """
     `set_vertex_color!(::Shape, ::Integer, ::RGBA) -> Nothing`
+
+    index 1-based
     """
     function set_vertex_color!(shape::Shape, index::Integer, color::RGBA) ::Nothing
+
+        index -= 1;
+
         ccall((:ts_shape_set_vertex_color, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), color.red, color.green, color.blue, color.alpha)
@@ -1652,8 +1642,13 @@ module ts
 
     """
     `set_vertex_texture_coordinate!(::Shape, ::Integer, ::Vector2f) -> Nothing`
+
+    index 1-based
     """
     function set_vertex_texture_coordinate!(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
+
+        index -= 1;
+
         ccall((:ts_shape_set_vertex_texture_coordinate, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), coordinate.x, coordinate.y)
@@ -1662,8 +1657,12 @@ module ts
 
     """
     `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
+
+    index 1-based
     """
     function get_vertex_position(shape::Shape, index::Integer) ::Vector2f
+
+        index -= 1;
 
         x = Ref{Cfloat}(-1)
         y = Ref{Cfloat}(-1)
@@ -1678,8 +1677,12 @@ module ts
 
     """
     `get_vertex_color(shape::Shape, index::Integer) -> RGBA`
+
+    index 1-based
     """
     function get_vertex_color(shape::Shape, index::Integer) ::RGBA
+
+        index -= 1;
 
         r = Ref{Cfloat}(-1)
         g = Ref{Cfloat}(-1)
@@ -1696,8 +1699,12 @@ module ts
 
     """
     `get_vertex_texture_coordinate(shape::Shape, index::Integer) -> Vector2f`
+
+    index 1-based
     """
     function get_vertex_texture_coordinate(shape::Shape, index::Integer) ::Vector2f
+
+        index -= 1;
 
         x = Ref{Cfloat}(-1)
         y = Ref{Cfloat}(-1)
@@ -2247,6 +2254,718 @@ module ts
             camera._native_window_id, top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y)
     end
     export get_view_area
+    
+    ### PHYSICS ##########################################################################
+    
+    """
+    PhysicsWorld
+    
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `PhysicsWorld()`
+    """
+    struct PhysicsWorld
+
+        _native_id::Csize_t
+
+        function PhysicsWorld()
+
+            id = ccall((:ts_physics_world_create, _lib), Csize_t, ())
+            out = new(id)
+            finalizer(out) do x::PhysicsWorld
+                ccall((:ts_physics_world_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
+            end
+            return out
+        end
+    end
+    
+    """
+    `step!(::PhysicsWorld, ::Time, [::Integer, ::Integer]) -> Nothing`
+    """
+    function step!(world::PhysicsWorld, time::Time, velocity_iterations::Integer = 8, position_iterations::Integer = 3) ::Nothing
+        ccall((:ts_physics_world_step, _lib), Cvoid,
+            (Csize_t, Cfloat, Cint, Cint),
+            world._native_id, as_milliseconds(time), velocity_iterations, position_iterations)
+    end
+    export step!
+    
+    """
+    `clear_forces!(::PhysicsWorld) -> Nothing
+    """
+    function clear_forces!(world::PhysicsWorld) ::Nothing
+        ccall((:ts_physics_world_clear_forces, _lib), Cvoid, (Csize_t,), world._native_id)
+    end
+    export clear_forces!
+    
+    """
+    `get_gravity(::PhysicsWorld) -> Vector2f`
+    """
+    function get_gravity(world::PhysicsWorld) ::Vector2f
+
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+
+        ccall((:ts_physics_world_get_gravity, _lib), Cvoid,
+            (Csize_t, Ref{Cfloat}, Ref{Cfloat}),
+            world._native_id, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_gravity
+    
+    """
+    `set_gravity!(::PhysicsWorld, ::Vector2f) -> Nothing`
+    """
+    function set_gravity!(world::PhysicsWorld, gravity::Vector2f) ::Nothing
+        ccall((:ts_physics_world_set_gravity, _lib), Cvoid,
+            (Csize_t, Cfloat, Cfloat),
+            world._native_id, gravity.x, gravity.y)
+    end
+    export set_gravity!
+
+    """
+    CollisionShape (Abstract Interface)
+
+    ### Expected Members
+    _native::Ptr{Cvoid}
+    """
+    abstract type CollisionShape end
+    export CollisionShape
+
+    """
+    enum CollisionType <: UInt64
+    """
+    @enum CollisionType begin
+
+        STATIC = ccall((:ts_collision_type_static, _lib), Csize_t, ())
+        KINEMATIC = ccall((:ts_collision_type_kinematic, _lib), Csize_t, ())
+        DYNAMIC = ccall((:ts_collision_type_dynamic, _lib), Csize_t, ())
+    end
+    export_enum(CollisionType)
+
+    """
+    CollisionTriangle
+
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `CollisionTriangle(::PhysicsWorld, ::CollisionType, ::Vector2f, ::Vector2f, ::Vector2f)`
+    `CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::Triangle)`
+    `CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape)`
+    """
+    struct CollisionTriangle <: CollisionShape
+
+        _native::Ptr{Cvoid}
+
+        function CollisionTriangle(world::PhysicsWorld, type::CollisionType, a::Vector2f, b::Vector2f, c::Vector2f)
+
+            native = ccall((:ts_collision_triangle_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat, Cfloat, Cfloat),
+                world._native_id, Csize_t(type), a.x, a.y, b.x, b.y, c.x, c.y)
+
+            out = new(native)
+            finalizer(out) do x::CollisionTriangle
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+            end
+            return out;
+        end
+
+        function CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::Triangle)
+            return CollisionTriangle(world, type, triangle.a, triangle.b, triangle.c)
+        end
+
+        function CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape)
+
+            a = get_vertex_position(triangle, 1)
+            b = get_vertex_position(triangle, 2)
+            c = get_vertex_position(triangle, 3)
+
+            return CollisionTriangle(world, type, a, b, c)
+        end
+    end
+    export CollisionTriangle
+
+    """
+    CollisionRectangle
+
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `CollisionRectangle(::PhysicsWorld, ::CollisionType, top_left::Vector2f, size::Vector2f)`
+    `CollisionRectangle(::PhysicsWorld, ::CollisionType, ::Rectangle)`
+    `CollisionRectangle(::PhysicsWorld, ::CollisionType, ::RectangleShape)`
+    """
+    struct CollisionRectangle <: CollisionShape
+
+        _native::Ptr{Cvoid}
+
+        function CollisionRectangle(world::PhysicsWorld, type::CollisionType, top_left::Vector2f, size::Vector2f)
+
+            native = ccall((:ts_collision_rectangle_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
+                world._native_id, Csize_t(type), top_left.x, top_left.y, size.x, size.y)
+
+            out = new(native)
+            finalizer(out) do x::CollisionRectangle
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
+            end
+        end
+
+        function CollisionRectangle(world::PhysicsWorld, type::CollisionType, rectangle::Rectangle)
+            return CollisionRectangle(world, type, rectangle.top_left, rectangle.size)
+        end
+
+        function CollisionRectangle(world::PhysicsWorld, type::CollisionType, rectangle::RectangleShape)
+            return CollisionRectangle(world, type, get_top_left(rectangle), get_size(rectangle_shape))
+        end
+    end
+    export CollisionRectangle
+
+    """
+    CollisionCircle
+
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `CollisionCircle(::PhysicsWorld, ::CollisionType, ::Vector2f, ::Float32)`
+    `CollisionCircle(::PhysicsWorld, ::CollisionType, ::Circle)`
+    `CollisionCircle(::PhysicsWorld, ::CollisionType, ::CircleShape)`
+    """
+    struct CollisionCircle <: CollisionShape
+
+        _native::Ptr{Cvoid}
+
+        function CollisionCircle(world::PhysicsWorld, type::CollisionType, center::Vector2f, radius::Float32)
+
+            native = ccall((:ts_collision_circle_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Cfloat, Cfloat, Cfloat),
+                world._native_id, Csize_t(type), center.x, center.y, radius)
+
+            out = new(native)
+            finalizer(out) do x::CollisionCircle
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
+            end
+            return out
+        end
+
+        function CollisionCircle(world::PhysicsWorld, type::CollisionType, circle::Circle)
+            CollisionCircle(world, type, circle.center, circle.radius)
+        end
+
+        function CollisionCircle(world::PhysicsWorld, type::CollisionType, circle::CircleShape)
+            CollisionCircle(world, type, get_center(circle), get_radius(circle))
+        end
+    end
+    export CollisionCircle
+
+    """
+    CollisionLine
+
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `CollisionLine(::PhysicsWorld, ::CollisionType, ::Vector2f, ::Vector2f, [is_two_sided::Bool])`
+    """
+    struct CollisionLine <: CollisionShape
+
+        _native::Ptr{Cvoid}
+        is_two_sided::Bool
+
+        function CollisionLine(world::PhysicsWorld, type::CollisionType, a::Vector2f, b::Vector2f, is_two_sided::Bool = true)
+
+            native = ccall((:ts_collision_line_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat, Bool),
+                world._native_id, Csize_t(type), a.x, a.y, b.x, b.y, is_two_sided)
+            out = new(native, is_two_sided)
+            finalizer(out) do x::CollisionLine
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
+            end
+            return out
+        end
+    end
+    export CollisionLine
+
+    """
+    CollisionWireFrame
+
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `CollisionWireFrame(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
+    """
+    struct CollisionWireFrame <: CollisionShape
+
+        _native::Ptr{Cvoid}
+
+        function CollisionWireFrame(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
+
+            xs = Float32[]
+            ys = Float32[]
+
+            for v in vertices
+                push!(xs, v.x)
+                push!(ys, v.y)
+            end
+
+            native = ccall((:ts_collision_wire_frame_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
+                world._native_id, Csize_t(type), pointer_from_objref(xs), pointer_from_objref(ys), length(vertices))
+
+            out = new(native)
+            finalizer(out) do x::CollisionLine
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
+            end
+            return out
+        end
+    end
+    export CollisionWireFrame
+
+    """
+    CollisionPolygon
+
+    ### Members
+    (no public members)
+
+    ### Constructors
+    `CollisionPolygon(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
+    """
+    struct CollisionPolygon <: CollisionShape
+
+        _native::Ptr{Cvoid}
+
+        function CollisionWireFrame(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
+
+            xs = Float32[]
+            ys = Float32[]
+
+            for v in vertices
+                push!(xs, v.x)
+                push!(ys, v.y)
+            end
+
+            native = ccall((:ts_collision_polygon_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
+                world._native_id, Csize_t(type), pointer_from_objref(xs), pointer_from_objref(ys), length(vertices))
+
+            out = new(native)
+            finalizer(out) do x::CollisionLine
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
+            end
+            return out
+        end
+    end
+    export CollisionPolygon
+
+    """
+    `set_density!(::CollisionShape, ::Float32) -> Nothing`
+    """
+    function set_density!(shape::CollisionShape, value::Float32) ::Nothing
+        ccall((:ts_collision_shape_set_density, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
+    end
+    export set_density!
+
+    """
+    `get_density(::CollisionShape) -> Float32`
+    """
+    function get_density(shape::CollisionShape) ::Float32
+        return ccall((:ts_collision_shape_get_density, _lib), Cfloat, (Ptr{Cvoid}), shape._native)
+    end
+    export get_density
+
+    """
+    `set_friction!(::CollisionShape, ::Float32) -> Nothing`
+    """
+    function set_friction!(shape::CollisionShape, value::Float32) ::Nothing
+        ccall((:ts_collision_shape_set_friction, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
+    end
+    export set_friction!
+
+    """
+    `get_friction(::CollisionShape) -> Float32`
+    """
+    function get_friction(shape::CollisionShape) ::Float32
+        ccall((:ts_collision_shape_get_friction, _lib), Cfloat, (Ptr{Cvoid},), shape._native)
+    end
+    export get_friction
+
+    """
+    `set_restitution!(::CollisionShape, ::Float32) -> Nothing`
+    """
+    function set_restitution!(shape::CollisionShape, value::Float32) ::Nothing
+        ccall((:ts_collision_shape_set_restitution, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat),
+            shape._native, value)
+    end
+    export set_restitution!
+
+    """
+    `get_restitution(::CollisionShape) -> Float32`
+    """
+    function get_restitution(shape::CollisionShape) ::Float32
+        return ccall((:ts_collision_shape_get_restitution, _lib), Cfloat, (Ptr{Cvoid},), shape._native)
+    end
+    export get_restitution
+
+    """
+    `get_centroid(::CollisionShape) -> Vector2f`
+    """
+    function get_centroid(shape::CollisionShape) ::Vector2f
+
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+
+        ccall((:ts_collision_shape_get_centroid, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
+            shape._native, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_centroid
+
+    """
+    `get_bounding_box(::CollisionShape) -> Rectangle`
+    """
+    function get_bounding_box(shape::CollisionShape) ::Rectangle
+
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+        width = Ref{Cfloat}(0)
+        height = Ref{Cfloat}(0)
+
+        ccall((:ts_collision_shape_get_bounding_box, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            shape._native, x, y, width, height)
+
+        return Rectangle(Vector2f(x, y), Vector2f(width, height))
+    end
+    export get_bounding_box
+
+    """
+    `get_rotation(::CollisionShape) -> Angle`
+    """
+    function get_rotation(shape::CollisionShape) ::Angle
+        return degrees(ccall((:ts_collision_shape_get_rotation, _lib), Cfloat,
+            (Ptr{Cvoid},), shape._native))
+    end
+    export get_rotation
+
+    """
+    `set_type!(::CollisionShape, ::CollisionType) -> Nothing`
+    """
+    function set_type!(shape::CollisionShape, type::CollisionType) ::Nothing
+        ccall((:ts_collision_shape_set_type, _lib), Cvoid,
+            (Ptr{Cvoid}, Csize_t), shape._native, Csize_t(type))
+    end
+    export set_type!
+
+    """
+    `get_type(::CollisionShape) -> CollisionType`
+    """
+    function get_type(shape::CollisionShape) ::CollisionType
+        return CollisionType(ccall((:ts_collision_shape_get_type, _lib), Csize_t,
+            (Ptr{Cvoid},), shape._native))
+    end
+    export get_type
+
+    """
+    `enable!(::CollisionShape) -> Nothing`
+    """
+    function enable!(shape::CollisionShape) ::Nothing
+        ccall((:ts_collision_shape_enable, _lib), Cvoid, (Ptr{Cvoid},), shape._native)
+    end
+    export enable!
+
+    """
+    `disable!(::CollisionShape) -> Nothing`
+    """
+    function disable!(shape::CollisionShape) ::Nothing
+        ccall((:ts_collision_shape_disable, _lib), Cvoid, (Ptr{Cvoid},), shape._native)
+    end
+    export disable!
+
+    """
+    `is_enabled(::CollisionShape) -> Bool`
+    """
+    function is_enabled(shape::CollisionShape) ::Bool
+        return ccall((:ts_collision_shape_is_enabled, _lib), Bool, (Ptr{Cvoid},), shape._native)
+    end
+    export is_enabled
+
+    """
+    `get_origin(::CollisionShape) -> Vector2f`
+    """
+    function get_origin(shape::CollisionShape) ::Vector2f
+
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+
+        ccall((:ts_collision_shape_get_origin, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}), shape._native, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_origin
+
+    """
+    `get_center_of_mass_local(::CollisionShape) -> Vector2f`
+    """
+    function get_center_of_mass_local(::CollisionShape) ::Vector2f
+
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+
+        ccall((:ts_collision_shape_get_center_of_mass_local, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}), shape._native, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_center_of_mass_local
+
+    """
+    `get_center_of_mass_global(::CollisionShape) -> Vector2f`
+    """
+    function get_center_of_mass_global(::CollisionShape) ::Vector2f
+
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+
+        ccall((:ts_collision_shape_get_center_of_mass_global, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}), shape._native, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_center_of_mass_global
+
+    """
+    `set_linear_velocity!(::CollisionShape, ::Vector2f) -> Nothing`
+    """
+    function set_linear_velocity!(shape::CollisionShape, velocity::Vector2f) ::Nothing
+        ccall((:ts_collision_shape_set_linear_velocity, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, velocity.x, velocity.y)
+    end
+    export set_lienar_velocity!
+
+    """
+    `get_linear_velocity(::CollisionShape) -> Vector2f`
+    """
+    function get_linear_velocity(shape::CollisionShape) ::Vector2f
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
+
+        ccall((:ts_collision_shape_get_linear_velocity, _lib), Cvoid,
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}), shape._native, x, y)
+
+        return Vector2f(x[], y[])
+    end
+    export get_linear_velocity
+
+    """
+    `set_angular_velocity!(::CollisionShape, ::Float32) -> Nothing`
+    """
+    function set_angular_velocity!(shape::CollisionShape, value::Float32) ::Nothing
+        ccall((:ts_collision_shape_set_angular_velocity, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat), shape._native, value)
+    end
+    export set_angular_velocity!
+
+    """
+    `get_angular_velocity(::CollisionShape) -> Float32`
+    """
+    function get_angular_velocity(shape::CollisionShape) ::Float32
+        return ccall((:ts_collision_shape_get_angular_velocity, _lib), Cfloat,
+            (Ptr{Cvoid},), shape._native)
+    end
+    export get_angular_velocity
+
+    """
+    `apply_force_to(::CollisionShape, force::Vector2f, point::Vector2f) -> Nothing`
+    """
+    function apply_force_to!(shape::CollisionShape, force::Vector2f, point::Vector2f) ::Nothing
+        ccall((:ts_collision_shape_apply_force_to, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
+            shape._native, force.x, force.y, point.x, point.y)
+    end
+    export apply_force_to!
+
+    """
+    `apply_force_to_center(::CollisionShape, force::Vector2f) -> Nothing`
+    """
+    function apply_force_to_center!(shape::CollisionShape, force::Vector2f) ::Nothing
+        ccall((:ts_collision_shape_apply_force_to_center, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, force.x, force.y)
+    end
+    export apply_force_to_center!
+
+    """
+    apply_torque!(::CollisionShape, ::Float32) -> Nothing
+    """
+    function apply_torque!(shape::CollisionShape, value::Float32) ::Nothing
+        ccall((:ts_collision_shape_apply_torque, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
+    end
+    export apply_torque!
+
+    """
+    `apply_linear_impulse_to!(::CollisionShape, force::Vector2f, point::Vector2f) -> Nothing`
+    """
+    function apply_linear_impulse_to!(shape::CollisionShape, impulse::Vector2f, point::Vector2f) ::Nothing
+        ccall((:ts_collision_shape_apply_linear_impulse_to, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
+            shape._native, impulse.x, impulse.y, point.x, point.y)
+    end
+    export apply_linear_impulse_to!
+
+    """
+    `apply_linear_impulse_to_center!(::CollisionShape, force::Vector2f) -> Nothing`
+    """
+    function apply_linear_impulse_to_center!(shape::CollisionShape, impulse::Vector2f) ::Nothing
+        ccall((:ts_collision_shape_apply_linear_impulse_to_center, _lib), Cvoid,
+            (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, impulse.x, impulse.y)
+    end
+    export apply_lienar_impulse_to_center!
+
+    """
+    `get_mass(::CollisionShape) -> Float32`
+    """
+    function get_mass(shape::CollisionShape) ::Float32
+        return ccall((:ts_collision_shape_get_mass, _lib), Cfloat, (Ptr{Cvoid},), shape._native)
+    end
+    export get_mass
+
+    """
+    `get_inertia(::CollisionShape) -> Float32`
+    """
+    function get_inertia(shape::CollisionShape) ::Float32
+        return ccall((:ts_collision_shape_get_inertia, _lib), Cfloat, (Ptr{Cvoid},), shape._native)
+    end
+    export get_inertia
+
+    """
+    `set_is_bullet!(::CollisionShape, ::Bool) -> Nothing`
+    """
+    function set_is_bullet(shape::CollisionShape, value::Bool) ::Nothing
+        ccall((:ts_collision_shape_set_is_bullet, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
+    end
+    export set_is_bullet
+
+    """
+    `is_bullet(::CollisionShape) -> Bool`
+    """
+    function is_bullet(shape::CollisionShape) ::Bool
+        return ccall((:ts_collision_shape_is_bullet, _lib), Bool, (Ptr{Cvoid},), shape._native)
+    end
+    export is_bullet
+
+    """
+    `is_rotation_fixed(::CollisionShape) -> Bool`
+    """
+    function is_rotation_fixed(shape::CollisionShape) ::Bool
+        return ccall((:ts_collision_shape_is_rotation_fixed, _lib), Bool, (Ptr{Cvoid},), shape._native)
+    end
+    export is_rotation_fixed
+
+    """
+    `set_rotation_fixed!(::CollisionShape, ::Bool) -> Nothing`
+    """
+    function set_rotation_fixed!(shape::CollisionShape, value::Bool) ::Nothing
+        ccall((:ts_collision_shape_set_rotation_fixed, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
+    end
+    export set_rotation_fixed!
+
+    """
+    `get_id(::CollisionShape) -> UInt64`
+    """
+    function get_id(shape::CollisionShape) ::UInt64
+        return ccall((:ts_collision_shape_get_id, _lib), Csize_t, (Ptr{Cvoid},), shape._native)
+    end
+    export get_id
+
+    """
+    DistanceInformation
+
+    ### Members
+    distance::Float32
+    closest_points::Pair{Vector2f, Vector2f}
+
+    ### Constructors
+    (no public constructors)
+    """
+    struct DistanceInformation
+
+        distance::Float32
+        closest_points::Pair{Vector2f, Vector2f}
+
+        function DistanceInformation(distance::Float32, point_a::Vector2f, point_b::Vector2f)
+            return new(distance, Pair{Vector2f, Vector2f}(point_a, point_b))
+        end
+    end
+
+    """
+    `distance_between(::PhysicsWorld, ::Shape, ::Shape) -> DistanceInformation
+    """
+    function distance_between(world::PhysicsWorld, shape_a::CollisionShape, shape_b::CollisionShape) ::DistanceInformation
+
+        distance = Ref{Cfloat}(-1)
+        a_x = Ref{Cfloat}(-1)
+        a_y = Ref{Cfloat}(-1)
+        b_x = Ref{Cfloat}(-1)
+        b_y = Ref{Cfloat}(-1)
+
+        ccall((:ts_collision_handler_distance_between, _lib), Cvoid,
+            (Csize_t, Ptr{Cvoid}, Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            world._native_id, shape_a._native, shape_b._native, distance, a_x, a_y, b_x, b_y)
+
+        return DistanceInformation(distance[], Vector2f(a_x[], a_y[]), Vector2f(b_x[], b_y[]))
+    end
+
+    """
+    RayCastInformation
+
+    ### Members
+    are_colliding::Bool
+    normal_vector::Vector2f
+    contact_point::Vector2f
+
+    ### Constructors
+    (no public constructors)
+    """
+    struct RayCastInformation
+        are_colliding::Bool
+        normal_vector::Vector2f
+        contact_point::Vector2f
+    end
+
+    """
+    `ray_cast(::PhysicsWorld, ::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) -> RayCastInformation
+    """
+    function ray_cast(world::PhysicsWorld, shape::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) ::RayCastInformation
+
+        normal_x = Ref{Cfloat}(-1)
+        normal_y = Ref{Cfloat}(-1)
+        hit_x = Ref{Cfloat}(-1)
+        hit_y = Ref{Cfloat}(-1)
+
+        colliding = ccall((:ts_collision_handler_ray_cast, _lib), Bool,
+            (Csize_t, Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            world._native_id, shape._native, ray_start.x, ray_start.y, ray_end.x, ray_end.y, normal_x, normal_y, hit_x, hit_y)
+
+        return RayCastInformation(colliding, Vector2f(normal_x[], normal_y[]), Vector2f(hit_x[], hit_y[]))
+    end
+
+    """
+    `is_point_in_shape(::CollisionShape, ::Vector2f) -> Bool`
+    """
+    function is_point_in_shape(world::PhysicsWorld, shape::CollisionShape, point::Vector2f) ::Bool
+        return ccall((:ts_collision_handler_is_point_in_shape, _lib), Bool,
+            (Csize_t, Ptr{Cvoid}, Cfloat, Cfloat),
+            world._native_id, shape._native, point.x, point.y)
+    end
 
     ### TODO #############################################################################
 
