@@ -13,6 +13,8 @@ namespace ts
     class CircleShape : public Shape
     {
         public:
+            virtual ~CircleShape() = default;
+
             /// \brief construct
             /// \param center: centroid
             /// \param radius: radius

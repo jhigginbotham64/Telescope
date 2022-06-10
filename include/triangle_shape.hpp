@@ -16,6 +16,9 @@ namespace ts
     class TriangleShape : public Shape
     {
         public:
+            /// \brief virtual destructor
+            virtual ~TriangleShape() = default;
+
             /// \brief construct from vertex positions
             /// \param a: position of the first vertex
             /// \param b: position of the second vertex

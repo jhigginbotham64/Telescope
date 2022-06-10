@@ -10,8 +10,10 @@
 namespace ts
 {
     CollisionShape::CollisionShape(PhysicsWorld* world, CollisionType type, Vector2f initial_center)
-        : _world(world), _id(_current_id++)
+        : _world(world), _id(_current_id)
     {
+        _current_id = (_current_id + 1);
+
         auto bodydef = default_body_def;
         bodydef.position.Set(initial_center.x, initial_center.y);
         bodydef.type = (b2BodyType) type;
@@ -208,5 +210,15 @@ namespace ts
     b2Body *CollisionShape::get_native_body()
     {
         return _body;
+    }
+
+    size_t CollisionShape::get_id() const
+    {
+        return _id;
+    }
+
+    float CollisionShape::get_restitution() const
+    {
+        return _fixture->GetRestitution();
     }
 }

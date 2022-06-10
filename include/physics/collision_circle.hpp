@@ -13,6 +13,9 @@ namespace ts
     class CollisionCircle : public CollisionShape
     {
         public:
+            /// \brief virtual destructor
+            virtual CollisionCircle = default;
+
             /// \brief construct from center and radius
             /// \param center: world coordinates of the center
             /// \param radius: radius of the circle

@@ -361,7 +361,7 @@ bool ts_collision_shape_is_bullet(void*);
 
 bool ts_collision_shape_is_rotation_fixed(void*);
 
-bool ts_collision_shape_set_rotation_fixed(void*, bool);
+void ts_collision_shape_set_rotation_fixed(void*, bool);
 
 size_t ts_collision_shape_get_id(void*);
 

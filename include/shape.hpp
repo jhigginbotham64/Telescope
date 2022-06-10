@@ -20,6 +20,9 @@ namespace ts
     class Shape : public Renderable
     {
         public:
+            /// \brief virtual destructor
+            virtual ~Shape() = default;
+
             /// \brief set the position of the shapes centroid
             /// \param position: centroid position
             virtual void set_centroid(Vector2f position) = 0;

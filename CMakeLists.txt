@@ -195,7 +195,7 @@ add_library(telescope SHARED
     src/collision_line.cpp
 
     include/physics/collision_wireframe.hpp
-    src/collision_line.cpp
+    src/collision_wireframe.cpp
 
     include/physics/collision_handler.hpp
     src/collision_handler.cpp

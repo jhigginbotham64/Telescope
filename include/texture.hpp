@@ -53,7 +53,7 @@ namespace ts
             Texture() = delete;
 
             /// \brief destructor, automatically deallocates memory GPU-side
-            ~Texture();
+            virtual ~Texture();
 
             /// \brief set the color each pixels value will be multiplied by
             /// \param color

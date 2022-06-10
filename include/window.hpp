@@ -114,7 +114,7 @@ namespace ts
             SDL_Window* _window = nullptr;
             SDL_Renderer* _renderer;
 
-            SDL_Surface* _icon = nulltpr;
+            SDL_Surface* _icon = nullptr;
 
             Transform _global_transform; // camera state
 

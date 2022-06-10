@@ -13,6 +13,9 @@ namespace ts
     class RectangleShape : public Shape
     {
         public:
+            /// \brief virtual destructor
+            virtual ~RectangleShape() = default;
+
             /// \brief construct, C-interface
             /// \param top_left_x: x-coordinate of the top left corner
             /// \param top_left_y: y-coordinate of the top left corner

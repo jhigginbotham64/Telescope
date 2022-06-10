@@ -13,6 +13,9 @@ namespace ts
     class PolygonShape : public Shape
     {
         public:
+            /// \brief virtual destructor
+            virtual ~PolygonShape() = default;
+
             /// \brief construct from number of points, will construct the convex hull of the points
             /// \param points
             PolygonShape(const std::vector<Vector2f>& positions);

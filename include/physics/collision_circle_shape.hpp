@@ -14,6 +14,9 @@ namespace ts
     class CollisionCircleShape : public CircleShape, public CollisionCircle
     {
         public:
+            /// \brief virtual destructor
+            virtual ~CollisionCircleShape() = default;
+
             //
             CollisionCircleShape(PhysicsWorld*, CollisionType, Vector2f center, float radius);
 

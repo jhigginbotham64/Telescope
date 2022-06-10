@@ -13,6 +13,9 @@ namespace ts
     class CollisionPolygon : public CollisionShape
     {
         public:
+            /// \brief virtual destructor
+            virtual ~CollisionPolygon() = default;
+
             /// \brief construct from list of vertices
             /// \param vertices: vector of world vertex positions
             CollisionPolygon(PhysicsWorld*, CollisionType, const std::vector<Vector2f>&);

@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <atomic>
+
 #include <include/vector.hpp>
 #include <include/geometric_shapes.hpp>
 #include <include/shape.hpp>
@@ -42,7 +44,7 @@ namespace ts
     {
         public:
             /// \brief destruct, this also deallocates the box2d fixture. The user is responsible for keeping the shape in memory while it is attached to a PhysicsObject
-            ~CollisionShape();
+            virtual ~CollisionShape();
 
             /// \brief set the density of this shape. This governs mass
             /// \param density

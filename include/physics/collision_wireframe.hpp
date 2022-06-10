@@ -13,6 +13,9 @@ namespace ts
     class CollisionWireFrame : public CollisionShape
     {
         public:
+            /// \brief virtual destructor
+            virtual ~CollisionWireFrame() = default;
+
             /// \brief create from position of vertices, the chain will automatically connect to become a loop
             /// \param vertices: vector of vertex positions
             CollisionWireFrame(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>&);

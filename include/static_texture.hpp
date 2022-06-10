@@ -20,6 +20,9 @@ namespace ts
     class StaticTexture : public Texture
     {
         public:
+            /// \brief virtual destructor
+            virtual ~StaticTexture() = default;
+
             /// \brief constructor
             /// \param window: window that supplies the rendering context
             StaticTexture(Window* context);

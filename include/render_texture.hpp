@@ -16,6 +16,9 @@ namespace ts
     class RenderTexture : public Texture, public RenderTarget
     {
         public:
+            /// \brief virtual destructor
+            virtual ~RenderTexture() = default;
+
             /// \brief create the render texture
             /// \param window: window to use to supply the rendering context
             RenderTexture(Window* window);

@@ -14,6 +14,9 @@ namespace ts
     class CollisionRectangleShape : public RectangleShape, public CollisionPolygon
     {
         public:
+            /// \brief virtual destructor
+            virtual ~CollisionRectangleShape() = default;
+
             //
             CollisionRectangleShape(PhysicsWorld*, CollisionType, Vector2f top_left, Vector2f size);
 

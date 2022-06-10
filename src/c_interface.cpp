@@ -730,6 +730,7 @@ size_t ts_physics_world_create()
     auto id = detail::_id++;
     detail::_worlds.emplace(id, ts::PhysicsWorld());
     detail::_collision_handlers.emplace(id, ts::CollisionHandler(&detail::_worlds.at(id)));
+    return id;
 }
 
 void ts_physics_world_destroy(size_t id)
@@ -1003,7 +1004,7 @@ bool ts_collision_shape_is_rotation_fixed(void* shape)
     return ((ts::CollisionShape*) shape)->is_rotation_fixed();
 }
 
-bool ts_collision_shape_set_rotation_fixed(void* shape, bool b)
+void ts_collision_shape_set_rotation_fixed(void* shape, bool b)
 {
     ((ts::CollisionShape*) shape)->set_rotation_fixed(b);
 }

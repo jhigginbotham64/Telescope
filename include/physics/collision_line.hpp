@@ -13,6 +13,9 @@ namespace ts
     class CollisionLine : public CollisionShape
     {
         public:
+            /// \brief virtual destructor
+            virtual ~CollisionLine() = default;
+
             //
             CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b, bool two_sided = true);
 
