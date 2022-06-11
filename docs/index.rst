@@ -17,10 +17,12 @@ Contents
 
 .. toctree::
 
-	installation
-	common_render
-	common_physics
-	common_sound
-	graphics_interface
-	physics_interface
-	other
+    common
+	music
+    sound
+    window
+    camera
+    shapes
+    textures
+    input_handler
+    physics
