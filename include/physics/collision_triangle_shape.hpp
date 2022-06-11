@@ -15,7 +15,7 @@ namespace ts
     {
         public:
             /// \brief virtual destructor
-            virtual CollisionTriangleShape() = default;
+            virtual ~CollisionTriangleShape() = default;
 
             //
             CollisionTriangleShape(PhysicsWorld*, CollisionType, Vector2f a, Vector2f b, Vector2f c);

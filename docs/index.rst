@@ -11,12 +11,13 @@ Contents
 
 .. toctree::
 
+    render_loop
+    in_julia
     common
-	music
-    sound
     window
     camera
     shapes
     textures
+    audio
     input_handler
     physics

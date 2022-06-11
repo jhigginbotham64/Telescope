@@ -12,7 +12,7 @@ namespace ts
 {
     /// \brief initialize all components of telescope
     /// \returns true if successfull, otherwise an exception will be thrown and false is returned
-    bool initialize();
+    [[nodiscard]] bool initialize();
 
     /// \brief set the fps limit for all windows
     /// \param frames_per_second: integer

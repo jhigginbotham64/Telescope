@@ -1,6 +1,10 @@
 Audio
 =====
 
+Handling and playback of audio-files. Supported formats include: .wav, .ogg, .mp3, .flac
+
+-----------------------
+
 Sound
 *****
 
@@ -51,7 +55,6 @@ channel and we can then manipulate that channel.
 .. doxygenclass:: ts::SoundHandler
     :members:
 
-
 -----------------------
 
 Playing a Sound
@@ -91,7 +94,9 @@ Even though both classes can load the same sound file, the difference between :c
 is that only one music can play at the same time. There are no channels, there is only the currently playing music.
 
 .. doxygenclass:: ts::Music
-    :members
+    :members:
+
+-----------------------------
 
 Loading Music
 ^^^^^^^^^^^^^
@@ -99,6 +104,7 @@ Loading Music
 Music is loaded just like sounds are:
 
 .. code-block:: cpp
+
     auto music = ts::Music();
     music.load("/usr/share/telescope/test/ok_desu_ka.mp3")
 
@@ -117,7 +123,7 @@ Telescope provides its own handler for music: :code:`ts::MusicHandler`. This cla
 :code:`ts::MusicHandler`, however, :code:`ts::MusicHandler` gives us much more control over the audio file currently
 being played:
 
-.. doxygenstruct:: ts::MusicHandler
+.. doxygenclass:: ts::MusicHandler
     :members:
 
 -----------------------------
@@ -128,6 +134,7 @@ Playing Music
 We see that we can skip around the current playback position of the music like so:
 
 .. code-block:: cpp
+
     // load 3s long audio file as music
     auto music = ts::Music("/usr/share/telescope/test/ok_desu_ka.mp3");
     ts::MusicHandler::play(music);
@@ -182,7 +189,7 @@ or :code:`next` allows us to specify a fade-out ramp duration, we can smoothly c
 -----------------------------
 
 In summary, using :code:`ts::MusicHandler` and :code:`ts::SoundHandler`, we are given the tools
-for handling audio in all but the most demanding situations. Notably, sound-effects and signal-processing of audio data
+for handling audio in all but the most demanding situations. To address this, sound-effects and signal-processing of audio data
 are planned for a future version of telescope.
 
 

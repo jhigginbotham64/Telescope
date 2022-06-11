@@ -68,9 +68,9 @@ namespace ts
     Time microseconds(double);
 
     /// \brief construct time interval from number of nanoseconds
-    /// \param minutes: number of nanoseconds
+    /// \param ns: number of nanoseconds, unsigned
     /// \returns time
-    Time nanoseconds(size_t);
+    Time nanoseconds(size_t ns);
 
     /// \brief clock used for measuring time deltas, steady clock, nanosecond precision
     class Clock

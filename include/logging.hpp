@@ -10,10 +10,16 @@
 
 namespace ts
 {
+    /// \brief suppress all log output from this point on
+    /// \param disabled: should the output be disabled?
+    void set_all_logging_disabled(bool disabled);
+
     /// \brief basic thread-safe log
     class Log
     {
         public:
+            static inline bool disabled = false;
+
             /// \brief print as general info
             /// \param args: arguments, converted to strings
             template<typename... Args_t>

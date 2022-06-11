@@ -7,9 +7,17 @@
 
 namespace ts
 {
+    inline void set_all_logging_disabled(bool disabled)
+    {
+        Log::disabled = disabled;
+    }
+
     template<typename... Args_t>
     void Log::print(Args_t... args)
     {
+        if (disabled)
+            return;
+
         _lock.lock();
         std::cout << GLOBAL_PREFIX << LOG_PREFIX << " ";
 
@@ -25,6 +33,9 @@ namespace ts
     template<typename... Args_t>
     void Log::warning(Args_t... args)
     {
+        if (disabled)
+            return;
+
         _lock.lock();
         std::cerr << GLOBAL_PREFIX << WARNING_PREFIX << " ";
 
@@ -40,6 +51,9 @@ namespace ts
     template<typename... Args_t>
     void Log::debug(Args_t... args)
     {
+        if (disabled)
+            return;
+
         if (not _debug_enabled)
             return;
 

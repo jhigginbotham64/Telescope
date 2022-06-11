@@ -1,6 +1,10 @@
 Common
 ======
 
+Commonly used classes representing spacial position, angle, color, shapes and time.
+
+--------------------
+
 Vectors
 *******
 
@@ -31,6 +35,7 @@ Internally, telescope uses :code:`glm::vec` for these classes. This means most v
 are supported out-of-the-box:
 
 .. code-block:: cpp
+
     Vector2f a = {1, 4}
     Vector2f b = {-1, 2}
     auto sum = a + b;
@@ -59,10 +64,10 @@ This class has no public constructors. Instead, we initialize by calling one of 
 Which take as their arguments a float, interpreted as either degrees or radians.
 
 While most of telescopes functions will ask for an :code:`ts::Angle` as input, we can still convert the object into
-either degree or radians using:
+either degree or radians using
 
-.. doxygenfunction:: ts::as_degrees
-.. doxygenfunction:: ts::as_radians
+- :code:`ts::Angle::as_degrees`
+- :code:`ts::Angle::as_radians`
 
 This gives us full flexiblity and avoids confusing about which functions asks for what type of angle measurement.
 
@@ -130,4 +135,84 @@ A circle is fully described by it's center and radius. Unlike :code:`ts::CircleS
 with maximum roundness.
 
 .. doxygenstruct:: ts::Circle
-    :members
+    :members:
+
+--------------------
+
+Time
+****
+
+Time is a central concept in both physics and real-time rendering, so it is only natural telescope provide a
+comprehensive system of how to express time in programming terms.
+
+All time in telescope is at the nanosecond precision. This means, if two time stamps are apart by more than one nanosecond,
+telescopes time will be able to tell the difference.
+
+When measuring duration, a high-resolution, `steady clock` is used. This clocks' ticks do not vary with cpu activity, display speed or
+frames per second. This makes them ideal to be used as the lowest common denominator between systems, 1s of a piece of
+music is exactly as long as 1s of steps in the physics simulation.
+
+ts::Time
+^^^^^^^^
+
+In telescope, time is represented by the :code:`ts::Time` class:
+
+.. doxygenclass:: ts::Time
+    :members:
+
+This class has no public constructors, instead, we create a :code:`ts::Time` using one of the following functions:
+
+.. doxygenfunction:: ts::minutes
+.. doxygenfunction:: ts::seconds
+.. doxygenfunction:: ts::milliseconds
+.. doxygenfunction:: ts::microseconds
+.. doxygenfunction:: ts::nanoseconds
+
+Because we have a central object to measure durations, converting between units is effortless:
+
+.. code-block:: cpp
+    :caption: Calculating the Duration of one Frame
+
+    size_t frames_per_second = 60;
+    auto fps_duration = ts::seconds(1.f / 60);
+    std::cout << "frame duration (ms): " << fps_duration.as_milliseconds() << std::endl;
+
+--------------------
+
+ts::Clock
+^^^^^^^^^
+
+Often we want to measure the length of a specific time interval: how long was this button held down? How long has it been since
+the player last updated this entity? For cases like these, telescope provides :code:`ts::Clock` to measure time.
+
+.. doxygenclass:: ts::Clock
+
+When :code:`ts::Clock` is constructed, its timer starts at 0. We can get the currently elapsed time using
+:code:`elapsed`. This will not restart the clock. If we want to reset the clock to 0, we call :code:`restart`, which
+also returns the time elapsed since either construction or the last :code:`restart`.
+
+.. code-block:: cpp
+    :caption: Measuring the average Duration of one loop iteration
+
+    auto clock = ts::Clock();
+    auto durations = std::vector<ts::Time>();
+
+    clock.restart();
+    for (size_t i = 0; i < 10; ++i)
+    {
+        // do something time-consuming here
+        durations.push_back(clock.restart());
+    }
+
+    auto duration_sum_ms = 0;
+    for (auto& d : durations)
+        duration_sum_ms += d.as_milliseconds();
+
+    std::cout << "Average Loop Duration (ms): " << duration_sum_ms / durations.size() << std::endl;
+
+
+
+
+
+
+

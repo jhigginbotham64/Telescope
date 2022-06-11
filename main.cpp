@@ -43,6 +43,48 @@
 
 using namespace ts;
 
+int main()
+{
+    // initialize everything
+    ts::initialize();
+
+    // create a window
+    const size_t window_resolution_width = 800;
+    const size_t window_resolution_height = 600;
+    const uint32_t window_options = ts::DEFAULT;
+    size_t frames_per_second = 60;
+
+    bool is_fullscreen = false;
+    if (is_fullscreen)
+        window_options = window_options | FULLSCREEN | BORDERLESS;
+
+    ts::set_framerate_limit(frames_per_second);
+
+    auto window = ts::Window();
+    window.create(
+            "Hello Telescope",          // window title
+            window_resolution_width,    // x-dimension
+            window_resolution_height,   // y-dimension
+            window_options              // options
+    );
+
+    // render loop
+    while (window.is_open())
+    {
+        auto time = ts::start_frame(&window);
+        window.clear();
+
+        // do rendering, physics, input-handling, etc. here
+
+        ts::end_frame(&window);
+    }
+
+    // shutdown here
+    return 0;
+}
+
+/*
+
 float rng()
 {
     return rand() / float(RAND_MAX);
@@ -128,12 +170,11 @@ struct Poly
 
     void update()
     {
-        /*
         auto pos = _hitbox.get_native_body()->GetPosition();
         auto rotation = _hitbox.get_native_body()->GetAngle();
         _shape.set_centroid(Vector2f(pos.x, pos.y));
         _shape.rotate(ts::radians(-rotation));
-         */
+
     }
 };
 
@@ -179,7 +220,6 @@ int main()
 
         auto val = rng() * 4;
 
-        /*
         if (val > 0 and val < 1)
             balls.emplace_back(&world, center, radius);
         else if (val > 1 and val < 2)
@@ -190,7 +230,7 @@ int main()
             rects.back().set_color(HSVA(rng(), rng(), 1, 1));
         }
         else if (val > 3 and val < 4)
-        {*/
+        {
             polys.emplace_back(&world, center, radius);
         //}
     };
@@ -224,6 +264,8 @@ int main()
         if (InputHandler::was_pressed(SPACE))
             spawn();
 
+        ts::set_f
+
         for (auto& ball : balls)
         {
             ball.update();
@@ -251,3 +293,5 @@ int main()
         ts::end_frame(&window);
     }
 }
+
+ */

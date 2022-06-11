@@ -17,6 +17,7 @@ namespace ts
     class MusicHandler
     {
         public:
+            /// \brief expected music sample rate (in Hz)
             static inline constexpr size_t sample_rate = 44100; // in Hz
 
             /// \brief instantly play new music, clears any scheduled music
