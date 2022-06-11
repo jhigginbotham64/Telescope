@@ -20,6 +20,13 @@ namespace ts
         }
     }
 
+    size_t SoundHandler::next_free_channel()
+    {
+        for (size_t i = 0; i < n_channels; ++i)
+            if (not is_playing(i) and not is_paused(i))
+                return i;
+    }
+
     void SoundHandler::play(size_t channel, Sound& sound,  size_t n_loops, Time fade_in_duration)
     {
         channel = forward_index(channel, "play");

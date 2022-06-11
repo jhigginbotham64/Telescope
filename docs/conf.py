@@ -39,7 +39,7 @@ if os.environ.get('READTHEDOCS', None) == 'True':
 # ones.
 #...
 
-extensions = ["breathe"]
+extensions = ["breathe"] #, "sphinx_rtd_dark_mode"]
 breathe_default_project = "telescope"
 
 #...

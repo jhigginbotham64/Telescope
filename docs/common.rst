@@ -39,6 +39,8 @@ are supported out-of-the-box:
 Where we used :ref:`C++s Aggregrate Initialization<https://en.cppreference.com/w/cpp/language/aggregate_initialization>`
 to create the vectors, then accessed their values using their members `x` and `y`.
 
+--------------------
+
 Angles
 ******
 
@@ -64,6 +66,8 @@ either degree or radians using:
 
 This gives us full flexiblity and avoids confusing about which functions asks for what type of angle measurement.
 
+--------------------
+
 Colors
 ******
 
@@ -84,6 +88,8 @@ Telescope functions will often ask for a color in RGBA format. Because :code:`HS
 this conversion will often be done automatically for us. If we want to manually convert HSVA to RGBA (or the other
 way around), we can use each color systems member functions: :code:`as_hsv` for :code:`RGBA` and :code:`as_rgb`
 for :code:`HSVA`.
+
+--------------------
 
 Geometric Shapes
 ****************

@@ -27,16 +27,16 @@ namespace ts
         /// \param a: transparency component, in [0, 1]
         RGBA(float r, float g, float b, float a);
 
-        /// \brief cast to vector
+        // no doc
         operator Vector4f();
 
-        /// \brief cast to SDL color
+        // no doc
         operator SDL_Color();
 
-        /// \brief cast to RGBA
+        /// \brief implicitly convert to HSVA
         operator HSVA();
 
-        /// \brief construct from SDL color
+        // no doc
         RGBA(SDL_Color);
 
         /// \brief convert to HSVA
@@ -68,13 +68,14 @@ namespace ts
         /// \param a: transparency component, in [0, 1]
         HSVA(float, float, float, float);
 
-        /// \brief cast to vector
+        // no doc
         operator Vector4f();
 
-        /// \brief cast to RGBA
+        /// \brief implicitly convert to RGBA
         operator RGBA();
 
         /// \brief convert to RGBA
+        /// \returns RGBA
         RGBA as_rgb() const;
 
         /// \brief hue component, in [0, 1]

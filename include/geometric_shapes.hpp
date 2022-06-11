@@ -19,11 +19,18 @@ namespace ts
     /// \brief trapezoid, arbitrary non-overlapping shape with 4 vertices
     struct Trapezoid
     {
-        /// \brief vertex positions
-        Vector2f top_left,
-                 top_right,
-                 bottom_left,
-                 bottom_right;
+        /// \brief first vertex: top left
+        Vector2f top_left;
+
+        /// \brief second vertex: top right
+        Vector2f top_right;
+
+        /// \brief third vertex: bottom right
+        Vector2f bottom_right;
+
+        /// \brief fourth vertex: bottom left
+        Vector2f bottom_left;
+
     };
 
     /// \brief axis-aligned rectangle

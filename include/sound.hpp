@@ -15,17 +15,17 @@ namespace ts
     class Sound
     {
         public:
-            /// \brief ctor, does no allocation
+            /// \brief construct, does not perform any allocation
             Sound();
 
-            /// \brief ctor, then load from path, supports .wav, .mp3, .ogg, .flac
+            /// \brief construct, then load from path. supports .wav, .mp3, .ogg, .flac
             /// \param path: absolute path
             Sound(const std::string& path);
 
             /// \brief dtor, safely deallocates memory
             ~Sound();
 
-            /// \brief multiply sound bite intensity, this is cumulative with the volume of the channel the sound bite will be played on
+            /// \brief multiply sound intensity, this is cumulative with the volume of the channel the sound will be played on
             /// \param volume, in [0, 1] where 0 is silence, 1 is the original volume
             void set_volume(float zero_to_one);
 

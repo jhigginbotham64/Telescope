@@ -21,6 +21,10 @@ namespace ts
             /// \brief maximum number of channels
             static inline constexpr size_t n_channels = 256;
 
+            /// \brief get a currently inactive channel
+            /// \returns channel index
+            static size_t next_free_channel();
+
             /// \brief play sample on specified channel
             /// \param channel: channel index, [0, 255]
             /// \param sound: sound to play, user is responsible for the sound staying in memory
