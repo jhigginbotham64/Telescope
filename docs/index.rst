@@ -18,6 +18,7 @@ Contents
     camera
     shapes
     textures
+    input_handler
     audio
     input_handler
     physics

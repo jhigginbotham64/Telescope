@@ -51,8 +51,8 @@ int main()
     // create a window
     const size_t window_resolution_width = 800;
     const size_t window_resolution_height = 600;
-    const uint32_t window_options = ts::DEFAULT;
-    size_t frames_per_second = 60;
+    uint32_t window_options = ts::DEFAULT;
+    const size_t frames_per_second = 60;
 
     bool is_fullscreen = false;
     if (is_fullscreen)
@@ -73,6 +73,9 @@ int main()
     {
         auto time = ts::start_frame(&window);
         window.clear();
+
+        if (ts::InputHandler::was_pressed(ts::ESCAPE))
+            window.close();
 
         // do rendering, physics, input-handling, etc. here
 

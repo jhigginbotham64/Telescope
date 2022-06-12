@@ -20,8 +20,8 @@ Short answer:
 a) very little
 b) **absolutely yes!**
 
-:code:`Telescope.jl` was designed and formatted specifically to imitate C++ naming as closely as possible, under the
-inherent limitations of Julia syntax, of course.
+:code:`Telescope.jl` was designed and formatted specifically to imitate C++ syntax as closely as possible, under the
+inherent limitations of Julia, of course.
 
 Consider the following code snippet, written using C++ telescope:
 
@@ -56,7 +56,7 @@ Here is this exact same program, written entirely in Julia using :code:`Telescop
 .. code-block:: julia
     :caption: The exact same Main, but in Julia
 
-    import telescope
+    import Telescope
 
     if !ts.initialize()
         exit(1)
@@ -76,7 +76,7 @@ Here is this exact same program, written entirely in Julia using :code:`Telescop
 
     return 0
 
-We see that both code excerpt are extremely similar. The only notable differences include:
+We see that both code excerpts are extremely similar. The only notable differences include:
 
 - namespacing notation :code:`ts::<Object>` is instead written as :code:`ts.<Object>` in Julia
 - any member function call

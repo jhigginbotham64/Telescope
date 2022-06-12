@@ -57,7 +57,7 @@ namespace ts
             /// \param pointer to texture, or nullptr for no texture
             void set_texture(Texture*);
 
-            /// \brief set which part of the texture is mapped
+            /// \brief set which part of the texture is mapped, texture is anchored at the top left of the bounding box
             /// \param rect: rectangle, relative coordinates. Rectangle({0, 0,}, {1, 1}) is the whole texture
             void set_texture_rectangle(Rectangle rect);
 
