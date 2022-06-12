@@ -10,7 +10,6 @@
 
 #include <include/renderable.hpp>
 #include <include/static_texture.hpp>
-#include <include/vertex.hpp>
 #include <include/color.hpp>
 #include <include/geometric_shapes.hpp>
 
@@ -20,7 +19,7 @@ namespace ts
     class Shape : public Renderable
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~Shape() = default;
 
             /// \brief set the position of the shapes centroid
@@ -98,9 +97,21 @@ namespace ts
             /// \returns relative coordinates, each element in [0, 1]
             Vector2f get_vertex_texture_coordinates(size_t index);
 
+            /// \brief set the origin of rotation and scaling
+            /// \param relative_to_centroid: relative distance from centroid, where (0, 0) makes the origin the centroid
             void set_origin(Vector2f relative_to_centroid);
 
+            /// \brief access the origin
+            /// \returns origin
+            Vector2f get_origin() const;
+
+            /// \param rotate around the shapes origin
+            /// \param angle
             void rotate(Angle);
+
+            /// \brief scale around the shapes origin
+            /// \param factor: 1.0 is no change, 1.5 is 50% bigger, 0.5 is 50% smaller
+            void scale(float);
 
         protected:
             /// \brief default constructor

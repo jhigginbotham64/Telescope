@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <deque>
-#include <mutex>
+#include "../../../../../usr/include/c++/12/unordered_map"
+#include "../../../../../usr/include/c++/12/deque"
+#include "../../../../../usr/include/c++/12/mutex"
 
-#include <include/physics/physics_world.hpp>
-#include <include/physics/collision_shape.hpp>
+#include "physics_world.hpp"
+#include "collision_shape.hpp"
 
 namespace ts
 {

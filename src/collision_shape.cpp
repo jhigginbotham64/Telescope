@@ -3,9 +3,9 @@
 // Created on 6/5/22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
-#include <include/physics/collision_shape.hpp>
+#include "include/collision_shape.hpp"
 #include <include/geometric_shapes.hpp>
-#include <include/physics/physics_world.hpp>
+#include "include/physics_world.hpp"
 
 namespace ts
 {

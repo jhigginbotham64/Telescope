@@ -496,8 +496,8 @@ module ts
         SHIFT = get_keyboard_key_enum_value("SHIFT")
         RIGHT_SHIFT = get_keyboard_key_enum_value("RIGHT_SHIFT")
 
-        BRACKET_LEFT = get_keyboard_key_enum_value("BRACKET_LEFT")
-        BRACKET_RIGHT = get_keyboard_key_enum_value("BRACKET_RIGHT")
+        LEFT_BRACKET = get_keyboard_key_enum_value("LEFT_BRACKET")
+        RIGHT_BRACKET = get_keyboard_key_enum_value("RIGHT_BRACKET")
 
         SLASH = get_keyboard_key_enum_value("SLASH")
         BACKSLASH = get_keyboard_key_enum_value("BACKSLASH")
@@ -606,9 +606,6 @@ module ts
 
         CONTROLLER_SELECT = get_controller_button_enum_value("CONTROLLER_SELECT")
         CONTROLLER_START = get_controller_button_enum_value("CONTROLLER_START")
-
-        CONTROLLER_GUIDE = get_controller_button_enum_value("CONTROLLER_GUIDE")
-        CONTROLLER_MAX = get_controller_button_enum_value("CONTROLLER_MAX")
 
         CONTROLLER_XBOX_X_SHARE = get_controller_button_enum_value("CONTROLLER_XBOX_X_SHARE")
         # CONTROLLER_PS5_MIC = CONTROLLER_XBOX_X_SHARE

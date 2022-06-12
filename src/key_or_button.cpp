@@ -60,8 +60,8 @@ namespace ts::detail
         if (str == "SHIFT") return SHIFT;
         if (str == "RIGHT_SHIFT") return RIGHT_SHIFT;
 
-        if (str == "BRACKET_LEFT") return BRACKET_LEFT;
-        if (str == "BRACKET_RIGHT") return BRACKET_RIGHT;
+        if (str == "LEFT_BRACKET") return LEFT_BRACKET;
+        if (str == "RIGHT_BRACKET") return RIGHT_BRACKET;
 
         if (str == "SLASH") return SLASH;
         if (str == "BACKSLASH") return BACKSLASH;
@@ -173,9 +173,6 @@ namespace ts::detail
 
         if (str == "CONTROLLER_SELECT") return CONTROLLER_SELECT;
         if (str == "CONTROLLER_START") return CONTROLLER_START;
-
-        if (str == "CONTROLLER_GUIDE") return CONTROLLER_GUIDE;
-        if (str == "CONTROLLER_MAX") return CONTROLLER_MAX;
 
         if (str == "CONTROLLER_XBOX_X_SHARE") return CONTROLLER_XBOX_X_SHARE;
         if (str == "CONTROLLER_PS5_MIC") return CONTROLLER_PS5_MIC;

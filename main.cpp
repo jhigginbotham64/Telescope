@@ -39,7 +39,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include <include/physics.hpp>
-#include <include/physics/collision_rectangle_shape.hpp>
+#include "include/collision_rectangle_shape.hpp"
 
 using namespace ts;
 
@@ -47,7 +47,6 @@ int main()
 {
     // initialize everything
     ts::initialize();
-
     // create a window
     const size_t window_resolution_width = 800;
     const size_t window_resolution_height = 600;
@@ -68,16 +67,22 @@ int main()
             window_options              // options
     );
 
+    auto texture = ts::StaticTexture(&window);
+    auto sprite = RectangleShape(Vector2f(200, 200), texture.get_size());
+
+    auto shape = CircleShape(Vector2f(400, 300), 200, 32);
+    for (size_t i = 0; i < shape.get_n_vertices(); ++i)
+        shape.set_vertex_color(i, HSVA(float(i) / shape.get_n_vertices(), 1, 1, 1));
+
     // render loop
     while (window.is_open())
     {
         auto time = ts::start_frame(&window);
         window.clear();
 
-        if (ts::InputHandler::was_pressed(ts::ESCAPE))
-            window.close();
+        window.render(&shape);
 
-        // do rendering, physics, input-handling, etc. here
+        window.render(&shape);
 
         ts::end_frame(&window);
     }

@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <include/rectangle_shape.hpp>
-#include <include/physics/collision_polygon.hpp>
+#include "rectangle_shape.hpp"
+#include "collision_polygon.hpp"
 
 namespace ts
 {
@@ -14,7 +14,7 @@ namespace ts
     class CollisionRectangleShape : public RectangleShape, public CollisionPolygon
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~CollisionRectangleShape() = default;
 
             //

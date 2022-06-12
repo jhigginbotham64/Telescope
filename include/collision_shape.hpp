@@ -5,22 +5,22 @@
 
 #pragma once
 
-#include <atomic>
+#include "../../../../../usr/include/c++/12/atomic"
 
-#include <include/vector.hpp>
-#include <include/geometric_shapes.hpp>
-#include <include/shape.hpp>
-#include <include/circle_shape.hpp>
-#include <include/rectangle_shape.hpp>
-#include <include/triangle_shape.hpp>
-#include <include/polygon_shape.hpp>
+#include "vector.hpp"
+#include "geometric_shapes.hpp"
+#include "shape.hpp"
+#include "circle_shape.hpp"
+#include "rectangle_shape.hpp"
+#include "triangle_shape.hpp"
+#include "polygon_shape.hpp"
 
-#include <box2d/b2_circle_shape.h>
-#include <box2d/b2_polygon_shape.h>
-#include <box2d/b2_edge_shape.h>
-#include <box2d/b2_chain_shape.h>
-#include <box2d/b2_body.h>
-#include <box2d/b2_fixture.h>
+#include "../../../../../usr/include/box2d/b2_circle_shape.h"
+#include "../../../../../usr/include/box2d/b2_polygon_shape.h"
+#include "../../../../../usr/include/box2d/b2_edge_shape.h"
+#include "../../../../../usr/include/box2d/b2_chain_shape.h"
+#include "../../../../../usr/include/box2d/b2_body.h"
+#include "../../../../../usr/include/box2d/b2_fixture.h"
 
 namespace ts
 {

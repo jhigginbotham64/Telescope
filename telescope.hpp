@@ -38,16 +38,16 @@
 #include <include/circle_shape.hpp>
 #include <include/polygon_shape.hpp>
 
-#include <include/physics/physics_world.hpp>
-#include <include/physics/collision_circle.hpp>
-#include <include/physics/collision_circle_shape.hpp>
-#include <include/physics/collision_handler.hpp>
-#include <include/physics/collision_line.hpp>
-#include <include/physics/collision_polygon.hpp>
-#include <include/physics/collision_rectangle_shape.hpp>
-#include <include/physics/collision_shape.hpp>
-#include <include/physics/collision_triangle_shape.hpp>
-#include <include/physics/collision_wireframe.hpp>
+#include "include/physics_world.hpp"
+#include "include/collision_circle.hpp"
+#include "include/collision_circle_shape.hpp"
+#include "include/collision_handler.hpp"
+#include "include/collision_line.hpp"
+#include "include/collision_polygon.hpp"
+#include "include/collision_rectangle_shape.hpp"
+#include "include/collision_shape.hpp"
+#include "include/collision_triangle_shape.hpp"
+#include "include/collision_wireframe.hpp"
 
 // do not include unless you know what you're doing:
 

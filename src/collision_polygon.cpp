@@ -8,7 +8,7 @@
 #include <sstream>
 #include <iostream> //TODO
 
-#include <include/physics/collision_polygon.hpp>
+#include "include/collision_polygon.hpp"
 
 namespace ts
 {

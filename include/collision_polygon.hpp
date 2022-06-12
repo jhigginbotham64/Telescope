@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <include/physics/collision_shape.hpp>
+#include "collision_shape.hpp"
 
 namespace ts
 {
@@ -13,7 +13,7 @@ namespace ts
     class CollisionPolygon : public CollisionShape
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~CollisionPolygon() = default;
 
             /// \brief construct from list of vertices

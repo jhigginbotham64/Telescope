@@ -17,7 +17,8 @@ Contents
     window
     camera
     shapes
-    textures
+    texture
     input_handler
     audio
     physics
+    list

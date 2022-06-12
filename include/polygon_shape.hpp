@@ -13,7 +13,7 @@ namespace ts
     class PolygonShape : public Shape
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~PolygonShape() = default;
 
             /// \brief construct from number of points, will construct the convex hull of the points

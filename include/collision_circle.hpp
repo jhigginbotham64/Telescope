@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <include/physics/collision_shape.hpp>
+#include "collision_shape.hpp"
 
 namespace ts
 {
@@ -13,7 +13,7 @@ namespace ts
     class CollisionCircle : public CollisionShape
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~CollisionCircle() = default;
 
             /// \brief construct from center and radius

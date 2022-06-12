@@ -204,10 +204,15 @@ namespace ts
         _origin = relative_to_centroid;
     }
 
+    Vector2f Shape::get_origin() const
+    {
+        return _origin;
+    }
+
     void Shape::rotate(Angle angle)
     {
         auto transform = Transform();
-        transform.rotate(angle, get_centroid());
+        transform.rotate(angle, get_centroid() + _origin);
 
         for (auto& v : _vertices)
         {
@@ -215,6 +220,23 @@ namespace ts
             pos = transform.apply_to(pos);
             v.position.x = pos.x;
             v.position.y = pos.y;
+        }
+
+        update_xy();
+    }
+
+    void Shape::scale(float scale)
+    {
+        auto center = get_centroid() + _origin;
+
+        for (auto& v : _vertices)
+        {
+            auto point = Vector2f(v.position.x, v.position.y) - center;
+            auto distance = glm::distance(Vector2f(0, 0), point);
+            auto angle_rad = std::atan2(point.x, point.y);
+
+            v.position.x = center.x + cos(angle_rad) * distance * scale;
+            v.position.y = center.y + sin(angle_rad) * distance * scale;
         }
 
         update_xy();

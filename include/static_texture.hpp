@@ -20,7 +20,7 @@ namespace ts
     class StaticTexture : public Texture
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~StaticTexture() = default;
 
             /// \brief constructor

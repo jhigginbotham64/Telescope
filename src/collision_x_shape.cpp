@@ -2,9 +2,9 @@
 // Created by clem on 6/9/22.
 //
 
-#include <include/physics/collision_circle_shape.hpp>
-#include <include/physics/collision_rectangle_shape.hpp>
-#include <include/physics/collision_triangle_shape.hpp>
+#include "include/collision_circle_shape.hpp"
+#include "include/collision_rectangle_shape.hpp"
+#include "include/collision_triangle_shape.hpp"
 #include <include/geometric_shapes.hpp>
 
 namespace ts

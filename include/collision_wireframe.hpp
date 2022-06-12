@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <include/physics/collision_shape.hpp>
+#include "collision_shape.hpp"
 
 namespace ts
 {
@@ -13,7 +13,7 @@ namespace ts
     class CollisionWireFrame : public CollisionShape
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~CollisionWireFrame() = default;
 
             /// \brief create from position of vertices, the chain will automatically connect to become a loop

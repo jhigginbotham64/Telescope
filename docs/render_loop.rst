@@ -48,6 +48,11 @@ start out with something already working, right?
             window_options              // options
         );
 
+        // create renderable entity: a circle
+        auto shape = CircleShape(Vector2f(400, 300), 200, 32);
+        for (size_t i = 0; i < shape.get_n_vertices(); ++i)
+            shape.set_vertex_color(i, HSVA(float(i) / shape.get_n_vertices(), 1, 1, 1));
+
         // render loop
         while (window.is_open())
         {
@@ -58,6 +63,7 @@ start out with something already working, right?
                 window.close();
 
             // do rendering, physics, input-handling, etc. here
+            window.render(&shape);
 
             ts::end_frame(&window);
         }

@@ -52,7 +52,7 @@ namespace ts
             /// \brief default constructor deleted, use RenderTexture or StaticTexture to create a Texture
             Texture() = delete;
 
-            /// \brief destructor, automatically deallocates memory GPU-side
+            // no docs
             virtual ~Texture();
 
             /// \brief set the color each pixels value will be multiplied by

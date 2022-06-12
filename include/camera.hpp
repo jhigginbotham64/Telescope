@@ -15,7 +15,7 @@ namespace ts
     class Window;
 
     /// \brief controls the view area without affect local object geometry
-    struct Camera
+    class Camera
     {
         public:
             /// \brief construct from window

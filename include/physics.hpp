@@ -5,16 +5,16 @@
 
 #pragma once
 
-#include <include/physics/physics_world.hpp>
+#include "physics_world.hpp"
 
-#include <include/physics/collision_shape.hpp>
-#include <include/physics/collision_line.hpp>
-#include <include/physics/collision_wireframe.hpp>
-#include <include/physics/collision_polygon.hpp>
-#include <include/physics/collision_circle.hpp>
+#include "collision_shape.hpp"
+#include "collision_line.hpp"
+#include "collision_wireframe.hpp"
+#include "collision_polygon.hpp"
+#include "collision_circle.hpp"
 
-#include <include/physics/collision_triangle_shape.hpp>
-#include <include/physics/collision_rectangle_shape.hpp>
-#include <include/physics/collision_circle_shape.hpp>
+#include "collision_triangle_shape.hpp"
+#include "collision_rectangle_shape.hpp"
+#include "collision_circle_shape.hpp"
 
-#include <include/physics/collision_handler.hpp>
+#include "collision_handler.hpp"

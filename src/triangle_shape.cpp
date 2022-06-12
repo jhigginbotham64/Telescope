@@ -4,6 +4,7 @@
 //
 
 #include <include/triangle_shape.hpp>
+#include <include/vertex.hpp>
 
 namespace ts
 {
