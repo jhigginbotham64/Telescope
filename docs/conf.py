@@ -22,7 +22,6 @@ import subprocess, os
 
 project = 'telescope'
 copyright = '2022, Joshua Higginbotham'
-author = 'Simon Brand, Modified by Clemapfel'
 
 # -- Read the Docs Config ----------------------------------------------------
 
@@ -66,3 +65,6 @@ html_static_path = ['_static']
 
 # disable "show source" in html output
 html_show_sourcelink = False
+
+html_logo = "_static/favicon.png"
+# note: this icon is from noto-emoji, which is a public domain emote package. No copyright applies
