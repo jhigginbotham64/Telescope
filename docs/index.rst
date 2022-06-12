@@ -6,6 +6,9 @@ Telescope Documentation
 
 Welcome to the documentation for the `Telescope <https://github.com/jhigginbotham64/Telescope>`_.
 
+Please navigate to the appropriate page below. If you are looking for instructions on how to install
+telescope, please instead visit the `GitHub page <https://github.com/jhigginbotham64/Telescope#installation>`_.
+
 Contents
 ========
 
@@ -15,10 +18,10 @@ Contents
     in_julia
     common
     window
-    camera
     shapes
     texture
     input_handler
+    camera
     audio
     physics
     list

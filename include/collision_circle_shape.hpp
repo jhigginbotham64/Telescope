@@ -10,17 +10,20 @@
 
 namespace ts
 {
-    //
+    /// \brief debug shape, a renderable circle with a hitbox the same size as the render shape
     class CollisionCircleShape : public CircleShape, public CollisionCircle
     {
         public:
             // no docs
             virtual ~CollisionCircleShape() = default;
 
-            //
+            /// \brief create
+            /// \param world: physics world
+            /// \param center: position of the centroid of the circle
+            /// \param radius: radius of the circle
             CollisionCircleShape(PhysicsWorld*, CollisionType, Vector2f center, float radius);
 
-            //
+            /// \brief synchronize the shapes position with the hitbox' position
             void update();
     };
 }

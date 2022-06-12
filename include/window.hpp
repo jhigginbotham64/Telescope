@@ -58,12 +58,14 @@ namespace ts
             /// \brief create the window
             /// \param width: number of pixels in x-dimension
             /// \param height: number of pixels in y-dimension
+            /// \param options: window options
             void create(size_t width, size_t height, uint32_t options = DEFAULT);
 
             /// \brief create the window with a title
             /// \param title: title
             /// \param width: number of pixels in x-dimension
             /// \param height: number of pixels in y-dimension
+            /// \param optiosn: window options
             void create(std::string title, size_t width, size_t height, uint32_t options = DEFAULT);
 
             /// \brief close the window

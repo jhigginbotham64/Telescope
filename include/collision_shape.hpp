@@ -40,7 +40,7 @@ namespace ts
     };
 
     /// \brief abstract collision shape
-    struct CollisionShape
+    class CollisionShape
     {
         public:
             /// \brief destruct, this also deallocates the box2d fixture. The user is responsible for keeping the shape in memory while it is attached to a PhysicsObject

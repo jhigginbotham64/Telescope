@@ -16,7 +16,12 @@ namespace ts
             // no docs
             virtual ~CollisionLine() = default;
 
-            //
+            /// \brief construct
+            /// \param world: physics world
+            /// \param type: collision type of object
+            /// \param a: first point of the line
+            /// \param b: second point of the line
+            /// \param two_sided: should collision happend from both sides of the line. If false, collision only happens on the outer, clockwise side of the line
             CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b, bool two_sided = true);
 
         protected:

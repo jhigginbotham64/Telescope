@@ -11,13 +11,10 @@
 #include "time.hpp"
 
 #undef b2_maxPolygonVertices
-#define b2_maxPolygonVertices 16
+#define b2_maxPolygonVertices 32
 
 namespace ts
 {
-    class PhysicsObject;
-    class CollisionListener;
-
     /// \brief world instance, contains all physics objects. Only objects within the same world can interact
     class PhysicsWorld
     {
