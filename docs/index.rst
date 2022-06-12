@@ -20,5 +20,4 @@ Contents
     textures
     input_handler
     audio
-    input_handler
     physics
