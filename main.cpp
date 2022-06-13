@@ -95,6 +95,8 @@ int main()
     auto world = PhysicsWorld();
     world.set_gravity({0, 100});
 
+    auto collision_handler = CollisionHandler(&world);
+
     auto camera = Camera(&window);
 
     auto down_shape = RectangleShape(0, h - ll, w, ll);
@@ -159,7 +161,7 @@ int main()
         }
     };
 
-    for (size_t i = 0; i < 100; ++i)
+    for (size_t i = 0; i < 5; ++i)
         spawn();
 
     auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
@@ -210,7 +212,6 @@ int main()
 
         if (InputHandler::was_pressed(SPACE))
         {
-            player.set_enabled(not player.is_enabled());
         }
 
         for (auto& ball : circles)
@@ -236,8 +237,6 @@ int main()
             line.update();
             window.render(&line);
         }
-
-        std::cout << lines.back().ts::CollisionShape::get_centroid().x << " " << lines.back().ts::CollisionShape::get_centroid().y << std::endl;
 
         player.update();
         ts::end_frame(&window);

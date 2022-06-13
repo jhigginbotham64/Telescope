@@ -53,8 +53,7 @@ namespace ts
         _shape.Set(points.data(), points.size());
         _shape.m_radius = _world->get_skin_radius();
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 
@@ -83,8 +82,7 @@ namespace ts
         _shape.Set(points.data(), points.size());
         _shape.m_radius = _world->get_skin_radius();
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 
@@ -132,8 +130,7 @@ namespace ts
         _shape.Set(points.data(), points.size());
         _shape.m_radius = _world->get_skin_radius();
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 

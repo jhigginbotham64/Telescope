@@ -37,9 +37,27 @@ namespace ts
         std::pair<Vector2f, Vector2f> closest_points;
     };
 
+    class CollisionHandler;
+    namespace detail
+    {
+        struct ContactListener : public b2ContactListener
+        {
+            ContactListener(CollisionHandler*);
+
+            void BeginContact(b2Contact*) override;
+            void EndContact(b2Contact*) override;
+            void PreSolve(b2Contact*, const b2Manifold*) override;
+            void PostSolve(b2Contact*, const b2ContactImpulse*) override;
+
+            CollisionHandler* _handler;
+        };
+    }
+
     /// \brief high-level geometric queries in a physics world
     class CollisionHandler
     {
+        friend class CollisionShape;
+
         public:
             /// \brief constructor
             /// \param world: world all the query should be performed in
@@ -66,20 +84,7 @@ namespace ts
 
         private:
             PhysicsWorld* _world;
-
-            struct ContactListener : public b2ContactListener
-            {
-                ContactListener(CollisionHandler*);
-
-                void BeginContact(b2Contact*) override;
-                void EndContact(b2Contact*) override;
-                void PreSolve(b2Contact*, const b2Manifold*) override;
-                void PostSolve(b2Contact*, const b2ContactImpulse*) override;
-
-                CollisionHandler* _handler;
-            };
-
             CollisionShape* fixture_to_shape(b2Fixture*);
-            ContactListener _contact_listener;
+            detail::ContactListener _contact_listener;
     };
 }

@@ -896,19 +896,13 @@ size_t ts_collision_shape_get_type(void* shape)
     return (size_t) ((ts::CollisionShape*) shape)->get_type();
 }
 
-void ts_collision_shape_enable(void* shape)
+void ts_collision_shape_set_hidden(void* shape, bool b)
 {
-    ((ts::CollisionShape*) shape)->enable();
+    ((ts::CollisionShape*) shape)->set_hidden(b);
 }
-
-void ts_collision_shape_disable(void* shape)
+bool ts_collision_shape_is_hidden(void* shape)
 {
-    ((ts::CollisionShape*) shape)->disable();
-}
-
-bool ts_collision_shape_is_enabled(void* shape)
-{
-    return ((ts::CollisionShape*) shape)->is_enabled();
+    return ((ts::CollisionShape*) shape)->is_hidden();
 }
 
 void ts_collision_shape_get_origin(void* shape, float* out_x, float* out_y)

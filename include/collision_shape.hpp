@@ -21,10 +21,12 @@
 #include <box2d/b2_chain_shape.h>
 #include <box2d/b2_body.h>
 #include <box2d/b2_fixture.h>
+#include <box2d/b2_settings.h>
 
 namespace ts
 {
     class PhysicsWorld;
+    namespace detail { struct ContactListener; }
 
     /// \brief physic object types, governs how it respond to different forces
     enum CollisionType : size_t
@@ -209,8 +211,40 @@ namespace ts
             b2Body* _body;
             b2Fixture* _fixture;
 
-            static inline std::atomic<bool> _current_id;
+            static inline std::atomic<size_t> _current_body_id = 0;
+            static inline std::atomic<size_t> _current_fixture_id = 0;
             size_t _id;
+
+            class CollisionData
+            {
+                private:
+                    size_t _body_id;
+                    size_t _fixture_id;
+
+                public:
+                    CollisionData(const CollisionShape* shape)
+                       : _body_id(shape->_id)
+                    {
+                        shape->_current_fixture_id = shape->_current_fixture_id + 1;
+                        _fixture_id = shape->_current_fixture_id;
+                    }
+
+                    size_t get_body_id() const
+                    {
+                        return _body_id;
+                    }
+
+                    size_t get_fixture_id() const
+                    {
+                        return _fixture_id;
+                    }
+            };
+
+            b2FixtureDef create_fixture_def(b2Shape* shape) const;
+
+        private:
+            friend class CollisionHandler;
+            friend class detail::ContactListener;
 
             static inline const b2BodyDef default_body_def = []() -> b2BodyDef
             {

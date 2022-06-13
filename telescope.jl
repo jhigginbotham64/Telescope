@@ -2685,26 +2685,17 @@ module ts
     export get_type
 
     """
-    `enable!(::CollisionShape) -> Nothing`
+    `set_hidden(::CollisionShape, ::Bool) -> Nothing`
     """
-    function enable!(shape::CollisionShape) ::Nothing
-        ccall((:ts_collision_shape_enable, _lib), Cvoid, (Ptr{Cvoid},), shape._native)
+    function set_hidden(shape::CollisionShape, value::Bool) ::Nothing
+        ccall((:ts_collision_shape_set_hidden, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
     end
-    export enable!
-
-    """
-    `disable!(::CollisionShape) -> Nothing`
-    """
-    function disable!(shape::CollisionShape) ::Nothing
-        ccall((:ts_collision_shape_disable, _lib), Cvoid, (Ptr{Cvoid},), shape._native)
-    end
-    export disable!
 
     """
     `is_enabled(::CollisionShape) -> Bool`
     """
     function is_enabled(shape::CollisionShape) ::Bool
-        return ccall((:ts_collision_shape_is_enabled, _lib), Bool, (Ptr{Cvoid},), shape._native)
+        return ccall((:ts_collision_shape_is_hidden, _lib), Bool, (Ptr{Cvoid},), shape._native)
     end
     export is_enabled
 

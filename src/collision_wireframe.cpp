@@ -32,9 +32,7 @@ namespace ts
 
         _shape.CreateLoop(points.data(), points.size());
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
-
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 }

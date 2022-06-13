@@ -17,9 +17,7 @@ namespace ts
         _shape.m_p.Set(0, 0);
         _shape.m_radius = radius / _world->pixel_ratio;
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
-
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 
@@ -30,9 +28,7 @@ namespace ts
         _shape.m_p.Set(0, 0);
         _shape.m_radius = circle.radius / _world->pixel_ratio;
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
-
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 

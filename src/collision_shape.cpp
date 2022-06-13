@@ -18,10 +18,18 @@ namespace ts
             Log::warning("Trying to query the state of, or otherwise interacting with ts::CollisionShape while it is hidden.");
     }
 
-    CollisionShape::CollisionShape(PhysicsWorld* world, CollisionType type, Vector2f initial_center)
-        : _world(world), _id(_current_id)
+    b2FixtureDef CollisionShape::create_fixture_def(b2Shape *shape) const
     {
-        _current_id = (_current_id + 1);
+        auto def = default_fixture_def;
+        def.shape = shape;
+        def.userData.pointer = (uintptr_t) new CollisionData(this);
+        return def;
+    }
+
+    CollisionShape::CollisionShape(PhysicsWorld* world, CollisionType type, Vector2f initial_center)
+        : _world(world), _id(_current_body_id)
+    {
+        _current_body_id = (_current_body_id + 1);
         initial_center = _world->world_to_native(initial_center);
 
         auto bodydef = default_body_def;
@@ -147,7 +155,7 @@ namespace ts
 
     bool CollisionShape::is_hidden() const
     {
-        return _body->IsEnabled();
+        return not _body->IsEnabled();
     }
 
     Vector2f CollisionShape::get_origin() const

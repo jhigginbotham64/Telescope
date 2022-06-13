@@ -36,9 +36,7 @@ namespace ts
         else
             _shape.SetOneSided(b2Vec2(a.x, a.y), b2Vec2(a.x, a.y), b2Vec2(b.x, b.y), b2Vec2(b.x, b.y));
 
-        auto def = default_fixture_def;
-        def.shape = &_shape;
-
+        auto def = create_fixture_def(&_shape);
         _fixture = _body->CreateFixture(&def);
     }
 

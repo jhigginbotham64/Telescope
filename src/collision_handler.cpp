@@ -2,9 +2,12 @@
 // Created by clem on 6/6/22.
 //
 
-#include "include/collision_handler.hpp"
+#include <include/collision_handler.hpp>
 
 #include <box2d/b2_distance.h>
+#include <box2d/b2_contact.h>
+
+#include <iostream>
 
 namespace ts
 {
@@ -64,40 +67,35 @@ namespace ts
         };
     }
 
-    CollisionHandler::ContactListener::ContactListener(CollisionHandler* handler)
-        : _handler(handler)
-    {}
-
-    // shapes start to overlap
-    void CollisionHandler::ContactListener::BeginContact(b2Contact* contact)
+    namespace detail
     {
-        /*
-        auto event = CollisionEvent();
-        event.shape_a = _handler->fixture_to_shape(contact->GetFixtureA());
-        event.shape_b = _handler->fixture_to_shape(contact->GetFixtureB());
 
-        b2Manifold* manifold = contact->GetManifold();
+        ContactListener::ContactListener(CollisionHandler *handler)
+            : _handler(handler)
+        {}
 
-        for (size_t i = 0; i < manifold.pointCount; ++i)
+        // shapes start to overlap
+        void ContactListener::BeginContact(b2Contact *contact)
         {
+            auto *a = contact->GetFixtureA();
+            auto *b = contact->GetFixtureB();
 
+            auto *a_data = (CollisionShape::CollisionData *) a->GetUserData().pointer;
+            auto *b_data = (CollisionShape::CollisionData *) b->GetUserData().pointer;
+
+            std::cout << "body : " << a_data->get_body_id() << " | fixture a: " << a_data->get_fixture_id() << " | fixture b: " << b_data->get_fixture_id() << std::endl;
         }
-            event.contact_points.push_back(manifold->localPoint)
 
-        _contacts.push_back(CollisionEvent{
+        void ContactListener::EndContact(b2Contact *contact)
+        {
+        }
 
-        });
-         */
+        void ContactListener::PreSolve(b2Contact *contact, const b2Manifold *)
+        {
+        }
+
+        void ContactListener::PostSolve(b2Contact *contact, const b2ContactImpulse *)
+        {
+        }
     }
-
-    void CollisionHandler::ContactListener::EndContact(b2Contact* contact)
-    {}
-
-    void CollisionHandler::ContactListener::PreSolve(b2Contact*, const b2Manifold*)
-    {}
-
-    void CollisionHandler::ContactListener::PostSolve(b2Contact*, const b2ContactImpulse*)
-    {}
-
-
 }
