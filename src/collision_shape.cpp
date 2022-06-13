@@ -160,7 +160,7 @@ namespace ts
         return _world->native_to_world(Vector2f(out.x, out.y));
     }
 
-    void CollisionShape::set_angular_veloctiy(float value)
+    void CollisionShape::set_angular_velocity(float value)
     {
         _body->SetAngularVelocity(value);
     }

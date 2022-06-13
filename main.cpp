@@ -204,7 +204,7 @@ int main()
         }
 
         player.set_linear_velocity(velocity);
-        lines.back().set_linear_velocity(velocity);
+        lines.back().ts::CollisionLine::set_angular_velocity(1);
 
         if (InputHandler::was_pressed(SPACE))
             spawn();

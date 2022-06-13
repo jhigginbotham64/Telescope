@@ -142,7 +142,7 @@ namespace ts
 
             /// \brief set the angular velocity, the clockwise direction (relative to he objects normal)
             /// \param velocity: positive for clockwise, negative for counter-clockwise
-            void set_angular_veloctiy(float);
+            void set_angular_velocity(float);
 
             /// \brief get the angular velocity, the clockwise direction (relative to he objects normal)
             /// \returns velocity positive for clockwise, negative for counter-clockwise

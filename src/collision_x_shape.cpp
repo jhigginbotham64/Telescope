@@ -56,14 +56,14 @@ namespace ts
     }
 
     CollisionLineShape::CollisionLineShape(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b)
-        : CollisionLine(world, type, a, b, true), RectangleShape(a, Vector2f(b.x - a.x, 1))
+        : CollisionLine(world, type, a, b, true), RectangleShape((a + b) / Vector2f(2, 2), Vector2f(glm::distance(a, b), 1))
     {
-        //CollisionShape::set_rotation_fixed(true);
-        // RectangleShape::rotate(CollisionLine::get_rotation());
+        RectangleShape::rotate(CollisionLine::get_rotation());
     }
 
     void CollisionLineShape::update()
     {
         RectangleShape::set_centroid(CollisionLine::get_centroid());
+        RectangleShape::rotate(CollisionLine::get_rotation());
     }
 }

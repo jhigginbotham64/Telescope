@@ -946,7 +946,7 @@ void ts_collision_shape_get_linear_velocity(void* shape, float* out_x, float* ou
 
 void ts_collision_shape_set_angular_velocity(void* shape, float v)
 {
-    ((ts::CollisionShape*) shape)->set_angular_veloctiy(v);
+    ((ts::CollisionShape*) shape)->set_angular_velocity(v);
 }
 
 float ts_collision_shape_get_angular_velocity(void* shape)
