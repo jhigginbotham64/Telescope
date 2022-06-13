@@ -3,12 +3,13 @@
 // Created on 6/5/22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
-#include "include/physics_world.hpp"
+#include <include/physics_world.hpp>
+#include <include/window.hpp>
 
 namespace ts
 {
-    PhysicsWorld::PhysicsWorld()
-        : _world(_default_gravity)
+    PhysicsWorld::PhysicsWorld(Window* window)
+        : _world(_default_gravity), pixel_scale(1.f / window->get_size().x, 1.f / window->get_size().y)
     {}
 
     PhysicsWorld::~PhysicsWorld()

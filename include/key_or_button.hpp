@@ -359,28 +359,28 @@ namespace ts
         /// xbox: `Y`, playstation: `△`, nintendo: `X`
         CONTROLLER_BUTTON_Y = SDL_CONTROLLER_BUTTON_Y,
 
-        /// pressing in left analogue joystick
+        /// pressing in left analog joystick
         CONTROLLER_LEFTSTICK_PRESS = SDL_CONTROLLER_BUTTON_LEFTSTICK,
 
-        /// pressing in right analogue joystick
+        /// pressing in right analog joystick
         CONTROLLER_RIGHTSTICK_PRESS = SDL_CONTROLLER_BUTTON_RIGHTSTICK,
 
-        /// left non-analogue shoulder button, usually `lb`
+        /// left non-analog shoulder button, usually `lb`
         CONTROLLER_LEFTSHOULDER = SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
 
-        /// right non-analogue shoulder button, usually `rb`
+        /// right non-analog shoulder button, usually `rb`
         CONTROLLER_RIGHTSHOULDER = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
 
-        /// analogue dpad up
+        /// analog dpad up
         CONTROLLER_DPAD_UP = SDL_CONTROLLER_BUTTON_DPAD_UP,
 
-        /// analogue dpad down
+        /// analog dpad down
         CONTROLLER_DPAD_DOWN = SDL_CONTROLLER_BUTTON_DPAD_DOWN,
 
-        /// analogue dpad left
+        /// analog dpad left
         CONTROLLER_DPAD_LEFT = SDL_CONTROLLER_BUTTON_DPAD_LEFT,
 
-        /// analogue dpad right
+        /// analog dpad right
         CONTROLLER_DPAD_RIGHT = SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
 
         /// xbox: back, playstation: select, nintendo: select or minus

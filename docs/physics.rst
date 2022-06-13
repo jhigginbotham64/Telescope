@@ -73,7 +73,6 @@ implementations.
 
 Unlike with shapes, there are different types of collision shapes: lines, circles, polygons and wireframes.
 
-------------------------------------
 
 Collision Shapes: Circles
 *************************
@@ -89,10 +88,11 @@ it acts as a perfect circle with maximum smoothness.
 Collision Shapes: Polygons
 **************************
 
-All "filled" shapes that can be expressed as 3 or more vertices are represented by :code:`ts::CollisionPolygon`. Rather
-than there being a CollisionTriangle or CollisionRectangle, we instance :code:`ts::CollisionPolygon` with 3 or 4 vertices.
+All "filled" shapes (shapes that cannot have another shape within its bounds) that can be expressed as 3 or more vertices
+are represented by :code:`ts::CollisionPolygon`. Rather than there being a CollisionTriangle or CollisionRectangle,
+we instance :code:`ts::CollisionPolygon` with 3 or 4 vertices respectively.
 
-For convenience, :code:`ts::CollisionPolygon` offers a number of constructors, that takes as their argument a (geometric)
+For convenience, :code:`ts::CollisionPolygon` offers a number of constructors that takes as their argument a (geometric)
 shape. Because of this, the following pattern can be used:
 
 .. code-block:: cpp
@@ -109,6 +109,45 @@ instead.
 .. doxygenclass:: ts::CollisionPolygon
     :members:
 
+------------------------------------
 
+Collision Shapes: Lines
+***********************
+
+Polygons have 3 or more vertices, lines only have 2. Lines are useful for level geometry, also, unlike other shapes,
+they can be made to allow for collision from one side but not from the other side. A good example for this is a one-way
+door. You want the player character to pass through the line from one side but afterwards, the line behaves like
+a solid shape from the other side. This property of lines is called being one- or two-sided respectively.
+
+.. doxygenclass:: ts::CollisionLine
+    :member:
+
+------------------------------------
+
+For one sided lines, which side of the line behaves like a wall and which doesn't is based on the relative position of
+the vertices. For example, if the second vertex is right of the first vertex, objects can pass from top to bottom
+through the line, but not from bottom to top. This also means that we can invert the one-sided nature by simply rotating
+the line 180°.
+
+Collision Shapes: Wireframes
+****************************
+
+Like polygons, wireframes take a number of vertices for whom the shape will compute the convex hull. Unlike polygons,
+however, wireframes are not filled. An object can be inside or outside the bounds of the wireframe.
+Wireframes can be thought of as a loop of :code:`ts::CollisionLine`. If the vertices provided do not loop back to
+each other, a line is inserted automatically, such that they do.
+
+.. doxygenclass:: ts::WireFrame
+    :members:
+
+------------------------------------
+
+Manipulating Collision Shapes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Unlike renderable shapes, we do not have direct control over collision objects. All we can do is
+modify their properties, then run the simulation. For example, if we want to move a non-:code:`ts::STATIC` object from
+point a to point b, we need to set its velocity such that it moves into the correct position, then step the
+simulation for enough time to reach that point
 
 

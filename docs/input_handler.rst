@@ -14,7 +14,7 @@ In telescope, user cannot manually handle input events. Instead, they are all ha
 Fundamentally, there are two types of inputs: the **state of a key** and the **state of an axis**.
 A key state is binary, the key is either up (not pressed) or down (pressed) at any given time. The state
 of an axis is described with a floating pointer number, usually in [0, 1]. For example, the triggers of
-most controller are analogue, you can press them slightly, or harder. Depending on the position of the trigger,
+most controller are analog, you can press them slightly, or harder. Depending on the position of the trigger,
 the controllers axis state of that trigger will contain a float: 0 if not pressed at all, 0.5 if half pressed,
 1 if pressed fully, etc.
 
@@ -95,7 +95,7 @@ then repress the button to trigger the action again. This makes for a frame-perf
 --------------------------------
 
 
-Analogue Input
+analog Input
 ^^^^^^^^^^^^^^
 
 There are a lot less axis when compared to keys or buttons. A keyboard does not have an axis associated with it.

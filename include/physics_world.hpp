@@ -15,12 +15,17 @@
 
 namespace ts
 {
+    class Window;
+
     /// \brief world instance, contains all physics objects. Only objects within the same world can interact
     class PhysicsWorld
     {
         public:
+            /// no docs
+            const Vector2f pixel_scale;
+
             /// \brief construct, gravity will be 0 in both directions
-            PhysicsWorld();
+            PhysicsWorld(Window*);
 
             /// \brief destroy, the user is responsible for safely allocating any object referencing this world
             ~PhysicsWorld();

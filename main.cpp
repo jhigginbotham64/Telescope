@@ -43,56 +43,6 @@
 
 using namespace ts;
 
-int main()
-{
-    // initialize everything
-    ts::initialize();
-    // create a window
-    const size_t window_resolution_width = 800;
-    const size_t window_resolution_height = 600;
-    uint32_t window_options = ts::DEFAULT;
-    const size_t frames_per_second = 60;
-
-    bool is_fullscreen = false;
-    if (is_fullscreen)
-        window_options = window_options | FULLSCREEN | BORDERLESS;
-
-    ts::set_framerate_limit(frames_per_second);
-
-    auto window = ts::Window();
-    window.create(
-            "Hello Telescope",          // window title
-            window_resolution_width,    // x-dimension
-            window_resolution_height,   // y-dimension
-            window_options              // options
-    );
-
-    auto texture = ts::StaticTexture(&window);
-    auto sprite = RectangleShape(Vector2f(200, 200), texture.get_size());
-
-    auto shape = CircleShape(Vector2f(400, 300), 200, 32);
-    for (size_t i = 0; i < shape.get_n_vertices(); ++i)
-        shape.set_vertex_color(i, HSVA(float(i) / shape.get_n_vertices(), 1, 1, 1));
-
-    // render loop
-    while (window.is_open())
-    {
-        auto time = ts::start_frame(&window);
-        window.clear();
-
-        window.render(&shape);
-
-        window.render(&shape);
-
-        ts::end_frame(&window);
-    }
-
-    // shutdown here
-    return 0;
-}
-
-/*
-
 float rng()
 {
     return rand() / float(RAND_MAX);
@@ -155,7 +105,7 @@ struct Tri
 struct Poly
 {
     PolygonShape _shape;
-    //CollisionPolygon _hitbox;
+    CollisionPolygon _hitbox;
 
     static std::vector<Vector2f> create_polygon(Vector2f center, float radius)
     {
@@ -171,7 +121,7 @@ struct Poly
     }
 
     Poly(PhysicsWorld* world, Vector2f center, float radius)
-        : _shape(create_polygon(center, radius))//, _hitbox(world, ts::DYNAMIC, create_polygon(center, radius))
+        : _shape(create_polygon(center, radius)), _hitbox(world, ts::DYNAMIC, create_polygon(center, radius))
     {
         _shape.set_color(HSVA(rng(), rng(), 1, 1));
     }
@@ -240,11 +190,14 @@ int main()
         else if (val > 3 and val < 4)
         {
             polys.emplace_back(&world, center, radius);
-        //}
+        }
     };
 
-    for (size_t i = 0; i < 10; ++i)
-        spawn();
+    //for (size_t i = 0; i < 10; ++i)
+        //spawn();
+
+    auto shape = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 100);
+    shape.set_density(1);
 
     while (window.is_open())
     {
@@ -256,23 +209,39 @@ int main()
         window.render(&left_shape);
         window.render(&right_shape);
         window.render(&down_shape);
+        window.render(&shape);
+
+        bool pressed = false;
 
         if (InputHandler::is_down(KeyboardKey::RIGHT))
-            camera.move(+10, 0);
+        {
+            pressed = true;
+            shape.set_linear_velocity(Vector2f(+50, 0));
+        }
 
         if (InputHandler::is_down(KeyboardKey::LEFT))
-            camera.move(-10, 0);
+        {
+            pressed = true;
+            shape.set_linear_velocity(Vector2f(-50, 0));
+        }
 
         if (InputHandler::is_down(KeyboardKey::UP))
-            camera.move(0, -10);
+        {
+            pressed = true;
+            shape.set_linear_velocity(Vector2f(0, -50));
+        }
 
         if (InputHandler::is_down(KeyboardKey::DOWN))
-            camera.move(0, +10);
+        {
+            pressed = true;
+            shape.set_linear_velocity(Vector2f(0, +50));
+        }
 
-        if (InputHandler::was_pressed(SPACE))
-            spawn();
+        if (not pressed)
+            shape.set_linear_velocity(Vector2f(0, 0));
 
-        ts::set_f
+        //if (InputHandler::was_pressed(SPACE))
+            //spawn();
 
         for (auto& ball : balls)
         {
@@ -298,8 +267,7 @@ int main()
             window.render(&poly._shape);
         }
 
+        shape.update();
         ts::end_frame(&window);
     }
 }
-
- */

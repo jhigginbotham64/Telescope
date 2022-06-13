@@ -4,7 +4,9 @@
 Telescope Documentation
 =======================
 
-Welcome to the documentation for the `Telescope <https://github.com/jhigginbotham64/Telescope>`_.
+Welcome to the documentation for `Telescope <https://github.com/jhigginbotham64/Telescope>`_.
+
+Telescope was created by Joshua Higginbotham & Clem Cords.
 
 Please navigate to the appropriate page below. If you are looking for instructions on how to install
 telescope, please instead visit the `GitHub page <https://github.com/jhigginbotham64/Telescope#installation>`_.
