@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "triangle_shape.hpp"
-#include "collision_polygon.hpp"
+#include <include/triangle_shape.hpp>
+#include <include/collision_polygon.hpp>
 
 namespace ts
 {

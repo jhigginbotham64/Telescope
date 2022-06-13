@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "collision_shape.hpp"
+#include <include/collision_shape.hpp>
 
 namespace ts
 {

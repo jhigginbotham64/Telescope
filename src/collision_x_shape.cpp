@@ -2,10 +2,13 @@
 // Created by clem on 6/9/22.
 //
 
-#include "include/collision_circle_shape.hpp"
-#include "include/collision_rectangle_shape.hpp"
-#include "include/collision_triangle_shape.hpp"
+#include <include/collision_circle_shape.hpp>
+#include <include/collision_rectangle_shape.hpp>
+#include <include/collision_triangle_shape.hpp>
 #include <include/geometric_shapes.hpp>
+#include <include/collision_line_shape.hpp>
+
+#include <iostream>
 
 namespace ts
 {
@@ -50,5 +53,17 @@ namespace ts
     {
         CircleShape::set_centroid(CollisionShape::get_centroid());
         CircleShape::rotate(CollisionShape::get_rotation());
+    }
+
+    CollisionLineShape::CollisionLineShape(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b)
+        : CollisionLine(world, type, a, b, true), RectangleShape(a, Vector2f(b.x - a.x, 1))
+    {
+        //CollisionShape::set_rotation_fixed(true);
+        // RectangleShape::rotate(CollisionLine::get_rotation());
+    }
+
+    void CollisionLineShape::update()
+    {
+        RectangleShape::set_centroid(CollisionLine::get_centroid());
     }
 }

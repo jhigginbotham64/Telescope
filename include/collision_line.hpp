@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "collision_shape.hpp"
+#include <include/collision_shape.hpp>
 
 namespace ts
 {
@@ -22,6 +22,7 @@ namespace ts
             /// \param a: first point of the line
             /// \param b: second point of the line
             /// \param two_sided: should collision happend from both sides of the line. If false, collision only happens on the outer, clockwise side of the line
+            /// \note Lines can only be ts::STATIC or ts::KINEMATIC. If ts::DYNAMIC is provided as the ts::CollisionType, a weak warning is issued
             CollisionLine(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b, bool two_sided = true);
 
         protected:

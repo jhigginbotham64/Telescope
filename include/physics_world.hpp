@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "../../../../../usr/include/box2d/b2_world.h"
+#include <box2d/b2_world.h>
 
-#include "vector.hpp"
-#include "time.hpp"
+#include <include/vector.hpp>
+#include <include/time.hpp>
 
 #undef b2_maxPolygonVertices
 #define b2_maxPolygonVertices 32
@@ -21,11 +21,8 @@ namespace ts
     class PhysicsWorld
     {
         public:
-            /// no docs
-            const Vector2f pixel_scale;
-
             /// \brief construct, gravity will be 0 in both directions
-            PhysicsWorld(Window*);
+            PhysicsWorld();
 
             /// \brief destroy, the user is responsible for safely allocating any object referencing this world
             ~PhysicsWorld();
@@ -50,9 +47,20 @@ namespace ts
             /// \returns pointer to world
             b2World* get_native();
 
+            /// no docs
+            static inline const float pixel_ratio = 1000;
+
+            // no docs
+            Vector2f world_to_native(Vector2f) const;
+
+            // no docs
+            Vector2f native_to_world(Vector2f) const;
+
+            // no docs
+            float get_skin_radius() const;
+
         private:
             static inline b2Vec2 _default_gravity = {0, 0};
             b2World _world;
-
     };
 }

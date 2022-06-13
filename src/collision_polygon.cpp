@@ -8,7 +8,8 @@
 #include <sstream>
 #include <iostream> //TODO
 
-#include "include/collision_polygon.hpp"
+#include <include/collision_polygon.hpp>
+#include <include/physics_world.hpp>
 
 namespace ts
 {
@@ -41,12 +42,16 @@ namespace ts
         points.reserve(3);
 
         auto center = (tri.a + tri.b + tri.c) / Vector2f(3, 3);
+        auto a = _world->world_to_native(tri.a - center);
+        auto b = _world->world_to_native(tri.b - center);
+        auto c = _world->world_to_native(tri.c - center);
 
-        points.emplace_back(tri.a.x - center.x, tri.a.y - center.y);
-        points.emplace_back(tri.b.x - center.x, tri.b.y - center.y);
-        points.emplace_back(tri.c.x - center.x, tri.c.y - center.y);
+        points.emplace_back(a.x, a.y);
+        points.emplace_back(b.x, b.y);
+        points.emplace_back(c.x, c.y);
 
         _shape.Set(points.data(), points.size());
+        _shape.m_radius = _world->get_skin_radius();
 
         auto def = default_fixture_def;
         def.shape = &_shape;
@@ -68,6 +73,7 @@ namespace ts
         points.reserve(4);
 
         auto size = rect.size * Vector2f(0.5, 0.5);
+        size = _world->world_to_native(size);
 
         points.emplace_back(-size.x, -size.y);
         points.emplace_back( size.x, -size.y);
@@ -75,6 +81,7 @@ namespace ts
         points.emplace_back(-size.x,  size.y);
 
         _shape.Set(points.data(), points.size());
+        _shape.m_radius = _world->get_skin_radius();
 
         auto def = default_fixture_def;
         def.shape = &_shape;
@@ -123,6 +130,7 @@ namespace ts
             points.emplace_back(point.x - center.x, point.y - center.y);
 
         _shape.Set(points.data(), points.size());
+        _shape.m_radius = _world->get_skin_radius();
 
         auto def = default_fixture_def;
         def.shape = &_shape;

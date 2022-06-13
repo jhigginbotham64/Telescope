@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "circle_shape.hpp"
-#include "collision_circle.hpp"
+#include <include/circle_shape.hpp>
+#include <include/collision_circle.hpp>
 
 namespace ts
 {

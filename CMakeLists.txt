@@ -199,7 +199,7 @@ add_library(telescope SHARED
         include/collision_rectangle_shape.hpp
         include/collision_triangle_shape.hpp
 
-    src/collision_x_shape.cpp)
+    src/collision_x_shape.cpp include/CollisionLineShape.hpp include/collision_line_shape.hpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C

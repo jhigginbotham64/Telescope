@@ -3,9 +3,11 @@
 // Created on 6/5/22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
-#include "include/collision_shape.hpp"
+#include <include/collision_shape.hpp>
 #include <include/geometric_shapes.hpp>
-#include "include/physics_world.hpp"
+#include <include/physics_world.hpp>
+
+#include <iostream>
 
 namespace ts
 {
@@ -13,6 +15,7 @@ namespace ts
         : _world(world), _id(_current_id)
     {
         _current_id = (_current_id + 1);
+        initial_center = _world->world_to_native(initial_center);
 
         auto bodydef = default_body_def;
         bodydef.position.Set(initial_center.x, initial_center.y);
@@ -23,16 +26,27 @@ namespace ts
 
     CollisionShape::~CollisionShape()
     {
+        /*
         if (_fixture != nullptr)
             _body->DestroyFixture(_fixture);
 
         if (_world != nullptr)
             _world->get_native()->DestroyBody(_body);
+            */
     }
 
     void CollisionShape::set_density(float density)
     {
-        _fixture->SetDensity(density);
+        if (density == 0)
+        {
+            _fixture->SetDensity(density);
+            _body->SetGravityScale(0);
+        }
+        else
+        {
+            _fixture->SetDensity(density);
+            _body->SetGravityScale(1);
+        }
     }
 
     float CollisionShape::get_density() const
@@ -59,13 +73,16 @@ namespace ts
     {
         auto aabb = _fixture->GetAABB(0);
         auto size = aabb.upperBound - aabb.lowerBound;
-        return Rectangle{{aabb.lowerBound.x, aabb.lowerBound.y}, {size.x, size.y}};
+        return Rectangle{
+            _world->native_to_world(Vector2f(aabb.lowerBound.x, aabb.lowerBound.y)),
+            _world->native_to_world(Vector2f(size.x, size.y) * _world->pixel_ratio)
+        };
     }
 
     Vector2f CollisionShape::get_centroid() const
     {
         auto center = _fixture->GetAABB(0).GetCenter();
-        return Vector2f{center.x, center.y};
+        return _world->native_to_world(Vector2f{center.x, center.y});
     }
 
     Angle CollisionShape::get_rotation() const
@@ -106,7 +123,7 @@ namespace ts
     Vector2f CollisionShape::get_origin() const
     {
         auto pos = _body->GetPosition();
-        return Vector2f(pos.x, pos.y);
+        return _world->native_to_world(Vector2f(pos.x, pos.y));
     }
 
     Angle CollisionShape::get_angle() const
@@ -128,18 +145,19 @@ namespace ts
     Vector2f CollisionShape::get_center_of_mass_global() const
     {
         auto pos = _body->GetWorldCenter();
-        return Vector2f(pos.x, pos.y);
+        return _world->native_to_world(Vector2f(pos.x, pos.y));
     }
 
     void CollisionShape::set_linear_velocity(Vector2f vec)
     {
+        vec = _world->world_to_native(vec);
         _body->SetLinearVelocity(b2Vec2(vec.x, vec.y));
     }
 
     Vector2f CollisionShape::get_linear_velocity() const
     {
         auto out = _body->GetLinearVelocity();
-        return Vector2f(out.x, out.y);
+        return _world->native_to_world(Vector2f(out.x, out.y));
     }
 
     void CollisionShape::set_angular_veloctiy(float value)
@@ -154,11 +172,13 @@ namespace ts
 
     void CollisionShape::apply_force_to(Vector2f force, Vector2f point)
     {
+        force = _world->world_to_native(force);
         _body->ApplyForce(b2Vec2(force.x, force.y), b2Vec2(point.x, point.y), true);
     }
 
     void CollisionShape::apply_force_to_center(Vector2f force)
     {
+        force = _world->world_to_native(force);
         _body->ApplyForceToCenter(b2Vec2(force.x, force.y), true);
     }
 

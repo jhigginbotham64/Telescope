@@ -39,7 +39,6 @@
 #include <glm/gtx/transform.hpp>
 
 #include <include/physics.hpp>
-#include "include/collision_rectangle_shape.hpp"
 
 using namespace ts;
 
@@ -47,60 +46,6 @@ float rng()
 {
     return rand() / float(RAND_MAX);
 }
-
-struct Ball
-{
-    CircleShape _shape;
-    CollisionCircle _hitbox;
-
-    Ball(PhysicsWorld* world, Vector2f center, float radius)
-        : _shape(center, radius, 16), _hitbox(world, DYNAMIC, center, radius)
-    {
-        _shape.set_color(HSVA(rng(), std::max<float>(0.5, rng()), 1, 1).as_rgb());
-        _hitbox.set_restitution(0.2);
-        update();
-    }
-
-    void update()
-    {
-        auto pos = _hitbox.get_native_body()->GetPosition();
-        _shape.set_centroid(Vector2f(pos.x, pos.y));
-    }
-};
-
-struct Tri
-{
-    TriangleShape _shape;
-    CollisionPolygon _hitbox;
-
-    static Triangle create_triangle(Vector2f center, float radius)
-    {
-        auto angle_to_point = [&](float degrees) -> Vector2f
-        {
-            return Vector2f(
-                    center.x + cos(ts::degrees(degrees).as_radians()) * radius,
-                    center.y + sin(ts::degrees(degrees).as_radians()) * radius);
-        };
-
-        return Triangle{angle_to_point(0), angle_to_point(1/3.f * 360), angle_to_point(2/3.f * 360)};
-    }
-
-    Tri(PhysicsWorld* world, Vector2f center, float radius)
-        : _shape(create_triangle(center, radius)), _hitbox(world, ts::DYNAMIC, create_triangle(center, radius))
-    {
-        _shape.set_color(HSVA(rng(), std::max<float>(0.5, rng()), 1, 1).as_rgb());
-        _hitbox.set_restitution(0.2);
-        update();
-    }
-
-    void update()
-    {
-        auto pos = _hitbox.get_native_body()->GetPosition();
-        auto rotation = _hitbox.get_native_body()->GetAngle();
-        _shape.set_centroid(Vector2f(pos.x, pos.y));
-        _shape.rotate(ts::radians(-rotation));
-    }
-};
 
 struct Poly
 {
@@ -156,8 +101,6 @@ int main()
     down_shape.set_color(RGBA(1, 1, 1, 1));
     auto down_hb = CollisionPolygon(&world, ts::STATIC, down_shape);
 
-    std::cout << down_hb.get_native_body()->GetPosition().x << " " << down_hb.get_native_body()->GetPosition().y  << std::endl;
-
     auto left_shape = RectangleShape(0, 0, ll, h);
     left_shape.set_color(RGBA(1, 1, 1, 1));
     auto left_hb = CollisionPolygon(&world, ts::STATIC, left_shape);
@@ -166,38 +109,61 @@ int main()
     right_shape.set_color(RGBA(1, 1, 1, 1));
     auto right_hb = CollisionPolygon(&world, ts::STATIC, right_shape);
 
-    std::vector<Ball> balls;
-    std::vector<Tri> tris;
-    std::vector<CollisionRectangleShape> rects;
-    std::vector<Poly> polys;
+    auto top_shape = RectangleShape(0, 0, w, ll);
+    top_shape.set_color(RGBA(1, 1, 1, 1));
+    auto top_hb = CollisionPolygon(&world, ts::STATIC, top_shape);
+
+    std::vector<CollisionCircleShape> circles;
+    std::vector<CollisionTriangleShape> triangles;
+    std::vector<CollisionRectangleShape> rectangles;
+    std::vector<CollisionLineShape> lines;
 
     auto spawn = [&](){
 
-        auto center = Vector2f{rng() * 800, 0};
+        auto center = Vector2f{rng() * 800, 200};
         auto radius = std::max<float>(10, rng() * 40);
+        auto color = HSVA(rng(), rng(), 1, 1);
 
         auto val = rng() * 4;
 
+        /*
         if (val > 0 and val < 1)
-            balls.emplace_back(&world, center, radius);
+        {
+            circles.emplace_back(&world, ts::DYNAMIC, center, radius);
+            circles.back().set_color(color);
+            circles.back().set_density(0.1);
+        }
         else if (val > 1 and val < 2)
-            tris.emplace_back(&world, center, radius);
+        {
+            auto angle_to_point = [&](float degrees) -> Vector2f
+            {
+                return Vector2f(
+                        center.x + cos(ts::degrees(degrees).as_radians()) * radius,
+                        center.y + sin(ts::degrees(degrees).as_radians()) * radius);
+            };
+            triangles.emplace_back(&world, ts::DYNAMIC, angle_to_point(0), angle_to_point(1 / 3.f * 360), angle_to_point(2 / 3.f * 360));
+            triangles.back().set_color(color);
+            triangles.back().set_density(0.1);
+        }
         else if (val > 2 and val < 3)
         {
-            rects.emplace_back(&world, ts::DYNAMIC, center - Vector2f(radius, radius), Vector2f(2 * radius, 2 * radius));
-            rects.back().set_color(HSVA(rng(), rng(), 1, 1));
+            rectangles.emplace_back(&world, ts::DYNAMIC, center - Vector2f(radius, radius), Vector2f(2 * radius, 2 * radius));
+            rectangles.back().set_color(color);
+            rectangles.back().set_density(0.1);
         }
-        else if (val > 3 and val < 4)
+        else if (val > 3 and val < 4)*/
         {
-            polys.emplace_back(&world, center, radius);
+            lines.emplace_back(&world, ts::DYNAMIC, center - Vector2f(radius, 0), center + Vector2f(radius, 0));
+            lines.back().set_color(color);
+            lines.back().set_density(1);
         }
     };
 
-    //for (size_t i = 0; i < 10; ++i)
-        //spawn();
+    for (size_t i = 0; i < 1; ++i)
+        spawn();
 
-    auto shape = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 100);
-    shape.set_density(1);
+    auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
+    player.set_density(1);
 
     while (window.is_open())
     {
@@ -209,65 +175,67 @@ int main()
         window.render(&left_shape);
         window.render(&right_shape);
         window.render(&down_shape);
-        window.render(&shape);
+        window.render(&top_shape);
+
+        window.render(&player);
 
         bool pressed = false;
 
+        const float v = 100;
+        Vector2f velocity = {0, 0};
         if (InputHandler::is_down(KeyboardKey::RIGHT))
         {
-            pressed = true;
-            shape.set_linear_velocity(Vector2f(+50, 0));
+            velocity.x += v;
         }
 
         if (InputHandler::is_down(KeyboardKey::LEFT))
         {
-            pressed = true;
-            shape.set_linear_velocity(Vector2f(-50, 0));
+            velocity.x -= v;
         }
 
         if (InputHandler::is_down(KeyboardKey::UP))
         {
-            pressed = true;
-            shape.set_linear_velocity(Vector2f(0, -50));
+            velocity.y -= v;
         }
 
         if (InputHandler::is_down(KeyboardKey::DOWN))
         {
-            pressed = true;
-            shape.set_linear_velocity(Vector2f(0, +50));
+            velocity.y += v;
         }
 
-        if (not pressed)
-            shape.set_linear_velocity(Vector2f(0, 0));
+        player.set_linear_velocity(velocity);
+        lines.back().set_linear_velocity(velocity);
 
-        //if (InputHandler::was_pressed(SPACE))
-            //spawn();
+        if (InputHandler::was_pressed(SPACE))
+            spawn();
 
-        for (auto& ball : balls)
+        for (auto& ball : circles)
         {
             ball.update();
-            window.render(&ball._shape);
+            window.render(&ball);
         }
 
-        for (auto& tri : tris)
+        for (auto& tri : triangles)
         {
             tri.update();
-            window.render(&tri._shape);
+            window.render(&tri);
         }
 
-        for (auto& rect : rects)
+        for (auto& rect : rectangles)
         {
             rect.update();
             window.render(&rect);
         }
 
-        for (auto& poly : polys)
+        for (auto& line : lines)
         {
-            poly.update();
-            window.render(&poly._shape);
+            line.update();
+            window.render(&line);
         }
 
-        shape.update();
+        std::cout << lines.back().ts::CollisionShape::get_centroid().x << " " << lines.back().ts::CollisionShape::get_centroid().y << std::endl;
+
+        player.update();
         ts::end_frame(&window);
     }
 }
