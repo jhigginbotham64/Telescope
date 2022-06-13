@@ -2502,19 +2502,19 @@ module ts
     export CollisionLine
 
     """
-    CollisionWireFrame
+    CollisionWireframe
 
     ### Members
     (no public members)
 
     ### Constructors
-    `CollisionWireFrame(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
+    `CollisionWireframe(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
     """
-    mutable struct CollisionWireFrame <: CollisionShape
+    mutable struct CollisionWireframe <: CollisionShape
 
         _native::Ptr{Cvoid}
 
-        function CollisionWireFrame(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
+        function CollisionWireframe(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
 
             xs = Float32[]
             ys = Float32[]
@@ -2535,7 +2535,7 @@ module ts
             return out
         end
     end
-    export CollisionWireFrame
+    export CollisionWireframe
 
     """
     CollisionPolygon
@@ -2550,7 +2550,7 @@ module ts
 
         _native::Ptr{Cvoid}
 
-        function CollisionWireFrame(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
+        function CollisionWireframe(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
 
             xs = Float32[]
             ys = Float32[]

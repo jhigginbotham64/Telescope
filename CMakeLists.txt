@@ -58,7 +58,7 @@ include(CTest)
 
 ### FIND DEPENDENCIES ###
 
-find_library(box2d REQUIRED NAMES box2d)   # unused
+find_library(box2d REQUIRED NAMES box2d)
 
 find_library(SDL2 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
@@ -174,32 +174,34 @@ add_library(telescope SHARED
 
     include/physics.hpp
 
-        include/physics_world.hpp
+    include/physics_world.hpp
     src/physics_world.cpp
 
-        include/collision_shape.hpp
+    include/collision_shape.hpp
     src/collision_shape.cpp
 
-        include/collision_circle.hpp
+    include/collision_circle.hpp
     src/collision_circle.cpp
 
-        include/collision_polygon.hpp
+    include/collision_polygon.hpp
     src/collision_polygon.cpp
 
-        include/collision_line.hpp
+    include/collision_line.hpp
     src/collision_line.cpp
 
-        include/collision_wireframe.hpp
+    include/collision_wireframe.hpp
     src/collision_wireframe.cpp
 
-        include/collision_handler.hpp
+    include/collision_handler.hpp
     src/collision_handler.cpp
 
-        include/collision_circle_shape.hpp
-        include/collision_rectangle_shape.hpp
-        include/collision_triangle_shape.hpp
-
-    src/collision_x_shape.cpp include/CollisionLineShape.hpp include/collision_line_shape.hpp)
+    include/collision_circle_shape.hpp
+    include/collision_rectangle_shape.hpp
+    include/collision_triangle_shape.hpp
+    include/collision_line_shape.hpp
+    include/collision_wireframe_shape.hpp
+    src/collision_x_shape.cpp
+)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C

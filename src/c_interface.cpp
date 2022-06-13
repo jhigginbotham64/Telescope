@@ -819,7 +819,7 @@ void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, fl
     for (size_t i = 0; i < n_vertices; ++i)
         vertices.emplace_back(xs[i], ys[i]);
 
-    return new ts::CollisionWireFrame(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
+    return new ts::CollisionWireframe(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
 }
 
 void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, bool two_sided)

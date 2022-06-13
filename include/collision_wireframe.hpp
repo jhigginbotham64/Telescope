@@ -10,15 +10,15 @@
 namespace ts
 {
     /// \brief collision shape: connected set of lines, closes in a loop
-    class CollisionWireFrame : public CollisionShape
+    class CollisionWireframe : public CollisionShape
     {
         public:
             // no docs
-            virtual ~CollisionWireFrame() = default;
+            virtual ~CollisionWireframe() = default;
 
             /// \brief create from position of vertices, the chain will automatically connect to become a loop
             /// \param vertices: vector of vertex positions
-            CollisionWireFrame(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>&);
+            CollisionWireframe(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>&);
 
         protected:
             b2Shape* get_native_shape() override;

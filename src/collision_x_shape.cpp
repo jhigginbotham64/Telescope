@@ -7,6 +7,7 @@
 #include <include/collision_triangle_shape.hpp>
 #include <include/geometric_shapes.hpp>
 #include <include/collision_line_shape.hpp>
+#include <include/collision_wireframe_shape.hpp>
 
 #include <iostream>
 
@@ -65,5 +66,11 @@ namespace ts
     {
         RectangleShape::set_centroid(CollisionLine::get_centroid());
         RectangleShape::rotate(CollisionLine::get_rotation());
+    }
+
+    CollisionWireframeShape::CollisionWireframeShape(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f> & vertices)
+        : CollisionWireframe(world, type, vertices)
+    {
+        assert(true);
     }
 }

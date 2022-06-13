@@ -7,12 +7,12 @@
 
 namespace ts
 {
-    b2Shape* CollisionWireFrame::get_native_shape()
+    b2Shape* CollisionWireframe::get_native_shape()
     {
         return &_shape;
     }
 
-    CollisionWireFrame::CollisionWireFrame(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>& vec)
+    CollisionWireframe::CollisionWireframe(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>& vec)
         : CollisionShape(world, type, [&]() -> Vector2f {
 
             auto sum = Vector2f(0, 0);

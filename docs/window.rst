@@ -98,3 +98,21 @@ is provided here
 
 .. doxygenclass:: ts::Window
     :members:
+
+-------------------------------------------
+
+Creating our Own Renderables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For something to be rendered by a :code:`ts::Window`, all the object needs to do is to inherit publicy from
+:code:`ts::Renderable`, then implement the following function
+
+.. doxygenfunction:: ts::Renderable::render
+
+This function takes as its first argument a :code:`ts::RenderTarget`. Using
+
+.. doxygenfunction:: ts::RenderTarget::get_renderer
+
+We can expose the native SDL rendering context, which we can modify as we like. For more information on how to interact
+with :code:`SDL_Renderer`, see `here <https://wiki.libsdl.org/SDL_Renderer>`_
+

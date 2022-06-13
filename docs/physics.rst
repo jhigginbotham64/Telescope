@@ -137,7 +137,7 @@ however, wireframes are not filled. An object can be inside or outside the bound
 Wireframes can be thought of as a loop of :code:`ts::CollisionLine`. If the vertices provided do not loop back to
 each other, a line is inserted automatically, such that they do.
 
-.. doxygenclass:: ts::WireFrame
+.. doxygenclass:: ts::Wireframe
     :members:
 
 ------------------------------------

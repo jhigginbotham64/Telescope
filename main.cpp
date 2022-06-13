@@ -117,16 +117,16 @@ int main()
     std::vector<CollisionTriangleShape> triangles;
     std::vector<CollisionRectangleShape> rectangles;
     std::vector<CollisionLineShape> lines;
+    //std::vector<CollisionWireframeShape> wireframes;
 
     auto spawn = [&](){
 
-        auto center = Vector2f{rng() * 800, 200};
+        auto center = Vector2f{rng() * 800, 50 + rng() * 550};
         auto radius = std::max<float>(10, rng() * 40);
         auto color = HSVA(rng(), rng(), 1, 1);
 
         auto val = rng() * 4;
 
-        /*
         if (val > 0 and val < 1)
         {
             circles.emplace_back(&world, ts::DYNAMIC, center, radius);
@@ -151,7 +151,7 @@ int main()
             rectangles.back().set_color(color);
             rectangles.back().set_density(0.1);
         }
-        else if (val > 3 and val < 4)*/
+        else if (val > 3 and val < 4)
         {
             lines.emplace_back(&world, ts::DYNAMIC, center - Vector2f(radius, 0), center + Vector2f(radius, 0));
             lines.back().set_color(color);
@@ -159,7 +159,7 @@ int main()
         }
     };
 
-    for (size_t i = 0; i < 1; ++i)
+    for (size_t i = 0; i < 100; ++i)
         spawn();
 
     auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
@@ -204,10 +204,14 @@ int main()
         }
 
         player.set_linear_velocity(velocity);
-        lines.back().ts::CollisionLine::set_angular_velocity(1);
+
+        for (auto& line : lines)
+            line.ts::CollisionLine::set_angular_velocity(rng());
 
         if (InputHandler::was_pressed(SPACE))
-            spawn();
+        {
+            player.set_enabled(not player.is_enabled());
+        }
 
         for (auto& ball : circles)
         {

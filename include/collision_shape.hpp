@@ -78,6 +78,10 @@ namespace ts
             /// \returns world coordinates of the center of mass
             Vector2f get_centroid() const;
 
+            /// \brief teleport to position, regardless of whether there is an object in the way
+            /// \param position: position in 2d space
+            void set_centroid(Vector2f);
+
             /// \brief get the rotation of the shape
             /// \returns rotation, respective the the normal the shape spawned with
             Angle get_rotation() const;
@@ -102,15 +106,13 @@ namespace ts
             /// \returns type
             CollisionType get_type() const;
 
-            /// \brief enable this object, it will take part in collision detection and, if it is kinematic or dynamic, it will no respond to forces
-            void enable();
-
-            /// \brief disable this object, it will no longer take part in collision or simulation
-            void disable();
+            /// \brief set whether this object should be disabled
+            /// \param bool
+            void set_hidden(bool);
 
             /// \brief is the this object enabled
             /// \returns true if enabled, false otherwise
-            bool is_enabled() const;
+            bool is_hidden() const;
 
             /// \brief get the origin of rotation for this object
             /// \returns local coodrinates
@@ -240,5 +242,7 @@ namespace ts
                 out.isSensor = false;
                 return out;
             }();
+
+            void assert_hidden() const;
     };
 }
