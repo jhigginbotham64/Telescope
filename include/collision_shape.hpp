@@ -26,6 +26,7 @@
 namespace ts
 {
     class PhysicsWorld;
+    class CollisionHandler;
     namespace detail { struct ContactListener; }
 
     /// \brief physic object types, governs how it respond to different forces
@@ -44,6 +45,9 @@ namespace ts
     /// \brief abstract collision shape
     class CollisionShape
     {
+        friend class CollisionHandler;
+        friend class detail::ContactListener;
+
         public:
             /// \brief destruct, this also deallocates the box2d fixture. The user is responsible for keeping the shape in memory while it is attached to a PhysicsObject
             virtual ~CollisionShape();
@@ -243,9 +247,6 @@ namespace ts
             b2FixtureDef create_fixture_def(b2Shape* shape) const;
 
         private:
-            friend class CollisionHandler;
-            friend class detail::ContactListener;
-
             static inline const b2BodyDef default_body_def = []() -> b2BodyDef
             {
                 auto out = b2BodyDef();
