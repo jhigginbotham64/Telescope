@@ -31,12 +31,11 @@ namespace ts
     CollisionShape::CollisionShape(
         PhysicsWorld* world,
         CollisionType type,
-        Vector2f initial_center,
-        const std::vector<uint16_t>& is_in_group,
-        const std::vector<uint16_t>& will_not_collide_with_group)
+        Vector2f initial_center)//,
+        //const std::vector<uint16_t>& is_in_group,
+        //const std::vector<uint16_t>& will_not_collide_with_group)
         : _world(world)
     {
-        _current_body_id = (_current_body_id + 1);
         initial_center = _world->world_to_native(initial_center);
 
         auto bodydef = default_body_def;
@@ -50,11 +49,14 @@ namespace ts
     {
         /*
         if (_fixture != nullptr)
+        {
+            delete ((CollisionData*) _fixture->GetUserData().pointer);
             _body->DestroyFixture(_fixture);
+        }
 
         if (_world != nullptr)
             _world->get_native()->DestroyBody(_body);
-            */
+        */
     }
 
     /*

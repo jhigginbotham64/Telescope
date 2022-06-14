@@ -227,7 +227,6 @@ namespace ts
             /// \returns id
             size_t get_id() const;
 
-
         private:
             friend class CollisionCircle;
             friend class CollisionPolygon;
@@ -240,8 +239,6 @@ namespace ts
             /// \param world
             /// \param collision_type
             /// \param initial_center
-            /// \param is_in_group: which collision groups should the shape be a member of. If empty: all groups
-            /// \param will_not_collide_with_group: which collision group should the shape not collide with. If empty: no groups
             CollisionShape(
                 PhysicsWorld*,
                 CollisionType,
@@ -260,9 +257,6 @@ namespace ts
             b2Body* _body;
             b2Fixture* _fixture;
 
-            static inline std::atomic<size_t> _current_body_id = 0;
-            static inline std::atomic<size_t> _current_fixture_id = 0;
-
             class CollisionData
             {
                 // data to be injected into b2Fixture. This data is used by
@@ -271,27 +265,16 @@ namespace ts
                 // c.f.: https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_loose_ends.html
 
                 private:
-                    size_t _body_id;
-                    size_t _fixture_id;
+                    CollisionShape* _shape;
 
                 public:
                     CollisionData(const CollisionShape* shape)
-                    {
-                        shape->_current_fixture_id = shape->_current_fixture_id + 1;
-                        _fixture_id = shape->_current_fixture_id;
+                        : _shape(const_cast<CollisionShape*>(shape))
+                    {}
 
-                        shape->_current_body_id = shape->_current_body_id + 1;
-                        _body_id = shape->_current_body_id;
-                    }
-
-                    size_t get_body_id() const
+                    CollisionShape* get_owner() const
                     {
-                        return _body_id;
-                    }
-
-                    size_t get_fixture_id() const
-                    {
-                        return _fixture_id;
+                        return _shape;
                     }
             };
 
