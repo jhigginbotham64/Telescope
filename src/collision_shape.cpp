@@ -23,11 +23,18 @@ namespace ts
         auto def = default_fixture_def;
         def.shape = shape;
         def.userData.pointer = (uintptr_t) new CollisionData(this);
+        def.filter.categoryBits = _is_in_collision_group_bits;
+        def.filter.maskBits = _will_collide_with_group_bits;
         return def;
     }
 
-    CollisionShape::CollisionShape(PhysicsWorld* world, CollisionType type, Vector2f initial_center)
-        : _world(world), _id(_current_body_id)
+    CollisionShape::CollisionShape(
+        PhysicsWorld* world,
+        CollisionType type,
+        Vector2f initial_center,
+        const std::vector<uint16_t>& is_in_group,
+        const std::vector<uint16_t>& will_not_collide_with_group)
+        : _world(world)
     {
         _current_body_id = (_current_body_id + 1);
         initial_center = _world->world_to_native(initial_center);
@@ -49,6 +56,21 @@ namespace ts
             _world->get_native()->DestroyBody(_body);
             */
     }
+
+    /*
+    void CollisionGroup::set_filter(CollisionFilterConfig)
+    {
+        // shape collides with:
+        _will_collide_with_group_bits = (uint16_t) CollisionGroup::ALL;
+        for (auto b : will_not_collide_with_group)
+        _will_collide_with_group_bits ^= b;
+
+        // shape is in group:
+        _is_in_collision_group_bits = (uint16_t) (is_in_group.empty() ?  CollisionGroup::ALL : CollisionGroup::NONE);
+        for (auto b : is_in_group)
+        _is_in_collision_group_bits |= b;
+    }
+     */
 
     void CollisionShape::set_density(float density)
     {
@@ -312,7 +334,7 @@ namespace ts
 
     size_t CollisionShape::get_id() const
     {
-        return _id;
+        return ((CollisionShape::CollisionData *) _fixture->GetUserData().pointer)->get_body_id();
     }
 
     float CollisionShape::get_restitution() const

@@ -19,7 +19,7 @@ namespace ts
             // no docs
             virtual ~RenderTexture() = default;
 
-            /// \brief create the render texture
+            /// \brief construct  from window
             /// \param window: window to use to supply the rendering context
             RenderTexture(Window* window);
 

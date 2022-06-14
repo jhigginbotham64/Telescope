@@ -20,10 +20,10 @@ namespace ts
         /// \brief position in 2d space, world coordinates
         Vector2f position = Vector2f(0, 0);
 
-        /// \brief texture coordinate, local where (0, 0) is the top-left of the texture, (1, 1) is the bottom right
+        /// \brief local texture coordinate, where (0, 0) is the top-left of the texture, (1, 1) is the bottom right
         Vector2f texture_coordinates = Vector2f(0, 0);
 
-        /// \brief vertex color, will be multiplied with each pixels color data
+        /// \brief vertex color, will be multiplied with each fragments color data
         RGBA color = RGBA(1, 1, 1, 1);
 
         // no docs

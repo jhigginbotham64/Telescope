@@ -15,7 +15,7 @@
 
 namespace ts
 {
-    /// \brief a texture, vertex-based shape
+    /// \brief a textured, vertex-based shape. Rendered as a triangle-fan
     class Shape : public Renderable
     {
         public:

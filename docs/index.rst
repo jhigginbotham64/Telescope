@@ -4,15 +4,18 @@
 Telescope Documentation
 =======================
 
-Welcome to the documentation for `Telescope <https://github.com/jhigginbotham64/Telescope>`_.
+Welcome to the documentation for `Telescope <https://github.com/jhigginbotham64/Telescope>`_, a game engine aiming to
+abstract rendering and physics into an easy-to-use yet powerful toolset.
 
-Telescope was created by Joshua Higginbotham & Clem Cords.
+Telescope was created `Joshua Higginbotham <https://github.com/jhigginbotham64>`_ & `Clem Cords <https://github.com/clemapfel>`_.
 
-Please navigate to the appropriate page below. If you are looking for instructions on how to install
+If you are looking for instructions on how to install
 telescope, please instead visit the `GitHub page <https://github.com/jhigginbotham64/Telescope#installation>`_.
 
 Contents
 ========
+
+Please navigate to the appropriate section below:
 
 .. toctree::
 

@@ -9,12 +9,17 @@
 
 namespace ts
 {
-    /// \brief axis aligned rectangle shape
+    /// \brief renderable trapezoid, initialized as an axis aligned rectangle
     class RectangleShape : public Shape
     {
         public:
-            /// \brief virtual destructor
+            // no docs
             virtual ~RectangleShape() = default;
+
+            /// \brief construct
+            /// \param top_left: x- and y-coordinate of the top left corner
+            /// \param size: size of the rectangle
+            RectangleShape(Vector2f top_left, Vector2f size);
 
             /// \brief construct, C-interface
             /// \param top_left_x: x-coordinate of the top left corner
@@ -22,11 +27,6 @@ namespace ts
             /// \param width: width of the rectangle
             /// \param height: height of the rectangle
             RectangleShape(float top_left_x, float top_left_y, float width, float height);
-
-            /// \brief construct, C-interface
-            /// \param top_left: x- and y-coordinate of the top left corner
-            /// \param size: size of the rectangle
-            RectangleShape(Vector2f top_left, Vector2f size);
 
             /// \brief construct from geometric rectangle
             /// \param rectangle
@@ -40,11 +40,11 @@ namespace ts
             /// \returns centroid
             Vector2f get_centroid() const override;
 
-            /// \brief set top left corners coordinate, moves all vertices accordingly
+            /// \brief set top left corners' coordinate, moves all vertices accordingly
             /// \param new_position: new position of the top left corner
             void set_top_left(Vector2f);
 
-            /// \brief get the top left corners coordinate
+            /// \brief get the top left corners' coordinate
             /// \returns position
             Vector2f get_top_left() const;
 

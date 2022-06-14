@@ -29,6 +29,29 @@ namespace ts
     class CollisionHandler;
     namespace detail { struct ContactListener; }
 
+    /// \brief collision group index
+    enum class CollisionGroup : uint16_t
+    {
+        _01 = uint16_t(1) << 0,
+        _02 = uint16_t(1) << 1,
+        _03 = uint16_t(1) << 2,
+        _04 = uint16_t(1) << 3,
+        _05 = uint16_t(1) << 4,
+        _06 = uint16_t(1) << 5,
+        _07 = uint16_t(1) << 6,
+        _08 = uint16_t(1) << 7,
+        _09 = uint16_t(1) << 8,
+        _10 = uint16_t(1) << 9,
+        _11 = uint16_t(1) << 10,
+        _12 = uint16_t(1) << 11,
+        _13 = uint16_t(1) << 12,
+        _14 = uint16_t(1) << 13,
+        _15 = uint16_t(1) << 14,
+        _16 = uint16_t(1) << 15,
+        ALL = uint16_t(0xFFFF),
+        NONE = uint16_t(0)
+    };
+
     /// \brief physic object types, governs how it respond to different forces
     enum CollisionType : size_t
     {
@@ -204,33 +227,61 @@ namespace ts
             /// \returns id
             size_t get_id() const;
 
-        protected:
-            /// \brief create an object in a world
-            /// \param world: world the object is created in
-            /// \param initial_center: initial position of the shape
-            /// \param type: simulation type of object
-            CollisionShape(PhysicsWorld*, CollisionType, Vector2f initial_center);
+
+        private:
+            friend class CollisionCircle;
+            friend class CollisionPolygon;
+            friend class CollisionLine;
+            friend class CollisionWireframe;
+            // sic, exposing private members like this prevents users from subclassing this class
+            // while still giving the ts-defined subclasses access to would-be protected members
+
+            /// \brief protected ctor
+            /// \param world
+            /// \param collision_type
+            /// \param initial_center
+            /// \param is_in_group: which collision groups should the shape be a member of. If empty: all groups
+            /// \param will_not_collide_with_group: which collision group should the shape not collide with. If empty: no groups
+            CollisionShape(
+                PhysicsWorld*,
+                CollisionType,
+                Vector2f initial_center);
+
+            b2FixtureDef create_fixture_def(b2Shape* shape) const;
+
+            // which collision group does this fixture belong to
+            uint16_t _is_in_collision_group_bits = (uint16_t) CollisionGroup::_01;
+
+            // which collision group will this fixture collide with
+            uint16_t _will_collide_with_group_bits = (uint16_t) CollisionGroup::ALL;
 
             PhysicsWorld* _world;
+
             b2Body* _body;
             b2Fixture* _fixture;
 
             static inline std::atomic<size_t> _current_body_id = 0;
             static inline std::atomic<size_t> _current_fixture_id = 0;
-            size_t _id;
 
             class CollisionData
             {
+                // data to be injected into b2Fixture. This data is used by
+                // ts::ContactListener to identify which objects are colliding.
+                //
+                // c.f.: https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_loose_ends.html
+
                 private:
                     size_t _body_id;
                     size_t _fixture_id;
 
                 public:
                     CollisionData(const CollisionShape* shape)
-                       : _body_id(shape->_id)
                     {
                         shape->_current_fixture_id = shape->_current_fixture_id + 1;
                         _fixture_id = shape->_current_fixture_id;
+
+                        shape->_current_body_id = shape->_current_body_id + 1;
+                        _body_id = shape->_current_body_id;
                     }
 
                     size_t get_body_id() const
@@ -244,9 +295,6 @@ namespace ts
                     }
             };
 
-            b2FixtureDef create_fixture_def(b2Shape* shape) const;
-
-        private:
             static inline const b2BodyDef default_body_def = []() -> b2BodyDef
             {
                 auto out = b2BodyDef();
