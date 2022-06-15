@@ -189,13 +189,10 @@ ends. Because :code:`play_next` allows us to specify a fade-in ramp duration, an
     // then, when we are ready, register fade-out duration
     ts::MusicHandler::next(fade_out_duration);
 
------------------------------
+---------------------------------
 
 In summary, using :code:`ts::MusicHandler` and :code:`ts::SoundHandler`, we are given the tools
 for handling audio in all but the most demanding situations. To address this, sound-effects and signal-processing of
 audio data are planned for a future version of telescope.
-
-
-
 
 

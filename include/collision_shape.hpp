@@ -30,25 +30,60 @@ namespace ts
     namespace detail { struct ContactListener; }
 
     /// \brief collision group index
-    enum class CollisionGroup : uint16_t
+    enum class CollisionFilterGroup : uint16_t
     {
+        /// \brief group 01
         _01 = uint16_t(1) << 0,
+
+        /// \brief group 02
         _02 = uint16_t(1) << 1,
+
+        /// \brief group 03
         _03 = uint16_t(1) << 2,
+
+        /// \brief group 04
         _04 = uint16_t(1) << 3,
+
+        /// \brief group 05
         _05 = uint16_t(1) << 4,
+
+        /// \brief group 06
         _06 = uint16_t(1) << 5,
+
+        /// \brief group 07
         _07 = uint16_t(1) << 6,
+
+        /// \brief group 08
         _08 = uint16_t(1) << 7,
+
+        /// \brief group 09
         _09 = uint16_t(1) << 8,
+
+        /// \brief group 10
         _10 = uint16_t(1) << 9,
+
+        /// \brief group 11
         _11 = uint16_t(1) << 10,
+
+        /// \brief group 12
         _12 = uint16_t(1) << 11,
+
+        /// \brief group 13
         _13 = uint16_t(1) << 12,
+
+        /// \brief group 14
         _14 = uint16_t(1) << 13,
+
+        /// \brief group 15
         _15 = uint16_t(1) << 14,
+
+        /// \brief group 01
         _16 = uint16_t(1) << 15,
+
+        /// \brief constant that is all groups bitwise-or'd together
         ALL = uint16_t(0xFFFF),
+
+        /// \brief no group at all
         NONE = uint16_t(0)
     };
 
@@ -109,7 +144,7 @@ namespace ts
 
             /// \brief teleport to position, regardless of whether there is an object in the way
             /// \param position: position in 2d space
-            void set_centroid(Vector2f);
+            // void set_centroid(Vector2f);
 
             /// \brief get the rotation of the shape
             /// \returns rotation, respective the the normal the shape spawned with
@@ -141,7 +176,7 @@ namespace ts
 
             /// \brief is the this object enabled
             /// \returns true if enabled, false otherwise
-            bool is_hidden() const;
+            bool get_is_hidden() const;
 
             /// \brief get the origin of rotation for this object
             /// \returns local coodrinates
@@ -217,7 +252,7 @@ namespace ts
 
             /// \brief is the objects rotation fixed
             /// \returns true if object cannot rotate, false otherwise
-            bool is_rotation_fixed() const;
+            bool get_is_rotation_fixed() const;
 
             /// \brief set whether the object can rotate
             /// \param value: true if object should not rotate, false otherwise
@@ -227,35 +262,38 @@ namespace ts
             /// \returns id
             size_t get_id() const;
 
+            /// \brief set which objects this shape collides with
+            /// \param does_not_collide_with_group: groups with whom this shape will not collide with
+            /// \param is_in_group: groups which this shape is part of
+            void set_collision_filter(
+                const std::vector<CollisionFilterGroup>& does_not_collide_with_group,
+                const std::vector<CollisionFilterGroup>& is_in_group);
+
         private:
             friend class CollisionCircle;
             friend class CollisionPolygon;
             friend class CollisionLine;
             friend class CollisionWireframe;
-            // sic, exposing private members like this prevents users from subclassing this class
-            // while still giving the ts-defined subclasses access to would-be protected members
+                // sic, exposing private members like this prevents users from subclassing this class
+                // while still giving the ts-defined subclasses access to would-be protected members
 
-            /// \brief protected ctor
-            /// \param world
-            /// \param collision_type
-            /// \param initial_center
-            CollisionShape(
-                PhysicsWorld*,
-                CollisionType,
-                Vector2f initial_center);
+            CollisionShape(PhysicsWorld*, CollisionType, Vector2f initial_center);
 
             b2FixtureDef create_fixture_def(b2Shape* shape) const;
 
             // which collision group does this fixture belong to
-            uint16_t _is_in_collision_group_bits = (uint16_t) CollisionGroup::_01;
+            uint16_t _is_in_collision_group_bits = (uint16_t) CollisionFilterGroup::_01;
 
             // which collision group will this fixture collide with
-            uint16_t _will_collide_with_group_bits = (uint16_t) CollisionGroup::ALL;
+            uint16_t _will_collide_with_group_bits = (uint16_t) CollisionFilterGroup::ALL;
 
             PhysicsWorld* _world;
 
             b2Body* _body;
             b2Fixture* _fixture;
+
+            static inline std::atomic<size_t> _current_id = 1;
+            size_t _id;
 
             static inline const b2BodyDef default_body_def = []() -> b2BodyDef
             {

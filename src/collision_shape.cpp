@@ -28,14 +28,11 @@ namespace ts
         return def;
     }
 
-    CollisionShape::CollisionShape(
-        PhysicsWorld* world,
-        CollisionType type,
-        Vector2f initial_center)//,
-        //const std::vector<uint16_t>& is_in_group,
-        //const std::vector<uint16_t>& will_not_collide_with_group)
-        : _world(world)
+    CollisionShape::CollisionShape(PhysicsWorld* world, CollisionType type, Vector2f initial_center)
+        : _world(world), _id(_current_id)
     {
+        _current_id = _current_id + 1;
+
         initial_center = _world->world_to_native(initial_center);
 
         auto bodydef = default_body_def;
@@ -177,7 +174,7 @@ namespace ts
         _body->SetEnabled(b);
     }
 
-    bool CollisionShape::is_hidden() const
+    bool CollisionShape::get_is_hidden() const
     {
         return not _body->IsEnabled();
     }
@@ -322,7 +319,7 @@ namespace ts
         _body->SetFixedRotation(b);
     }
 
-    bool CollisionShape::is_rotation_fixed() const
+    bool CollisionShape::get_is_rotation_fixed() const
     {
         assert_hidden();
 
@@ -336,7 +333,7 @@ namespace ts
 
     size_t CollisionShape::get_id() const
     {
-        return ((CollisionShape::CollisionData *) _fixture->GetUserData().pointer)->get_body_id();
+        return _id;
     }
 
     float CollisionShape::get_restitution() const
@@ -344,5 +341,23 @@ namespace ts
         assert_hidden();
 
         return _fixture->GetRestitution();
+    }
+
+    void CollisionShape::set_collision_filter(
+        const std::vector<CollisionFilterGroup> &does_not_collide_with_group,
+        const std::vector<CollisionFilterGroup> &is_in_group)
+    {
+        _will_collide_with_group_bits = (uint16_t) CollisionFilterGroup::ALL;
+        for (auto b : does_not_collide_with_group)
+            _will_collide_with_group_bits ^= (uint16_t) b;
+
+        _is_in_collision_group_bits = (uint16_t) CollisionFilterGroup::NONE;
+        for (auto b : is_in_group)
+            _is_in_collision_group_bits |= (uint16_t) b;
+
+        auto filter = b2Filter();
+        filter.maskBits = _will_collide_with_group_bits;
+        filter.categoryBits = _is_in_collision_group_bits;
+        _fixture->SetFilterData(filter);
     }
 }
