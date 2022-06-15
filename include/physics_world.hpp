@@ -21,23 +21,23 @@ namespace ts
     class Window;
     class CollisionShape;
 
-    /// \brief object returned by ts::CollisionHandler::ray_cast
+    /// \brief object returned by ts::PhysicsWorld::ray_cast
     struct RayCastInformation
     {
         /// \brief do the ray and the shape overlap at all
         bool are_colliding;
 
-        /// \brief normal vector of the intersection point (if any9
+        /// \brief normal vector of the intersection point (if any)
         Vector2f normal_vector; // from a to b
 
-        /// \brief earliest contact point of the ray
+        /// \brief earliest contact point with the ray (if any)
         Vector2f contact_point;
     };
 
-    /// \brief object returned by ts::CollisionHandler::distance_between
+    /// \brief object returned by ts::PhysicsWorld::distance_between
     struct DistanceInformation
     {
-        /// \brief the distance, in pixels
+        /// \brief the distance, in world units (1 pixel if the world transform is identity)
         float distance;
 
         /// \brief the two closest points of shape a and b respectively
@@ -47,6 +47,8 @@ namespace ts
     /// \brief collision event, reports when and which physics entities touch
     struct CollisionEvent
     {
+        CollisionEvent() = default;
+
         /// \brief type of collision event
         enum CollisionEventType : bool
         {
@@ -103,8 +105,9 @@ namespace ts
             RayCastInformation ray_cast(CollisionShape* a, Vector2f ray_start, Vector2f ray_end);
 
             /// \brief pop an event from the event queue, thread-safe. The event queue is automatically cleared every ts::PhysicsWorld::step
-            /// \returns event
-            CollisionEvent next_event();
+            /// \param event: [out] event, will be modified if event queue is not empty
+            /// \returns true if event queue was non-empty and the input event pointer was updated, false otherwise
+            bool next_event(CollisionEvent*);
 
             /// \brief clear the event queue
             void clear_events();

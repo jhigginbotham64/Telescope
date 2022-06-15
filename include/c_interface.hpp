@@ -67,7 +67,7 @@ float ts_radians_to_degrees(float radians);
 
 // ### WINDOW ##################################################
 
-size_t ts_window_create(size_t width, size_t height, const char* title, uint32_t options);
+size_t ts_window_create(const char* title, size_t width, size_t height, uint32_t options);
 
 void ts_window_destroy(size_t id);
 
@@ -135,7 +135,7 @@ bool ts_initialize();
 
 void ts_set_framerate_limit(size_t frames_per_second);
 
-void ts_start_frame(size_t window_id);
+double ts_start_frame(size_t window_id);
 
 void ts_end_frame(size_t window_id);
 
@@ -290,6 +290,18 @@ void ts_physics_world_set_gravity(size_t world_id, float x, float y);
 
 void ts_physics_world_get_gravity(size_t world_id, float* out_x, float* out_y);
 
+void ts_physics_world_distance_between(size_t world_id, void* shape_a, void* shape_b, float* out_distance, float* out_point_a_x, float* out_point_a_y, float* out_point_b_x, float* out_point_b_y);
+
+bool ts_physics_world_is_point_in_shape(size_t world_id, void* shape, float point_x, float point_y);
+
+bool ts_physics_world_ray_cast(
+        size_t world_id, void* shape,
+        float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
+        float* out_normal_x, float* out_normal_y,
+        float* out_hit_x, float* out_hit_y);
+
+bool ts_physics_world_next_event(size_t world_id, int* out_event_type, size_t* out_shape_a_id, size_t* out_shape_b_id);
+
 size_t ts_collision_type_static();
 size_t ts_collision_type_dynamic();
 size_t ts_collision_type_kinematic();
@@ -366,23 +378,13 @@ float ts_collision_shape_get_inertia(void*);
 
 void ts_collision_shape_set_is_bullet(void*, bool);
 
-bool ts_collision_shape_is_bullet(void*);
+bool ts_collision_shape_get_is_bullet(void*);
 
-bool ts_collision_shape_is_rotation_fixed(void*);
+bool ts_collision_shape_get_is_rotation_fixed(void*);
 
-void ts_collision_shape_set_rotation_fixed(void*, bool);
+void ts_collision_shape_set_is_rotation_fixed(void*, bool);
 
 size_t ts_collision_shape_get_id(void*);
-
-void ts_collision_handler_distance_between(size_t world_id, void* shape_a, void* shape_b, float* out_distance, float* out_point_a_x, float* out_point_a_y, float* out_point_b_x, float* out_point_b_y);
-
-bool ts_collision_handler_is_point_in_shape(size_t world_id, void* shape, float point_x, float point_y);
-
-bool ts_collision_handler_ray_cast(
-    size_t world_id, void* shape,
-    float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
-    float* out_normal_x, float* out_normal_y,
-    float* out_hit_x, float* out_hit_y);
 
 // ### INPUT ###################################################
 

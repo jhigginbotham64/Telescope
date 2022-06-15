@@ -93,10 +93,10 @@ namespace ts
         /// \brief static: never moves
         STATIC = b2BodyType::b2_staticBody,
 
-        /// \brief kinematic: responds to set_velocity, but to nothing else
+        /// \brief kinematic: responds to ts::CollisionShape::set_linear_velocity and ts::CollisionShape::set_angular_velocity, but to nothing else
         KINEMATIC = b2BodyType::b2_kinematicBody,
 
-        /// \brief dynamic: responds to set_velocity and any other force impulse, including secondary ones
+        /// \brief dynamic: responds to setting velocity along with force or impulses, including secondary ones
         DYNAMIC = b2BodyType::b2_dynamicBody
     };
 
@@ -142,8 +142,8 @@ namespace ts
             /// \returns world coordinates of the center of mass
             Vector2f get_centroid() const;
 
-            /// \brief teleport to position, regardless of whether there is an object in the way
-            /// \param position: position in 2d space
+            // \brief teleport to position, regardless of whether there is an object in the way
+            // \param position: position in 2d space
             // void set_centroid(Vector2f);
 
             /// \brief get the rotation of the shape
@@ -172,7 +172,7 @@ namespace ts
 
             /// \brief set whether this object should be disabled
             /// \param bool
-            void set_hidden(bool);
+            void set_is_hidden(bool);
 
             /// \brief is the this object enabled
             /// \returns true if enabled, false otherwise
@@ -248,7 +248,7 @@ namespace ts
 
             /// \brief is bullet-mode enabled
             /// \returns true if enabled, false otherwise
-            bool is_bullet();
+            bool get_is_bullet();
 
             /// \brief is the objects rotation fixed
             /// \returns true if object cannot rotate, false otherwise
@@ -256,7 +256,7 @@ namespace ts
 
             /// \brief set whether the object can rotate
             /// \param value: true if object should not rotate, false otherwise
-            void set_rotation_fixed(bool) const;
+            void set_is_rotation_fixed(bool) const;
 
             /// \brief get the internal id of the object
             /// \returns id

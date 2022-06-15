@@ -10,16 +10,18 @@
 
 namespace ts
 {
-    //
+    /// \brief renderable 1-pixel wide line
     class CollisionLineShape : public CollisionLine, public RectangleShape
     {
         public:
-            //
+            /// \brief construct
+            /// \param world: physics world
+            /// \param type: collision type
+            /// \param a: start of the line
+            /// \param b: end of the line
             CollisionLineShape(PhysicsWorld*, CollisionType, Vector2f a, Vector2f b);
 
-            //
+            /// \brief synchronize the shapes position with that of its hitbox
             void update();
-
-        protected:
     };
 }

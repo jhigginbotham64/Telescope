@@ -119,12 +119,25 @@ namespace ts
         };
     }
 
-    CollisionEvent PhysicsWorld::next_event()
+    bool PhysicsWorld::next_event(CollisionEvent* event)
     {
         auto lock = std::lock_guard(_queue_lock);
+
+        if (_event_queue.empty())
+        {
+            event->type = CollisionEvent::CONTACT_END;
+            event->shape_a = nullptr;
+            event->shape_b = nullptr;
+            return false;
+        }
+
         auto out = _event_queue.front();
         _event_queue.pop_front();
-        return out;
+
+        event->type = out.type;
+        event->shape_a = out.shape_a;
+        event->shape_b = out.shape_b;
+        return true;
     }
 
     void PhysicsWorld::clear_events()

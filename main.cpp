@@ -42,6 +42,21 @@
 
 using namespace ts;
 
+int main()
+{
+    auto window_id = ts_window_create("test", 500, 500, ts::DEFAULT);
+    auto world_id = ts_physics_world_create();
+
+    while (ts_window_is_open(window_id))
+    {
+        float time = ts_start_frame(window_id);
+
+        if (ts_keyboard_was_pressed(ts::SPACE))
+    }
+}
+
+/*
+
 float rng()
 {
     return rand() / float(RAND_MAX);
@@ -242,3 +257,5 @@ int main()
         ts::end_frame(&window);
     }
 }
+
+ */

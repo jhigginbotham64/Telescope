@@ -58,7 +58,7 @@ module ts
         get_center, get_view_area
 
     export PhysicsWorld
-    export step!, clear_forces!, get_gravity, set_gravity!
+    export step!, clear_forces!, get_gravity, set_gravity!, next_event!
 
     export CollisionShape, CollisionType
     export CollisionTriangle, CollisionRectangle, CollisionCircle, CollisionPolygon,
@@ -68,8 +68,8 @@ module ts
         is_enabled, get_origin, get_center_of_mass_local, get_center_of_mass_global,
         set_linear_velocity!, get_linear_velocity, set_angular_velocity!, get_angular_velocity,
         apply_force_to!, apply_force_to_center!, apply_torque!, apply_linear_impulse_to!,
-        apply_linear_impulse_to_center!, get_mass, get_inertia, set_is_bullet!, is_bullet,
-        is_rotation_fixed, set_rotation_fixed!, get_id
+        apply_linear_impulse_to_center!, get_mass, get_inertia, set_is_bullet!, get_is_bullet,
+        get_is_rotation_fixed, set_is_rotation_fixed!, get_id
 
     export DistanceInformation, RayCastInformation
     export distance_between, ray_cast, is_point_in_shape
@@ -365,6 +365,7 @@ module ts
         return nanoseconds(out_ns)
     end
     export restart!
+
 
     ### ANGLE ################################################################
 
@@ -1944,19 +1945,28 @@ module ts
     (no public members)
 
     ## Constructors
+    `Window(::String, width::Integer, height::Integer, title::String, [options::UInt32])`
     `Window(width::Integer, height::Integer, title::String, [options::UInt32])`
     """
     mutable struct Window <: AbstractWindow
 
         _native_id::Csize_t
 
-        function Window(width::Integer, height::Integer, title::String, options::UInt32 = UInt32(DEFAULT))
+        function Window(title::String, width::Integer, height::Integer, options::UInt32 = UInt32(DEFAULT))
             id = ccall((:ts_window_create, _lib), Csize_t, (Csize_t, Csize_t, Cstring, UInt32), width, height, title, options)
             out = new(id)
             finalizer(out) do x::Window
                 ccall((:ts_window_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
             end
             return out
+        end
+
+        function Window(title::String, width::Integer, height::Integer, options::WindowOptions)
+            Window(title, width, height, UInt32(options))
+        end
+
+        function Window(width::Integer, height::Integer, options::WindowOptions)
+            Window("", width, height, options)
         end
     end
     export Window
@@ -2117,12 +2127,14 @@ module ts
     export set_framerate_limit
 
     """
-    `start_frame!(::Window) -> Nothing`
+    `start_frame!(::Window) -> Time`
     """
-    function start_frame!(window::Window) ::Nothing
-        ccall((:ts_start_frame, _lib), Cvoid, (Csize_t,), window._native_id)
+    function start_frame!(window::Window) ::Time
+
+        ms = ccall((:ts_start_frame, _lib), Cdouble, (Csize_t,), window._native_id)
+        return milliseconds(ms)
     end
-    export start_frame
+    export start_frame!; start_frame = start_frame!
 
     """
     `end_frame!(::Window) -> Nothing`
@@ -2130,7 +2142,7 @@ module ts
     function end_frame!(window::Window) ::Nothing
         ccall((:ts_end_frame, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export end_frame
+    export end_frame!
 
     ### CAMERA ################################################################
 
@@ -2685,10 +2697,17 @@ module ts
     export get_type
 
     """
-    `set_hidden(::CollisionShape, ::Bool) -> Nothing`
+    `set_is_hidden(::CollisionShape, ::Bool) -> Nothing`
     """
-    function set_hidden(shape::CollisionShape, value::Bool) ::Nothing
-        ccall((:ts_collision_shape_set_hidden, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
+    function set_is_hidden(shape::CollisionShape, value::Bool) ::Nothing
+        ccall((:ts_collision_shape_set_is_hidden, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
+    end
+
+    """
+    `get_is_hidden(::CollisionShape) -> Bool`
+    """
+    function get_is_hidden(shape::CollisionShape) ::Bool
+        return ccall((:ts_collision_shape_get_is_hidden, _lib), Bool, (Ptr{Cvoid},), shape._native)
     end
 
     """
@@ -2866,18 +2885,18 @@ module ts
     """
     `is_rotation_fixed(::CollisionShape) -> Bool`
     """
-    function is_rotation_fixed(shape::CollisionShape) ::Bool
-        return ccall((:ts_collision_shape_is_rotation_fixed, _lib), Bool, (Ptr{Cvoid},), shape._native)
+    function get_is_rotation_fixed(shape::CollisionShape) ::Bool
+        return ccall((:ts_collision_shape_get_is_rotation_fixed, _lib), Bool, (Ptr{Cvoid},), shape._native)
     end
-    export is_rotation_fixed
+    export get_is_rotation_fixed
 
     """
     `set_rotation_fixed!(::CollisionShape, ::Bool) -> Nothing`
     """
-    function set_rotation_fixed!(shape::CollisionShape, value::Bool) ::Nothing
-        ccall((:ts_collision_shape_set_rotation_fixed, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
+    function set_is_rotation_fixed!(shape::CollisionShape, value::Bool) ::Nothing
+        ccall((:ts_collision_shape_set_is_rotation_fixed, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
     end
-    export set_rotation_fixed!
+    export set_is_rotation_fixed!
 
     """
     `get_id(::CollisionShape) -> UInt64`
@@ -2937,6 +2956,7 @@ module ts
     (no public constructors)
     """
     struct RayCastInformation
+
         are_colliding::Bool
         normal_vector::Vector2f
         contact_point::Vector2f
@@ -2968,12 +2988,89 @@ module ts
             world._native_id, shape._native, point.x, point.y)
     end
 
+    """
+    enum CollisionEventType <: Bool
+    """
+    @enum CollisionEventType begin
+
+        CONTACT_START = true
+        CONTACT_END = false
+    end
+    @export_enum CollisionEventType
+
+    """
+    CollisionEvent
+
+    ### Members
+    type::CollisionEventType
+    shape_a_id::Csize_t
+    shape_b_id::Csize_t
+
+    ### Constructors
+    (no public constructors)
+    """
+    struct CollisionEvent
+
+        type::CollisionEventType
+        shape_a_id::Union{Csize_t, Nothing}
+        shape_b_id::Union{Csize_t, Nothing}
+    end
+
+    """
+    `next_event!(::PhysicsWorld, ::Ref{CollisionEvent}) -> Bool`
+    """
+    function next_event!(world::PhysicsWorld, event_ref::Ref{CollisionEvent}) ::Bool
+
+        a_id = Ref{Csize_t}()
+        b_id = Ref{Csize_t}()
+        type = Ref{Bool}()
+
+        new_event = ccall((:ts_physics_world_next_event, _lib), Bool,
+            (Csize_t, Ref{Bool}, Ref{Csize_t}, Ref{Csize_t}),
+            world._native_id, type, shape_a_native, shape_b_native)
+
+        if !new_event
+            event_ref[].type = CollisionEventType::CONTACT_END
+            event_ref[].shape_a_id = nothing
+            event_ref[].shape_b_id = nothing
+            return false
+        end
+
+        if type[]
+            event_ref[].type = CollisionEventType::CONTACT_START
+        else
+            event_ref[].type = CollisionEventType::CONTACT_END
+        end
+
+        event_ref[].shape_a_id = a_id[]
+        event_ref[].shape_b_id = b_id[]
+
+        return true
+    end
+
     ### TODO #############################################################################
 
     module test
 
         import Main.ts; using Main.ts
         import Test; using Test
+
+        function main()
+
+            window = Window("running tests...", 500, 500, ts.DEFAULT)
+            #world = PhysicsWorld()
+
+            while is_open(window)
+
+                time = ts.start_frame(window)
+
+                if ts.InputHandler.was_pressed(ts.SPACE)
+                    println("space")
+                end
+
+                ts.end_frame!(window)
+            end
+        end
 
         function run()
 
@@ -3048,3 +3145,5 @@ module ts
         # no export
     end
 end
+
+Main.ts.test.main()

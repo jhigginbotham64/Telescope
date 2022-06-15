@@ -14,7 +14,7 @@ namespace ts
 {
     class Window;
 
-    /// \brief controls the view area without affect local object geometry
+    /// \brief controls the view area without affecting local object geometry
     class Camera
     {
         public:

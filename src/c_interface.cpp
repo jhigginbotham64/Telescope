@@ -135,9 +135,9 @@ namespace detail
 }
 
 size_t ts_window_create(
+        const char* title,
         size_t width,
         size_t height,
-        const char* title,
         uint32_t options)
 {
     auto id = detail::_window_id++;
@@ -314,9 +314,9 @@ void ts_set_framerate_limit(size_t frames_per_second)
     ts::set_framerate_limit(frames_per_second);
 }
 
-void ts_start_frame(size_t window_id)
+double ts_start_frame(size_t window_id)
 {
-    ts::start_frame(&detail::_windows.at(window_id));
+    return ts::start_frame(&detail::_windows.at(window_id)).as_milliseconds();
 }
 
 void ts_end_frame(size_t window_id)
@@ -722,21 +722,18 @@ namespace detail
 {
     size_t _id = 1;
     std::unordered_map<size_t, ts::PhysicsWorld> _worlds;
-    std::unordered_map<size_t, ts::CollisionHandler> _collision_handlers;
 }
 
 size_t ts_physics_world_create()
 {
     auto id = detail::_id++;
     detail::_worlds.emplace(id, ts::PhysicsWorld());
-    detail::_collision_handlers.emplace(id, ts::CollisionHandler(&detail::_worlds.at(id)));
     return id;
 }
 
 void ts_physics_world_destroy(size_t id)
 {
     detail::_worlds.erase(id);
-    detail::_collision_handlers.erase(id);
 }
 
 void ts_physics_world_step(size_t id, float time_ms, int32_t velocity_iterations, int32_t position_iterations)
@@ -896,13 +893,13 @@ size_t ts_collision_shape_get_type(void* shape)
     return (size_t) ((ts::CollisionShape*) shape)->get_type();
 }
 
-void ts_collision_shape_set_hidden(void* shape, bool b)
+void ts_collision_shape_set_is_hidden(void* shape, bool b)
 {
-    ((ts::CollisionShape*) shape)->set_hidden(b);
+    ((ts::CollisionShape*) shape)->set_is_hidden(b);
 }
-bool ts_collision_shape_is_hidden(void* shape)
+bool ts_collision_shape_get_is_hidden(void* shape)
 {
-    return ((ts::CollisionShape*) shape)->is_hidden();
+    return ((ts::CollisionShape*) shape)->get_is_hidden();
 }
 
 void ts_collision_shape_get_origin(void* shape, float* out_x, float* out_y)
@@ -988,19 +985,19 @@ void ts_collision_shape_set_is_bullet(void* shape, bool b)
     ((ts::CollisionShape*) shape)->set_is_bullet(b);
 }
 
-bool ts_collision_shape_is_bullet(void* shape)
+bool ts_collision_shape_get_is_bullet(void* shape)
 {
-    return ((ts::CollisionShape*) shape)->is_bullet();
+    return ((ts::CollisionShape*) shape)->get_is_bullet();
 }
 
-bool ts_collision_shape_is_rotation_fixed(void* shape)
+bool ts_collision_shape_get_is_rotation_fixed(void* shape)
 {
-    return ((ts::CollisionShape*) shape)->is_rotation_fixed();
+    return ((ts::CollisionShape*) shape)->get_is_rotation_fixed();
 }
 
-void ts_collision_shape_set_rotation_fixed(void* shape, bool b)
+void ts_collision_shape_set_is_rotation_fixed(void* shape, bool b)
 {
-    ((ts::CollisionShape*) shape)->set_rotation_fixed(b);
+    ((ts::CollisionShape*) shape)->set_is_rotation_fixed(b);
 }
 
 size_t ts_collision_shape_get_id(void* shape)
@@ -1008,14 +1005,14 @@ size_t ts_collision_shape_get_id(void* shape)
     return ((ts::CollisionShape*) shape)->get_id();
 }
 
-void ts_collision_handler_distance_between(
+void ts_physics_world_distance_between(
     size_t id,
     void* shape_a, void* shape_b,
     float* out_distance,
     float* out_point_a_x, float* out_point_a_y,
     float* out_point_b_x, float* out_point_b_y)
 {
-    auto out = detail::_collision_handlers.at(id).distance_between(((ts::CollisionShape*) shape_a), ((ts::CollisionShape*) shape_b));
+    auto out = detail::_worlds.at(id).distance_between(((ts::CollisionShape*) shape_a), ((ts::CollisionShape*) shape_b));
     *out_point_a_x = out.closest_points.first.x;
     *out_point_a_y = out.closest_points.first.y;
     *out_point_b_x = out.closest_points.second.x;
@@ -1023,18 +1020,18 @@ void ts_collision_handler_distance_between(
     *out_distance = out.distance;
 }
 
-bool ts_collision_handler_is_point_in_shape(size_t id, void* shape, float point_x, float point_y)
+bool ts_physics_world_is_point_in_shape(size_t id, void* shape, float point_x, float point_y)
 {
-    return detail::_collision_handlers.at(id).is_point_in_shape((ts::CollisionShape*) shape, ts::Vector2f(point_x, point_y));
+    return detail::_worlds.at(id).is_point_in_shape((ts::CollisionShape*) shape, ts::Vector2f(point_x, point_y));
 }
 
-bool ts_collision_handler_ray_cast(
+bool ts_physics_world_ray_cast(
         size_t id, void* shape,
         float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
         float* out_normal_x, float* out_normal_y,
         float* out_hit_x, float* out_hit_y)
 {
-    auto out = detail::_collision_handlers.at(id).ray_cast(
+    auto out = detail::_worlds.at(id).ray_cast(
         (ts::CollisionShape*) shape,
         ts::Vector2f(ray_start_x, ray_start_y),
         ts::Vector2f(ray_end_x, ray_end_y));
@@ -1044,6 +1041,35 @@ bool ts_collision_handler_ray_cast(
     *out_hit_x = out.contact_point.x;
     *out_hit_y = out.contact_point.y;
     return out.are_colliding;
+}
+
+bool ts_physics_world_next_event(
+    size_t world_id,
+    int* out_event_type,
+    size_t* out_shape_a_id,
+    size_t* out_shape_b_id)
+{
+    auto event = ts::CollisionEvent();
+    auto out = detail::_worlds.at(world_id).next_event(&event);
+
+    if (out)
+    {
+        if (event.type == ts::CollisionEvent::CONTACT_START)
+            *out_event_type = 1;
+        else
+            *out_event_type = 0;
+
+        *out_shape_a_id = event.shape_a->get_id();
+        *out_shape_b_id = event.shape_b->get_id();
+        return true;
+    }
+    else
+    {
+        *out_event_type = -1;
+        *out_shape_a_id = -1;
+        *out_shape_b_id = -1;
+        return false;
+    }
 }
 
 // ### INPUT ###################################################

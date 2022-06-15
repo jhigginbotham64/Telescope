@@ -60,6 +60,7 @@ Here is this exact same program, written entirely in Julia with :code:`Telescope
 
     if !ts.initialize()
         exit(1)
+    end
 
     window = ts.Window()
     ts.create!(window, "title", 800, 600, ts.DEFAULT)
@@ -70,6 +71,7 @@ Here is this exact same program, written entirely in Julia with :code:`Telescope
 
         if ts.InputHandler.was_pressed(ts.SPACE)
             println("space pressed.")
+        end
 
         ts.end_frame!(window)
     end

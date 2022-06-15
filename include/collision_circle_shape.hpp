@@ -19,6 +19,7 @@ namespace ts
 
             /// \brief create
             /// \param world: physics world
+            /// \param type: collision type
             /// \param center: position of the centroid of the circle
             /// \param radius: radius of the circle
             CollisionCircleShape(PhysicsWorld*, CollisionType, Vector2f center, float radius);

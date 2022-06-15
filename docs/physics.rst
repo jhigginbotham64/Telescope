@@ -1,24 +1,26 @@
 Physics
 =======
 
-Hitbox Collision & Physics Simulation.
+Hitbox Collision & Physics Simulation
 
 ----------------------------------------
 
-Telescope natively offers a 2d physics system, that allows for full, realistic simulation and automatic collision handling.
+Telescope natively offers a 2d physics system that allows for comprehensive, realistic simulation and automatic collision handling.
 This is made possible by two central classes:
 
 .. doxygenclass:: ts::PhysicsWorld
 .. doxygenclass:: ts::CollisionShape
 
+----------------------------------------
+
 Physics World
 ^^^^^^^^^^^^^
 
-A physics world is best thought of as a 2d room. Objects that are inside the same room
- interact during the simulation. Objects inside one room do not know anything about objects in another
-room. Usually, games will only have a single physics world, though this is not a requirement.
+A physics world is best thought of as a 2d room. Objects that are inside the same room interact during the simulation.
+Objects inside one room do not know anything about objects in another room. Usually, games will only have a single
+physics world, though this is not a requirement.
 
-We create a physics world by callings its only constructor:
+To create a physics world, we call its only constructor:
 
 .. doxygenfunction:: ts::PhysicsWorld::PhysicsWorld
 
@@ -31,15 +33,18 @@ is created:
 .. doxygenfunction:: ts::PhysicsWorld::set_gravity
 
 The simulation is run only during a specified period called a **step**. We specify the length of each step, in seconds,
-though resolution of this function does not actually take that amount of time. Internally, the physics simulation runs
-on its clock, step "fast-forwards" the simulation by the specified number of seconds.
-
-We trigger this fast-forward by using
+though callback of this function does not actually take that amount of time.
 
 .. doxygenfunction:: ts::PhysicsWorld::step
 
-Note that stepping is independent of render cycle duration. If we want the simulation to run in real time (that is, one
-seconds in the simulation takes one second to resolve in the real world), the following pattern is useful:
+Internally, the physics simulation runs on its own internal clock, :code:`step` "fast-forwards" the simulation by
+the specified number of seconds internally, then pauses it until called again.
+
+Note that stepping is independent of any other of telescopes systems. This gives users the freedom to run their simulation
+arbitrarily fast or slow.
+
+If we do want the simulation to run in real time (that is, one second passing in real-life means one second will pass
+inside the simulation), the following pattern is useful:
 
 .. code-block:: cpp
     :caption: Using the result of ts::start_frame to synchronize the physics simulation with the real-world clock
@@ -60,8 +65,9 @@ seconds in the simulation takes one second to resolve in the real world), the fo
         ts::end_frame();
     }
 
-:code:`ts::start_frame` returns the time since it was last called. Because it is called once, at the start of each frame,
-this duration is duration of one render cycle.
+:code:`ts::start_frame` returns the time since it was last called. Because it is called once at the start of each frame,
+this duration is duration of one render cycle. This makes each step of the simulation take the same amount of time as
+one frame, synchronizing both cycles.
 
 ----------------------------------
 
@@ -72,18 +78,21 @@ There are three types of physics object in telescope:
 
 .. doxygenenum:: ts::CollisionType
 
-Objects of any type take part in the simulation, the difference between them is, which forces they respond to.
+Objects of any type take part in the simulation, the difference between them is which forces they respond to.
 
 + :code:`STATIC` objects do not respond to any forces and cannot be moved
 + :code:`KINEMATIC` objects only respond to setting the velocity manually, no other forces will move them.
 + :code:`DYNAMIC` objects are fully simulated
 
-Static and kinematic objects cannot collide with each other, while dynamic objects can collide with bot static, kinematic
+Static and kinematic objects cannot collide with each other. Dynamic objects collide with both static, kinematic
 and other dynamic objects.
 
-Static objects are usually level geometry, such as floors or walls. Kinematic objects are a middle ground, usually
-reserved to things that should act like a static object but allow for movement, such as moving platforms, doors, etc.
-Dynamic objects are fully simulate, for example a bouncing ball or an object falling from great height.
+Static objects are usually unchanging level geometry, such as floors or walls.Kinematic objects are reserved
+to things that should act like a static objects most of the time but allow for movement, such as moving platforms, doors, etc.
+
+Dynamic objects are fully simulated, an example would be a bouncing ball or an object falling from great height.
+
+We can modify/access the type of an object after creation:
 
 .. doxygenfunction:: ts::CollisionShape::set_type
 .. doxygenfunction:: ts::CollisionShape::get_type
@@ -93,12 +102,12 @@ Dynamic objects are fully simulate, for example a bouncing ball or an object fal
 Collision Shapes
 ^^^^^^^^^^^^^^^^
 
-Similarly to all native renderable objects in telescope inherit from :code:`ts::Shape`, all physics objects
+Similarly to how all native renderable objects in telescope inherit from :code:`ts::Shape`, all physics objects
 inherit from :code:`ts::CollisionShape`.
 
 .. doxygenclass:: ts::CollisionShape
 
-This class is once pure virtual, making it impossible to instance. Instead, we will need to instance one of its
+This class is pure virtual, making it impossible to instance. Instead, we will need to instance one of its
 implementations.
 
 Collision shapes come in four types: lines, circles, polygons and wireframes.
@@ -119,9 +128,9 @@ Collision Shapes: Polygons
 
 All "filled" shapes (shapes that cannot have another shape within its bounds), that can be expressed as 3 or more vertices,
 are represented by :code:`ts::CollisionPolygon`. Rather than there being a CollisionTriangle or CollisionRectangle,
-we instance :code:`ts::CollisionPolygon` with 3 or 4 vertices respectively.
+we instead instance :code:`ts::CollisionPolygon` with 3 or 4 vertices respectively.
 
-For convenience, :code:`ts::CollisionPolygon` offers a number of constructors that takes as their argument a (geometric)
+For convenience, :code:`ts::CollisionPolygon` offers a number of constructors that take, as their argument, a (geometric)
 shape. Because of this, the following pattern can be used:
 
 .. code-block:: cpp
@@ -150,25 +159,26 @@ Unlike filled shape, lines can furthermore be made to allow for collision from e
 is commonly used to create one-way barriers.
 
 .. doxygenclass:: ts::CollisionLine
-    :member:
+    :members:
 
 For one-sided lines, which side of the line behaves like a wall, and which one does not, is based on the relative position
-of the second vertex to the first. For example, if the second vertex is right of the first vertex (its x-coordinate is
+of the second vertex to the firsts. For example, if the second vertex is right of the first vertex (its x-coordinate is
 larger than that of the first), objects will be able to pass from the bottom to the top (from positive y to negative y),
-but not the other way around. To reverse this, we simply rotate the line by 180°.
+but not the other way around. To reverse this, we simply swap the vertices' positions, which rotates the line by 180°
+around its centroid.
 
 ------------------------------------
 
 Collision Shapes: Wireframes
 ****************************
 
-Like polygons initialized with an arbitrary number of points, wireframes will compute the convex hull from then, then create
-it's vertices from this hull.. Unlike polygons, however, **wireframes are not filled**. An object can be inside or outside
-the bounds of the wireframe. Wireframes can be thought of as a "loop" of a series :code:`ts::CollisionLine`. If the
-vertices provided do not loop back to each other such that the second coordinate of the last line-segment is identical
+Like polygons, wireframes are initialized with an arbitrary number of points. They then compute the convex hull of this
+set, which becomes the shape of the wireframe. Unlike polygons, however, **wireframes are not filled**. An object can
+be inside or outside the bounds of the wireframe. Wireframes can be thought of as a "loop" of a series :code:`ts::CollisionLine`.
+If the vertices provided do not loop back to each other,     such that the second coordinate of the last line-segment is identical
 with the first coordinate of the first line-segment, a line is inserted automatically to complete the loop.
 
-.. doxygenclass:: ts::Wireframe
+.. doxygenclass:: ts::CollisionWireframe
     :members:
 
 ------------------------------------
@@ -176,18 +186,18 @@ with the first coordinate of the first line-segment, a line is inserted automati
 Manipulating Collision Shapes: Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Unlike renderable shapes, we do not have direct control over collision objects. Instead, we
+Unlike renderable shapes, we do not have direct control over the position of collision objects. Instead, we
 modify their properties, then run the simulation. For example, if we want to move a non-:code:`ts::STATIC` object from
 point a to point b, we need to set its velocity such that it moves into the correct position, then step the
-simulation for enough time to reach that point, then set its velocity back to 0.
+simulation enough times for the object to reach that point. Then, we set its velocity back to 0.
 
 :code:`ts::CollisionShapes` provide a number of properties we can modify:
 
 Density
 *******
 
-An objects density along with its surface area governs its mass. An object with density 0 will
-have a mass of 0, regardless of its size.
+An objects density, along with its surface area, governs its **mass**. An object with density 0 will
+have a mass of 0, regardless of its size. Only objects with a non-zero mass will be affected by gravity.
 
 .. doxygenfunction:: ts::CollisionShape::set_density
 .. doxygenfunction:: ts::CollisionShape::get_density
@@ -195,9 +205,9 @@ have a mass of 0, regardless of its size.
 Friction
 ********
 
-Friction determines the forces applied to two objects that are colliding. For example, if a circle
-is rolling down a flat surface, the circle will loose speed faster the higher its or the surfaces friction is.
-If both have a friction of 0, the circle will never loose speed.
+Friction determines the deceleration applied to two objects that are colliding. For example, if a circle
+is rolling down a flat surface, the circle will loose speed faster, the higher its or the surfaces friction is.
+If both have a friction of 0, the circle will not loose any momentum.
 
 .. doxygenfunction:: ts::CollisionShape::set_friction
 .. doxygenfunction:: ts::CollisionShape::get_friction
@@ -216,8 +226,8 @@ Linear Velocity
 ***************
 
 Linear velocity is a 2d vector that influences how an objects moves in 2d space. For :code:`ts::DYNAMIC`, linear
-velocity is influences the objects trajectory alonge with other forces such as gravity. For non-:code:`ts::DYNAMIC`
-objects, linear velocity is forwarded one-to-one, making the the preferred method of moving kinematic objects.
+velocity, along with other forces such as gravity, influences the objects trajectory. For :code:`ts::KINEMATIC`
+objects, linear velocity is applied as-is. This makes it the preferred way of moving kinematic objects.
 
 .. doxygenfunction:: ts::CollisionShape::set_linear_velocity
 .. doxygenfunction:: ts::CollisionShape::get_linear_velocity
@@ -226,7 +236,7 @@ objects, linear velocity is forwarded one-to-one, making the the preferred metho
 Angular Velocity
 ****************
 
-Unlike linear velocity, angular velocity a 1-element vector applied tangentially in the clockwise direction. It causes
+Unlike linear velocity, angular velocity is a skala, applied in the clockwise direction. It causes
 dynamic and kinematic objects to spin. This makes it useful for influencing an objects rotation.
 
 .. doxygenfunction:: ts::CollisionShape::set_angular_velocity
@@ -237,7 +247,7 @@ Being a Bullet
 
 We can declare an object to be a "bullet". This informs the physics simulation that the objects
 will be either very small and/or moving at high speeds. "Bullet" objects will be simulated with a
-higher degree of accuracy, to prevent them from pass through geometry or missing a collision.
+higher degree of accuracy. This prevents them from passing through geometry, potentially missing a collision.
 "Bullet" objects are much less performant, so they should only be used if necessary.
 
 .. doxygenfunction:: ts::CollisionShape::set_is_bullet
@@ -265,8 +275,8 @@ or bounds. Hiding objects should be reserved for performance optimizations.
 Read-Only Properties
 ********************
 
-:code:`ts::CollisionShape` furthermore supports querying the following properties of an object, though their value can
-only be influenced by the other properties mentioned so far, along with advancing the simulation.
+:code:`ts::CollisionShape` furthermore supports querying the following properties of an object, though the value of each
+of these can only be influenced by modifying the properties mentioned so far, then advancing the simulation.
 
 .. doxygenfunction:: ts::CollisionShape::get_centroid
 .. doxygenfunction:: ts::CollisionShape::get_rotation
@@ -279,15 +289,15 @@ only be influenced by the other properties mentioned so far, along with advancin
 Manipulating Collision Shapes: Impulses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Other than setting the linear or angular velocity directly, we can apply force to objects in
-a multitude of ways. These forces interact with the object according to the simulation:
+Other than setting the linear or angular velocity directly, we can apply force to dynamic objects in
+a multitude of ways. These forces interact with the object according to the laws of the simulation:
 
 .. doxygenfunction:: ts::CollisionShape::apply_force_to
 .. doxygenfunction:: ts::CollisionShape::apply_linear_impulse_to
 .. doxygenfunction:: ts::CollisionShape::apply_torque
 
-These often make for more realistic movement, when comparing them to the programmer manually setting the
-velocity of an object each step.
+Using impulses often makes for more realistic movement, compared to manually setting the
+velocity of an object programmatically.
 
 --------------------------------------
 
@@ -300,14 +310,18 @@ additional properties, both relating to :code:`ts::CollisionFilterGroup`:
 .. doxygenenum:: CollisionFilterGroup
 
 We can declare an object to be in one or more filter groups. Additional, we can restrict which
-filter groups the object interacts with. If an object comes into contact with another object
+filter groups the object interacts with.
+
+If an object comes into contact with another object
 which is of a filter group the object is ignoring, no collision will happen and the objects won't
-affect each other, seeming to pass through each other. We can specify which group an object is
-part of and which group an object will not interact with using:
+affect each other, making them pass through each other.
+
+We can specify which group an object is
+part of, and which group an object will not interact with, using:
 
 .. doxygenfunction:: ts::CollisionShape::set_collision_filter
 
-By default, an object is in :code:`ts::CollisionFilterGroup::ALL` groups and will not interact
+By default, an object is in :code:`ts::CollisionFilterGroup::ALL` groups and will `not` interact
 with :code:`ts::CollisionFilterGroup::NONE`, meaning it will collide with any object, regardless of its group membership.
 
 ------------------------------------------
@@ -315,15 +329,18 @@ with :code:`ts::CollisionFilterGroup::NONE`, meaning it will collide with any ob
 Handling Collision Events
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A common scenario in games is this: if two specific objects collide, we want something to happen. For example, playing
-a sound. Rather than asking the user to test overlap of every single pair of shapes, telescope offers
-an optional way of iterating all collisions in each simulation step. By calling:
+A common scenario in games is this: if two specific objects collide, we want something to happen, such as
+playing a sound or updating an entity.
+
+Rather than asking the user to test overlap of every single pair of shapes, telescope offers
+an optional way of iterating all collisions that happened in the last simulation step:
 
 .. doxygenfunction:: ts::PhysicsWorld::next_event
 
-We obtain an object of type :code:`ts::CollisionEvent`:
+Using this funciton, we obtain an object of type :code:`ts::CollisionEvent`:
 
 .. doxygenstruct:: ts::CollisionEvent
+    :members:
 
 This objects contains three fields. Firstly, the collision *type* states whether or not this event
 describes two objects starting to collide, or seizing to collide. Secondly, the event contains a pointer
@@ -331,31 +348,44 @@ to the two shapes involved in the collision. We can identify a :code:`ts::Collis
 
 .. doxygenfunction:: ts::CollisionShape::get_id
 
-Which allows us to freely trigger behavior depending on collisions in the simulation. Note that the collision
-will resolve regardless of whether the corresponding event was polled. If ignored, the worlds event queue will
+Which allows us to freely trigger behavior depending on collisions occurring during the simulation. Note that the collision
+will resolve, regardless of whether the corresponding event was polled. If ignored, the worlds event queue will
 simply be cleared when :code:`ts::PhysicsWorld::step` is called again.
 
+
+.. code-block:: cpp
+    :caption: Example usage of next_event
+
+    world.step(ts::seconds(0.1));
+
+    auto event = ts::CollisionEvent()
+    while (world.next_event(&event))
+    {
+        if (event.shape_a.get_id() == 12 and event.shape_b.get_id() == 14)
+            // do something
+    }
+
 If the steps duration is long enough, the same objects may collide multiple times, triggering multiple collision
-events with the same two shapes.
+events between the same two shapes.
 
 -----------------------------------------
 
 Geometric Queries
 ^^^^^^^^^^^^^^^^^
 
-Telescope offers a number of sophisticated geometric queries.
+Telescope offers a number of sophisticated geometric queries:
 
-Geometric Queries: Point-in-Shape
-*********************************
+Point-in-Shape
+**************
 
-To test whether a specific point is inside the bounds of a collision shape, we can call:
+To test whether a specific point is inside the bounds of a collision shape, we use:
 
 .. doxygenfunction:: ts::PhysicsWorld::is_point_in_shape
 
 This function simply returns a yes or no answer in form of a boolean.
 
-Geometric Queries: Ray Cast
-***************************
+Ray Cast
+********
 
 We can ask whether a ray (a line with a fixed beginning- and end-point) overlaps
 with a shape:
@@ -363,13 +393,14 @@ with a shape:
 .. doxygenfunction:: ts::PhysicsWorld::ray_cast
 
 This function returns an object of type :code:`ts::RayCastInformation`, which, along with the
-yes or no answer of whether overlap is present, also returns (distance-wise) earliest contact point
+yes or no answer of whether overlap is present, also returns the (distance-wise) earliest contact point
 between the beginning of the ray and the shape, along with the normal vector at the point of intersection.
 
 .. doxygenstruct:: ts::RayCastInformation
+    :members:
 
-Geometric Queries: Distance between Shapes
-******************************************
+Distance between Shapes
+***********************
 
 Lastly, we can ask for the shortest distance between two specific shapes:
 
@@ -379,6 +410,35 @@ Similar to ray-casting, this function returns an information object that contain
 between the two closest points of the first and second shape respectively:
 
 .. doxygenstruct:: ts::DistanceInformation
+    :members:
+
+--------------------------------
+
+Drawable Collision Shapes
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Instances of :code:`ts::CollisionShape` are "invisible", they cannot be rendered. To make debugging easier, telescope provides
+a number of shapes that are both a :code:`ts::CollisionShape` and a :code:`ts::Shape`, such that
+both have the exact same size and boundary. These objects behave exactly like a regular physics object, except
+they can also be rendered.
+
+After each :code:`ts::PhysicsWorld::step`, :code:`update` needs to be called on all of these objects. This will
+synchronize the position and state of the visible shape with that of its physics-simulation counterpart.
+
+.. doxygenclass:: ts::CollisionTriangleShape
+    :members:
+
+.. doxygenclass:: ts::CollisionRectangleShape
+    :members:
+
+.. doxygenclass:: ts::CollisionCircleShape
+    :members:
+
+.. doxygenclass:: ts::CollisionLineShape
+    :members:
+
+.. doxygenclass:: ts::CollisionWireframeShape
+    :members:
 
 ---------------------------------
 
@@ -399,6 +459,7 @@ A full list of all member functions of :code:`ts::CollisionShape` is available h
 
 .. doxygenclass:: ts::CollisionShape
     :members:
+
 
 
 

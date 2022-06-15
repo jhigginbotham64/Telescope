@@ -1,5 +1,5 @@
-Handling Player Input
-=====================
+Player Input
+============
 
 Accessing the state of the keyboard, mouse, and controller
 

@@ -14,8 +14,11 @@ namespace ts
 {
     void CollisionShape::assert_hidden() const
     {
-        if (is_hidden())
-            Log::warning("Trying to query the state of, or otherwise interacting with ts::CollisionShape while it is hidden.");
+        if (get_is_hidden())
+            Log::warning("Trying to query the state of, or otherwise interact with, ts::CollisionShape while it is hidden.");
+
+        // if it is hidden, application will probably crash right after this message so
+        // this gives additional information to a potential box2d error
     }
 
     b2FixtureDef CollisionShape::create_fixture_def(b2Shape *shape) const
@@ -135,12 +138,6 @@ namespace ts
         return _world->native_to_world(Vector2f{center.x, center.y});
     }
 
-    void CollisionShape::set_centroid(Vector2f vector)
-    {
-        assert_hidden();
-
-    }
-
     Angle CollisionShape::get_rotation() const
     {
         assert_hidden();
@@ -169,7 +166,7 @@ namespace ts
         return (CollisionType) _body->GetType();
     }
 
-    void CollisionShape::set_hidden(bool b)
+    void CollisionShape::set_is_hidden(bool b)
     {
         _body->SetEnabled(b);
     }
@@ -305,14 +302,14 @@ namespace ts
         _body->SetBullet(b);
     }
 
-    bool CollisionShape::is_bullet()
+    bool CollisionShape::get_is_bullet()
     {
         assert_hidden();
 
         return _body->IsBullet();
     }
 
-    void CollisionShape::set_rotation_fixed(bool b) const
+    void CollisionShape::set_is_rotation_fixed(bool b) const
     {
         assert_hidden();
 
