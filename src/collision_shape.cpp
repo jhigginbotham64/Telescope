@@ -22,7 +22,7 @@ namespace ts
     {
         auto def = default_fixture_def;
         def.shape = shape;
-        def.userData.pointer = (uintptr_t) new CollisionData(this);
+        def.userData.pointer = (uintptr_t) this;
         def.filter.categoryBits = _is_in_collision_group_bits;
         def.filter.maskBits = _will_collide_with_group_bits;
         return def;

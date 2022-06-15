@@ -37,21 +37,28 @@ namespace ts
         std::pair<Vector2f, Vector2f> closest_points;
     };
 
-    class CollisionHandler;
-    namespace detail
+    /// \brief collision event, reports when and which physics entities touch
+    struct CollisionEvent
     {
-        struct ContactListener : public b2ContactListener
+        /// \brief type of collision event
+        enum CollisionEventType : bool
         {
-            ContactListener(CollisionHandler*);
+            /// \brief shapes start to touch, they are now in contact
+            CONTACT_START = true,
 
-            void BeginContact(b2Contact*) override;
-            void EndContact(b2Contact*) override;
-            void PreSolve(b2Contact*, const b2Manifold*) override;
-            void PostSolve(b2Contact*, const b2ContactImpulse*) override;
-
-            CollisionHandler* _handler;
+            /// \brief shapes cease to touch, they are now no longer contacting
+            CONTACT_END = false,
         };
-    }
+
+        /// \brief event type
+        CollisionEventType type;
+
+        /// \brief first shape
+        CollisionShape* shape_a;
+
+        /// \brief second shape
+        CollisionShape* shape_b;
+    };
 
     /// \brief high-level geometric queries in a physics world
     class CollisionHandler
@@ -82,9 +89,31 @@ namespace ts
             /// \returns object of type ts::RayCastInformation
             RayCastInformation ray_cast(CollisionShape* a, Vector2f ray_start, Vector2f ray_end);
 
+            /// \brief pop an event from the event queue, thread-safe. The event queue is automatically cleared every ts::PhysicsWorld::step
+            /// \returns event
+            CollisionEvent next_event();
+
+            /// \brief clear the event queue
+            void clear_events();
+
         private:
             PhysicsWorld* _world;
-            CollisionShape* fixture_to_shape(b2Fixture*);
-            detail::ContactListener _contact_listener;
+
+            std::mutex _queue_lock;
+            std::deque<CollisionEvent> _event_queue;
+
+            struct ContactListener : public b2ContactListener
+            {
+                ContactListener(CollisionHandler*);
+
+                void BeginContact(b2Contact*) override;
+                void EndContact(b2Contact*) override;
+
+                void PreSolve(b2Contact*, const b2Manifold*) override;
+                void PostSolve(b2Contact*, const b2ContactImpulse*) override;
+
+                CollisionHandler* _handler;
+            };
+            ContactListener _contact_listener;
     };
 }

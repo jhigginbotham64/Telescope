@@ -257,27 +257,6 @@ namespace ts
             b2Body* _body;
             b2Fixture* _fixture;
 
-            class CollisionData
-            {
-                // data to be injected into b2Fixture. This data is used by
-                // ts::ContactListener to identify which objects are colliding.
-                //
-                // c.f.: https://box2d.org/documentation/md__d_1__git_hub_box2d_docs_loose_ends.html
-
-                private:
-                    CollisionShape* _shape;
-
-                public:
-                    CollisionData(const CollisionShape* shape)
-                        : _shape(const_cast<CollisionShape*>(shape))
-                    {}
-
-                    CollisionShape* get_owner() const
-                    {
-                        return _shape;
-                    }
-            };
-
             static inline const b2BodyDef default_body_def = []() -> b2BodyDef
             {
                 auto out = b2BodyDef();

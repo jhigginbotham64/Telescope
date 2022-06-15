@@ -67,35 +67,52 @@ namespace ts
         };
     }
 
-    namespace detail
+    CollisionEvent CollisionHandler::next_event()
     {
+        auto lock = std::lock_guard(_queue_lock);
+        auto out = _event_queue.front();
+        _event_queue.pop_front();
+        return out;
+    }
 
-        ContactListener::ContactListener(CollisionHandler *handler)
-            : _handler(handler)
-        {}
+    void CollisionHandler::clear_events()
+    {
+        auto lock = std::lock_guard(_queue_lock);
+        _event_queue.clear();
+    }
 
-        // shapes start to overlap
-        void ContactListener::BeginContact(b2Contact *contact)
-        {
-            auto *a = contact->GetFixtureA();
-            auto *b = contact->GetFixtureB();
+    CollisionHandler::ContactListener::ContactListener(CollisionHandler *handler)
+        : _handler(handler)
+    {}
 
-            auto *a_data = (CollisionShape::CollisionData *) a->GetUserData().pointer;
-            auto *b_data = (CollisionShape::CollisionData *) b->GetUserData().pointer;
+    // shapes start to overlap
+    void CollisionHandler::ContactListener::BeginContact(b2Contact *contact)
+    {
+        auto lock = std::lock_guard(_handler->_queue_lock);
+        _handler->_event_queue.push_back({
+            CollisionEvent::CONTACT_START,
+            (CollisionShape *) contact->GetFixtureA()->GetUserData().pointer,
+            (CollisionShape *) contact->GetFixtureB()->GetUserData().pointer
+        });
+    }
 
-            std::cout << "body : " << a_data->get_body_id() << " | fixture a: " << a_data->get_fixture_id() << " | fixture b: " << b_data->get_fixture_id() << std::endl;
-        }
+    void CollisionHandler::ContactListener::EndContact(b2Contact *contact)
+    {
+        auto lock = std::lock_guard(_handler->_queue_lock);
+        _handler->_event_queue.push_back({
+             CollisionEvent::CONTACT_END,
+             (CollisionShape *) contact->GetFixtureA()->GetUserData().pointer,
+             (CollisionShape *) contact->GetFixtureB()->GetUserData().pointer
+        });
+    }
 
-        void ContactListener::EndContact(b2Contact *contact)
-        {
-        }
+    void CollisionHandler::ContactListener::PreSolve(b2Contact*, const b2Manifold*)
+    {
+        // noop
+    }
 
-        void ContactListener::PreSolve(b2Contact *contact, const b2Manifold *)
-        {
-        }
-
-        void ContactListener::PostSolve(b2Contact *contact, const b2ContactImpulse *)
-        {
-        }
+    void CollisionHandler::ContactListener::PostSolve(b2Contact*, const b2ContactImpulse*)
+    {
+        // noop
     }
 }
