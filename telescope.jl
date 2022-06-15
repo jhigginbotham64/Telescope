@@ -364,7 +364,7 @@ module ts
         out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Cdouble, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
     end
-    export restart!
+    export restart!; restart = restart!
 
 
     ### ANGLE ################################################################
@@ -854,7 +854,7 @@ module ts
                 (Csize_t, Csize_t, Csize_t, Cdouble),
                 sound._native_id, channel, n_loops, as_milliseconds(fade_in_duration))
         end
-        export play
+        export play!; play = play!
         
         """
         `stop!(::ChannelID, ::Time) -> Nothing`
@@ -864,7 +864,7 @@ module ts
                 (Csize_t, Cdouble),
                 channel, as_milliseconds(fade_out_duration))
         end
-        export stop
+        export stop!; stop = stop!
         
         """
         `pause!(::ChannelID) -> Nothing`
@@ -872,7 +872,7 @@ module ts
         function pause!(channel::ChannelID) ::Nothing
             ccall((:ts_sound_pause, _lib), Cvoid, (Csize_t,), channel)
         end
-        export pause
+        export pause!; pause = pause!
         
         """
         `unpause!(::ChannelID) -> Nothing`
@@ -880,7 +880,7 @@ module ts
         function unpause!(channel::ChannelID) ::Nothing
             ccall((:ts_sound_unpause, _lib), Cvoid, (Csize_t,), channel)
         end
-        export unpause
+        export unpause!; unpause = unpause!
 
         """
         `force_stop!(::ChannelID) -> Nothing`
@@ -888,7 +888,7 @@ module ts
         function force_stop!(channel::ChannelID) ::Nothing
             ccall((:ts_sound_force_stop, _lib), Cvoid, (Csize_t,), channel)
         end
-        export force_stop
+        export force_stop!; force_stop = force_stop!
 
         """
         `is_playing(::ChannelID) -> Bool`
@@ -920,7 +920,7 @@ module ts
         function set_volume!(channel::ChannelID, zero_to_one::Float32) ::Nothing
             ccall((:ts_sound_set_volume, _lib), Cvoid, (Csize_t, Cfloat), channel, zero_to_one)
         end
-        export set_volume
+        export set_volume!; set_volume = set_volume!
 
         """
         `get_volume(::ChannelID) -> Float32`
@@ -936,7 +936,7 @@ module ts
         function set_panning!(channel::ChannelID, angle::Angle) ::Nothing
             return ccall((:ts_sound_set_panning, _lib), Cvoid, (Csize_t, Cfloat), channel, as_degrees(angle))
         end
-        export set_panning
+        export set_panning!; set_panning = set_panning!
 
         """
         `get_panning(::ChannelID) -> Angle`
@@ -993,7 +993,7 @@ module ts
         function set_volume!(zero_to_one::Float32) ::Nothing
             ccall((:ts_music_set_volume, _lib), Cvoid, (Cfloat,), zero_to_one)
         end
-        export set_volume
+        export set_volume!; set_volume = set_volume!
 
         """
         `get_volume() -> Float32`
@@ -1011,7 +1011,7 @@ module ts
                 (Csize_t, Bool, Cdouble),
                 music._native_id, should_loop, as_milliseconds(fade_in_duration))
         end
-        export play
+        export play!; play = play!
 
         """
         `play_next!(::Music, ::Bool, ::Time) -> Nothing
@@ -1021,7 +1021,7 @@ module ts
                 (Csize_t, Bool, Cdouble),
                 music._native_id, should_loop, as_milliseconds(fade_in_duration))
         end
-        export play_next
+        export play_next!; play_next = play_next!
 
         """
         `stop!(::Time) -> Nothing`
@@ -1029,7 +1029,7 @@ module ts
         function stop!(fade_out_duration::Time) ::Nothing
             ccall((:ts_music_stop, _lib), Cvoid, (Cdouble,), as_milliseconds(fade_out_duration))
         end
-        export stop
+        export stop!; stop = stop!
 
         """
         `next!(::Time) -> Nothing`
@@ -1037,7 +1037,7 @@ module ts
         function next!(fade_out_duration::Time) ::Nothing
             ccall((:ts_music_next, _lib), Cvoid, (Cdouble,), as_milliseconds(fade_out_duration))
         end
-        export next
+        export next!; next = next!
 
         """
         `clear_next!() -> Nothing`
@@ -1045,7 +1045,7 @@ module ts
         function clear_next!() ::Nothing
             ccall((:ts_music_clear_next, _lib), Cvoid, ())
         end
-        export clear_next
+        export clear_next!; clear_next = clear_next!
 
         """
         `force_stop!() -> Nothing`
@@ -1053,7 +1053,7 @@ module ts
         function force_stop!() ::Nothing
             ccall((:ts_music_force_stop, _lib), Cvoid, ())
         end
-        export force_stop
+        export force_stop!; force_stop = force_stop!
 
         """
         `pause!() -> Nothing`
@@ -1061,7 +1061,7 @@ module ts
         function pause!() ::Nothing
             ccall((:ts_music_pause, _lib), Cvoid, ())
         end
-        export pause
+        export pause!; pause = pause!
 
         """
         `unpause!() -> Nothing`
@@ -1069,7 +1069,7 @@ module ts
         function unpause!() ::Nothing
             ccall((:ts_music_unpause, _lib), Cvoid, ())
         end
-        export unpause
+        export unpause!; unpause = unpause!
 
         """
         `skip_to!(::Time) -> Nothing`
@@ -1077,7 +1077,7 @@ module ts
         function skip_to!(timestamp::Time) ::Nothing
             ccall((:ts_music_skip_to, _lib), Cvoid, (Cdouble,), as_milliseconds(timestamp))
         end
-        export skip_to
+        export skip_to!; skip_to = skip_to!
 
         """
         `is_playing() -> Bool`
@@ -1225,7 +1225,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
             texture._native, color.red, color.green, color.blue, color.alpha)
     end
-    export set_color!
+    export set_color!; set_color = set_color!
     
     """
     `get_color(::Texture) -> RGBA`
@@ -1254,7 +1254,7 @@ module ts
             texture._native,
             convert(Cint, mode))
     end
-    export set_blend_mode!
+    export set_blend_mode!; set_blend_mode = set_blend_mode!
 
     """
     `get_blend_mode(::Texture) -> TextureBlendMode`
@@ -1274,7 +1274,7 @@ module ts
             texture._native,
             convert(Cint, mode))
     end
-    export set_filtering_mode!
+    export set_filtering_mode!; set_filtering_mode = set_filtering_mode!
 
     """
     `get_filtering_mode(::Texture) -> TextureFilteringMode`
@@ -1370,7 +1370,7 @@ module ts
     function reset!(transform::Transform) ::Nothing
         ccall((:ts_transform_reset, _lib), Cvoid, (Ptr{Cvoid},), transform._native)
     end
-    export reset!
+    export reset!; reset = reset!
 
     """
     `combine!(::Transform, ::Transform) -> Nothing`
@@ -1378,7 +1378,7 @@ module ts
     function combine!(left::Transform, right::Transform) ::Nothing
         ccall((:ts_transform_combin, _lib), Cvoid, (Ptr{Cvoid}, Ptr{Cvoid}), left._native, right._native)
     end
-    export combine!
+    export combine!; combine = combine!
 
     """
     `translate!(::Transform, ::Float32, ::Float32) -> Nothing`
@@ -1386,7 +1386,7 @@ module ts
     function translate!(transform::Transform, x::Float32, y::Float32) ::Nothing
         ccall((:ts_transform_translate, _lib), Cvoid, (Ptr{Cvoid}, Cfloat, Cfloat), transform._native, x, y)
     end
-    export translate!
+    export translate!; translate = translate!
 
     """
     `rotate!(::Transform, ::Angle, ::Vector2f) -> Nothing`
@@ -1396,7 +1396,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat),
             transform._native, as_degrees(angle), origin.x, origin.y)
     end
-    export rotate!
+    export rotate!; rotate = rotate!
 
     """
     `scale!(::Transform, ::Float32, ::Float32) -> Nothing`
@@ -1406,7 +1406,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat),
             transform._native, x_scale, y_scale)
     end
-    export scale!
+    export scale!; scale = scale!
 
     """
     `shear!(::Transform, ::Float32, ::Float32) -> Nothing`
@@ -1416,7 +1416,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat),
             transform._native, x_scale, y_scale)
     end
-    export shear!
+    export shear!; shear = shear!
 
     """
     `reflect!(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
@@ -1426,7 +1426,7 @@ module ts
             (Ptr{Cvoid}, Bool, Bool, Cfloat, Cfloat),
             transform._native, about_x_axis, about_y_axis, origin.x, origin.y)
     end
-    export reflect!
+    export reflect!; reflect = reflect!
 
     ### GEOMETRY ##############################################################
 
@@ -1524,7 +1524,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat),
             shape._native, position.x, position.y)
     end
-    export set_centroid!
+    export set_centroid!; set_centroid = set_centroid!
 
     """
     `get_centroid(::Shape) -> Vector2f`
@@ -1546,7 +1546,7 @@ module ts
     function move!(shape::Shape, x::Float32, y::Float32) ::Nothing
         ccall((:ts_shape_move, _lib), Cvoid, (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, x, y)
     end
-    export move!
+    export move!; move = move!
 
     """
     `set_color!(::Shape, ::RGBA) -> Nothing`
@@ -1557,7 +1557,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
             shape._native, color.red, color.green, color.blue, color.alpha)
     end
-    export set_color!
+    export set_color!; set_color = set_color!
 
     """
     `set_texture!(::Shape, ::Texture) -> Nothing`
@@ -1567,7 +1567,7 @@ module ts
             (Ptr{Cvoid}, Ptr{Cvoid}),
             shape._native, texture._native)
     end
-    export set_texture!
+    export set_texture!; set_texture = set_texture!
 
     """
     `set_texture_rectangle!(::Shape, ::Rectangle) -> Nothing`
@@ -1577,7 +1577,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
             shape._native, rect.top_left.x, rect.top_left.y, rect.size.x, rect.size.y)
     end
-    export set_texture_rectangle!
+    export set_texture_rectangle!; set_texture_rectangle = set_texture_rectangle!
 
     """
     `get_texture_rectangle(::Shape) -> Rectangle`
@@ -1634,7 +1634,7 @@ module ts
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), position.x, position.y)
     end
-    export set_vertex_position!
+    export set_vertex_position!; set_vertex_position = set_vertex_position!
 
     """
     `set_vertex_color!(::Shape, ::Integer, ::RGBA) -> Nothing`
@@ -1649,7 +1649,7 @@ module ts
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), color.red, color.green, color.blue, color.alpha)
     end
-    export set_vertex_color!
+    export set_vertex_color!; set_vertex_color = set_vertex_color!
 
     """
     `set_vertex_texture_coordinate!(::Shape, ::Integer, ::Vector2f) -> Nothing`
@@ -1664,7 +1664,7 @@ module ts
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), coordinate.x, coordinate.y)
     end
-    export set_vertex_texture_coordinate!
+    export set_vertex_texture_coordinate!; set_vertex_texture_coordinate = set_vertex_texture_coordinate!
 
     """
     `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
@@ -1796,7 +1796,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat),
              rect._native, position.x, position.y)
     end
-    export set_top_left!
+    export set_top_left!; set_top_left = set_top_left!
 
     """
     `get_top_left(::RectangleShape) -> Vector2f`
@@ -1821,7 +1821,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat),
             rect._native, size.x, size.y)
     end
-    export set_size!
+    export set_size!; set_size = set_size!
 
     """
     `get_size(::RectangleShape) -> Vector2f`
@@ -1880,7 +1880,7 @@ module ts
        ccall((:ts_shape_circle_set_radius, _lib), Cvoid,
         (Ptr{Cvoid}, Cfloat), circle._native, radius)
     end
-    export set_radius!
+    export set_radius!; set_radius = set_radius!
 
     ### POLYGON SHAPE #########################################################
 
@@ -1977,7 +1977,7 @@ module ts
     function close!(window::Window) ::Nothing
         ccall((:ts_window_close, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export close
+    export close!; close = close!
 
     """
     `is_open(::Window) -> Bool`
@@ -2017,7 +2017,7 @@ module ts
     function set_hidden!(window::Window, hidden::Bool) ::Nothing
         ccall((:ts_window_set_hidden, _lib), Cvoid, (Csize_t, Bool), window._native_id, hidden)
     end
-    export set_hidden
+    export set_hidden!; set_hidden = set_hidden!
 
     """
     `is_hidden(::Window) -> Bool`
@@ -2033,7 +2033,7 @@ module ts
     function minimize!(window::Window) ::Nothing
         ccall((:ts_window_minimize, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export minimize
+    export minimize!; minimize = minimize!
 
     """
     `is_minimized(::Window) -> Bool`
@@ -2049,7 +2049,7 @@ module ts
     function maximize!(window::Window) ::Nothing
         ccall((:ts_window_maximize, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export maximize
+    export maximize!; maximize = maximize!
 
     """
     `is_maximized(::Window) -> Bool`
@@ -2081,7 +2081,7 @@ module ts
     function clear!(window::Window) ::Nothing
         ccall((:ts_window_clear, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export clear
+    export clear!; clear = clear!
 
     """
     `render!(::Window, ::Shape, ::Transform) -> Nothing`
@@ -2091,7 +2091,7 @@ module ts
             (Ptr{Cvoid}, Csize_t, Ptr{Cvoid}),
             shape._native, window._native_id, transform._native)
     end
-    export render!
+    export render!; render = render!
 
     """
     `render!(::RenderTexture, ::Shape, ::Transform) -> Nothing`
@@ -2101,7 +2101,7 @@ module ts
             (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
             shape._native, render_texture._native, transform._native)
     end
-    export render!
+    export render!; render = render!
 
     """
     `flush!(::Window) -> Nothing`
@@ -2109,7 +2109,7 @@ module ts
     function flush!(window::Window) ::Nothing
         ccall((:ts_window_flush, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export flush!
+    export flush!; flush = flush!
 
     """
     `set_icon(::Window, ::String) -> Nothing`
@@ -2117,6 +2117,7 @@ module ts
     function set_icon!(window::Window, path::String) ::Nothing
         ccall((:ts_window_set_icon, _lib), Cvoid, (Csize_t, Cstring), window._native_id, path)
     end
+    export set_icon!; set_icon = set_icon!
 
     """
     `set_framerate_limit!(::Integer) -> Nothing`
@@ -2124,7 +2125,7 @@ module ts
     function set_framerate_limit!(n_fps::Integer) ::Nothing
         ccall((:ts_set_framerate_limit, _lib), Cvoid, (Csize_t,), convert(Csize_t, n_fps))
     end
-    export set_framerate_limit
+    export set_framerate_limit!; set_framerate_limit = set_framerate_limit!
 
     """
     `start_frame!(::Window) -> Time`
@@ -2142,7 +2143,7 @@ module ts
     function end_frame!(window::Window) ::Nothing
         ccall((:ts_end_frame, _lib), Cvoid, (Csize_t,), window._native_id)
     end
-    export end_frame!
+    export end_frame!; end_frame = end_frame!
 
     ### CAMERA ################################################################
 
@@ -2171,7 +2172,7 @@ module ts
             (Csize_t, Cfloat, Cfloat),
             camera._native_window_id, point.x, point.y)
     end
-    export center_on!
+    export center_on!; center_on = center_on!
 
     """
     `move!(::Camera, ::Float32, Float32) -> Nothing`
@@ -2181,7 +2182,7 @@ module ts
             (Csize_t, Cfloat, Cfloat),
             camera._native_window_id, x_offset, y_offset)
     end
-    export move!
+    export move!; move = move!
 
     """
     `zoom_in!(::Camera, ::Float32) -> Nothing`
@@ -2191,7 +2192,7 @@ module ts
             (Csize_t, Cfloat),
             camera._native_window_id, factor)
     end
-    export zoom_in!
+    export zoom_in!; zoom_in = zoom_in!
 
     """
     `zoom_out!(::Camera, ::Float32) -> Nothing`
@@ -2201,7 +2202,7 @@ module ts
             (Csize_t, Cfloat),
             camera._native_window_id, factor)
     end
-    export zoom_out!
+    export zoom_out!; zoom_out = zoom_out!
 
     """
     `set_zoom!(::Camera, ::Float32) -> Nothing`
@@ -2211,7 +2212,7 @@ module ts
             (Csize_t, Cfloat),
             camera._native_window_id, factor)
     end
-    export set_zoom!
+    export set_zoom!; set_zoom = set_zoom!
 
     """
     `rotate!(::Camera, ::Angle) -> Nothing`
@@ -2221,7 +2222,7 @@ module ts
             (Csize_t, Cfloat),
             camera._native_window_id, as_degrees(angle))
     end
-    export rotate!
+    export rotate!; rotate = rotate!
 
     """
     `set_rotation!(::Camera, ::Angle) -> Nothing`
@@ -2231,7 +2232,7 @@ module ts
             (Csize_t, Cfloat),
             camera._native_window_id, as_degrees(angle))
     end
-    export set_rotation!
+    export set_rotation!; set_rotation = set_rotation!
 
     """
     `get_transform(::Camera) -> Transform`
@@ -2311,7 +2312,7 @@ module ts
             (Csize_t, Cfloat, Cint, Cint),
             world._native_id, as_milliseconds(time), velocity_iterations, position_iterations)
     end
-    export step!
+    export step!; step = step!
     
     """
     `clear_forces!(::PhysicsWorld) -> Nothing
@@ -2319,7 +2320,7 @@ module ts
     function clear_forces!(world::PhysicsWorld) ::Nothing
         ccall((:ts_physics_world_clear_forces, _lib), Cvoid, (Csize_t,), world._native_id)
     end
-    export clear_forces!
+    export clear_forces!; clear_forces = clear_forces!
     
     """
     `get_gravity(::PhysicsWorld) -> Vector2f`
@@ -2345,7 +2346,7 @@ module ts
             (Csize_t, Cfloat, Cfloat),
             world._native_id, gravity.x, gravity.y)
     end
-    export set_gravity!
+    export set_gravity!; set_gravity = set_gravity!
 
     """
     CollisionShape (Abstract Interface)
@@ -2591,7 +2592,7 @@ module ts
     function set_density!(shape::CollisionShape, value::Float32) ::Nothing
         ccall((:ts_collision_shape_set_density, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
-    export set_density!
+    export set_density!; set_density = set_density!
 
     """
     `get_density(::CollisionShape) -> Float32`
@@ -2607,7 +2608,7 @@ module ts
     function set_friction!(shape::CollisionShape, value::Float32) ::Nothing
         ccall((:ts_collision_shape_set_friction, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
-    export set_friction!
+    export set_friction!; set_friction = set_friction!
 
     """
     `get_friction(::CollisionShape) -> Float32`
@@ -2625,7 +2626,7 @@ module ts
             (Ptr{Cvoid}, Cfloat),
             shape._native, value)
     end
-    export set_restitution!
+    export set_restitution!; set_restitution = set_restitution!
 
     """
     `get_restitution(::CollisionShape) -> Float32`
@@ -2685,7 +2686,7 @@ module ts
         ccall((:ts_collision_shape_set_type, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t), shape._native, Csize_t(type))
     end
-    export set_type!
+    export set_type!; set_type = set_type!
 
     """
     `get_type(::CollisionShape) -> CollisionType`
@@ -2770,7 +2771,7 @@ module ts
         ccall((:ts_collision_shape_set_linear_velocity, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, velocity.x, velocity.y)
     end
-    export set_linear_velocity!
+    export set_linear_velocity!; set_linear_velocity = set_linear_velocity!
 
     """
     `get_linear_velocity(::CollisionShape) -> Vector2f`
@@ -2793,7 +2794,7 @@ module ts
         ccall((:ts_collision_shape_set_angular_velocity, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
-    export set_angular_velocity!
+    export set_angular_velocity!; set_angular_velocity = set_angular_velocity!
 
     """
     `get_angular_velocity(::CollisionShape) -> Float32`
@@ -2812,7 +2813,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
             shape._native, force.x, force.y, point.x, point.y)
     end
-    export apply_force_to!
+    export apply_force_to!; apply_force_to = apply_force_to!
 
     """
     `apply_force_to_center(::CollisionShape, force::Vector2f) -> Nothing`
@@ -2821,7 +2822,7 @@ module ts
         ccall((:ts_collision_shape_apply_force_to_center, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, force.x, force.y)
     end
-    export apply_force_to_center!
+    export apply_force_to_center!; apply_force_to_center = apply_force_to_center!
 
     """
     apply_torque!(::CollisionShape, ::Float32) -> Nothing
@@ -2829,7 +2830,7 @@ module ts
     function apply_torque!(shape::CollisionShape, value::Float32) ::Nothing
         ccall((:ts_collision_shape_apply_torque, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
-    export apply_torque!
+    export apply_torque!; apply_torque = apply_torque!
 
     """
     `apply_linear_impulse_to!(::CollisionShape, force::Vector2f, point::Vector2f) -> Nothing`
@@ -2839,7 +2840,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat),
             shape._native, impulse.x, impulse.y, point.x, point.y)
     end
-    export apply_linear_impulse_to!
+    export apply_linear_impulse_to!; apply_linear_impulse_to = apply_linear_impulse_to!
 
     """
     `apply_linear_impulse_to_center!(::CollisionShape, force::Vector2f) -> Nothing`
@@ -2848,7 +2849,7 @@ module ts
         ccall((:ts_collision_shape_apply_linear_impulse_to_center, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, impulse.x, impulse.y)
     end
-    export apply_lienar_impulse_to_center!
+    export apply_lienar_impulse_to_center!; apply_lienar_impulse_to_center = apply_lienar_impulse_to_center!
 
     """
     `get_mass(::CollisionShape) -> Float32`
@@ -2872,13 +2873,13 @@ module ts
     function set_is_bullet(shape::CollisionShape, value::Bool) ::Nothing
         ccall((:ts_collision_shape_set_is_bullet, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
     end
-    export set_is_bullet
+    export set_is_bullet!; set_is_bullet = set_is_bullet!
 
     """
     `is_bullet(::CollisionShape) -> Bool`
     """
-    function is_bullet(shape::CollisionShape) ::Bool
-        return ccall((:ts_collision_shape_is_bullet, _lib), Bool, (Ptr{Cvoid},), shape._native)
+    function get_is_bullet(shape::CollisionShape) ::Bool
+        return ccall((:ts_collision_shape_get_is_bullet, _lib), Bool, (Ptr{Cvoid},), shape._native)
     end
     export is_bullet
 
@@ -2896,7 +2897,7 @@ module ts
     function set_is_rotation_fixed!(shape::CollisionShape, value::Bool) ::Nothing
         ccall((:ts_collision_shape_set_is_rotation_fixed, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
     end
-    export set_is_rotation_fixed!
+    export set_is_rotation_fixed!; set_is_rotation_fixed = set_is_rotation_fixed!
 
     """
     `get_id(::CollisionShape) -> UInt64`
@@ -2925,6 +2926,7 @@ module ts
             return new(distance, Pair{Vector2f, Vector2f}(point_a, point_b))
         end
     end
+    export DistanceInformation
 
     """
     `distance_between(::PhysicsWorld, ::Shape, ::Shape) -> DistanceInformation`
@@ -2943,6 +2945,7 @@ module ts
 
         return DistanceInformation(distance[], Vector2f(a_x[], a_y[]), Vector2f(b_x[], b_y[]))
     end
+    export distance_between
 
     """
     RayCastInformation
@@ -2961,6 +2964,7 @@ module ts
         normal_vector::Vector2f
         contact_point::Vector2f
     end
+    export RayCastInformation
 
     """
     `ray_cast(::PhysicsWorld, ::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) -> RayCastInformation`
@@ -2978,6 +2982,7 @@ module ts
 
         return RayCastInformation(colliding, Vector2f(normal_x[], normal_y[]), Vector2f(hit_x[], hit_y[]))
     end
+    export ray_cast
 
     """
     `is_point_in_shape(::CollisionShape, ::Vector2f) -> Bool`
@@ -2987,6 +2992,7 @@ module ts
             (Csize_t, Ptr{Cvoid}, Cfloat, Cfloat),
             world._native_id, shape._native, point.x, point.y)
     end
+    export is_point_in_shape
 
     """
     enum CollisionEventType <: Bool
@@ -3015,6 +3021,7 @@ module ts
         shape_a_id::Union{Csize_t, Nothing}
         shape_b_id::Union{Csize_t, Nothing}
     end
+    export CollisionEvent
 
     """
     `next_event!(::PhysicsWorld, ::Ref{CollisionEvent}) -> Bool`
@@ -3047,6 +3054,7 @@ module ts
 
         return true
     end
+    export next_event!; next_event = next_event!
 
     ### TODO #############################################################################
 
