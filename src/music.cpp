@@ -9,6 +9,10 @@
 
 namespace ts
 {
+    Music::Music()
+        : _music(nullptr)
+    {}
+
     Music::Music(const std::string& path)
     {
         load(path);

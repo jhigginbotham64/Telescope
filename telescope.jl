@@ -955,7 +955,7 @@ module ts
         end
         export get_panning
     end
-    import Main.ts.SoundHandler; using Main.ts.SoundHandler
+    export SoundHandler
 
     ### MUSIC ################################################################
 
@@ -977,7 +977,7 @@ module ts
             id = ccall((:ts_music_load, _lib), Csize_t, (Cstring,), path)
             out = new(id)
             finalizer(out) do x::Music
-                ccall((ts_music_unload, _lib), Cvoid, (Csize_t,), x._native_id)
+                ccall((:ts_music_unload, _lib), Cvoid, (Csize_t,), x._native_id)
             end
         end
     end
@@ -999,7 +999,7 @@ module ts
         """
         `set_volume!(::Float32) -> Nothing`
         """
-        function set_volume!(zero_to_one::Float32) ::Nothing
+        function set_volume!(zero_to_one) ::Nothing
             ccall((:ts_music_set_volume, _lib), Cvoid, (Cfloat,), zero_to_one)
         end
         export set_volume!; set_volume = set_volume!
@@ -1035,7 +1035,7 @@ module ts
         """
         `stop!(::Time) -> Nothing`
         """
-        function stop!(fade_out_duration::Time) ::Nothing
+        function stop!(fade_out_duration::Time = seconds(0)) ::Nothing
             ccall((:ts_music_stop, _lib), Cvoid, (Cdouble,), as_milliseconds(fade_out_duration))
         end
         export stop!; stop = stop!
@@ -1043,7 +1043,7 @@ module ts
         """
         `next!(::Time) -> Nothing`
         """
-        function next!(fade_out_duration::Time) ::Nothing
+        function next!(fade_out_duration::Time = seconds(0)) ::Nothing
             ccall((:ts_music_next, _lib), Cvoid, (Cdouble,), as_milliseconds(fade_out_duration))
         end
         export next!; next = next!
@@ -1112,6 +1112,7 @@ module ts
         end
         export is_stopped
     end
+    export MusicHandler
 
     ### TEXTURES ##############################################################
 
@@ -3089,6 +3090,48 @@ module ts
         function run()
 
             @test ts.initialize()
+
+            @testset "Audio" begin
+
+                @testset "Music" begin
+
+                    ms = ts.MusicHandler
+
+                    @test ms.sample_rate > 0
+                    music = Music("test/otherworldy_foe.mp3")
+                    @test music._native_id != Ptr{Cvoid}()
+
+                    ms.play!(music)
+                    ms.play_next!(music)
+
+                    ms.skip_to!(seconds(0.1))
+
+                    @test ms.is_playing()
+
+                    ms.pause!()
+                    @test ms.is_paused()
+                    ms.unpause!()
+
+                    ms.next!()
+
+                    ms.set_volume!(1)
+                    @test ms.get_volume() == 1
+
+                    ms.play_next!(music)
+                    ms.clear_next!()
+
+                    ms.stop!()
+                    @test ms.is_stopped()
+
+                    ms.play!(music)
+                    ms.force_stop!()
+
+                    @test ms.is_stopped();
+                end
+
+            end
+
+            return #TODO
 
             @testset "Colors" begin
 

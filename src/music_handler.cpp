@@ -18,7 +18,7 @@ namespace ts
             return;
         }
 
-        if (fade_in_delay.as_milliseconds() < sample_rate / 1000)
+        if (fade_in_delay.as_milliseconds() < sample_rate / 1000.f)
             Mix_PlayMusic(music._music, (should_loop ? -1 : 1));
         else
             Mix_FadeInMusic(music._music, (should_loop ? -1 : 1), (int32_t) fade_in_delay.as_milliseconds());

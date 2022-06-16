@@ -1227,7 +1227,11 @@ size_t ts_music_sample_rate()
 size_t ts_music_load(const char* path)
 {
     size_t id = std::hash<std::string>()(path);
-    detail::_music_library.emplace(id, ts::Music(path));
+    detail::_music_library.emplace(
+        std::piecewise_construct,
+        std::forward_as_tuple(id),
+        std::forward_as_tuple(ts::Music()));
+    detail::_music_library.at(id).load(path);
     return id;
 }
 

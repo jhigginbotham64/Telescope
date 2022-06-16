@@ -85,11 +85,6 @@ int main()
 {
     initialize();
 
-    auto window = ts_window_create("title", 0, 0, ts::DEFAULT);
-    size_t x, y;
-    ts_window_get_size(window, &x, &y);
-
-    std::cout << x << " " << y << std::endl;
     /*
 
     size_t ll = 5;
