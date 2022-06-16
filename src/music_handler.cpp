@@ -140,6 +140,7 @@ namespace ts
         }
 
         Mix_VolumeMusic(uint8_t(zero_to_one * 128));
+        _volume = zero_to_one;
     }
 
     double MusicHandler::get_volume()

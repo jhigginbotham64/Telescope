@@ -72,7 +72,7 @@ namespace ts
     {
         auto guard = std::lock_guard(_lock);
         channel = forward_index(channel, "is_playing");
-        return not Mix_Paused(channel) and not Mix_Playing(channel);
+        return not Mix_Paused(channel) and Mix_Playing(channel);
     }
 
     bool SoundHandler::is_paused(size_t channel)
@@ -91,14 +91,26 @@ namespace ts
         auto guard = std::lock_guard(_lock);
         if (zero_to_one > 1.0)
         {
-            Log::warning("In ts::SoundHandler.set_volume: volume level ", zero_to_one,
-                         " is outside [0, 1]; volume will instead be set to 1 (the maximum).");
+            static bool once = false;
+
+            if (not once)
+            {
+                Log::warning("In ts::SoundHandler.set_volume: volume level ", zero_to_one,
+                             " is outside [0, 1]; volume will instead be set to 1 (the maximum).");
+                once = true;
+            }
             zero_to_one = 1.0;
         }
         else if (zero_to_one < 0)
         {
-            Log::warning("In ts::SoundHandler.set_volume: volume level ", zero_to_one,
+            static bool once = false;
+
+            if (not once)
+            {
+                Log::warning("In ts::SoundHandler.set_volume: volume level ", zero_to_one,
                          " is outside [0, 1]; volume will instead be set to 0 (the minimum).");
+                once = true;
+            }
             zero_to_one = 0.0;
         }
 

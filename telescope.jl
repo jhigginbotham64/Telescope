@@ -825,19 +825,19 @@ module ts
 
         _native_id::Csize_t
 
-        function Sound(path::String, volume_modifier::Cfloat = 1)
+        function Sound(path::String, volume_modifier = 1)
 
             id = ccall((:ts_sound_load, _lib), Csize_t, (Cstring, Cfloat), path, volume_modifier)
             out = new(id)
             finalizer(out) do x::Sound
-                call((:ts_sound_unload, _lib), Cvoid, (Csize_t), x._native_id)
+                ccall((:ts_sound_unload, _lib), Cvoid, (Csize_t,), x._native_id)
             end
             return out
         end
     end
     export Sound
 
-    const ChannelID = Csize_t;
+    const ChannelID = Integer;
     export ChannelID
 
     """
@@ -856,22 +856,24 @@ module ts
         export n_channels
 
         """
-        `play!(::ChannelID, ::Sound, ::Integer, ::Time) -> Nothing`
+        `play!(::ChannelID, ::Sound, [::Integer, ::Time]) -> Nothing`
+
+        channel id 1-based
         """
-        function play!(channel::ChannelID, sound::Sound, n_loops::Integer, fade_in_duration::Time) ::Nothing
+        function play!(channel::ChannelID, sound::Sound, n_loops::Integer = 1, fade_in_duration::Time = seconds(0.0)) ::Nothing
             ccall((:ts_sound_play, _lib), Cvoid,
                 (Csize_t, Csize_t, Csize_t, Cdouble),
-                sound._native_id, channel, n_loops, as_milliseconds(fade_in_duration))
+                sound._native_id, channel - 1, n_loops, as_milliseconds(fade_in_duration))
         end
         export play!; play = play!
         
         """
-        `stop!(::ChannelID, ::Time) -> Nothing`
+        `stop!(::ChannelID, [::Time]) -> Nothing`
         """
-        function stop!(channel::ChannelID, fade_out_duration::Time) ::Nothing
+        function stop!(channel::ChannelID, fade_out_duration::Time = seconds(0.0)) ::Nothing
             ccall((:ts_sound_stop, _lib), Cvoid,
                 (Csize_t, Cdouble),
-                channel, as_milliseconds(fade_out_duration))
+                channel - 1, as_milliseconds(fade_out_duration))
         end
         export stop!; stop = stop!
         
@@ -879,7 +881,7 @@ module ts
         `pause!(::ChannelID) -> Nothing`
         """
         function pause!(channel::ChannelID) ::Nothing
-            ccall((:ts_sound_pause, _lib), Cvoid, (Csize_t,), channel)
+            ccall((:ts_sound_pause, _lib), Cvoid, (Csize_t,), channel - 1)
         end
         export pause!; pause = pause!
         
@@ -887,7 +889,7 @@ module ts
         `unpause!(::ChannelID) -> Nothing`
         """
         function unpause!(channel::ChannelID) ::Nothing
-            ccall((:ts_sound_unpause, _lib), Cvoid, (Csize_t,), channel)
+            ccall((:ts_sound_unpause, _lib), Cvoid, (Csize_t,), channel - 1)
         end
         export unpause!; unpause = unpause!
 
@@ -895,7 +897,7 @@ module ts
         `force_stop!(::ChannelID) -> Nothing`
         """
         function force_stop!(channel::ChannelID) ::Nothing
-            ccall((:ts_sound_force_stop, _lib), Cvoid, (Csize_t,), channel)
+            ccall((:ts_sound_force_stop, _lib), Cvoid, (Csize_t,), channel - 1)
         end
         export force_stop!; force_stop = force_stop!
 
@@ -903,7 +905,7 @@ module ts
         `is_playing(::ChannelID) -> Bool`
         """
         function is_playing(channel::ChannelID) ::Bool
-            return ccall((:ts_sound_is_playing, _lib), Bool, (Csize_t,), channel)
+            return ccall((:ts_sound_is_playing, _lib), Bool, (Csize_t,), channel - 1)
         end
         export is_playing
 
@@ -911,7 +913,7 @@ module ts
         `is_paused(::ChannelID) -> Bool`
         """
         function is_paused(channel::ChannelID) ::Bool
-            return ccall((:ts_sound_is_paused, _lib), Bool, (Csize_t,), channel)
+            return ccall((:ts_sound_is_paused, _lib), Bool, (Csize_t,), channel - 1)
         end
         export is_paused
 
@@ -919,15 +921,15 @@ module ts
         `is_stopped(::ChannelID) -> Bool`
         """
         function is_stopped(channel::ChannelID) ::Bool
-            return ccall((:ts_sound_is_stopped, _lib), Bool, (Csize_t,), channel)
+            return ccall((:ts_sound_is_stopped, _lib), Bool, (Csize_t,), channel - 1)
         end
         export is_stopped
 
         """
         `set_volume!(::ChannelID, ::Float32) -> Nothing`
         """
-        function set_volume!(channel::ChannelID, zero_to_one::Float32) ::Nothing
-            ccall((:ts_sound_set_volume, _lib), Cvoid, (Csize_t, Cfloat), channel, zero_to_one)
+        function set_volume!(channel::ChannelID, zero_to_one) ::Nothing
+            ccall((:ts_sound_set_volume, _lib), Cvoid, (Csize_t, Cfloat), channel - 1, zero_to_one)
         end
         export set_volume!; set_volume = set_volume!
 
@@ -935,7 +937,7 @@ module ts
         `get_volume(::ChannelID) -> Float32`
         """
         function get_volume(channel::ChannelID) ::Float32
-            return ccall((:ts_sound_get_volume, _lib), Cvoid, (Csize_t,), channel)
+            return ccall((:ts_sound_get_volume, _lib), Cfloat, (Csize_t,), channel - 1)
         end
         export get_volume
 
@@ -943,7 +945,7 @@ module ts
         `set_panning!(::ChannelID, ::Angle) -> Nothing`
         """
         function set_panning!(channel::ChannelID, angle::Angle) ::Nothing
-            return ccall((:ts_sound_set_panning, _lib), Cvoid, (Csize_t, Cfloat), channel, as_degrees(angle))
+            return ccall((:ts_sound_set_panning, _lib), Cvoid, (Csize_t, Cfloat), channel - 1, as_degrees(angle))
         end
         export set_panning!; set_panning = set_panning!
 
@@ -951,7 +953,7 @@ module ts
         `get_panning(::ChannelID) -> Angle`
         """
         function get_panning(channel::ChannelID) ::Angle
-            return degrees(ccall((:ts_sound_get_panning, _lib), Cfloat, (Csize_t,), channel))
+            return degrees(ccall((:ts_sound_get_panning, _lib), Cfloat, (Csize_t,), channel - 1))
         end
         export get_panning
     end
@@ -3091,48 +3093,6 @@ module ts
 
             @test ts.initialize()
 
-            @testset "Audio" begin
-
-                @testset "Music" begin
-
-                    ms = ts.MusicHandler
-
-                    @test ms.sample_rate > 0
-                    music = Music("test/otherworldy_foe.mp3")
-                    @test music._native_id != Ptr{Cvoid}()
-
-                    ms.play!(music)
-                    ms.play_next!(music)
-
-                    ms.skip_to!(seconds(0.1))
-
-                    @test ms.is_playing()
-
-                    ms.pause!()
-                    @test ms.is_paused()
-                    ms.unpause!()
-
-                    ms.next!()
-
-                    ms.set_volume!(1)
-                    @test ms.get_volume() == 1
-
-                    ms.play_next!(music)
-                    ms.clear_next!()
-
-                    ms.stop!()
-                    @test ms.is_stopped()
-
-                    ms.play!(music)
-                    ms.force_stop!()
-
-                    @test ms.is_stopped();
-                end
-
-            end
-
-            return #TODO
-
             @testset "Colors" begin
 
                 rgb_in = RGBA(1.0, 0.5, 0.5, 1.0)
@@ -3247,6 +3207,76 @@ module ts
                     InputHandler.get_controller_trigger_left()
                     InputHandler.get_controller_trigger_right()
                 end
+            end
+
+            @testset "Audio" begin
+
+                @testset "Music" begin
+
+                    ms = ts.MusicHandler
+
+                    @test ms.sample_rate > 0
+                    music = Music("test/otherworldy_foe.mp3")
+                    @test music._native_id != Ptr{Cvoid}()
+
+                    ms.play!(music)
+                    ms.set_volume!(0)
+                    ms.play_next!(music)
+
+                    ms.skip_to!(seconds(0.1))
+
+                    @test ms.is_playing()
+
+                    ms.pause!()
+                    @test ms.is_paused()
+                    ms.unpause!()
+
+                    ms.next!()
+
+                    ms.set_volume!(0)
+                    @test ms.get_volume() == 0
+
+                    ms.play_next!(music)
+                    ms.clear_next!()
+
+                    ms.stop!()
+                    @test ms.is_stopped()
+
+                    ms.play!(music)
+                    ms.force_stop!()
+
+                    @test ms.is_stopped();
+                end
+
+                @testset "Sound" begin
+
+                    sh = ts.SoundHandler
+                    @test sh.n_channels > 0
+
+                    sound = Sound("test/ok_desu_ka.mp3", 0)
+
+                    for i in 1:sh.n_channels
+                        sh.play!(i, sound)
+                        sh.stop!(i)
+                    end
+
+                    sh.play!(1, sound)
+                    sh.set_volume!(1, 0)
+                    @test sh.get_volume(1) == 0
+
+                    sh.set_panning!(1, degrees(90))
+                    @test as_degrees(sh.get_panning(1)) == 90
+
+                    @test sh.is_playing(1)
+                    sh.pause!(1)
+                    @test sh.is_paused(1)
+                    sh.unpause!(1)
+                    @test sh.is_playing(1)
+                    sh.stop!(1)
+                    @test sh.is_stopped(1)
+
+                    sh.force_stop!(1)
+                end#
             end
 
         end

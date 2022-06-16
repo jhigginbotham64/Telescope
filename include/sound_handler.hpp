@@ -85,8 +85,8 @@ namespace ts
         private:
             static int32_t forward_index(size_t channel, const std::string function_name);
 
-            static inline std::array<float, n_channels> _volume = {};
-            static inline std::array<size_t, n_channels> _panning = {};
+            static inline std::array<float, n_channels> _volume = {1};
+            static inline std::array<size_t, n_channels> _panning = {0};
 
             static inline std::mutex _lock = std::mutex();
     };

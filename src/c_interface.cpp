@@ -1330,8 +1330,9 @@ size_t ts_sound_get_max_n_channels()
 size_t ts_sound_load(const char* path, float volume)
 {
     size_t id = std::hash<std::string>()(path);
-    detail::_sound_library.emplace(id, ts::Sound(path));
-    detail::_sound_library.at(id).set_volume(volume);
+    auto it = detail::_sound_library.emplace(id, ts::Sound());
+    it.first->second.load(path);
+    it.first->second.set_volume(volume);
     return id;
 }
 
