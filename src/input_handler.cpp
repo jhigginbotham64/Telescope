@@ -220,7 +220,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::is_down: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::is_down: No controller with id ", id, " connected, returning false");
+                already_printed.insert(id);
+            }
             return false;
         }
 
@@ -230,8 +235,10 @@ namespace ts
     bool InputHandler::has_state_changed(KeyboardKey keyboard_key)
     {
         wait_if_locked();
+
         bool before = _keyboard_state[0].pressed.find(keyboard_key) != _keyboard_state[0].pressed.end();
         bool after = _keyboard_state[1].pressed.find(keyboard_key) != _keyboard_state[1].pressed.end();
+
 
         return before != after;
     }
@@ -251,7 +258,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::has_state_changed: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::has_state_changed: No controller with id ", id, " connected, returning false");
+                already_printed.insert(id);
+            }
             return false;
         }
 
@@ -279,7 +291,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::was_pressed: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::was_pressed: No controller with id ", id, " connected, returning false");
+                already_printed.insert(id);
+            }
             return false;
         }
 
@@ -304,7 +321,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::was_released: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::was_released: No controller with id ", id, " connected, returning false");
+                already_printed.insert(id);
+            }
             return false;
         }
 
@@ -326,7 +348,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::get_controller_axis_left: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::get_controller_axis_left: No controller with id ", id, " connected, returning (0, 0)");
+                already_printed.insert(id);
+            }
             return Vector2f(0, 0);
         }
         return it->second[1].axis_left;
@@ -337,7 +364,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::get_controller_axis_right: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::get_controller_axis_right: No controller with id ", id, " connected, returning (0, 0)");
+                already_printed.insert(id);
+            }
             return Vector2f(0, 0);
         }
         return it->second[1].axis_right;
@@ -348,7 +380,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::get_controller_trigger_left: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::get_controller_trigger_left: No controller with id ", id, " connected, returning 0");
+                already_printed.insert(id);
+            }
             return 0;
         }
         return it->second[1].trigger_left;
@@ -359,7 +396,12 @@ namespace ts
         auto it = _controller_states.find(id);
         if (it == _controller_states.end())
         {
-            Log::warning("In ts::InputHandler::get_controller_trigger_right: No controller with id ", id, " connected, returning false");
+            static auto already_printed = std::set<size_t>();
+            if (already_printed.find(id) == already_printed.end())
+            {
+                Log::warning("In ts::InputHandler::get_controller_trigger_right: No controller with id ", id, " connected, returning 0");
+                already_printed.insert(id);
+            }
             return 0;
         }
         return it->second[1].trigger_right;

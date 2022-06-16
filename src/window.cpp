@@ -200,7 +200,7 @@ namespace ts
             Log::warning("In ts::Window::set_icon: Unable to load icon from file ", path);
 
         if (_icon->w != _icon->h)
-            Log::warning("In ts::Window::set_icon: Icon image should be square. Visual corruption may occur with icon \"", path, "\" which is of size ", _icon->w, "x", _icon->h);
+            Log::warning("In ts::Window::set_icon: Icon image should be square. Visual corruption may occur because icon \"", path, "\" is of size ", _icon->w, "x", _icon->h, ".");
 
         SDL_SetWindowIcon(_window, _icon);
     }

@@ -128,6 +128,8 @@ module ts
         x::T
         y::T
         z::T
+
+        Vector3{T}(x, y, z) where T = new{T}(x, y, z)
     end
     export Vector3
 
@@ -369,7 +371,6 @@ module ts
         return nanoseconds(out_ns)
     end
     export restart!; restart = restart!
-
 
     ### ANGLE ################################################################
 
@@ -708,7 +709,7 @@ module ts
             x = Ref{Cfloat}(0)
             y = Ref{Cfloat}(0)
             ccall((:ts_mouse_cursor_position, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
-            return Vector2f(x, y)
+            return Vector2f(x[], y[])
         end
         export get_cursor_position
 
@@ -720,7 +721,7 @@ module ts
             x = Ref{Cfloat}(0)
             y = Ref{Cfloat}(0)
             ccall((:ts_mouse_scrollwheel, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
-            return Vector2f(x, y)
+            return Vector2f(x[], y[])
         end
         export get_scrollwheel
         
@@ -732,7 +733,7 @@ module ts
         """
         `is_down(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function is_down(key::ControllerButton, id::ControllerID = 0) ::Bool
+        function is_down(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
             return ccall((:ts_controller_is_down, _lib), Bool, (Int64, Csize_t), key, id)
         end
         export is_down
@@ -740,7 +741,7 @@ module ts
         """
         `has_state_changed(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function has_state_changed(key::ControllerButton, id::ControllerID = 0) ::Bool
+        function has_state_changed(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
             return ccall((:ts_controller_has_state_changed, _lib), Bool, (Int64, Csize_t), key, id)
         end
         export has_state_changed
@@ -748,7 +749,7 @@ module ts
         """
         `was_pressed(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function was_pressed(key::ControllerButton, id::ControllerID = 0) ::Bool
+        function was_pressed(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
             return ccall((:ts_controller_was_pressed, _lib), Bool, (Int64, Csize_t), key, id)
         end
         export was_pressed
@@ -756,7 +757,7 @@ module ts
         """
         `was_released(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function was_released(key::ControllerButton, id::ControllerID = 0) ::Bool
+        function was_released(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
             return ccall((:ts_controller_was_released, _lib), Bool, (Int64, Csize_t), key, id)
         end
         export was_released
@@ -764,12 +765,14 @@ module ts
         """
         `get_controller_axis_left([::ControllerID]) -> Vector2f`
         """
-        function get_controller_axis_left(id::ControllerID = 0) ::Vector2f
+        function get_controller_axis_left(id::ControllerID = UInt64(0)) ::Vector2f
 
             x = Ref{Cfloat}(0)
             y = Ref{Cfloat}(0)
-            ccall((:ts_controller_axis_left, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
-            return Vector2f(x, y)
+            ccall((:ts_controller_axis_left, _lib), Cvoid,
+                (Csize_t, Ref{Cfloat}, Ref{Cfloat}),
+                id, x, y)
+            return Vector2f(x[], y[])
 
         end
         export get_controller_axis_left
@@ -777,12 +780,14 @@ module ts
         """
         `get_controller_axis_right([::ControllerID]) -> Vector2f`
         """
-        function get_controller_axis_right(id::ControllerID = 0) ::Vector2f
+        function get_controller_axis_right(id::ControllerID = UInt64(0)) ::Vector2f
 
             x = Ref{Cfloat}(0)
             y = Ref{Cfloat}(0)
-            ccall((:ts_controller_axis_right, _lib), Cvoid, (Ref{Cfloat}, Ref{Cfloat}), x, y)
-            return Vector2f(x, y)
+            ccall((:ts_controller_axis_right, _lib), Cvoid,
+                (Csize_t, Ref{Cfloat}, Ref{Cfloat}),
+                id, x, y)
+            return Vector2f(x[], y[])
 
         end
         export get_controller_axis_right
@@ -790,7 +795,7 @@ module ts
         """
         `get_controller_trigger_left([::ControllerID]) -> Float32`
         """
-        function get_controller_trigger_left(id::ControllerID = 0) ::Float32
+        function get_controller_trigger_left(id::ControllerID = UInt64(0)) ::Float32
             return ccall((:ts_controller_trigger_left, _lib), Cfloat, (Csize_t,), id)
         end
         export get_controller_trigger_left
@@ -798,8 +803,8 @@ module ts
         """
         `get_controller_trigger_right([::ControllerID]) -> Float32`
         """
-        function get_controller_trigger_right(id::ControllerID = 0) ::Float32
-            return ccall((:ts_controller_trigger_left, _lib), Cfloat, (Csize_t,), id)
+        function get_controller_trigger_right(id::ControllerID = UInt64(0)) ::Float32
+            return ccall((:ts_controller_trigger_right, _lib), Cfloat, (Csize_t,), id)
         end
         export get_controller_trigger_left
     end
@@ -3122,8 +3127,6 @@ module ts
                 @test as_degrees(radians(as_radians(angle))) == ns
             end
 
-            window::Union{Window, Nothing} = nothing
-
             @testset "Window" begin
 
                 window = ts.Window("", 1, 1, ts.DEFAULT)
@@ -3162,6 +3165,45 @@ module ts
                 end_frame!(window)
 
                 close!(window)
+            end
+
+            @testset "InputHandler" begin
+
+                # don't actually query input, just check if the function crashes
+                # asking the user to press specific buttons during the test would be annoying
+
+                function test_input(x)
+                    @test InputHandler.was_pressed(x) == false || was_pressed(x) == true
+                    @test InputHandler.was_released(x) == false || was_released(x) == true
+                    @test InputHandler.is_down(x) == false || is_down(x) == true
+                    @test InputHandler.has_state_changed(x) == false || has_state_changed(x) == true
+                end
+
+                @testset "Keyboard" begin
+                    for e in instances(KeyboardKey)
+                        test_input(e)
+                    end
+                end
+
+                @testset "Mouse" begin
+                    for e in instances(MouseButton)
+                        test_input(e)
+                    end
+
+                    cursor_pos = get_cursor_position()
+                    scrollwheel_pos = get_scrollwheel()
+                end
+
+                @testset "Controller" begin
+                    for e in instances(ControllerButton)
+                        test_input(e)
+                    end
+
+                    InputHandler.get_controller_axis_left()
+                    InputHandler.get_controller_axis_right()
+                    InputHandler.get_controller_trigger_left()
+                    InputHandler.get_controller_trigger_right()
+                end
             end
 
         end

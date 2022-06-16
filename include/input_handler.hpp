@@ -119,8 +119,10 @@ namespace ts
             /// \returns float in [0, 1], where 0: not pressed, 1: fully pressed
             static float get_controller_trigger_right(ControllerID = 0);
 
-        //protected:
+            // no docs
             static void update(ts::Window*);
+
+            // no docs
             static void update(std::vector<ts::Window*>);
 
         private:
