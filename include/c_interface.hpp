@@ -49,9 +49,9 @@ size_t ts_clock_create();
 
 void ts_clock_destroy(size_t id);
 
-double ts_clock_elapsed(size_t id);
+size_t ts_clock_elapsed(size_t id);
 
-double ts_clock_restart(size_t id);
+size_t ts_clock_restart(size_t id);
 
 // ### COLORS ##################################################
 
@@ -134,6 +134,8 @@ void ts_window_camera_get_view_area(size_t window_id,
 bool ts_initialize();
 
 void ts_set_framerate_limit(size_t frames_per_second);
+
+size_t ts_get_framerate_limit();
 
 double ts_start_frame(size_t window_id);
 
@@ -385,6 +387,23 @@ bool ts_collision_shape_get_is_rotation_fixed(void*);
 void ts_collision_shape_set_is_rotation_fixed(void*, bool);
 
 size_t ts_collision_shape_get_id(void*);
+
+/*
+void* ts_collision_circle_shape_create(size_t world_id, int type, float center_x, float center_y, float radius);
+void ts_collision_circle_shape_update(void*);
+
+void* ts_collision_triangle_shape_create(size_t world_id, int type, float a_x, float a_y, float b_x, float b_y, float c_x, float c_y);
+void ts_collision_triangle_shape_update(void*);
+
+void* ts_collision_rectangle_shape_create(size_t world_id, int type, float top_left_x, float top_left_y, float width, float height);
+void ts_collision_rectangle_shape_update(void*);
+
+void* ts_collision_line_shape_create(size_t world_id, int type, float a_x, float a_y, float b_x, float b_y);
+void ts_collision_line_shape_update(void*);
+
+void* ts_collision_wireframe_shape_create(size_t world_id, int type, float* xs, float* ys, size_t n_vertices);
+void s_collision_wireframe_shape_update(void*);
+*/
 
 // ### INPUT ###################################################
 

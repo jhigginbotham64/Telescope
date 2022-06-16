@@ -7,7 +7,7 @@ module ts
 
     ### EXPORTS ###############################################################
 
-    export initialize, set_framerate_limit!, start_frame!, end_frame!
+    export initialize, set_framerate_limit!, get_framerate_limit, start_frame!, end_frame!
 
     export Vector2, Vector2f, Vector2i, Vector2ui, Vector3, Vector3f, Vector3i, Vector3ui
 
@@ -102,6 +102,8 @@ module ts
     struct Vector2{T}
         x::T
         y::T
+
+        Vector2{T}(x, y) where T = new{T}(x, y)
     end
     export Vector2
 
@@ -173,7 +175,7 @@ module ts
     + alpha::Float32
 
     ## Constructors
-    `RGBA(h::Float32, s::Float32, v::Float32, a::Float32)`
+    `HSVA(h::Float32, s::Float32, v::Float32, a::Float32)`
     """
     struct HSVA
 
@@ -182,7 +184,7 @@ module ts
         value::Float32
         alpha::Float32
 
-        function RGBA(h::AbstractFloat, s::AbstractFloat, b::AbstractFloat, a::AbstractFloat)
+        function HSVA(h::AbstractFloat, s::AbstractFloat, v::AbstractFloat, a::AbstractFloat)
             fclamp(x::AbstractFloat) = if x < 0 return 0 elseif x > 1 return 1 else return x end
             new(fclamp(h), fclamp(s), fclamp(v), fclamp(a))
         end
@@ -215,7 +217,7 @@ module ts
         g = Ref{Float32}(-1)
         b = Ref{Float32}(-1)
 
-        ccall((:ts_rgb_to_hsv, _lib), Cvoid, 
+        ccall((:ts_hsv_to_rgb, _lib), Cvoid,
             (Cfloat, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
             hsva.hue, hsva.saturation, hsva.value, r, g, b)
             
@@ -236,6 +238,8 @@ module ts
     """
     struct Time
         _count_ns::Int64
+
+        Time(ns) = new(ns)
     end
     export Time
 
@@ -275,14 +279,14 @@ module ts
     `as_nanoseconds(::Time) -> Float64`
     """
     function as_nanoseconds(time::Time) ::Float64
-        return ccall((:ts_ns_to_nanoseconds, _lib), Cdouble, (Csize_t,), time._count_ns)
+        return ccall((:ts_ns_to_nanoseconds, _lib), Csize_t, (Csize_t,), time._count_ns)
     end
     export as_nanoseconds
 
     """
     `minutes(::Float64) -> Time`
     """
-    function minutes(n::Float64) ::Time
+    function minutes(n) ::Time
         ns::Csize_t = ccall((:ts_minutes_to_ns, _lib), Csize_t, (Cdouble,), n)
         return Time(ns)
     end
@@ -291,7 +295,7 @@ module ts
     """
     `seconds(::Float64) -> Time`
     """
-    function seconds(n::Float64) ::Time
+    function seconds(n) ::Time
         ns::Csize_t = ccall((:ts_seconds_to_ns, _lib), Csize_t, (Cdouble,), n)
         return Time(ns)
     end
@@ -300,7 +304,7 @@ module ts
     """
     `milliseconds(::Float64) -> Time`
     """
-    function milliseconds(n::Float64) ::Time
+    function milliseconds(n) ::Time
         ns::Csize_t = ccall((:ts_milliseconds_to_ns, _lib), Csize_t, (Cdouble,), n)
         return Time(ns)
     end
@@ -309,7 +313,7 @@ module ts
     """
     `microseconds(::Float64) -> Time`
     """
-    function microseconds(n::Float64) ::Time
+    function microseconds(n) ::Time
         ns::Csize_t = ccall((:ts_microseconds_to_ns, _lib), Csize_t, (Cdouble,), n)
         return Time(ns)
     end
@@ -318,8 +322,8 @@ module ts
     """
     `nanoseconds(::UInt64) -> Time`
     """
-    function nanoseconds(n::UInt64) ::Time
-        ns::Csize_t = ccall((:ts_nanoseconds_to_ns, _lib), Csize_t, (Cdouble,), n)
+    function nanoseconds(n) ::Time
+        ns::Csize_t = ccall((:ts_nanoseconds_to_ns, _lib), Csize_t, (Csize_t,), n)
         return Time(ns)
     end
     export nanoseconds
@@ -352,7 +356,7 @@ module ts
     `elapsed(::Clock) -> Time`
     """
     function elapsed(clock::Clock) ::Time
-        out_ns::Csize_t = ccall((:ts_clock_elapsed, _lib), Cdouble, (Csize_t,), clock._native_id)
+        out_ns::Csize_t = ccall((:ts_clock_elapsed, _lib), Csize_t, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
     end
     export elapsed
@@ -361,7 +365,7 @@ module ts
     `restart!(::Clock) -> Time`
     """
     function restart!(clock::Clock) ::Time
-        out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Cdouble, (Csize_t,), clock._native_id)
+        out_ns::Csize_t = ccall((:ts_clock_restart, _lib), Csize_t, (Csize_t,), clock._native_id)
         return nanoseconds(out_ns)
     end
     export restart!; restart = restart!
@@ -386,7 +390,7 @@ module ts
     """
     `degrees(::Float32) -> Angle`
     """
-    function degrees(n::Float32) ::Angle
+    function degrees(n) ::Angle
         return Angle(n % 360.0)
     end
     export degrees
@@ -394,8 +398,8 @@ module ts
     """
     `radians(::Float32) -> Angle`
     """
-    function radians(n::Float32) ::Angle
-        return Angle(ccall((:ts_radians_to_degree, _lib), Cfloat, (Cfloat,), n))
+    function radians(n) ::Angle
+        return Angle(ccall((:ts_radians_to_degrees, _lib), Cfloat, (Cfloat,), n))
     end
     export radians
 
@@ -1004,9 +1008,9 @@ module ts
         export get_volume
 
         """
-        `play!(::Music, ::Bool, ::Time) -> Nothing`
+        `play!(::Music, [::Bool, ::Time]) -> Nothing`
         """
-        function play!(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+        function play!(music::Music, should_loop::Bool = true, fade_in_duration::Time = seconds(0.0)) ::Nothing
             ccall((:ts_music_play, _lib), Cvoid,
                 (Csize_t, Bool, Cdouble),
                 music._native_id, should_loop, as_milliseconds(fade_in_duration))
@@ -1014,9 +1018,9 @@ module ts
         export play!; play = play!
 
         """
-        `play_next!(::Music, ::Bool, ::Time) -> Nothing
+        `play_next!(::Music, [::Bool, ::Time]) -> Nothing
         """
-        function play_next!(music::Music, should_loop::Bool, fade_in_duration::Time) ::Nothing
+        function play_next!(music::Music, should_loop::Bool = false, fade_in_duration::Time = seconds(0.0)) ::Nothing
             ccall((:ts_music_play_next, _lib), Cvoid,
                 (Csize_t, Bool, Cdouble),
                 music._native_id, should_loop, as_milliseconds(fade_in_duration))
@@ -1739,7 +1743,7 @@ module ts
     ## Constructors
     `TriangleShape(::Vector2f, ::Vector2f, ::Vector2f)`
     """
-    mutable struct TriangleShape
+    mutable struct TriangleShape <: Shape
 
         _native::Ptr{Cvoid}
 
@@ -1770,7 +1774,7 @@ module ts
     ## Constructors
     `RectangleShape(top_left::Vector2f, size::Vector2f)`
     """
-    mutable struct RectangleShape
+    mutable struct RectangleShape <: Shape
 
         _native::Ptr{Cvoid}
 
@@ -1781,7 +1785,7 @@ module ts
                 top_left.x, top_left.y, size.x, size.y)
 
             out = new(native)
-            finalize(out) do x::RectangleShape
+            finalizer(out) do x::RectangleShape
                 ccall((:ts_shape_destroy_rectangle, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
@@ -1847,7 +1851,7 @@ module ts
     ## Constructors
     `CircleShape(center::Vector2f, radius::Float32, [n_vertices::UInt64])
     """
-    mutable struct CircleShape
+    mutable struct CircleShape <: Shape
 
         _native::Ptr{Cvoid}
 
@@ -1893,7 +1897,7 @@ module ts
     ## Constructors
     `PolygonShape(points::Vector2f...)`
     """
-    mutable struct PolygonShape
+    mutable struct PolygonShape <: Shape
 
         _native::Ptr{Cvoid}
 
@@ -1917,7 +1921,7 @@ module ts
                 pointer_from_objret(xs), pointer_from_objref(ys), n)
 
             out = new(native)
-            finalize(out) do x::PolygonShape
+            finalizer(out) do x::PolygonShape
                 ccall((:ts_shape_destroy_polygon, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
@@ -1953,7 +1957,7 @@ module ts
         _native_id::Csize_t
 
         function Window(title::String, width::Integer, height::Integer, options::UInt32 = UInt32(DEFAULT))
-            id = ccall((:ts_window_create, _lib), Csize_t, (Csize_t, Csize_t, Cstring, UInt32), width, height, title, options)
+            id = ccall((:ts_window_create, _lib), Csize_t, (Cstring, Csize_t, Csize_t, UInt32), title, width, height, options)
             out = new(id)
             finalizer(out) do x::Window
                 ccall((:ts_window_destroy, _lib), Cvoid, (Csize_t,), x._native_id)
@@ -1961,11 +1965,11 @@ module ts
             return out
         end
 
-        function Window(title::String, width::Integer, height::Integer, options::WindowOptions)
+        function Window(title::String, width::Integer, height::Integer, options::WindowOptions = DEFAULT)
             Window(title, width, height, UInt32(options))
         end
 
-        function Window(width::Integer, height::Integer, options::WindowOptions)
+        function Window(width::Integer, height::Integer, options::WindowOptions = DEFAULT)
             Window("", width, height, options)
         end
     end
@@ -1992,9 +1996,12 @@ module ts
     """
     function get_size(window::Window) ::Vector2ui
 
-        x = Ref{Csize_t}(-1)
-        y = Ref{Csize_t}(-1)
-        ccall((:ts_window_get_size, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
+        x = Ref{Csize_t}(0)
+        y = Ref{Csize_t}(0)
+        ccall((:ts_window_get_size, _lib), Cvoid,
+            (Csize_t, Ref{Csize_t}, Ref{Csize_t}),
+            window._native_id, x, y)
+
         return Vector2ui(x[], y[])
     end
     export get_size
@@ -2004,9 +2011,12 @@ module ts
     """
     function get_position(window::Window) ::Vector2ui
 
-        x = Ref{Csize_t}(-1)
-        y = Ref{Csize_t}(-1)
-        ccall((:ts_window_get_position, _lib), Cvoid, (Ref{Csize_t}, Ref{Csize_t}), x, y)
+        x = Ref{Csize_t}(0)
+        y = Ref{Csize_t}(0)
+        ccall((:ts_window_get_position, _lib), Cvoid,
+            (Csize_t, Ref{Csize_t}, Ref{Csize_t}),
+            window._native_id, x, y)
+
         return Vector2ui(x[], y[])
     end
     export get_position
@@ -2084,9 +2094,9 @@ module ts
     export clear!; clear = clear!
 
     """
-    `render!(::Window, ::Shape, ::Transform) -> Nothing`
+    `render!(::Window, ::Shape, [::Transform]) -> Nothing`
     """
-    function render!(window::Window, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: Shape
+    function render!(window::Window, shape::Shape, transform::Transform = Transform()) ::Nothing
         ccall((:ts_shape_render_to_window, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Ptr{Cvoid}),
             shape._native, window._native_id, transform._native)
@@ -2094,9 +2104,9 @@ module ts
     export render!; render = render!
 
     """
-    `render!(::RenderTexture, ::Shape, ::Transform) -> Nothing`
+    `render!(::RenderTexture, ::Shape, [::Transform]) -> Nothing`
     """
-    function render!(render_texture::RenderTexture, shape::Shape_t, transform::Transform) ::Nothing where Shape_t <: Shape
+    function render!(render_texture::RenderTexture, shape::Shape, transform::Transform = Transform()) ::Nothing
         ccall((:ts_shape_render_to_texture, _lib), Cvoid,
             (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}),
             shape._native, render_texture._native, transform._native)
@@ -2126,6 +2136,14 @@ module ts
         ccall((:ts_set_framerate_limit, _lib), Cvoid, (Csize_t,), convert(Csize_t, n_fps))
     end
     export set_framerate_limit!; set_framerate_limit = set_framerate_limit!
+
+    """
+    `get_framerate_limit() -> Csize_t`
+    """
+    function get_framerate_limit() ::Csize_t
+        return ccall((:ts_get_framerate_limit, _lib), Csize_t, ())
+    end
+    export get_framerate_limit
 
     """
     `start_frame!(::Window) -> Time`
@@ -2849,7 +2867,7 @@ module ts
         ccall((:ts_collision_shape_apply_linear_impulse_to_center, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, impulse.x, impulse.y)
     end
-    export apply_lienar_impulse_to_center!; apply_lienar_impulse_to_center = apply_lienar_impulse_to_center!
+    export apply_linear_impulse_to_center!; apply_linear_impulse_to_center = apply_linear_impulse_to_center!
 
     """
     `get_mass(::CollisionShape) -> Float32`
@@ -2870,7 +2888,7 @@ module ts
     """
     `set_is_bullet!(::CollisionShape, ::Bool) -> Nothing`
     """
-    function set_is_bullet(shape::CollisionShape, value::Bool) ::Nothing
+    function set_is_bullet!(shape::CollisionShape, value::Bool) ::Nothing
         ccall((:ts_collision_shape_set_is_bullet, _lib), Cvoid, (Ptr{Cvoid}, Bool), shape._native, value)
     end
     export set_is_bullet!; set_is_bullet = set_is_bullet!
@@ -3063,36 +3081,19 @@ module ts
         import Main.ts; using Main.ts
         import Test; using Test
 
-        function main()
-
-            window = Window("running tests...", 500, 500, ts.DEFAULT)
-            #world = PhysicsWorld()
-
-            while is_open(window)
-
-                time = ts.start_frame(window)
-
-                if ts.InputHandler.was_pressed(ts.SPACE)
-                    println("space")
-                end
-
-                ts.end_frame!(window)
-            end
-        end
-
         function run()
 
             @test ts.initialize()
 
             @testset "Colors" begin
 
-                rgb_in = RGBA(1, 0.5, 0.5, 1)
-                hsv = as_hsv(rgb)
+                rgb_in = RGBA(1.0, 0.5, 0.5, 1.0)
+                hsv = as_hsv(rgb_in)
                 rgb = as_rgb(hsv)
-                @test rgb.r == rgb_in.r
-                @test rgb.g == rgb_in.g
-                @test rgb.b == rgb_in.b
-                @test rgb.a == rgb_in.a
+                @test rgb.red == rgb_in.red
+                @test rgb.green == rgb_in.green
+                @test rgb.blue == rgb_in.blue
+                @test rgb.alpha == rgb_in.alpha
             end
 
             @testset "Time" begin
@@ -3107,10 +3108,10 @@ module ts
                 @test as_nanoseconds(nanoseconds(ns)) == ns
 
                 clock = Clock()
-                sleep(0.3)
-                @test elapsed(clock).as_seconds > 0.2
-                @test restart(clock).as_seconds > 0.2
-                @test elapsed(clock).as_seconds < 0.05
+                sleep(0.01)
+                @test as_seconds(elapsed(clock)) > 0.005
+                @test as_seconds(restart(clock)) > 0.005
+                @test as_seconds(elapsed(clock)) < 0.05
             end
 
             @testset "Angle" begin
@@ -3125,20 +3126,20 @@ module ts
 
             @testset "Window" begin
 
-                window = ts.Window(0, 0, "TEST IN PROGRESS", DEFAULT)
+                window = ts.Window("", 1, 1, ts.DEFAULT)
 
                 @test is_open(window)
-                @test has_focus(window) == true
+                @test has_focus(window) == false
                 @test has_mouse_focus(window) == false
 
-                @test get_size(window) == Vector2f(0, 0)
+                @test get_size(window) == Vector2ui(1, 1)
                 @test get_position(window).x >= 0
                 @test get_position(window).y >= 0
 
                 set_hidden!(window, true)
-                @test is_hidden(window) == false
-                set_hidden!(window, false)
                 @test is_hidden(window) == true
+                set_hidden!(window, false)
+                @test is_hidden(window) == false
 
                 minimize!(window)
                 @test is_minimized(window) == true
@@ -3147,11 +3148,23 @@ module ts
                 @test is_maximized(window) == true
 
                 clear!(window)
+
+                shape = RectangleShape(Vector2f(0, 0), Vector2f(10, 10));
+                render!(window, shape)
+                flush!(window)
+
+                set_icon!(window, "docs/_static/favicon.png")
+
+                set_framerate_limit!(60)
+                @test get_framerate_limit() == 60
+
+                start_frame!(window)
+                end_frame!(window)
+
+                close!(window)
             end
 
         end
         # no export
     end
 end
-
-Main.ts.test.main()

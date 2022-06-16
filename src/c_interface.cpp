@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iostream>
+#include <string>
 
 #include <include/common.hpp>
 #include <include/window.hpp>
@@ -143,7 +144,7 @@ size_t ts_window_create(
     auto id = detail::_window_id++;
     detail::_windows.emplace(id, ts::Window());
     auto& window = detail::_windows.at(id);
-    window.create(title, width, height, options);
+    window.create(std::string(title), width, height, options);
     detail::_cameras.emplace(id, ts::Camera(&window));
 
     return id;
@@ -168,12 +169,16 @@ bool ts_window_is_open(size_t id)
 
 void ts_window_get_size(size_t window_id, size_t* out_x, size_t* out_y)
 {
-    SDL_GetWindowSize(detail::_windows.at(window_id).get_native(), (int*) out_x, (int*) out_y);
+    auto out = detail::_windows.at(window_id).get_size();
+    *out_x = out.x;
+    *out_y = out.y;
 }
 
 void ts_window_get_position(size_t window_id, size_t* out_x, size_t* out_y)
 {
-    SDL_GetWindowPosition(detail::_windows.at(window_id).get_native(), (int*) out_x, (int*) out_y);
+    auto out = detail::_windows.at(window_id).get_position();
+    *out_x = out.x;
+    *out_y = out.y;
 }
 
 void ts_window_set_hidden(size_t id, bool hidden)
@@ -312,6 +317,11 @@ bool ts_initialize()
 void ts_set_framerate_limit(size_t frames_per_second)
 {
     ts::set_framerate_limit(frames_per_second);
+}
+
+size_t ts_get_framerate_limit()
+{
+    return ts::get_framerate_limit();
 }
 
 double ts_start_frame(size_t window_id)
@@ -727,7 +737,10 @@ namespace detail
 size_t ts_physics_world_create()
 {
     auto id = detail::_id++;
-    detail::_worlds.emplace(id, ts::PhysicsWorld());
+    detail::_worlds.emplace(
+        std::piecewise_construct,
+        std::forward_as_tuple(id),
+        std::forward_as_tuple());
     return id;
 }
 

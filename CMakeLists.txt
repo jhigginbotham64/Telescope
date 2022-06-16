@@ -192,9 +192,6 @@ add_library(telescope SHARED
     include/collision_wireframe.hpp
     src/collision_wireframe.cpp
 
-    include/collision_handler.hpp
-    src/collision_handler.cpp
-
     include/collision_circle_shape.hpp
     include/collision_rectangle_shape.hpp
     include/collision_triangle_shape.hpp

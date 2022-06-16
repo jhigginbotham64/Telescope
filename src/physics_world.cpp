@@ -146,6 +146,10 @@ namespace ts
         _event_queue.clear();
     }
 
+    PhysicsWorld::ContactListener::ContactListener(PhysicsWorld * world)
+        : _world(world)
+    {}
+
     // shapes start to overlap
     void PhysicsWorld::ContactListener::BeginContact(b2Contact *contact)
     {

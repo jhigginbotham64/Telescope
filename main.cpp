@@ -42,21 +42,6 @@
 
 using namespace ts;
 
-int main()
-{
-    auto window_id = ts_window_create("test", 500, 500, ts::DEFAULT);
-    auto world_id = ts_physics_world_create();
-
-    while (ts_window_is_open(window_id))
-    {
-        float time = ts_start_frame(window_id);
-
-        if (ts_keyboard_was_pressed(ts::SPACE))
-    }
-}
-
-/*
-
 float rng()
 {
     return rand() / float(RAND_MAX);
@@ -100,6 +85,13 @@ int main()
 {
     initialize();
 
+    auto window = ts_window_create("title", 0, 0, ts::DEFAULT);
+    size_t x, y;
+    ts_window_get_size(window, &x, &y);
+
+    std::cout << x << " " << y << std::endl;
+    /*
+
     size_t ll = 5;
     size_t h = 600;
     size_t w = 800;
@@ -109,8 +101,6 @@ int main()
 
     auto world = PhysicsWorld();
     world.set_gravity({0, 100});
-
-    auto collision_handler = CollisionHandler(&world);
 
     auto camera = Camera(&window);
 
@@ -256,6 +246,5 @@ int main()
         player.update();
         ts::end_frame(&window);
     }
+     */
 }
-
- */

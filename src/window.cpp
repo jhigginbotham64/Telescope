@@ -4,6 +4,8 @@
 //
 
 #include <include/window.hpp>
+#include <include/logging.hpp>
+
 #include <SDL2/SDL_image.h>
 
 namespace ts
@@ -38,6 +40,16 @@ namespace ts
 
     void Window::create(std::string title, size_t width, size_t height, uint32_t options)
     {
+        if (width == 0 or height == 0)
+        {
+            Log::warning("In ts::Window::create: Trying to create a window of size ", width, "x", height,
+                         ". Instead, resizing window to ", std::max<size_t>(width, 1), "x",
+                         std::max<size_t>(height, 1));
+
+            width = std::max<size_t>(width, 1);
+            height = std::max<size_t>(height, 1);
+        }
+
         if (options & (1 << 1))
             _is_fullscreen = true;
 
@@ -184,6 +196,12 @@ namespace ts
             SDL_FreeSurface(_icon);
 
         _icon = IMG_Load(path.c_str());
+        if (_icon == nullptr)
+            Log::warning("In ts::Window::set_icon: Unable to load icon from file ", path);
+
+        if (_icon->w != _icon->h)
+            Log::warning("In ts::Window::set_icon: Icon image should be square. Visual corruption may occur with icon \"", path, "\" which is of size ", _icon->w, "x", _icon->h);
+
         SDL_SetWindowIcon(_window, _icon);
     }
 

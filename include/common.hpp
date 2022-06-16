@@ -18,6 +18,10 @@ namespace ts
     /// \param frames_per_second: integer
     void set_framerate_limit(size_t frames_per_second);
 
+    /// \brief get the fps limit for all windows
+    /// \returns number of frames per second
+    size_t get_framerate_limit();
+
     /// \brief start the frame, updates input component and window, nothing should happen in between this and end_frame
     /// \param window
     ts::Time start_frame(Window* window);

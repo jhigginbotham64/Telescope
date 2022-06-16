@@ -18,5 +18,3 @@
 #include <include/collision_circle_shape.hpp>
 #include <include/collision_line_shape.hpp>
 #include <include/collision_wireframe_shape.hpp>
-
-#include <include/collision_handler.hpp>

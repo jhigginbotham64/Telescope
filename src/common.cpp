@@ -86,6 +86,11 @@ namespace ts
         detail::_target_fps = frames_per_second;
     }
 
+    size_t get_framerate_limit()
+    {
+        return detail::_target_fps;
+    }
+
     ts::Time start_frame(std::vector<Window*> windows)
     {
         ts::InputHandler::update(windows);
