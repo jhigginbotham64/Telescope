@@ -1693,6 +1693,10 @@ module ts
 
         index -= 1;
 
+        if i > get_n_vertices(shape)
+            throw(BoundsError(shape, i))
+        end
+
         x = Ref{Cfloat}(-1)
         y = Ref{Cfloat}(-1)
 
@@ -1712,6 +1716,10 @@ module ts
     function get_vertex_color(shape::Shape, index::Integer) ::RGBA
 
         index -= 1;
+
+        if i > get_n_vertices(shape)
+            throw(BoundsError(shape, i))
+        end
 
         r = Ref{Cfloat}(-1)
         g = Ref{Cfloat}(-1)
@@ -1734,6 +1742,10 @@ module ts
     function get_vertex_texture_coordinate(shape::Shape, index::Integer) ::Vector2f
 
         index -= 1;
+
+        if i > get_n_vertices(shape)
+            throw(BoundsError(shape, i))
+        end
 
         x = Ref{Cfloat}(-1)
         y = Ref{Cfloat}(-1)
@@ -3098,6 +3110,42 @@ module ts
         function run()
 
             test_icon = "docs/_static/favicon.png"
+
+            @testset "Shapes" begin
+
+                triangle = TriangleShape(Vector2f(0, 1), Vector2f(1, 0), Vector2f(0.5, 0.5))
+                @test get_vertex_position(triangle, 1) == Vector2f(0, 1)
+                @test get_vertex_position(triangle, 2) == Vector2f(1, 0)
+                @test get_vertex_position(triangle, 3) == Vector2f(0.5, 0.5)
+
+                rectangle = RectangleShape(Vector2f(0, 0), Vector2f(1, 1))
+                @test get_vertex_position(rectangle, 1) == Vector2f(0, 0)
+                @test get_vertex_position(rectangle, 2) == Vector2f(1, 0)
+                @test get_vertex_position(rectangle, 3) == Vector2f(0, 1)
+                @test get_vertex_position(rectangle, 4) == Vector2f(1, 1)
+
+                @test get_top_left(rectangle) == Vector2f(0, 0)
+                @test get_size(rectangle) == Vector2f(1, 1)
+
+                set_top_left!(rectangle, Vector2f(1, 1))
+                @test get_top_left(rectangle) == Vector2f(1, 1)
+                set_size!(rectangle, Vector2f(0.5, 0.5))
+                @test get_size(rectangle) == Vector2f(0.5, 0.5)
+
+                circle = CircleShape(Vector2f(1, 1), 1, 16)
+                @test get_radius(circle) == 1
+                set_radius!(circle, 2)
+                @test get_radius(circle) == 2
+
+                polygon = PolygonShape(Vector2f(0, 0), Vector2f(1, 0), Vector2f(1, 1), Vector2f(0, 1))
+                @test get_vertex_position(polygon, 1) == Vector2f(0, 0)
+                @test get_vertex_position(polygon, 2) == Vector2f(1, 0)
+                @test get_vertex_position(polygon, 3) == Vector2f(1, 1)
+                @test get_vertex_position(polygon, 4) == Vector2f(0, 1)
+
+            end
+
+            return
 
             @testset "Transform" begin
 
