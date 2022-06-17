@@ -89,6 +89,7 @@ We see that both code excerpts are extremely similar. The only notable differenc
         + :code:`ts.<member_function>(<instance>, <arg>)`
     because Julia does not offer C++-style member functions natively.
 - a :code:`!` is appended to names of functions that mutate their arguments, this adheres to Julia syntax convention
+- any index that would be 0-based in C++ is instead 1-based
 
 Other than this, there is very little difference in notation between C++ telescope and Julia telescope. The Julia package
 has the exact same classes and functions, named exactly the same, exhibiting exactly the same behavior.

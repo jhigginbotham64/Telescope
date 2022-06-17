@@ -160,8 +160,8 @@ module ts
         blue::Float32
         alpha::Float32
 
-        function RGBA(r::AbstractFloat, g::AbstractFloat, b::AbstractFloat, a::AbstractFloat)
-            fclamp(x::AbstractFloat) = if x < 0 return 0 elseif x > 1 return 1 else return x end
+        function RGBA(r::Number, g::Number, b::Number, a::Number)
+            fclamp(x) ::Float32 = if x < 0 return 0 elseif x > 1 return 1 else return x end
             new(fclamp(r), fclamp(g), fclamp(b), fclamp(a))
         end
     end
@@ -186,8 +186,8 @@ module ts
         value::Float32
         alpha::Float32
 
-        function HSVA(h::AbstractFloat, s::AbstractFloat, v::AbstractFloat, a::AbstractFloat)
-            fclamp(x::AbstractFloat) = if x < 0 return 0 elseif x > 1 return 1 else return x end
+        function HSVA(h::Number, s::Number, v::Number, a::Number)
+            fclamp(x) ::Float32 = if x < 0 return 0 elseif x > 1 return 1 else return x end
             new(fclamp(h), fclamp(s), fclamp(v), fclamp(a))
         end
     end
@@ -1173,7 +1173,7 @@ module ts
         _native::Ptr{Cvoid}
 
         # equivalent to ts::RenderTexture::create
-        function RenderTexture(window::AbstractWindow, width::Unsigned, height::Unsigned)
+        function RenderTexture(window::AbstractWindow, width, height)
 
             native = ccall((:ts_texture_create_render_texture, _lib),
                     Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
@@ -1205,24 +1205,23 @@ module ts
         function StaticTexture(window::AbstractWindow, path::String)
 
             native = ccall((:ts_texture_load_static_texture, _lib),
-                Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
-                window._native_id, width, height)
+                Ptr{Cvoid}, (Csize_t, Cstring), window._native_id, path)
 
             out = new(native)
-            finalizer(out) do x::RenderTexture
+            finalizer(out) do x::StaticTexture
                 ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
 
         # equivalent to ts::StaticTexture::create
-        function StaticTexture(window::AbstractWindow, width::Unsigned, height::Unsigned, color::RGBA)
+        function StaticTexture(window::AbstractWindow, width, height, color::RGBA)
 
             native = ccall((:ts_texture_create_static_texture, _lib),
                 Ptr{Cvoid}, (Csize_t, Csize_t, Csize_t),
                 window._native_id, width, height)
 
             out = new(native)
-            finalizer(out) do x::RenderTexture
+            finalizer(out) do x::StaticTexture
                 ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
@@ -1263,8 +1262,7 @@ module ts
     function set_blend_mode!(texture::Texture, mode::TextureBlendMode) ::Nothing
         ccall((:ts_texture_set_blend_mode, _lib), Cvoid,
             (Ptr{Cvoid}, Cint),
-            texture._native,
-            convert(Cint, mode))
+            texture._native, mode)
     end
     export set_blend_mode!; set_blend_mode = set_blend_mode!
 
@@ -1273,7 +1271,7 @@ module ts
     """
     function get_blend_mode(texture::Texture) ::TextureBlendMode
         out::Cint = ccall((:ts_texture_get_blend_mode, _lib), Cint, (Ptr{Cvoid},), texture._native)
-        return convert(TextureBlendMode, out)
+        return TextureBlendMode(out)
     end
     export get_blend_mode
 
@@ -1283,8 +1281,7 @@ module ts
     function set_filtering_mode!(texture::Texture, mode::TextureFilteringMode) ::Nothing
         ccall((:ts_texture_set_filtering_mode, _lib), Cvoid,
             (Ptr{Cvoid}, Cint),
-            texture._native,
-            convert(Cint, mode))
+            texture._native, mode)
     end
     export set_filtering_mode!; set_filtering_mode = set_filtering_mode!
 
@@ -1293,7 +1290,7 @@ module ts
     """
     function get_filtering_mode(texture::Texture) ::TextureFilteringMode
         out::Cint = ccall((:ts_texture_get_filtering_mode, _lib), Cint, (Ptr{Cvoid},), texture._native)
-        return convert(TextureBlendMode, out)
+        return TextureFilteringMode(out)
     end
     export get_filtering_mode
 
@@ -1306,10 +1303,10 @@ module ts
         y = Ref{Csize_t}(0)
 
         ccall((:ts_texture_get_size, _lib), Cvoid,
-            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
+            (Ptr{Cvoid}, Ref{Csize_t}, Ref{Csize_t}),
             texture._native, x, y)
 
-        return Vector2f(x[], y[])
+        return Vector2ui(x[], y[])
 
     end
     export get_size
@@ -3091,7 +3088,44 @@ module ts
 
         function run()
 
+            test_icon = "docs/_static/favicon.png"
+
             @test ts.initialize()
+
+            @testset "Textures" begin
+
+                for e in instances(TextureFilteringMode)
+                    @test Int32(e) > -2
+                end
+
+                for e in instances(TextureBlendMode)
+                    @test Int32(e) > -2
+                end
+
+                window = Window(1, 1)
+
+                render = RenderTexture(window, 100, 100)
+                @test render._native != Ptr{Cvoid}()
+
+                static = StaticTexture(window, 100, 100, RGBA(0.5, 1, 1, 1))
+                @test static._native != Ptr{Cvoid}()
+
+                static = StaticTexture(window, test_icon)
+                @test static._native != Ptr{Cvoid}()
+
+                set_color!(render, RGBA(0, 0, 0, 1))
+                @test get_color(render) == RGBA(0, 0, 0, 1)
+
+                set_blend_mode!(render, ts.ADD)
+                @test get_blend_mode(render) == ts.ADD
+
+                set_filtering_mode!(render, ts.LINEAR)
+                @test get_filtering_mode(render) == ts.LINEAR
+
+                @test get_size(render) == Vector2ui(100, 100)
+            end
+
+            return
 
             @testset "Colors" begin
 
@@ -3159,7 +3193,7 @@ module ts
                 render!(window, shape)
                 flush!(window)
 
-                set_icon!(window, "docs/_static/favicon.png")
+                set_icon!(window, test_icon)
 
                 set_framerate_limit!(60)
                 @test get_framerate_limit() == 60

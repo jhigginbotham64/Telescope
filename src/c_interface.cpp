@@ -414,7 +414,8 @@ void ts_texture_get_size(void* texture, size_t* out_x, size_t* out_y)
 
 void ts_texture_destroy_texture(void* texture)
 {
-    delete ((ts::Texture*) texture);
+    if (texture != nullptr)
+        delete ((ts::Texture*) texture);
 }
 
 void* ts_texture_create_render_texture(size_t window_id, size_t width, size_t height)
@@ -469,7 +470,8 @@ void* ts_transform_create()
 
 void ts_transform_destroy(void* transform_ptr)
 {
-    delete ((ts::Transform*) transform_ptr);
+    if (transform_ptr != nullptr)
+        delete ((ts::Transform*) transform_ptr);
 }
 
 void ts_transform_set(void* transform_ptr, size_t x, size_t y, float value)
@@ -655,7 +657,8 @@ void ts_shape_triangle_get_vertices(void* triangle_ptr,
 
 void ts_shape_destroy_triangle(void* triangle_ptr)
 {
-    delete ((ts::TriangleShape*) triangle_ptr);
+    if (triangle_ptr != nullptr)
+        delete ((ts::TriangleShape*) triangle_ptr);
 }
 
 void* ts_shape_create_rectangle(float top_left_x, float top_left_y, float width, float height)
@@ -665,7 +668,8 @@ void* ts_shape_create_rectangle(float top_left_x, float top_left_y, float width,
 
 void ts_shape_destroy_rectangle(void* rectangle_ptr)
 {
-    delete ((ts::TriangleShape*) rectangle_ptr);
+    if (rectangle_ptr != nullptr)
+        delete ((ts::TriangleShape*) rectangle_ptr);
 }
 
 void ts_shape_rectangle_set_top_left(void* rectangle_ptr, float top_left_x, float top_left_y)
@@ -709,7 +713,8 @@ void ts_shape_circle_set_radius(void* circle_ptr, float radius)
 
 void ts_shape_destroy_circle(void* circle_ptr)
 {
-    delete ((ts::Circle*) circle_ptr);
+    if (circle_ptr != nullptr)
+        delete ((ts::Circle*) circle_ptr);
 }
 
 void* ts_shape_create_polygon(float* vertices_x, float* vertices_y, size_t n_vertices)
@@ -723,7 +728,8 @@ void* ts_shape_create_polygon(float* vertices_x, float* vertices_y, size_t n_ver
 
 void ts_shape_destroy_polygon(void* polygon_ptr)
 {
-    delete ((ts::PolygonShape*) polygon_ptr);
+    if (polygon_ptr != nullptr)
+        delete ((ts::PolygonShape*) polygon_ptr);
 }
 
 // ### COLLISION ###################################################
@@ -842,7 +848,8 @@ void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_
 
 void ts_collision_shape_destroy(void* shape)
 {
-    delete ((ts::CollisionShape*) shape);
+    if (shape != nullptr)
+        delete ((ts::CollisionShape*) shape);
 }
 
 void ts_collision_shape_set_density(void* shape, float v)
