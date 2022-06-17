@@ -12,6 +12,8 @@
 #include <include/render_target.hpp>
 #include <include/shape.hpp>
 
+#include <iostream> // TODO
+
 namespace ts
 {
     void Shape::render(RenderTarget* target, Transform transform) const
@@ -95,7 +97,7 @@ namespace ts
             v.position.y += y_offset;
         }
 
-        update_xy();
+        signal_vertices_updated();
     }
 
     void Shape::set_color(RGBA color)
@@ -169,6 +171,21 @@ namespace ts
         update_xy();
     }
 
+    Vector2f Shape::get_centroid() const
+    {
+        auto out = Vector2f(0, 0);
+        for (auto& v : _vertices)
+        {
+            out.x += float(v.position.x);
+            out.y += float(v.position.y);
+        }
+
+        out.x /= float(_vertices.size());
+        out.y /= float(_vertices.size());
+
+        return out;
+    }
+
     void Shape::set_vertex_color(size_t index, RGBA color)
     {
         _vertices.at(index).color = color.operator SDL_Color();
@@ -238,7 +255,6 @@ namespace ts
             v.position.x = center.x + cos(angle_rad) * distance * scale;
             v.position.y = center.y + sin(angle_rad) * distance * scale;
         }
-
         update_xy();
     }
 }

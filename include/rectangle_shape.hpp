@@ -36,10 +36,6 @@ namespace ts
             /// \param new_position: new position of the centroid
             void set_centroid(Vector2f) override;
 
-            /// \brief get the centroid
-            /// \returns centroid
-            Vector2f get_centroid() const override;
-
             /// \brief set top left corners' coordinate, moves all vertices accordingly
             /// \param new_position: new position of the top left corner
             void set_top_left(Vector2f);

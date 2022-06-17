@@ -28,7 +28,7 @@ namespace ts
 
             /// \brief get the position of the shapes centroid
             /// \returns position, true coordinates
-            virtual Vector2f get_centroid() const = 0;
+            virtual Vector2f get_centroid() const;
 
             /// \brief move the shape such that its centroid will be offset by the specified amount
             /// \param x_offset: offset along the x-axis, true coordinates

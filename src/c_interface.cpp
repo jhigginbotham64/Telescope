@@ -543,7 +543,7 @@ void ts_shape_move(void* shape_ptr, float x, float y)
     ((ts::Shape*) shape_ptr)->move(x, y);
 }
 
-void ts_shape_get_centroid(void* shape_ptr, int* out_x, int* out_y)
+void ts_shape_get_centroid(void* shape_ptr, float* out_x, float* out_y)
 {
     auto centroid = ((ts::Shape*) shape_ptr)->get_centroid();
     *out_x = centroid.x;
@@ -691,7 +691,7 @@ void ts_shape_rectangle_set_size(void* rectangle_ptr, float width, float height)
 
 void ts_shape_rectangle_get_size(void* rectangle_ptr, float* out_width, float* out_height)
 {
-    auto out = ((ts::RectangleShape*) rectangle_ptr)->get_top_left();
+    auto out = ((ts::RectangleShape*) rectangle_ptr)->get_size();
     *out_width = out.x;
     *out_height = out.y;
 }

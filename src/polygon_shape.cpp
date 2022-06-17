@@ -86,15 +86,9 @@ namespace ts
         Shape::signal_vertices_updated();
     }
 
-    Vector2f PolygonShape::get_centroid() const
-    {
-        auto aabb = get_bounding_box();
-        return aabb.top_left + (aabb.size / Vector2f{2, 2});
-    }
-
     void PolygonShape::set_centroid(Vector2f new_centroid)
     {
-        auto offset = get_centroid() - new_centroid;
+        auto offset = new_centroid - get_centroid();
 
         for (auto& v : _vertices)
         {

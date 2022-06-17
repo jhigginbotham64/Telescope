@@ -83,9 +83,4 @@ namespace ts
 
         update();
     }
-
-    Vector2f TriangleShape::get_centroid() const
-    {
-        return _centroid;
-    }
 }

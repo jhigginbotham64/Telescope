@@ -213,13 +213,13 @@ void ts_shape_render_to_window(void *shape_ptr, size_t window_id, void *transfor
 
 void ts_shape_render_to_texture(void *shape_ptr, void *render_texture_ptr, void *transform_ptr);
 
-void ts_shape_get_centroid(void *shape_ptr, int *out_x, int *out_y);
+void ts_shape_get_centroid(void *shape_ptr, float* out_x, float* out_y);
 
 void ts_shape_set_centroid(void *shape_ptr, float x, float y);
 
 void ts_shape_move(void *shape_ptr, float x, float y);
 
-size_t ts_shape_get_n_vertices(void *shape_ptr);
+size_t ts_shape_tget_n_vertices(void *shape_ptr);
 
 void ts_shape_set_color(void *shape_ptr, float r, float g, float b, float a);
 

@@ -178,7 +178,9 @@ int main()
         return out;
     };
 
-    auto poly = PolygonShape(create_polygon(Vector2f(300, 300), 100));
+    auto poly = PolygonShape({Vector2f(0, 0), Vector2f(0, 1), Vector2f(1, 0), Vector2f(1, 1)});
+
+            //PolygonShape(create_polygon(Vector2f(300, 300), 100));
 
     while (window.is_open())
     {
@@ -188,6 +190,13 @@ int main()
         world.step(ts::seconds(time.as_seconds() * 2));
 
         window.render(&poly);
+
+        if (InputHandler::was_pressed(SPACE))
+        {
+            std::cout << poly.get_centroid().x << " " << poly.get_centroid().y << std::endl;
+            poly.move(10, 10);
+            std::cout << poly.get_centroid().x << " " << poly.get_centroid().y << std::endl;
+        }
 
         /*
         window.render(&left_shape);

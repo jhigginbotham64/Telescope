@@ -28,10 +28,6 @@ namespace ts
             /// \param n_outer_vertices: number of vertices along the circumference of the circle
             CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices);
 
-            /// \brief get centroid
-            /// \returns center
-            Vector2f get_centroid() const override;
-
             /// \brief set centroid
             /// \param centroid coordinates
             void set_centroid(Vector2f) override;

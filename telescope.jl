@@ -45,8 +45,8 @@ module ts
     export Shape, TriangleShape, RectangleShape, CircleShape, PolygonShape,
         set_centroid!, get_centroid, move!, set_color!, get_color, set_texture!,
         set_texture_rectangle!, get_texture_rectangle, get_bounding_box, get_n_vertices,
-        set_vertex_position!, set_vertex_color!, set_vertex_texture_coordinate!,
-        get_vertex_position, get_vertex_color, get_vertex_texture_coordinate, get_top_left,
+        set_vertex_position!, set_vertex_color!, set_vertex_texture_coordinates!,
+        get_vertex_position, get_vertex_color, get_vertex_texture_coordinates, get_top_left,
         get_size, set_size!, set_top_left, get_radius, set_radius!
 
     export Window, WindowOptions
@@ -1549,19 +1549,21 @@ module ts
     """
     function get_centroid(shape::Shape) ::Vector2f
 
-        x = Ref{Cint}(0)
-        y = Ref{Cint}(0)
+        x = Ref{Cfloat}(0)
+        y = Ref{Cfloat}(0)
 
         ccall((:ts_shape_get_centroid, _lib), Cvoid,
-            (Ptr{Cvoid}, Ref{Cint}, Ref{Cint}),
+            (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
             shape._native, x, y)
+
+        return Vector2f(x[], y[])
     end
     export get_centroid
 
     """
     `move!(::Shape, ::Float32, ::Float32) -> Nothing`
     """
-    function move!(shape::Shape, x::Float32, y::Float32) ::Nothing
+    function move!(shape::Shape, x::Number, y::Number) ::Nothing
         ccall((:ts_shape_move, _lib), Cvoid, (Ptr{Cvoid}, Cfloat, Cfloat), shape._native, x, y)
     end
     export move!; move = move!
@@ -1670,19 +1672,19 @@ module ts
     export set_vertex_color!; set_vertex_color = set_vertex_color!
 
     """
-    `set_vertex_texture_coordinate!(::Shape, ::Integer, ::Vector2f) -> Nothing`
+    `set_vertex_texture_coordinates!(::Shape, ::Integer, ::Vector2f) -> Nothing`
 
     index 1-based
     """
-    function set_vertex_texture_coordinate!(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
+    function set_vertex_texture_coordinates!(shape::Shape, index::Integer, coordinate::Vector2f) ::Nothing
 
         index -= 1;
 
-        ccall((:ts_shape_set_vertex_texture_coordinate, _lib), Cvoid,
+        ccall((:ts_shape_set_vertex_texture_coordinates, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Cfloat, Cfloat),
             shape._native, convert(Csize_t, index), coordinate.x, coordinate.y)
     end
-    export set_vertex_texture_coordinate!; set_vertex_texture_coordinate = set_vertex_texture_coordinate!
+    export set_vertex_texture_coordinates!; set_vertex_texture_coordinates = set_vertex_texture_coordinates!
 
     """
     `get_vertex_position(shape::Shape, index::Integer) -> Vector2f`
@@ -1693,8 +1695,8 @@ module ts
 
         index -= 1;
 
-        if i > get_n_vertices(shape)
-            throw(BoundsError(shape, i))
+        if index > get_n_vertices(shape)
+            throw(BoundsError(shape, index))
         end
 
         x = Ref{Cfloat}(-1)
@@ -1717,8 +1719,8 @@ module ts
 
         index -= 1;
 
-        if i > get_n_vertices(shape)
-            throw(BoundsError(shape, i))
+        if index > get_n_vertices(shape)
+            throw(BoundsError(shape, index))
         end
 
         r = Ref{Cfloat}(-1)
@@ -1726,7 +1728,7 @@ module ts
         b = Ref{Cfloat}(-1)
         a = Ref{Cfloat}(-1)
 
-        ccall((:ts_get_vertex_color, _lib), Cvoid,
+        ccall((:ts_shape_get_vertex_color, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
             shape._native, convert(Csize_t, index), r, g, b, a)
 
@@ -1735,28 +1737,28 @@ module ts
     export get_vertex_color
 
     """
-    `get_vertex_texture_coordinate(shape::Shape, index::Integer) -> Vector2f`
+    `get_vertex_texture_coordinates(shape::Shape, index::Integer) -> Vector2f`
 
     index 1-based
     """
-    function get_vertex_texture_coordinate(shape::Shape, index::Integer) ::Vector2f
+    function get_vertex_texture_coordinates(shape::Shape, index::Integer) ::Vector2f
 
         index -= 1;
 
-        if i > get_n_vertices(shape)
-            throw(BoundsError(shape, i))
+        if index > get_n_vertices(shape)
+            throw(BoundsError(shape, index))
         end
 
         x = Ref{Cfloat}(-1)
         y = Ref{Cfloat}(-1)
 
-        ccall((:ts_shape_get_vertex_texture_coordinate, _lib), Cvoid,
+        ccall((:ts_shape_get_vertex_texture_coordinates, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Ref{Cfloat}, Ref{Cfloat}),
             shape._native, convert(Csize_t, index), x, y)
 
         return Vector2f(x[], y[])
     end
-    export get_vertex_texture_coordinate
+    export get_vertex_texture_coordinates
 
     ### TRIANGLE SHAPE ########################################################
 
@@ -1863,6 +1865,8 @@ module ts
         ccall((:ts_shape_rectangle_get_size, _lib), Cvoid,
             (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}),
             rect._native, x, y)
+
+        return Vector2f(x[], y[])
     end
     export get_size
 
@@ -1881,7 +1885,7 @@ module ts
 
         _native::Ptr{Cvoid}
 
-        function CircleShape(center::Vector2f, radius::Float32, n_vertices::Csize_t = 32)
+        function CircleShape(center::Vector2f, radius::Number, n_vertices::Number = 32)
 
             native = ccall((:ts_shape_create_circle, _lib), Ptr{Cvoid},
                 (Cfloat, Cfloat, Cfloat, Csize_t),
@@ -1906,7 +1910,7 @@ module ts
     """
     `set_radius!(::CircleShape) -> Float32`
     """
-    function set_radius!(circle::CircleShape, radius::Float32) ::Nothing
+    function set_radius!(circle::CircleShape, radius::Number) ::Nothing
        ccall((:ts_shape_circle_set_radius, _lib), Cvoid,
         (Ptr{Cvoid}, Cfloat), circle._native, radius)
     end
@@ -1943,8 +1947,7 @@ module ts
             end
 
             native = ccall((:ts_shape_create_polygon, _lib), Ptr{Cvoid},
-                (Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
-                pointer_from_objret(xs), pointer_from_objref(ys), n)
+                (Ptr{Cfloat}, Ptr{Cfloat}, Csize_t), xs, ys, n)
 
             out = new(native)
             finalizer(out) do x::PolygonShape
@@ -2583,7 +2586,7 @@ module ts
 
             native = ccall((:ts_collision_wire_frame_create, _lib), Ptr{Cvoid},
                 (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
-                world._native_id, Csize_t(type), pointer_from_objref(xs), pointer_from_objref(ys), length(vertices))
+                world._native_id, Csize_t(type), xs, ys, length(vertices))
 
             out = new(native)
             finalizer(out) do x::CollisionLine
@@ -2619,7 +2622,7 @@ module ts
 
             native = ccall((:ts_collision_polygon_create, _lib), Ptr{Cvoid},
                 (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
-                world._native_id, Csize_t(type), pointer_from_objref(xs), pointer_from_objref(ys), length(vertices))
+                world._native_id, Csize_t(type), xs, ys, length(vertices))
 
             out = new(native)
             finalizer(out) do x::CollisionLine
@@ -3111,97 +3114,6 @@ module ts
 
             test_icon = "docs/_static/favicon.png"
 
-            @testset "Shapes" begin
-
-                triangle = TriangleShape(Vector2f(0, 1), Vector2f(1, 0), Vector2f(0.5, 0.5))
-                @test get_vertex_position(triangle, 1) == Vector2f(0, 1)
-                @test get_vertex_position(triangle, 2) == Vector2f(1, 0)
-                @test get_vertex_position(triangle, 3) == Vector2f(0.5, 0.5)
-
-                rectangle = RectangleShape(Vector2f(0, 0), Vector2f(1, 1))
-                @test get_vertex_position(rectangle, 1) == Vector2f(0, 0)
-                @test get_vertex_position(rectangle, 2) == Vector2f(1, 0)
-                @test get_vertex_position(rectangle, 3) == Vector2f(0, 1)
-                @test get_vertex_position(rectangle, 4) == Vector2f(1, 1)
-
-                @test get_top_left(rectangle) == Vector2f(0, 0)
-                @test get_size(rectangle) == Vector2f(1, 1)
-
-                set_top_left!(rectangle, Vector2f(1, 1))
-                @test get_top_left(rectangle) == Vector2f(1, 1)
-                set_size!(rectangle, Vector2f(0.5, 0.5))
-                @test get_size(rectangle) == Vector2f(0.5, 0.5)
-
-                circle = CircleShape(Vector2f(1, 1), 1, 16)
-                @test get_radius(circle) == 1
-                set_radius!(circle, 2)
-                @test get_radius(circle) == 2
-
-                polygon = PolygonShape(Vector2f(0, 0), Vector2f(1, 0), Vector2f(1, 1), Vector2f(0, 1))
-                @test get_vertex_position(polygon, 1) == Vector2f(0, 0)
-                @test get_vertex_position(polygon, 2) == Vector2f(1, 0)
-                @test get_vertex_position(polygon, 3) == Vector2f(1, 1)
-                @test get_vertex_position(polygon, 4) == Vector2f(0, 1)
-
-            end
-
-            return
-
-            @testset "Transform" begin
-
-                transform = Transform()
-
-                for x in 1:3, y in 1:3
-                    if x == y
-                        @test transform[x, y] == 1
-                    else
-                        @test transform[x, y] == 0
-                    end
-                end
-
-                point = Vector2f(12, 15)
-                apply_to(transform, point)
-                @test point.x == 12 && point.y == 15
-
-                transform[1, 1] = 999
-                @test transform[1, 1] == 999
-
-                reset!(transform)
-                @test transform[1, 1] == 1
-
-                translate!(transform, 1, 1)
-                point = Vector2f(0, 0)
-                point = apply_to(transform, point)
-                @test point.x == 1 && point.y == 1
-                reset!(transform)
-
-                point = Vector2f(1, 1)
-                rotate!(transform, degrees(180), Vector2f(0, 0))
-                point = apply_to(transform, point)
-                @test round(point.x) == -1 && round(point.y) == -1
-                reset!(transform)
-
-                point = Vector2f(1, 1)
-                scale!(transform, 2, 2)
-                point = apply_to(transform, point)
-                @test round(point.x) == 2 && round(point.y) == 2
-                reset!(transform)
-
-                point = Vector2f(1, 1)
-                shear!(transform, 1, 1)
-                point = apply_to(transform, point)
-                @test round(point.x) == 2 && round(point.y) == 2
-                reset!(transform)
-
-                point = Vector2f(1, 1)
-                reflect!(transform, true, true, Vector2f(0, 0))
-                point = apply_to(transform, point)
-                @test point.x == -1 && point.y == -1
-                reset!(transform)
-            end
-
-            return
-
             @test ts.initialize()
 
             @testset "Colors" begin
@@ -3420,9 +3332,129 @@ module ts
                     @test sh.is_stopped(1)
 
                     sh.force_stop!(1)
-                end#
+                end
             end
 
+            @testset "Shapes" begin
+
+                rectangle = RectangleShape(Vector2f(0, 0), Vector2f(1, 1))
+                @test get_top_left(rectangle) == Vector2f(0, 0)
+                @test get_size(rectangle) == Vector2f(1, 1)
+
+                set_top_left!(rectangle, Vector2f(1, 1))
+                @test get_top_left(rectangle) == Vector2f(1, 1)
+                set_size!(rectangle, Vector2f(0.5, 0.5))
+                @test get_size(rectangle) == Vector2f(0.5, 0.5)
+
+                circle = CircleShape(Vector2f(1, 1), 1, 16)
+                @test get_radius(circle) == 1
+                set_radius!(circle, 2)
+                @test get_radius(circle) == 2
+
+                polygon = PolygonShape(Vector2f(0, 0), Vector2f(1, 0), Vector2f(1, 1), Vector2f(0, 1))
+                triangle = TriangleShape(Vector2f(0, 1), Vector2f(1, 0), Vector2f(0.5, 0.5))
+
+                shapes = Shape[triangle, rectangle, triangle, polygon]
+
+                function compare(a::Vector2f, b::Vector2f) ::Bool
+                    return abs(a.x - b.x) < 0.01 && abs(a.y - b.y) < 0.01
+                end
+
+                function compare(a::RGBA, b::RGBA) ::Bool
+                    return abs(a.red - b.red) < 0.01 &&
+                           abs(a.green - b.green) < 0.01 &&
+                           abs(a.blue - b.blue) < 0.01 &&
+                           abs(a.alpha - b.alpha) < 0.01
+                end
+
+                for shape in shapes
+
+                    set_centroid!(shape, Vector2f(12, 15))
+                    @test compare(get_centroid(shape), Vector2f(12, 15))
+
+                    set_centroid!(shape, Vector2f(0, 0))
+                    move!(shape, 10.0, 10.0)
+                    @test get_centroid(shape) == Vector2f(10, 10)
+
+                    set_color!(shape, RGBA(0.5, 0.5, 0.5, 1))
+                    @test compare(get_vertex_color(shape, 1), RGBA(0.5, 0.5, 0.5, 1))
+
+                    window = Window(1, 1)
+                    set_texture!(shape, StaticTexture(window, 100, 100, RGBA(1, 1, 1, 1)))
+                    close!(window)
+
+                    set_texture_rectangle!(shape, Rectangle(Vector2f(0, 0), Vector2f(0, 0)))
+                    @test get_texture_rectangle(shape) == Rectangle(Vector2f(0, 0), Vector2f(0, 0))
+
+                    get_bounding_box(shape)
+                    @test get_n_vertices(shape) > 0
+
+                    for vertex_i in 1:get_n_vertices(shape)
+
+                        set_vertex_position!(shape, 1, Vector2f(50, 50))
+                        @test compare(get_vertex_position(shape, 1), Vector2f(50, 50))
+
+                        set_vertex_color!(shape, 1, RGBA(0.5, 0.5, 0.5, 1))
+                        @test compare(get_vertex_color(shape, 1), RGBA(0.5, 0.5, 0.5, 1))
+
+                        set_vertex_texture_coordinates!(shape, 1, Vector2f(1, 1))
+                        @test compare(get_vertex_texture_coordinates(shape, 1), Vector2f(1, 1))
+                    end
+                end
+            end
+
+            @testset "Transform" begin
+
+                transform = Transform()
+
+                for x in 1:3, y in 1:3
+                    if x == y
+                        @test transform[x, y] == 1
+                    else
+                        @test transform[x, y] == 0
+                    end
+                end
+
+                point = Vector2f(12, 15)
+                apply_to(transform, point)
+                @test point.x == 12 && point.y == 15
+
+                transform[1, 1] = 999
+                @test transform[1, 1] == 999
+
+                reset!(transform)
+                @test transform[1, 1] == 1
+
+                translate!(transform, 1, 1)
+                point = Vector2f(0, 0)
+                point = apply_to(transform, point)
+                @test point.x == 1 && point.y == 1
+                reset!(transform)
+
+                point = Vector2f(1, 1)
+                rotate!(transform, degrees(180), Vector2f(0, 0))
+                point = apply_to(transform, point)
+                @test round(point.x) == -1 && round(point.y) == -1
+                reset!(transform)
+
+                point = Vector2f(1, 1)
+                scale!(transform, 2, 2)
+                point = apply_to(transform, point)
+                @test round(point.x) == 2 && round(point.y) == 2
+                reset!(transform)
+
+                point = Vector2f(1, 1)
+                shear!(transform, 1, 1)
+                point = apply_to(transform, point)
+                @test round(point.x) == 2 && round(point.y) == 2
+                reset!(transform)
+
+                point = Vector2f(1, 1)
+                reflect!(transform, true, true, Vector2f(0, 0))
+                point = apply_to(transform, point)
+                @test point.x == -1 && point.y == -1
+                reset!(transform)
+            end
         end
         # no export
     end

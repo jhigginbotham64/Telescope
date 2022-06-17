@@ -74,11 +74,6 @@ namespace ts
         update();
     }
 
-    Vector2f RectangleShape::get_centroid() const
-    {
-        return _top_left + (_size / Vector2f{2, 2});
-    }
-
     Vector2f RectangleShape::get_top_left() const
     {
         return _top_left;

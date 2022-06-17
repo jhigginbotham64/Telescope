@@ -33,10 +33,6 @@ namespace ts
             /// \param position
             void set_centroid(Vector2f) override;
 
-            /// \brief get the centroid
-            /// \returns centroid
-            Vector2f get_centroid() const override;
-
         private:
             void update();
 
