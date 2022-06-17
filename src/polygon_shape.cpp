@@ -41,8 +41,6 @@ namespace ts
             return a.second.as_degrees() < b.second.as_degrees();
         });
 
-        HSVA temp_color = HSVA(0, 1, 1, 0.33); //TODO
-
         static auto push_vertex = [&](Vector2f position) -> void
         {
             _vertices.emplace_back();
@@ -61,28 +59,29 @@ namespace ts
 
         _vertices.clear();
         push_vertex(centroid);
-        push_vertex(per_angle.at(0).first);
-        push_vertex(per_angle.at(1).first);
 
-        for (size_t i = 1; i < per_angle.size(); ++i)
-        {
-            push_vertex(centroid);
-            push_vertex(per_angle.at(i-1).first);
+        for (size_t i = 0; i < per_angle.size(); ++i)
             push_vertex(per_angle.at(i).first);
-        }
 
-        push_vertex(centroid);
-        push_vertex(per_angle.back().first);
-        push_vertex(per_angle.front().first);
-
-        // TODO
-        float step = 1.0 / _vertices.size();
-        for (auto& v : _vertices)
+        size_t n = _vertices.size() - 1;
+        for (size_t i = 0; i < _vertices.size(); ++i)
         {
-            v.color = temp_color.as_rgb().operator SDL_Color();
-            temp_color.hue += step;
+            auto col = HSVA(float(i) / n, float(i) / n, 1, 1);
+            _vertices.at(i).color = col.as_rgb();
         }
-        // TODO
+
+        _vertex_indices.clear();
+
+        for (size_t i = 2; i < _vertices.size(); ++i)
+        {
+            _vertex_indices.push_back(0);
+            _vertex_indices.push_back(i-1);
+            _vertex_indices.push_back(i);
+        }
+
+        _vertex_indices.push_back(0);
+        _vertex_indices.push_back(_vertices.size() - 1);
+        _vertex_indices.push_back(1);
 
         Shape::signal_vertices_updated();
     }

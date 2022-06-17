@@ -31,7 +31,7 @@ namespace ts
                 _colors.data(), sizeof(SDL_Color),
                 _uv.data(), 2 * sizeof(float),
                 _vertices.size(),
-                (const void*) nullptr, 0, 0
+                _vertex_indices.data(), _vertex_indices.size(), sizeof(int)
         );
     }
 

@@ -55,6 +55,7 @@ struct Poly
     static std::vector<Vector2f> create_polygon(Vector2f center, float radius)
     {
         std::vector<Vector2f> out;
+        out.push_back(center);
 
         for (size_t i = 0; i < 8; ++i)
             out.push_back(Vector2f(
@@ -84,8 +85,6 @@ struct Poly
 int main()
 {
     initialize();
-
-    /*
 
     size_t ll = 5;
     size_t h = 600;
@@ -167,6 +166,20 @@ int main()
     auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
     player.set_density(1);
 
+    auto create_polygon = [](Vector2f center, float radius) -> std::vector<Vector2f>
+    {
+        std::vector<Vector2f> out;
+        for (size_t i = 0; i < 8; ++i)
+            out.push_back(Vector2f(
+                    center.x + cos(ts::degrees(i / 8.f * 360).as_radians()) * radius,
+                    center.y + sin(ts::degrees(i / 8.f * 360).as_radians()) * radius
+            ));
+
+        return out;
+    };
+
+    auto poly = PolygonShape(create_polygon(Vector2f(300, 300), 100));
+
     while (window.is_open())
     {
         auto time = ts::start_frame(&window);
@@ -174,12 +187,16 @@ int main()
 
         world.step(ts::seconds(time.as_seconds() * 2));
 
+        window.render(&poly);
+
+        /*
         window.render(&left_shape);
         window.render(&right_shape);
         window.render(&down_shape);
         window.render(&top_shape);
 
         window.render(&player);
+         */
 
         bool pressed = false;
 
@@ -214,6 +231,7 @@ int main()
         {
         }
 
+        /*
         for (auto& ball : circles)
         {
             ball.update();
@@ -237,9 +255,9 @@ int main()
             line.update();
             window.render(&line);
         }
+         */
 
         player.update();
         ts::end_frame(&window);
     }
-     */
 }

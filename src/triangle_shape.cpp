@@ -70,6 +70,7 @@ namespace ts
         }
 
         _centroid = {x_sum / 3.f, y_sum / 3.f};
+        _vertex_indices = {0, 1, 2};
         Shape::signal_vertices_updated();
     }
 

@@ -17,7 +17,7 @@ namespace ts
             auto bl = Vertex(_top_left + Vector2f(0, _size.y), Vector2f(1, 0), RGBA(1, 1, 1, 1));
             auto br = Vertex(_top_left + _size, Vector2f(1, 1), RGBA(1, 1, 1, 1));
 
-            _vertices = {tl, tr, bl, tr, bl, br};
+            _vertices = {tl, tr, bl, br};
         }
         else
         {
@@ -35,16 +35,11 @@ namespace ts
             _vertices.at(2).position.x = bl.x;
             _vertices.at(2).position.y = bl.y;
 
-            _vertices.at(3).position.x = tr.x;
-            _vertices.at(3).position.y = tr.y;
-
-            _vertices.at(4).position.x = bl.x;
-            _vertices.at(4).position.y = bl.y;
-
-            _vertices.at(5).position.x = br.x;
-            _vertices.at(5).position.y = br.y;
+            _vertices.at(3).position.x = br.x;
+            _vertices.at(3).position.y = br.y;
         }
 
+        _vertex_indices = {0, 1, 2, 1, 2, 3};
         Shape::signal_vertices_updated();
     }
 

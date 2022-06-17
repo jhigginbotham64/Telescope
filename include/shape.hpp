@@ -120,8 +120,11 @@ namespace ts
             /// \copydoc Renderable::render
             void render(RenderTarget*, Transform) const final override;
 
-            /// \brief vertices of shapes tris, in render order
+            /// \brief pairwise different vertices of shapes tris
             std::vector<SDL_Vertex> _vertices;
+
+            /// \brief
+            std::vector<int> _vertex_indices;
 
             /// \brief signal to the shape that a vertex property has changed
             void signal_vertices_updated();

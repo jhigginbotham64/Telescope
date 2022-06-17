@@ -54,19 +54,21 @@ namespace ts
 
         _vertices.clear();
         _vertices.push_back(middle);
-        _vertices.push_back(outer.at(0));
-        _vertices.push_back(outer.at(1));
-
         for (size_t i = 1; i < outer.size(); ++i)
-        {
-            _vertices.push_back(outer.at(i-1));
-            _vertices.push_back(middle);
             _vertices.push_back(outer.at(i));
+
+        _vertex_indices.clear();
+
+        for (size_t i = 2; i < outer.size(); ++i)
+        {
+            _vertex_indices.push_back(0);
+            _vertex_indices.push_back(i-1);
+            _vertex_indices.push_back(i);
         }
 
-        _vertices.push_back(outer.back());
-        _vertices.push_back(middle);
-        _vertices.push_back(outer.front());
+        _vertex_indices.push_back(0);
+        _vertex_indices.push_back(outer.size() - 1);
+        _vertex_indices.push_back(1);
 
         for (size_t i = 0; i < _vertices.size(); ++i)
         {
