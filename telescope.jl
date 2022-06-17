@@ -1339,9 +1339,13 @@ module ts
 
     """
     `getindex(::Transform, ::Integer, ::Integer) -> Float32`
+
+    index 1-based
     """
     function Base.getindex(transform::Transform, x::Integer, y::Integer) ::Float32
 
+        x -= 1
+        y -= 1
         return ccall((:ts_transform_get, _lib), Cfloat,
             (Ptr{Cvoid}, Csize_t, Csize_t),
             transform._native, x, y)
@@ -1349,8 +1353,13 @@ module ts
 
     """
     `setindex!(::Transform, ::Float32, ::Integer, ::Integer) -> Float32`
+
+    index 1-based
     """
-    function Base.setindex!(transform::Transform, value::Float32, x::Integer, y::Integer) ::Nothing
+    function Base.setindex!(transform::Transform, value::Number, x::Integer, y::Integer) ::Nothing
+
+        x -= 1
+        y -= 1
 
         ccall((:ts_transform_set, _lib), Cvoid,
             (Ptr{Cvoid}, Csize_t, Csize_t, Cfloat),
@@ -1369,7 +1378,7 @@ module ts
             (Ptr{Cvoid}, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}),
             transform._native, point.x, point.y, x, y)
 
-        return Vector2f{x[], y[]}
+        return Vector2f(x[], y[])
     end
     export apply_to
 
@@ -1392,15 +1401,15 @@ module ts
     """
     `translate!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
-    function translate!(transform::Transform, x::Float32, y::Float32) ::Nothing
+    function translate!(transform::Transform, x::Number, y::Number) ::Nothing
         ccall((:ts_transform_translate, _lib), Cvoid, (Ptr{Cvoid}, Cfloat, Cfloat), transform._native, x, y)
     end
     export translate!; translate = translate!
 
     """
-    `rotate!(::Transform, ::Angle, ::Vector2f) -> Nothing`
+    `rotate!(::Transform, ::Angle, [::Vector2f]) -> Nothing`
     """
-    function rotate!(transform::Transform, angle::Angle, origin::Vector2f) ::Nothing
+    function rotate!(transform::Transform, angle::Angle, origin::Vector2f = Vector2f(0, 0)) ::Nothing
         ccall((:ts_transform_rotate, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat, Cfloat),
             transform._native, as_degrees(angle), origin.x, origin.y)
@@ -1410,7 +1419,7 @@ module ts
     """
     `scale!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
-    function scale!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+    function scale!(transform::Transform, x_scale::Number, y_scale::Number) ::Nothing
         ccall((:ts_transform_scale, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat),
             transform._native, x_scale, y_scale)
@@ -1420,7 +1429,7 @@ module ts
     """
     `shear!(::Transform, ::Float32, ::Float32) -> Nothing`
     """
-    function shear!(transform::Transform, x_scale::Float32, y_scale::Float32) ::Nothing
+    function shear!(transform::Transform, x_scale::Number, y_scale::Number) ::Nothing
         ccall((:ts_transform_shear, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat, Cfloat),
             transform._native, x_scale, y_scale)
@@ -1428,9 +1437,9 @@ module ts
     export shear!; shear = shear!
 
     """
-    `reflect!(::Transform, ::Bool, ::Bool, ::Vector2f) -> Nothing`
+    `reflect!(::Transform, ::Bool, ::Bool, [::Vector2f]) -> Nothing`
     """
-    function reflect!(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f) ::Nothing
+    function reflect!(transform::Transform, about_x_axis::Bool, about_y_axis::Bool, origin::Vector2f = Vector2f(0, 0)) ::Nothing
         ccall((:ts_transform_reflect, _lib), Cvoid,
             (Ptr{Cvoid}, Bool, Bool, Cfloat, Cfloat),
             transform._native, about_x_axis, about_y_axis, origin.x, origin.y)
@@ -3090,42 +3099,62 @@ module ts
 
             test_icon = "docs/_static/favicon.png"
 
-            @test ts.initialize()
+            @testset "Transform" begin
 
-            @testset "Textures" begin
+                transform = Transform()
 
-                for e in instances(TextureFilteringMode)
-                    @test Int32(e) > -2
+                for x in 1:3, y in 1:3
+                    if x == y
+                        @test transform[x, y] == 1
+                    else
+                        @test transform[x, y] == 0
+                    end
                 end
 
-                for e in instances(TextureBlendMode)
-                    @test Int32(e) > -2
-                end
+                point = Vector2f(12, 15)
+                apply_to(transform, point)
+                @test point.x == 12 && point.y == 15
 
-                window = Window(1, 1)
+                transform[1, 1] = 999
+                @test transform[1, 1] == 999
 
-                render = RenderTexture(window, 100, 100)
-                @test render._native != Ptr{Cvoid}()
+                reset!(transform)
+                @test transform[1, 1] == 1
 
-                static = StaticTexture(window, 100, 100, RGBA(0.5, 1, 1, 1))
-                @test static._native != Ptr{Cvoid}()
+                translate!(transform, 1, 1)
+                point = Vector2f(0, 0)
+                point = apply_to(transform, point)
+                @test point.x == 1 && point.y == 1
+                reset!(transform)
 
-                static = StaticTexture(window, test_icon)
-                @test static._native != Ptr{Cvoid}()
+                point = Vector2f(1, 1)
+                rotate!(transform, degrees(180), Vector2f(0, 0))
+                point = apply_to(transform, point)
+                @test round(point.x) == -1 && round(point.y) == -1
+                reset!(transform)
 
-                set_color!(render, RGBA(0, 0, 0, 1))
-                @test get_color(render) == RGBA(0, 0, 0, 1)
+                point = Vector2f(1, 1)
+                scale!(transform, 2, 2)
+                point = apply_to(transform, point)
+                @test round(point.x) == 2 && round(point.y) == 2
+                reset!(transform)
 
-                set_blend_mode!(render, ts.ADD)
-                @test get_blend_mode(render) == ts.ADD
+                point = Vector2f(1, 1)
+                shear!(transform, 1, 1)
+                point = apply_to(transform, point)
+                @test round(point.x) == 2 && round(point.y) == 2
+                reset!(transform)
 
-                set_filtering_mode!(render, ts.LINEAR)
-                @test get_filtering_mode(render) == ts.LINEAR
-
-                @test get_size(render) == Vector2ui(100, 100)
+                point = Vector2f(1, 1)
+                reflect!(transform, true, true, Vector2f(0, 0))
+                point = apply_to(transform, point)
+                @test point.x == -1 && point.y == -1
+                reset!(transform)
             end
 
             return
+
+            @test ts.initialize()
 
             @testset "Colors" begin
 
@@ -3202,6 +3231,39 @@ module ts
                 end_frame!(window)
 
                 close!(window)
+            end
+
+            @testset "Textures" begin
+
+                for e in instances(TextureFilteringMode)
+                    @test Int32(e) > -2
+                end
+
+                for e in instances(TextureBlendMode)
+                    @test Int32(e) > -2
+                end
+
+                window = Window(1, 1)
+
+                render = RenderTexture(window, 100, 100)
+                @test render._native != Ptr{Cvoid}()
+
+                static = StaticTexture(window, 100, 100, RGBA(0.5, 1, 1, 1))
+                @test static._native != Ptr{Cvoid}()
+
+                static = StaticTexture(window, test_icon)
+                @test static._native != Ptr{Cvoid}()
+
+                set_color!(render, RGBA(0, 0, 0, 1))
+                @test get_color(render) == RGBA(0, 0, 0, 1)
+
+                set_blend_mode!(render, ts.ADD)
+                @test get_blend_mode(render) == ts.ADD
+
+                set_filtering_mode!(render, ts.LINEAR)
+                @test get_filtering_mode(render) == ts.LINEAR
+
+                @test get_size(render) == Vector2ui(100, 100)
             end
 
             @testset "InputHandler" begin
