@@ -278,6 +278,16 @@ void* ts_window_camera_get_transform(size_t window_id)
     return (void*) &detail::_cameras.at(window_id).get_transform();
 }
 
+void ts_window_camera_reset(size_t window_id)
+{
+    detail::_cameras.at(window_id).reset();
+}
+
+void ts_window_camera_set_transform(size_t window_id, void* transform)
+{
+    detail::_cameras.at(window_id).set_transform(*((ts::Transform*) transform));
+}
+
 void ts_window_camera_set_rotation(size_t window_id, float degrees)
 {
     detail::_cameras.at(window_id).set_rotation(ts::degrees(degrees));

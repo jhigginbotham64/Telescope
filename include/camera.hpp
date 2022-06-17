@@ -22,6 +22,9 @@ namespace ts
             /// \param window: window to control
             Camera(Window*);
 
+            /// \brief reset transform to identity
+            void reset();
+
             /// \brief move the camera such that it is centered on a given point
             /// \param point: true coordinates
             void center_on(Vector2f);
@@ -46,19 +49,23 @@ namespace ts
             /// \note setting the zoom to 1 will give no visual change, a factor of 0.5 will double an objects size, a factor 2 will half an objects size
             void set_zoom(float factor);
 
-            /// \param rotate the camera around its center by `angle` degrees
+            /// \brief rotate the camera around its center by `angle` degrees
             /// \param angle: angle offset
             /// \note +angle: clockwise rotation, -angle: counter-clockwise rotation
             void rotate(Angle);
 
-            /// \param set the rotation of the camera
+            /// \brief set the rotation of the camera
             /// \param angle: angle to override
             /// \note 0° is no rotation, > 0° is clockwise rotation
             void set_rotation(Angle);
 
-            /// \param expose the transform, can be modified to affect the camera state
+            /// \brief expose the transform, can be modified to affect the camera state
             /// \returns reference to transform
             Transform& get_transform();
+
+            /// \brief replace the transform
+            /// \param transform: to replace with
+            void set_transform(Transform);
 
             /// \param get the true coordinates of the cameras center
             /// \returns center

@@ -16,6 +16,16 @@ namespace ts
         return _window->_global_transform;
     }
 
+    void Camera::set_transform(Transform in)
+    {
+        _window->_global_transform = in;
+    }
+
+    void Camera::reset()
+    {
+        _window->_global_transform.reset();
+    }
+
     void Camera::center_on(Vector2f pos)
     {
         int width, height;

@@ -55,7 +55,7 @@ module ts
 
     export Camera
     export center_on!, move!, zoom_in!, zoom_out!, rotate!, set_rotation!, get_transform,
-        get_center, get_view_area
+        get_center, get_view_area, reset!, set_transform!
 
     export PhysicsWorld
     export step!, clear_forces!, get_gravity, set_gravity!, next_event!
@@ -1334,6 +1334,8 @@ module ts
                 ccall((:ts_transform_destroy, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
         end
+
+        Transform(native::Ptr{Cvoid}) = new(native) # sic, don't finalize
     end
     export Transform
 
@@ -2224,7 +2226,7 @@ module ts
     """
     `move!(::Camera, ::Float32, Float32) -> Nothing`
     """
-    function move!(camera::Camera, x_offset::Float32, y_offset::Float32) ::Nothing
+    function move!(camera::Camera, x_offset::Number, y_offset::Number) ::Nothing
         ccall((:ts_window_camera_move, _lib), Cvoid,
             (Csize_t, Cfloat, Cfloat),
             camera._native_window_id, x_offset, y_offset)
@@ -2234,7 +2236,7 @@ module ts
     """
     `zoom_in!(::Camera, ::Float32) -> Nothing`
     """
-    function zoom_in!(camera::Camera, factor::Float32) ::Nothing
+    function zoom_in!(camera::Camera, factor::Number) ::Nothing
         ccall((:ts_window_camera_zoom_in, _lib), Cvoid,
             (Csize_t, Cfloat),
             camera._native_window_id, factor)
@@ -2244,7 +2246,7 @@ module ts
     """
     `zoom_out!(::Camera, ::Float32) -> Nothing`
     """
-    function zoom_out!(camera::Camera, factor::Float32) ::Nothing
+    function zoom_out!(camera::Camera, factor::Number) ::Nothing
         ccall((:ts_window_camera_zoom_out, _lib), Cvoid,
             (Csize_t, Cfloat),
             camera._native_window_id, factor)
@@ -2254,7 +2256,7 @@ module ts
     """
     `set_zoom!(::Camera, ::Float32) -> Nothing`
     """
-    function set_zoom!(camera::Camera, factor::Float32) ::Nothing
+    function set_zoom!(camera::Camera, factor::Number) ::Nothing
         ccall((:ts_window_camera_set_zoom, _lib), Cvoid,
             (Csize_t, Cfloat),
             camera._native_window_id, factor)
@@ -2288,7 +2290,17 @@ module ts
         return Transform(ccall((:ts_window_camera_get_transform, _lib), Ptr{Cvoid},
             (Csize_t,), camera._native_window_id))
     end
-    export get_transform
+    export get_transform;
+
+    """
+    `set_transform!(::Camera, ::Transform) -> Nothing`
+    """
+    function set_transform!(camera::Camera, transform::Transform) ::Nothing
+        ccall((:ts_window_camera_set_transform, _lib), Cvoid,
+            (Csize_t, Ptr{Cvoid}),
+            camera._native_window_id, transform._native)
+    end
+    export set_transform!; set_transform = set_transform!
 
     """
     `get_center(::Camera) -> Vector2f`
@@ -2304,6 +2316,14 @@ module ts
         return Vector2f(x[], y[])
     end
     export get_center
+
+    """
+    `reset!(::Camera) -> Nothing`
+    """
+    function reset!(camera::Camera) ::Nothing
+        ccall((:ts_window_camera_reset, _lib), Cvoid, (Csize_t,), camera._native_window_id)
+    end
+    export reset!; reset = reset!
 
     """
     `get_view_area(::Camera) -> Trapezoid`
@@ -2322,6 +2342,12 @@ module ts
         ccall((:ts_window_camera_get_view_area, _lib), Cvoid,
             (Csize_t, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
             camera._native_window_id, top_left_x, top_left_y, top_right_x, top_right_y, bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y)
+
+        return Trapezoid(
+            Vector2f(top_left_x[], top_left_y[]),
+            Vector2f(top_right_x[], top_right_y[]),
+            Vector2f(bottom_left_x[], bottom_left_y[]),
+            Vector2f(bottom_right_x[], bottom_right_y[]))
     end
     export get_view_area
     
@@ -3115,6 +3141,35 @@ module ts
             test_icon = "docs/_static/favicon.png"
 
             @test ts.initialize()
+
+            @testset "Camera" begin
+                window = Window(1, 1)
+                camera = Camera(window)
+
+                @test camera._native_window_id == window._native_id
+
+                center_on!(camera, Vector2f(50, 50))
+                @test get_center(camera) == Vector2f(50, 50)
+
+                center_on!(camera, Vector2f(0, 0))
+                move!(camera, 50, 50)
+                @test get_center(camera) == Vector2f(50, 50)
+
+                zoom_in!(camera, 0.5)
+                zoom_out!(camera, 2)
+                set_zoom!(camera, 1)
+                rotate!(camera, degrees(90))
+                set_rotation!(camera, degrees(0))
+
+                transform = get_transform(camera)
+                reset!(transform)
+                set_transform!(camera, transform)
+
+                reset!(camera)
+                area = get_view_area(camera)
+            end
+
+            return
 
             @testset "Colors" begin
 

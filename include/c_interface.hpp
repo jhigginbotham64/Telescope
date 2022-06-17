@@ -117,7 +117,11 @@ void ts_window_camera_set_zoom(size_t window_id, float factor);
 
 void ts_window_camera_rotate(size_t window_id, float degrees);
 
-void *ts_window_camera_get_transform(size_t window_id);
+void* ts_window_camera_get_transform(size_t window_id);
+
+void ts_window_camera_set_transform(size_t window, void* transform);
+
+void ts_window_camera_reset(size_t window_id);
 
 void ts_window_camera_set_rotation(size_t window_id, float degrees);
 
