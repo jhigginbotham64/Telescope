@@ -61,6 +61,9 @@ namespace ts
     class CollisionPolygonShape : public CollisionRenderShape, public CollisionPolygon, public PolygonShape
     {
         public:
+            // no docs
+            virtual ~CollisionPolygonShape() = default;
+
             /// \brief construct
             /// \param world: physics world
             /// \param type: collision type
@@ -93,6 +96,9 @@ namespace ts
     class CollisionLineShape : public CollisionRenderShape, public CollisionLine, public RectangleShape
     {
         public:
+            // no docs
+            virtual ~CollisionLineShape() = default;
+
             /// \brief construct
             /// \param world: physics world
             /// \param type: collision type
@@ -108,6 +114,9 @@ namespace ts
     class CollisionLineSequenceShape : public CollisionRenderShape, public CollisionLineSequence, public Renderable
     {
         public:
+            // no docs
+            virtual ~CollisionLineSequenceShape() = default;
+
             /// \brief construct
             /// \param world: physics world
             /// \param type: collision type

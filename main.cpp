@@ -1,4 +1,4 @@
-// 
+//
 // Copyright 2022 Joshua Higginbotham
 // Created on 20.05.22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
@@ -151,12 +151,10 @@ int main()
         }
         else if (val > 5)
         {
-            /*
             auto vertices = generate_polygon(center, radius);
             polys.emplace_back(&world, ts::DYNAMIC, vertices);
-            polys.back().set_color(color);
+            //polys.back().set_color(color);
             polys.back().set_density(1);
-             */
         }
     };
 
@@ -175,6 +173,8 @@ int main()
     auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
     player.set_density(1);
 
+    auto poly_test = CollisionPolygonShape(&world, ts::STATIC, generate_polygon(Vector2f(300, 300), 100));
+
     while (window.is_open())
     {
         auto time = ts::start_frame(&window);
@@ -188,9 +188,6 @@ int main()
         window.render(&top_shape);
 
         window.render(&player);
-
-        //TODO
-        window.render(&test);
 
         const float v = 100;
         Vector2f velocity = {0, 0};

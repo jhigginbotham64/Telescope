@@ -70,13 +70,21 @@ namespace ts
         bool is_two_sided)
         : CollisionLineSequence(world, type, vertices, is_two_sided)
     {
+        auto center = Vector2f(0, 0);
+        size_t n = vertices.size() - 1;
+        for (size_t i = 0; i < n; ++i)
+            center += (vertices.at(i) + vertices.at(i+1)) / Vector2f(2, 2);
+        center /= Vector2f(n, n);
+
         for (size_t i = 0; i < vertices.size() - 1; ++i)
         {
             auto a = vertices.at(i);
             auto b = vertices.at(i+1);
-            auto center = (a + b) / Vector2f(2, 2);
-            _lines.push_back(RectangleShape(center, Vector2f(glm::distance(a, b), 1)));
-            _lines.back().rotate(radians(std::atan2((b-a).x, (b-a).y)));
+            auto middle = (a + b) / Vector2f(2, 2);
+            auto dist = glm::distance(a, b);
+            _lines.emplace_back(middle - Vector2f(dist, 0), Vector2f(dist, 1));
+            _lines.back().set_origin(middle - a);
+            _lines.back().rotate(radians(std::atan2(a.x - b.x, a.y - b.y) - 0.5 * M_PI));
         }
     }
 

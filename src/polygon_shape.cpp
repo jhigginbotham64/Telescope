@@ -57,7 +57,6 @@ namespace ts
             _vertices.back().tex_coord.y = position.y - top_left.y;
         };
 
-        _vertices.clear();
         push_vertex(centroid);
 
         for (size_t i = 0; i < per_angle.size(); ++i)

@@ -62,7 +62,7 @@ module ts
 
     export CollisionShape, CollisionType
     export CollisionTriangle, CollisionRectangle, CollisionCircle, CollisionPolygon,
-        CollisionLine, CollisionWireframe
+        CollisionLine, CollisionLineSequence
     export set_density!, get_density, set_restitution!, get_restitution, get_centroid,
         get_bounding_box, get_rotation, set_type!, get_type, get_is_hidden, set_is_hidden,
         get_origin, get_center_of_mass_local, get_center_of_mass_global,
@@ -2648,19 +2648,19 @@ module ts
     export CollisionLine
 
     """
-    CollisionWireframe
+    CollisionLineSequence
 
     ### Members
     (no public members)
 
     ### Constructors
-    `CollisionWireframe(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
+    `CollisionLineSequence(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
     """
-    mutable struct CollisionWireframe <: CollisionShape
+    mutable struct CollisionLineSequence <: CollisionShape
 
         _native::Ptr{Cvoid}
 
-        function CollisionWireframe(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
+        function CollisionLineSequence(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
 
             xs = Float32[]
             ys = Float32[]
@@ -2670,24 +2670,23 @@ module ts
                 push!(ys, v.y)
             end
 
-            native = ccall((:ts_collision_wire_frame_create, _lib), Ptr{Cvoid},
+            native = ccall((:ts_collision_line_sequence_create, _lib), Ptr{Cvoid},
                 (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
                 world._native_id, Csize_t(type), xs, ys, length(vertices))
 
             out = new(native)
-            finalizer(out) do x::CollisionWireframe
+            finalizer(out) do x::CollisionLineSequence
                 ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
             end
             return out
         end
     end
-    export CollisionWireframe
-
+    export CollisionLineSequence
 
     """
     `set_density!(::CollisionShape, ::Float32) -> Nothing`
     """
-    function set_density!(shape::CollisionShape, value::Float32) ::Nothing
+    function set_density!(shape::CollisionShape, value::Number) ::Nothing
         ccall((:ts_collision_shape_set_density, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
     export set_density!; set_density = set_density!
@@ -2703,7 +2702,7 @@ module ts
     """
     `set_friction!(::CollisionShape, ::Float32) -> Nothing`
     """
-    function set_friction!(shape::CollisionShape, value::Float32) ::Nothing
+    function set_friction!(shape::CollisionShape, value::Number) ::Nothing
         ccall((:ts_collision_shape_set_friction, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
     export set_friction!; set_friction = set_friction!
@@ -2719,7 +2718,7 @@ module ts
     """
     `set_restitution!(::CollisionShape, ::Float32) -> Nothing`
     """
-    function set_restitution!(shape::CollisionShape, value::Float32) ::Nothing
+    function set_restitution!(shape::CollisionShape, value::Number) ::Nothing
         ccall((:ts_collision_shape_set_restitution, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat),
             shape._native, value)
@@ -2764,7 +2763,7 @@ module ts
             (Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
             shape._native, x, y, width, height)
 
-        return Rectangle(Vector2f(x, y), Vector2f(width, height))
+        return Rectangle(Vector2f(x[], y[]), Vector2f(width[], height[]))
     end
     export get_bounding_box
 
@@ -2827,7 +2826,7 @@ module ts
     """
     `get_center_of_mass_local(::CollisionShape) -> Vector2f`
     """
-    function get_center_of_mass_local(::CollisionShape) ::Vector2f
+    function get_center_of_mass_local(shape::CollisionShape) ::Vector2f
 
         x = Ref{Cfloat}(0)
         y = Ref{Cfloat}(0)
@@ -2842,7 +2841,7 @@ module ts
     """
     `get_center_of_mass_global(::CollisionShape) -> Vector2f`
     """
-    function get_center_of_mass_global(::CollisionShape) ::Vector2f
+    function get_center_of_mass_global(shape::CollisionShape) ::Vector2f
 
         x = Ref{Cfloat}(0)
         y = Ref{Cfloat}(0)
@@ -2880,7 +2879,7 @@ module ts
     """
     `set_angular_velocity!(::CollisionShape, ::Float32) -> Nothing`
     """
-    function set_angular_velocity!(shape::CollisionShape, value::Float32) ::Nothing
+    function set_angular_velocity!(shape::CollisionShape, value::Number) ::Nothing
         ccall((:ts_collision_shape_set_angular_velocity, _lib), Cvoid,
             (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
@@ -2896,7 +2895,7 @@ module ts
     export get_angular_velocity
 
     """
-    `apply_force_to(::CollisionShape, force::Vector2f, point::Vector2f) -> Nothing`
+    `apply_force_to(::CollisionShape, force::Float32, point::Vector2f) -> Nothing`
     """
     function apply_force_to!(shape::CollisionShape, force::Vector2f, point::Vector2f) ::Nothing
         ccall((:ts_collision_shape_apply_force_to, _lib), Cvoid,
@@ -2917,7 +2916,7 @@ module ts
     """
     apply_torque!(::CollisionShape, ::Float32) -> Nothing
     """
-    function apply_torque!(shape::CollisionShape, value::Float32) ::Nothing
+    function apply_torque!(shape::CollisionShape, value::Number) ::Nothing
         ccall((:ts_collision_shape_apply_torque, _lib), Cvoid, (Ptr{Cvoid}, Cfloat), shape._native, value)
     end
     export apply_torque!; apply_torque = apply_torque!
@@ -3194,22 +3193,20 @@ module ts
                 line = CollisionLine(world, ts.DYNAMIC, Vector2f(50, 50), Vector2f(10, 10))
                 @test line._native != Ptr{Cvoid}()
 
-                polygon = CollisionPolygon(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
-                @test polygon._native != Ptr{Cvoid}()
+                #polygon = CollisionPolygon(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                #@test polygon._native != Ptr{Cvoid}()
 
-                return
+                linesequence = CollisionLineSequence(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                @test linesequence._native != Ptr{Cvoid}()
 
-                # wireframe = CollisionWireframe(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
-                # @test wireframe._native != Ptr{Cvoid}()
-
-                shapes = [rect, tri, circ]#, polygon, wireframe]
+                shapes = [rect, tri, circ, linesequence]#, polygon]
 
                 for shape in shapes
 
                     set_density!(shape, 12)
                     @test get_density(shape) == 12
 
-                    set_friction(shape, 12)
+                    set_friction!(shape, 12)
                     @test get_friction(shape) == 12
 
                     set_restitution!(shape, 12)
@@ -3221,8 +3218,8 @@ module ts
 
                     @test get_rotation(shape) == degrees(0)
 
-                    @test set_type(shape, ts.STATIC)
-                    get_type(shape) == ts.STATIC
+                    set_type!(shape, ts.STATIC)
+                    @test get_type(shape) == ts.STATIC
 
                     set_is_hidden(shape, true)
                     @test get_is_hidden(shape) == true
@@ -3230,22 +3227,22 @@ module ts
 
                     @test get_origin(shape) == Vector2f(0, 0)
                     get_center_of_mass_local(shape)
-                    get_center_of_Mass_global(shape)
+                    get_center_of_mass_global(shape)
 
                     set_linear_velocity!(shape, Vector2f(12, 13))
-                    @test get_linear_velocity!(shape, Vector2f(12, 13))
+                    @test get_linear_velocity(shape) == Vector2f(12, 13)
                     set_linear_velocity!(shape, Vector2f(0, 0))
 
                     set_angular_velocity!(shape, 12)
                     @test get_angular_velocity(shape) == 12
                     set_angular_velocity!(shape, 0)
 
-                    apply_force_to!(shape, 12, Vector2f(0, 0))
-                    apply_force_to_center!(shape, 12)
+                    apply_force_to!(shape, Vector2f(12, 12), Vector2f(0, 0))
+                    apply_force_to_center!(shape, Vector2f(12, 12))
 
                     apply_torque!(shape, 12)
                     apply_linear_impulse_to!(shape, Vector2f(12, 13), Vector2f(0, 0));
-                    apply_linaer_impulse_to_center!(shape, Vector2f(12, 13))
+                    apply_linear_impulse_to_center!(shape, Vector2f(12, 13))
 
                     @test get_mass(shape) > 0
                     @test get_inertia(shape) > 0

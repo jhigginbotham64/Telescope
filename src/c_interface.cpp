@@ -837,19 +837,6 @@ void* ts_collision_polygon_create(size_t world_id, size_t type, float* xs, float
     return new ts::CollisionPolygon(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
 }
 
-/*
-void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices)
-{
-    std::vector<ts::Vector2f> vertices;
-    vertices.reserve(n_vertices);
-
-    for (size_t i = 0; i < n_vertices; ++i)
-        vertices.emplace_back(xs[i], ys[i]);
-
-    return new ts::CollisionWireframe(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
-}
- */
-
 void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, bool two_sided)
 {
     return new ts::CollisionLine(
@@ -860,7 +847,13 @@ void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_
 
 void *ts_collision_line_sequence_create(size_t world_id, size_t type, float *xs, float *ys, size_t n_vertices)
 {
+    std::vector<ts::Vector2f> vertices;
+    vertices.reserve(n_vertices);
 
+    for (size_t i = 0; i < n_vertices; ++i)
+        vertices.emplace_back(xs[i], ys[i]);
+
+    return new ts::CollisionLineSequence(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
 }
 
 void ts_collision_shape_destroy(void* shape)
