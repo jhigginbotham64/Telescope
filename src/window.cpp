@@ -24,7 +24,9 @@ namespace ts
     Window::~Window()
     {
         close();
-        SDL_FreeSurface(_icon);
+
+        if (_icon != nullptr)
+            SDL_FreeSurface(_icon);
     }
 
     void Window::render(const Renderable * object, Transform transform)
@@ -197,7 +199,10 @@ namespace ts
 
         _icon = IMG_Load(path.c_str());
         if (_icon == nullptr)
+        {
             Log::warning("In ts::Window::set_icon: Unable to load icon from file ", path);
+            return;
+        }
 
         if (_icon->w != _icon->h)
             Log::warning("In ts::Window::set_icon: Icon image should be square. Visual corruption may occur because icon \"", path, "\" is of size ", _icon->w, "x", _icon->h, ".");

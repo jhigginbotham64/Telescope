@@ -76,7 +76,7 @@ module ts
 
     ### COMMON ################################################################
 
-    const _lib = "./libtelescope.so"
+    const _lib = "../libtelescope.so"
     export _lib
 
     """
@@ -1209,7 +1209,10 @@ module ts
 
             out = new(native)
             finalizer(out) do x::StaticTexture
-                ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+
+                if x._native != Ptr{Cvoid}()
+                    ccall((:ts_texture_destroy_texture, _lib), Cvoid, (Ptr{Cvoid},), x._native)
+                end
             end
         end
 
@@ -3167,7 +3170,7 @@ module ts
 
         function run()
 
-            test_icon = "docs/_static/favicon.png"
+            test_icon = "../docs/_static/favicon.png"
             @test ts.initialize()
 
             @testset "Colors" begin
@@ -3354,7 +3357,7 @@ module ts
                     ms = ts.MusicHandler
 
                     @test ms.sample_rate > 0
-                    music = Music("test/otherworldy_foe.mp3")
+                    music = Music("../test/otherworldy_foe.mp3")
                     @test music._native_id != Ptr{Cvoid}()
 
                     ms.play!(music)
@@ -3391,7 +3394,7 @@ module ts
                     sh = ts.SoundHandler
                     @test sh.n_channels > 0
 
-                    sound = Sound("test/ok_desu_ka.mp3", 0)
+                    sound = Sound("../test/ok_desu_ka.mp3", 0)
 
                     for i in 1:sh.n_channels
                         sh.play!(i, sound)

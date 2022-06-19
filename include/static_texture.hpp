@@ -35,8 +35,9 @@ namespace ts
 
             /// \brief load the texture from a path
             /// \param path: absolute path to image file
+            /// \returns true if load succesfull, false otherwise
             /// \note supported formats include: .bmp, .png, .jpg, .jpeg
-            void load(const std::string& path);
+            bool load(const std::string& path);
 
             /// \brief free the memory of the texture, this function is automatically called when the texture object calls its destructor
             void unload();

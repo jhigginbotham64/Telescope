@@ -27,7 +27,7 @@ namespace ts
         SDL_ClearHints();
     }
 
-    void StaticTexture::load(const std::string& path)
+    bool StaticTexture::load(const std::string& path)
     {
         SDL_SetHint("SDL_HINT_RENDER_SCALE_QUALITY", std::to_string((size_t) get_filtering_mode()).c_str());
         _texture = IMG_LoadTexture(get_window()->get_renderer(), path.c_str());
@@ -36,11 +36,12 @@ namespace ts
         {
             ts::Log::warning("In ts::Texture.load: unable to load texture from file \"", path, "\"");
             _texture = nullptr;
-            return;
+            return false;
         }
 
         Texture::update();
         SDL_ClearHints();
+        return true
     }
 
     void StaticTexture::unload()

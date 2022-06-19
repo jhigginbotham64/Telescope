@@ -169,8 +169,8 @@ add_library(telescope SHARED
     include/camera.hpp
     src/camera.cpp
 
-    include/c_interface.hpp
-    src/c_interface.cpp
+    julia/c_interface.hpp
+    julia/c_interface.cpp
 
     include/physics.hpp
 
@@ -218,17 +218,6 @@ target_link_libraries(telescope PUBLIC
     ${box2d}
 )
 
-# TODO: REMOVE THIS vvv
-
-add_executable(debug_main main.cpp)
-target_link_libraries(debug_main PUBLIC telescope)
-set_target_properties(telescope PROPERTIES
-    CXX_STANDARD 17
-    LINKER_LANGUAGE C
-)
-
-# TODO REMOVE THIS ^^
-
 ### TESTS ####
 
 option(BUILD_TESTS "build telescope unit tests" ON)
@@ -263,8 +252,6 @@ if (BUILD_TESTS)
     endfunction()
 
     #declare_test(template_test)
-    declare_test(time)
-    declare_test(input_handler)
 endif()
 
 ### GENERATE DOCS ###
