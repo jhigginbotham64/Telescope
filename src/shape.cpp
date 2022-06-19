@@ -12,8 +12,6 @@
 #include <include/render_target.hpp>
 #include <include/shape.hpp>
 
-#include <iostream> // TODO
-
 namespace ts
 {
     void Shape::render(RenderTarget* target, Transform transform) const

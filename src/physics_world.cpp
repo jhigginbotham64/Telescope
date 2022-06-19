@@ -6,8 +6,6 @@
 #include <box2d/b2_contact.h>
 #include <box2d/b2_distance.h>
 
-#include <iostream> //TODO
-
 #include <include/physics_world.hpp>
 #include <include/window.hpp>
 #include <include/collision_shape.hpp>

@@ -86,6 +86,16 @@ module ts
         return ccall((:ts_initialize, _lib), Bool, ())
     end
     export initialize
+    
+    """
+    `assert_zero_based(id) -> Nothing`
+    """
+    function assert_zero_base(id) ::Nothing
+        if (id == 0)
+            @warn "Indices that are 0-based in C++ are instead 1-based in Telescope.jl"
+        end
+    end
+    # no export
 
     ### VECTOR ################################################################
 
@@ -733,39 +743,43 @@ module ts
         """
         `is_down(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function is_down(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
-            return ccall((:ts_controller_is_down, _lib), Bool, (Int64, Csize_t), key, id)
+        function is_down(key::ControllerButton, id::ControllerID = UInt64(1)) ::Bool
+            assert_zero_base(id);
+            return ccall((:ts_controller_is_down, _lib), Bool, (Int64, Csize_t), key, id - 1)
         end
         export is_down
 
         """
         `has_state_changed(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function has_state_changed(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
-            return ccall((:ts_controller_has_state_changed, _lib), Bool, (Int64, Csize_t), key, id)
+        function has_state_changed(key::ControllerButton, id::ControllerID = UInt64(1)) ::Bool
+            assert_zero_base(id);
+            return ccall((:ts_controller_has_state_changed, _lib), Bool, (Int64, Csize_t), key, id - 1)
         end
         export has_state_changed
 
         """
         `was_pressed(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function was_pressed(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
-            return ccall((:ts_controller_was_pressed, _lib), Bool, (Int64, Csize_t), key, id)
+        function was_pressed(key::ControllerButton, id::ControllerID = UInt64(1)) ::Bool
+            assert_zero_base(id);
+            return ccall((:ts_controller_was_pressed, _lib), Bool, (Int64, Csize_t), key, id - 1)
         end
         export was_pressed
         
         """
         `was_released(::ControllerButton, [::ControllerID]) -> Bool`
         """
-        function was_released(key::ControllerButton, id::ControllerID = UInt64(0)) ::Bool
-            return ccall((:ts_controller_was_released, _lib), Bool, (Int64, Csize_t), key, id)
+        function was_released(key::ControllerButton, id::ControllerID = UInt64(1)) ::Bool
+            assert_zero_base(id);
+            return ccall((:ts_controller_was_released, _lib), Bool, (Int64, Csize_t), key, id - 1)
         end
         export was_released
 
         """
         `get_controller_axis_left([::ControllerID]) -> Vector2f`
         """
-        function get_controller_axis_left(id::ControllerID = UInt64(0)) ::Vector2f
+        function get_controller_axis_left(id::ControllerID = UInt64(1)) ::Vector2f
 
             x = Ref{Cfloat}(0)
             y = Ref{Cfloat}(0)
@@ -780,7 +794,7 @@ module ts
         """
         `get_controller_axis_right([::ControllerID]) -> Vector2f`
         """
-        function get_controller_axis_right(id::ControllerID = UInt64(0)) ::Vector2f
+        function get_controller_axis_right(id::ControllerID = UInt64(1)) ::Vector2f
 
             x = Ref{Cfloat}(0)
             y = Ref{Cfloat}(0)
@@ -795,16 +809,18 @@ module ts
         """
         `get_controller_trigger_left([::ControllerID]) -> Float32`
         """
-        function get_controller_trigger_left(id::ControllerID = UInt64(0)) ::Float32
-            return ccall((:ts_controller_trigger_left, _lib), Cfloat, (Csize_t,), id)
+        function get_controller_trigger_left(id::ControllerID = UInt64(1)) ::Float32
+            assert_zero_base(id);
+            return ccall((:ts_controller_trigger_left, _lib), Cfloat, (Csize_t,), id - 1)
         end
         export get_controller_trigger_left
 
         """
         `get_controller_trigger_right([::ControllerID]) -> Float32`
         """
-        function get_controller_trigger_right(id::ControllerID = UInt64(0)) ::Float32
-            return ccall((:ts_controller_trigger_right, _lib), Cfloat, (Csize_t,), id)
+        function get_controller_trigger_right(id::ControllerID = UInt64(1)) ::Float32
+            assert_zero_base(id);
+            return ccall((:ts_controller_trigger_right, _lib), Cfloat, (Csize_t,), id - 1)
         end
         export get_controller_trigger_left
     end
@@ -857,10 +873,10 @@ module ts
 
         """
         `play!(::ChannelID, ::Sound, [::Integer, ::Time]) -> Nothing`
-
-        channel id 1-based
         """
         function play!(channel::ChannelID, sound::Sound, n_loops::Integer = 1, fade_in_duration::Time = seconds(0.0)) ::Nothing
+
+            assert_zero_base(channel);
             ccall((:ts_sound_play, _lib), Cvoid,
                 (Csize_t, Csize_t, Csize_t, Cdouble),
                 sound._native_id, channel - 1, n_loops, as_milliseconds(fade_in_duration))
@@ -871,6 +887,7 @@ module ts
         `stop!(::ChannelID, [::Time]) -> Nothing`
         """
         function stop!(channel::ChannelID, fade_out_duration::Time = seconds(0.0)) ::Nothing
+            assert_zero_base(channel);
             ccall((:ts_sound_stop, _lib), Cvoid,
                 (Csize_t, Cdouble),
                 channel - 1, as_milliseconds(fade_out_duration))
@@ -881,6 +898,7 @@ module ts
         `pause!(::ChannelID) -> Nothing`
         """
         function pause!(channel::ChannelID) ::Nothing
+            assert_zero_base(channel);
             ccall((:ts_sound_pause, _lib), Cvoid, (Csize_t,), channel - 1)
         end
         export pause!; pause = pause!
@@ -889,6 +907,7 @@ module ts
         `unpause!(::ChannelID) -> Nothing`
         """
         function unpause!(channel::ChannelID) ::Nothing
+            assert_zero_base(channel);
             ccall((:ts_sound_unpause, _lib), Cvoid, (Csize_t,), channel - 1)
         end
         export unpause!; unpause = unpause!
@@ -897,6 +916,7 @@ module ts
         `force_stop!(::ChannelID) -> Nothing`
         """
         function force_stop!(channel::ChannelID) ::Nothing
+            assert_zero_base(channel);
             ccall((:ts_sound_force_stop, _lib), Cvoid, (Csize_t,), channel - 1)
         end
         export force_stop!; force_stop = force_stop!
@@ -905,6 +925,7 @@ module ts
         `is_playing(::ChannelID) -> Bool`
         """
         function is_playing(channel::ChannelID) ::Bool
+            assert_zero_base(channel);
             return ccall((:ts_sound_is_playing, _lib), Bool, (Csize_t,), channel - 1)
         end
         export is_playing
@@ -913,6 +934,7 @@ module ts
         `is_paused(::ChannelID) -> Bool`
         """
         function is_paused(channel::ChannelID) ::Bool
+            assert_zero_base(channel);
             return ccall((:ts_sound_is_paused, _lib), Bool, (Csize_t,), channel - 1)
         end
         export is_paused
@@ -921,6 +943,7 @@ module ts
         `is_stopped(::ChannelID) -> Bool`
         """
         function is_stopped(channel::ChannelID) ::Bool
+            assert_zero_base(channel);
             return ccall((:ts_sound_is_stopped, _lib), Bool, (Csize_t,), channel - 1)
         end
         export is_stopped
@@ -929,6 +952,7 @@ module ts
         `set_volume!(::ChannelID, ::Float32) -> Nothing`
         """
         function set_volume!(channel::ChannelID, zero_to_one) ::Nothing
+            assert_zero_base(channel);
             ccall((:ts_sound_set_volume, _lib), Cvoid, (Csize_t, Cfloat), channel - 1, zero_to_one)
         end
         export set_volume!; set_volume = set_volume!
@@ -937,6 +961,7 @@ module ts
         `get_volume(::ChannelID) -> Float32`
         """
         function get_volume(channel::ChannelID) ::Float32
+            assert_zero_base(channel);
             return ccall((:ts_sound_get_volume, _lib), Cfloat, (Csize_t,), channel - 1)
         end
         export get_volume
@@ -945,6 +970,7 @@ module ts
         `set_panning!(::ChannelID, ::Angle) -> Nothing`
         """
         function set_panning!(channel::ChannelID, angle::Angle) ::Nothing
+            assert_zero_base(channel);
             return ccall((:ts_sound_set_panning, _lib), Cvoid, (Csize_t, Cfloat), channel - 1, as_degrees(angle))
         end
         export set_panning!; set_panning = set_panning!
@@ -953,6 +979,7 @@ module ts
         `get_panning(::ChannelID) -> Angle`
         """
         function get_panning(channel::ChannelID) ::Angle
+            assert_zero_base(channel);
             return degrees(ccall((:ts_sound_get_panning, _lib), Cfloat, (Csize_t,), channel - 1))
         end
         export get_panning
@@ -1698,6 +1725,7 @@ module ts
     """
     function get_vertex_position(shape::Shape, index::Integer) ::Vector2f
 
+        assert_zero_base(channel);
         index -= 1;
 
         if index > get_n_vertices(shape)
@@ -1722,6 +1750,7 @@ module ts
     """
     function get_vertex_color(shape::Shape, index::Integer) ::RGBA
 
+        assert_zero_base(channel);
         index -= 1;
 
         if index > get_n_vertices(shape)
@@ -1748,6 +1777,7 @@ module ts
     """
     function get_vertex_texture_coordinates(shape::Shape, index::Integer) ::Vector2f
 
+        assert_zero_base(channel);
         index -= 1;
 
         if index > get_n_vertices(shape)
@@ -3152,7 +3182,7 @@ module ts
 
     ### TEST #############################################################################
 
-    module test
+    module _test
 
         import Main.ts; using Main.ts
         import Test; using Test
@@ -3646,4 +3676,15 @@ module ts
         end
         # no export
     end
+
+    """
+    `runtests() -> Nothing`
+    """
+    function runtests() ::Nothing
+
+        printstyled("Running tests...\n", bold = true);
+        Main.ts._test.run();
+        printstyled("done.\n", bold = true);
+    end
+    # no export
 end

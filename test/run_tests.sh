@@ -1,5 +1,6 @@
+#!/bin/bash
+
+# runs the julia-side tests. This also inherently tests the C++ library
 # Usage: /bin/bash -i run_tests.sh
 
-echo ---------------------------------------------------------------------
-cd ../julia
-julia -e "include(\"telescope.jl\"); Main.ts.test.run()"
+julia -e "include(\"../julia/telescope.jl\"); Main.ts.runtests();"

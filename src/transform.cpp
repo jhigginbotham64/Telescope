@@ -2,8 +2,6 @@
 // Created by clem on 6/1/22.
 //
 
-#include <iostream> // TODO
-
 #include <glm/geometric.hpp>
 #include <glm/gtx/transform.hpp>
 

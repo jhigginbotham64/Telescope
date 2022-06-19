@@ -44,7 +44,7 @@ namespace ts
             static inline constexpr const char* GLOBAL_PREFIX = "";//"[C++]";
             static inline std::mutex _lock;
 
-            static inline bool _debug_enabled = true; //TODO: false for release
+            static inline bool _debug_enabled = false;
     };
 }
 

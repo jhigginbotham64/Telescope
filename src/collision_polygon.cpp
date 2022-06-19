@@ -6,7 +6,6 @@
 #include <array>
 #include <exception>
 #include <sstream>
-#include <iostream> //TODO
 
 #include <include/collision_polygon.hpp>
 #include <include/physics_world.hpp>

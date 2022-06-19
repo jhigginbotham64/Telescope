@@ -5,7 +5,6 @@
 
 #include <stdexcept>
 #include <algorithm>
-#include <iostream> //TODO
 
 #include <include/polygon_shape.hpp>
 #include <include/angle.hpp>

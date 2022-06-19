@@ -1,5 +1,5 @@
 // 
-// Copyright 2022 Clemens Cords
+// Copyright 2022 Joshua Higginbotham
 // Created on 6/19/22 by clem (mail@clemens-cords.com)
 //
 

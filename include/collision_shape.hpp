@@ -237,9 +237,11 @@ namespace ts
             void apply_linear_impulse_to_center(Vector2f impulse);
 
             /// \brief get the total mass of the object
+            /// \returns mass
             float get_mass() const;
 
             /// \brief get the total inertia of the object
+            /// \returns inertia
             float get_inertia() const;
 
             /// \brief enable bullet-mode, c.f. https://box2d.org/documentation/structb2_body_def.html#a7c0047c9a98a1d20614eeddcdbce7586
