@@ -6,9 +6,10 @@ What is the difference between this Telescope and :code:`Telescope.jl` ?
 -----------------------------------------
 
 Telescope is heavily used in `Starlight.jl <https://github.com/jhigginbotham64/Starlight.jl>`_, but may be
-a solid base for any game engine written in C++ or Julia all by itself. All of telescopes functionality is
+a solid base for any game engine written all by itself. All of telescopes functionality is
 exported to Julia through `Telescope.jl <https://github.com/jhigginbotham64/Telescope.jl>`_. We can make this package
-available by simply calling :code:`import Pkg; Pkg.add("Telescope")` from within Julia.
+available by simply calling :code:`import Pkg; Pkg.add("Telescope")` from within Julia. This makes telescope easy access
+in both C++ and Julia.
 
 The obvious question, then, is:
 
@@ -20,7 +21,7 @@ Short answer:
 a) very little
 b) yes!
 
-Telescope.jl was designed and formatted specifically to imitate C++ syntax as closely as possible, under the
+:code:`Telescope.jl` was designed and formatted specifically to imitate C++ syntax as closely as possible, under the
 inherent limitations of Julia, of course.
 
 Consider the following code snippet, written using C++ telescope:
@@ -89,11 +90,12 @@ We see that both code excerpts are extremely similar. The only notable differenc
         + :code:`ts.<member_function>(<instance>, <arg>)`
     because Julia does not offer C++-style member functions natively.
 - a :code:`!` is appended to names of functions that mutate their arguments, this adheres to Julia syntax convention
-- any index that would be 0-based in C++ is instead 1-based
+- indices that would be 0-based in C++ are instead 1-based in Julia
 
 Other than this, there is very little difference in notation between C++ telescope and Julia telescope. The Julia package
-has the exact same classes and functions, named exactly the same, exhibiting exactly the same behavior.
-In fact, the Julia package directly calls the C++ functions through an internal C-interface.
+has the exact same classes and functions, named exactly the same, exhibiting exactly the same behavior, except for the
+four differences mentioned above.
+In fact, the Julia package directly calls the C++ functions through an internal C-interface, making them fully equivalent.
 
 Because of this, all documentation and tutorials offered here also apply to :code:`Telescope.jl`. Most code can
 be translated to Julia with very little effort, making knowledge about C++ Telescope fully transferable.

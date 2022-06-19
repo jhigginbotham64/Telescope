@@ -189,16 +189,12 @@ add_library(telescope SHARED
     include/collision_line.hpp
     src/collision_line.cpp
 
-    include/collision_wireframe.hpp
-    src/collision_wireframe.cpp
+    include/collision_render_shape.hpp
+    src/collision_render_shape.cpp
 
-    include/collision_circle_shape.hpp
-    include/collision_rectangle_shape.hpp
-    include/collision_triangle_shape.hpp
-    include/collision_line_shape.hpp
-    include/collision_wireframe_shape.hpp
-    src/collision_x_shape.cpp
-)
+    include/collision_line_sequence.hpp
+    src/collision_line_sequence.cpp
+        src/collision_line_sequence.cpp)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C

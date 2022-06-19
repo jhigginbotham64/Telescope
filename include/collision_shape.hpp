@@ -273,7 +273,7 @@ namespace ts
             friend class CollisionCircle;
             friend class CollisionPolygon;
             friend class CollisionLine;
-            friend class CollisionWireframe;
+            friend class CollisionLineSequence;
                 // sic, exposing private members like this prevents users from subclassing this class
                 // while still giving the ts-defined subclasses access to would-be protected members
 

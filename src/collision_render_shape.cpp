@@ -2,12 +2,7 @@
 // Created by clem on 6/9/22.
 //
 
-#include <include/collision_circle_shape.hpp>
-#include <include/collision_rectangle_shape.hpp>
-#include <include/collision_triangle_shape.hpp>
-#include <include/geometric_shapes.hpp>
-#include <include/collision_line_shape.hpp>
-#include <include/collision_wireframe_shape.hpp>
+#include <include/collision_render_shape.hpp>
 
 #include <iostream>
 
@@ -68,9 +63,45 @@ namespace ts
         RectangleShape::rotate(CollisionLine::get_rotation());
     }
 
-    CollisionWireframeShape::CollisionWireframeShape(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f> & vertices)
-        : CollisionWireframe(world, type, vertices)
+    CollisionLineSequenceShape::CollisionLineSequenceShape(
+        PhysicsWorld* world,
+        CollisionType type,
+        const std::vector<Vector2f>& vertices,
+        bool is_two_sided)
+        : CollisionLineSequence(world, type, vertices, is_two_sided)
     {
-        assert(true);
+        for (size_t i = 0; i < vertices.size() - 1; ++i)
+        {
+            auto a = vertices.at(i);
+            auto b = vertices.at(i+1);
+            auto center = (a + b) / Vector2f(2, 2);
+            _lines.push_back(RectangleShape(center, Vector2f(glm::distance(a, b), 1)));
+            _lines.back().rotate(radians(std::atan2((b-a).x, (b-a).y)));
+        }
+    }
+
+    std::vector<RectangleShape> &CollisionLineSequenceShape::get_shapes()
+    {
+        return _lines;
+    }
+
+    void CollisionLineSequenceShape::update()
+    {
+    }
+
+    void CollisionLineSequenceShape::render(RenderTarget *target, Transform transform) const
+    {
+        for (auto& e : _lines)
+            e.render(target, transform);
+    }
+
+    CollisionPolygonShape::CollisionPolygonShape(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f> & vertices)
+        : CollisionPolygon(world, type, vertices), PolygonShape(vertices)
+    {}
+
+    void CollisionPolygonShape::update()
+    {
+        PolygonShape::set_centroid(CollisionPolygon::get_centroid());
+        PolygonShape::rotate(CollisionPolygon::get_rotation());
     }
 }

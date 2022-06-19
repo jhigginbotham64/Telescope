@@ -127,8 +127,7 @@ Collision Shapes: Polygons
 **************************
 
 All "filled" shapes (shapes that cannot have another shape within its bounds), that can be expressed as 3 or more vertices,
-are represented by :code:`ts::CollisionPolygon`. Rather than there being a CollisionTriangle or CollisionRectangle,
-we instead instance :code:`ts::CollisionPolygon` with 3 or 4 vertices respectively.
+are represented by :code:`ts::CollisionPolygon`.
 
 For convenience, :code:`ts::CollisionPolygon` offers a number of constructors that take, as their argument, a (geometric)
 shape. Because of this, the following pattern can be used:
@@ -142,7 +141,14 @@ shape. Because of this, the following pattern can be used:
     // hitbox now has the same position, shape and size of `shape`
 
 No constructors for :code:`ts::CircleShape` are provided, because they should be simulated using a :code:`ts::CollisionCircle`
-instead. A full list of all constructors available to :code:`ts::CollisionPolygon` is provided here:
+instead.
+
+.. note::
+    In :code:`Telescope.jl`, in addition to the constructors of :code:`ts.CollisionPolygon`,
+    :code:`ts.CollisionRectangle` and :code:`ts.CollisionTriangle` are provided for syntactic convenience,
+    though both functions still return a :code:`ts.CollisionPolygon`
+
+A full list of all constructors available to :code:`ts::CollisionPolygon` is provided here:
 
 .. doxygenclass:: ts::CollisionPolygon
     :members:

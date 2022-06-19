@@ -102,7 +102,7 @@ namespace ts
            return out / Vector2f(vec.size(), vec.size());
         }())
     {
-        if (vec.size() < b2_maxPolygonVertices)
+        if (vec.size() > b2_maxPolygonVertices)
         {
             std::stringstream str;
             str << "In ts::CollisionPolygon CTor: Maximum number of vertices (" << b2_maxPolygonVertices << ") exceeded." \

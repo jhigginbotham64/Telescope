@@ -64,8 +64,8 @@ module ts
     export CollisionTriangle, CollisionRectangle, CollisionCircle, CollisionPolygon,
         CollisionLine, CollisionWireframe
     export set_density!, get_density, set_restitution!, get_restitution, get_centroid,
-        get_bounding_box, get_rotation, set_type!, get_type, enable!, disable!,
-        is_enabled, get_origin, get_center_of_mass_local, get_center_of_mass_global,
+        get_bounding_box, get_rotation, set_type!, get_type, get_is_hidden, set_is_hidden,
+        get_origin, get_center_of_mass_local, get_center_of_mass_global,
         set_linear_velocity!, get_linear_velocity, set_angular_velocity!, get_angular_velocity,
         apply_force_to!, apply_force_to_center!, apply_torque!, apply_linear_impulse_to!,
         apply_linear_impulse_to_center!, get_mass, get_inertia, set_is_bullet!, get_is_bullet,
@@ -1772,6 +1772,7 @@ module ts
 
     ## Constructors
     `TriangleShape(::Vector2f, ::Vector2f, ::Vector2f)`
+    `TriangleShape(triangle::Triangle)`
     """
     mutable struct TriangleShape <: Shape
 
@@ -1790,6 +1791,10 @@ module ts
 
             return out
         end
+
+        function TriangleShape(triangle::Triangle)
+            TriangleShape(triangle.a, triangle.b, triangle.c)
+        end
     end
     export TriangleShape
 
@@ -1803,6 +1808,7 @@ module ts
 
     ## Constructors
     `RectangleShape(top_left::Vector2f, size::Vector2f)`
+    `RectangleShape(::Rectangle)`
     """
     mutable struct RectangleShape <: Shape
 
@@ -1818,6 +1824,10 @@ module ts
             finalizer(out) do x::RectangleShape
                 ccall((:ts_shape_destroy_rectangle, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
+        end
+
+        function RectangleShape(rectangle::Rectangle)
+            RectangleShape(rectangle.top_left, rectangle.size)
         end
     end
     export RectangleShape
@@ -1882,6 +1892,7 @@ module ts
 
     ## Constructors
     `CircleShape(center::Vector2f, radius::Float32, [n_vertices::UInt64])
+    `CircleShape(::Circle, [n_vertices::UInt64])`
     """
     mutable struct CircleShape <: Shape
 
@@ -1897,6 +1908,10 @@ module ts
             finalizer(out) do x::CircleShape
                 ccall((:ts_shape_destroy_circle, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
+        end
+
+        function CircleShape(circle::Circle, n_vertices::Number = 32)
+            CircleShape(circle.center, circle.radius, n_vertices)
         end
     end
     export CircleShape
@@ -2442,82 +2457,127 @@ module ts
     @export_enum(CollisionType)
 
     """
-    CollisionTriangle
-
-    ### Members
-    (no public members)
+    CollisionPolygon
 
     ### Constructors
-    `CollisionTriangle(::PhysicsWorld, ::CollisionType, ::Vector2f, ::Vector2f, ::Vector2f)`
-    `CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::Triangle)`
-    `CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape)`
+
+    CollisionTriangle(::PhysicsWorld, ::CollisionType, a::Vector2f, b::Vector2f, c::Vector2f)
+    CollisionTriangle(::PhysicsWorld, ::CollisionType, triangle::Triangle)
+    CollisionTriangle(::PhysicsWorld, ::CollisionType, top_left::Vector2f, size::Vector2f)
+
+    CollisionRectangle(::PhysicsWorld, ::CollisionType, top_left::Vector2f, size::Vector2f)
+    CollisionRectangle(::PhysicsWorld, ::CollisionType, rectangle::Rectangle)
+    CollisionRectangle(::PhysicsWorld, ::CollisionType, rectangle::RectangleShape)
+
+    CollisionPolygon(::PhysicsWorld, ::CollisionType, vertices::Vector{Vector2f})
     """
-    mutable struct CollisionTriangle <: CollisionShape
+    mutable struct CollisionPolygon <: CollisionShape
 
         _native::Ptr{Cvoid}
 
-        function CollisionTriangle(world::PhysicsWorld, type::CollisionType, a::Vector2f, b::Vector2f, c::Vector2f)
+        # as triangle
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, a::Vector2f, b::Vector2f, c::Vector2f)
 
             native = ccall((:ts_collision_triangle_create, _lib), Ptr{Cvoid},
                 (Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat, Cfloat, Cfloat),
                 world._native_id, Csize_t(type), a.x, a.y, b.x, b.y, c.x, c.y)
 
             out = new(native)
-            finalizer(out) do x::CollisionTriangle
+            finalizer(out) do x::CollisionPolygon
                 ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), x._native)
             end
             return out;
         end
 
-        function CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::Triangle)
-            return CollisionTriangle(world, type, triangle.a, triangle.b, triangle.c)
+        # as triangle
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, triangle::Triangle)
+            return CollisionPolygon(world, type, triangle.a, triangle.b, triangle.c)
         end
 
-        function CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape)
+        # as triangle
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape)
 
             a = get_vertex_position(triangle, 1)
             b = get_vertex_position(triangle, 2)
             c = get_vertex_position(triangle, 3)
 
-            return CollisionTriangle(world, type, a, b, c)
+            return CollisionPolygon(world, type, a, b, c)
         end
-    end
-    export CollisionTriangle
 
-    """
-    CollisionRectangle
-
-    ### Members
-    (no public members)
-
-    ### Constructors
-    `CollisionRectangle(::PhysicsWorld, ::CollisionType, top_left::Vector2f, size::Vector2f)`
-    `CollisionRectangle(::PhysicsWorld, ::CollisionType, ::Rectangle)`
-    `CollisionRectangle(::PhysicsWorld, ::CollisionType, ::RectangleShape)`
-    """
-    mutable struct CollisionRectangle <: CollisionShape
-
-        _native::Ptr{Cvoid}
-
-        function CollisionRectangle(world::PhysicsWorld, type::CollisionType, top_left::Vector2f, size::Vector2f)
+        # as rectangle
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, top_left::Vector2f, size::Vector2f)
 
             native = ccall((:ts_collision_rectangle_create, _lib), Ptr{Cvoid},
                 (Csize_t, Csize_t, Cfloat, Cfloat, Cfloat, Cfloat),
                 world._native_id, Csize_t(type), top_left.x, top_left.y, size.x, size.y)
 
             out = new(native)
-            finalizer(out) do x::CollisionRectangle
+            finalizer(out) do x::CollisionPolygon
                 ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
             end
         end
 
-        function CollisionRectangle(world::PhysicsWorld, type::CollisionType, rectangle::Rectangle)
-            return CollisionRectangle(world, type, rectangle.top_left, rectangle.size)
+        # as rectangle
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, rectangle::Rectangle)
+            return CollisionPolygon(world, type, rectangle.top_left, rectangle.size)
         end
 
-        function CollisionRectangle(world::PhysicsWorld, type::CollisionType, rectangle::RectangleShape)
-            return CollisionRectangle(world, type, get_top_left(rectangle), get_size(rectangle_shape))
+        # as rectangle
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, rectangle::RectangleShape)
+            return CollisionPolygon(world, type, get_top_left(rectangle), get_size(rectangle))
         end
+
+        # as polygon
+        function CollisionPolygon(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
+
+            xs = Float32[]
+            ys = Float32[]
+
+            for v in vertices
+                push!(xs, v.x)
+                push!(ys, v.y)
+            end
+
+            native = ccall((:ts_collision_polygon_create, _lib), Ptr{Cvoid},
+                (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
+                world._native_id, Csize_t(type), xs, ys, length(vertices))
+
+            out = new(native)
+            finalizer(out) do x::CollisionPolygon
+                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
+            end
+            return out
+        end
+    end
+    export CollisionPolygon
+
+    function CollisionTriangle(world::PhysicsWorld, type::CollisionType, a::Vector2f, b::Vector2f, c::Vector2f) ::CollisionPolygon
+        return CollisionPolygon(world, type, a, b, c)
+    end
+    export CollisionTriangle
+
+    function CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::Triangle) ::CollisionPolygon
+        return CollisionPolygon(world, type, triangle)
+    end
+    export CollisionTriangle
+
+    function CollisionTriangle(world::PhysicsWorld, type::CollisionType, triangle::TriangleShape) ::CollisionPolygon
+        return CollisionPolygon(world, type, triangle)
+    end
+    export CollisionTriangle
+
+    function CollisionRectangle(world::PhysicsWorld, type::CollisionType, top_left::Vector2f, size::Vector2f) ::CollisionPolygon
+        return CollisionPolygon(world, type, top_left, size)
+    end
+    export CollisionRectangle
+
+    function CollisionRectangle(world::PhysicsWorld, type::CollisionType, rectangle::Rectangle) ::CollisionPolygon
+        return CollisionPolygon(world, type, rectangle)
+    end
+    export CollisionRectangle
+
+    function CollisionRectangle(world::PhysicsWorld, type::CollisionType, rectangle::RectangleShape) ::CollisionPolygon
+        return CollisionPolygon(world, type, rectangle)
     end
     export CollisionRectangle
 
@@ -2554,7 +2614,7 @@ module ts
         end
 
         function CollisionCircle(world::PhysicsWorld, type::CollisionType, circle::CircleShape)
-            CollisionCircle(world, type, get_center(circle), get_radius(circle))
+            CollisionCircle(world, type, get_centroid(circle), get_radius(circle))
         end
     end
     export CollisionCircle
@@ -2615,7 +2675,7 @@ module ts
                 world._native_id, Csize_t(type), xs, ys, length(vertices))
 
             out = new(native)
-            finalizer(out) do x::CollisionLine
+            finalizer(out) do x::CollisionWireframe
                 ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
             end
             return out
@@ -2623,41 +2683,6 @@ module ts
     end
     export CollisionWireframe
 
-    """
-    CollisionPolygon
-
-    ### Members
-    (no public members)
-
-    ### Constructors
-    `CollisionPolygon(::PhysicsWorld, ::CollisionType, ::Vector{Vector2f})`
-    """
-    mutable struct CollisionPolygon <: CollisionShape
-
-        _native::Ptr{Cvoid}
-
-        function CollisionWireframe(world::PhysicsWorld, type::CollisionType, vertices::Vector{Vector2f})
-
-            xs = Float32[]
-            ys = Float32[]
-
-            for v in vertices
-                push!(xs, v.x)
-                push!(ys, v.y)
-            end
-
-            native = ccall((:ts_collision_polygon_create, _lib), Ptr{Cvoid},
-                (Csize_t, Csize_t, Ptr{Cfloat}, Ptr{Cfloat}, Csize_t),
-                world._native_id, Csize_t(type), xs, ys, length(vertices))
-
-            out = new(native)
-            finalizer(out) do x::CollisionLine
-                ccall((:ts_collision_shape_destroy, _lib), Cvoid, (Ptr{Cvoid},), out._native)
-            end
-            return out
-        end
-    end
-    export CollisionPolygon
 
     """
     `set_density!(::CollisionShape, ::Float32) -> Nothing`
@@ -2783,14 +2808,6 @@ module ts
     function get_is_hidden(shape::CollisionShape) ::Bool
         return ccall((:ts_collision_shape_get_is_hidden, _lib), Bool, (Ptr{Cvoid},), shape._native)
     end
-
-    """
-    `is_enabled(::CollisionShape) -> Bool`
-    """
-    function is_enabled(shape::CollisionShape) ::Bool
-        return ccall((:ts_collision_shape_is_hidden, _lib), Bool, (Ptr{Cvoid},), shape._native)
-    end
-    export is_enabled
 
     """
     `get_origin(::CollisionShape) -> Vector2f`
@@ -3139,34 +3156,109 @@ module ts
         function run()
 
             test_icon = "docs/_static/favicon.png"
-
             @test ts.initialize()
 
-            @testset "Camera" begin
-                window = Window(1, 1)
-                camera = Camera(window)
+             @testset "Physics" begin
 
-                @test camera._native_window_id == window._native_id
+                world = PhysicsWorld()
+                @test world._native_id != 0
 
-                center_on!(camera, Vector2f(50, 50))
-                @test get_center(camera) == Vector2f(50, 50)
+                set_gravity!(world, Vector2f(-1, 1))
+                @test get_gravity(world) == Vector2f(-1, 1)
 
-                center_on!(camera, Vector2f(0, 0))
-                move!(camera, 50, 50)
-                @test get_center(camera) == Vector2f(50, 50)
+                clear_forces!(world)
+                step!(world, seconds(1))
 
-                zoom_in!(camera, 0.5)
-                zoom_out!(camera, 2)
-                set_zoom!(camera, 1)
-                rotate!(camera, degrees(90))
-                set_rotation!(camera, degrees(0))
+                rect_geometry = Rectangle(Vector2f(0, 0,), Vector2f(100, 100))
+                rect_shape = RectangleShape(rect_geometry)
+                rect = CollisionRectangle(world, ts.DYNAMIC, rect_geometry)
+                @test rect._native != Ptr{Cvoid}()
+                rect = CollisionRectangle(world, ts.DYNAMIC, rect_shape)
+                @test rect._native != Ptr{Cvoid}()
 
-                transform = get_transform(camera)
-                reset!(transform)
-                set_transform!(camera, transform)
+                tri_geometry = Triangle(Vector2f(50, 50), Vector2f(150, 150), Vector2f(0, 75))
+                tri_shape = TriangleShape(tri_geometry)
 
-                reset!(camera)
-                area = get_view_area(camera)
+                tri = CollisionTriangle(world, ts.DYNAMIC, tri_geometry)
+                @test tri._native != Ptr{Cvoid}()
+                tri = CollisionTriangle(world, ts.DYNAMIC, tri_shape)
+                @test tri._native != Ptr{Cvoid}()
+
+                circ_geometry = Circle(Vector2f(50, 50), 100)
+                circ_shape = CircleShape(circ_geometry)
+                circ = CollisionCircle(world, ts.DYNAMIC, circ_geometry)
+                @test circ._native != Ptr{Cvoid}()
+                circ = CollisionCircle(world, ts.DYNAMIC, circ_shape)
+                @test circ._native != Ptr{Cvoid}()
+
+                line = CollisionLine(world, ts.DYNAMIC, Vector2f(50, 50), Vector2f(10, 10))
+                @test line._native != Ptr{Cvoid}()
+
+                polygon = CollisionPolygon(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                @test polygon._native != Ptr{Cvoid}()
+
+                return
+
+                # wireframe = CollisionWireframe(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                # @test wireframe._native != Ptr{Cvoid}()
+
+                shapes = [rect, tri, circ]#, polygon, wireframe]
+
+                for shape in shapes
+
+                    set_density!(shape, 12)
+                    @test get_density(shape) == 12
+
+                    set_friction(shape, 12)
+                    @test get_friction(shape) == 12
+
+                    set_restitution!(shape, 12)
+                    @test get_restitution(shape) == 12
+
+                    @test get_centroid(shape) != Vector2f(0, 0)
+                    aabb = get_bounding_box(shape)
+                    @test get_centroid(shape) == Vector2f(aabb.top_left.x + aabb.size.x * 0.5, aabb.top_left.y + aabb.size.y * 0.5)
+
+                    @test get_rotation(shape) == degrees(0)
+
+                    @test set_type(shape, ts.STATIC)
+                    get_type(shape) == ts.STATIC
+
+                    set_is_hidden(shape, true)
+                    @test get_is_hidden(shape) == true
+                    set_is_hidden(shape, false)
+
+                    @test get_origin(shape) == Vector2f(0, 0)
+                    get_center_of_mass_local(shape)
+                    get_center_of_Mass_global(shape)
+
+                    set_linear_velocity!(shape, Vector2f(12, 13))
+                    @test get_linear_velocity!(shape, Vector2f(12, 13))
+                    set_linear_velocity!(shape, Vector2f(0, 0))
+
+                    set_angular_velocity!(shape, 12)
+                    @test get_angular_velocity(shape) == 12
+                    set_angular_velocity!(shape, 0)
+
+                    apply_force_to!(shape, 12, Vector2f(0, 0))
+                    apply_force_to_center!(shape, 12)
+
+                    apply_torque!(shape, 12)
+                    apply_linear_impulse_to!(shape, Vector2f(12, 13), Vector2f(0, 0));
+                    apply_linaer_impulse_to_center!(shape, Vector2f(12, 13))
+
+                    @test get_mass(shape) > 0
+                    @test get_inertia(shape) > 0
+
+                    set_is_bullet!(shape, true)
+                    @test get_is_bullet(shape)
+                    set_is_bullet!(shape, false)
+
+                    set_is_rotation_fixed!(shape, true)
+                    @test get_is_rotation_fixed(shape) == true
+
+                    @test get_id(shape) > 0
+                end
             end
 
             return
@@ -3247,6 +3339,35 @@ module ts
 
                 close!(window)
             end
+
+            @testset "Camera" begin
+
+                window = Window(1, 1)
+                camera = Camera(window)
+
+                @test camera._native_window_id == window._native_id
+
+                center_on!(camera, Vector2f(50, 50))
+                @test get_center(camera) == Vector2f(50, 50)
+
+                center_on!(camera, Vector2f(0, 0))
+                move!(camera, 50, 50)
+                @test get_center(camera) == Vector2f(50, 50)
+
+                zoom_in!(camera, 0.5)
+                zoom_out!(camera, 2)
+                set_zoom!(camera, 1)
+                rotate!(camera, degrees(90))
+                set_rotation!(camera, degrees(0))
+
+                transform = get_transform(camera)
+                reset!(transform)
+                set_transform!(camera, transform)
+
+                reset!(camera)
+                area = get_view_area(camera)
+            end
+
 
             @testset "Textures" begin
 

@@ -837,6 +837,7 @@ void* ts_collision_polygon_create(size_t world_id, size_t type, float* xs, float
     return new ts::CollisionPolygon(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
 }
 
+/*
 void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices)
 {
     std::vector<ts::Vector2f> vertices;
@@ -847,6 +848,7 @@ void* ts_collision_wire_frame_create(size_t world_id, size_t type, float* xs, fl
 
     return new ts::CollisionWireframe(&detail::_worlds.at(world_id), (ts::CollisionType) type, vertices);
 }
+ */
 
 void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, bool two_sided)
 {
@@ -854,6 +856,11 @@ void* ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_
         &detail::_worlds.at(world_id), 
         (ts::CollisionType) type,
         ts::Vector2f(a_x, a_y), ts::Vector2f(b_x, b_y), two_sided);
+}
+
+void *ts_collision_line_sequence_create(size_t world_id, size_t type, float *xs, float *ys, size_t n_vertices)
+{
+
 }
 
 void ts_collision_shape_destroy(void* shape)

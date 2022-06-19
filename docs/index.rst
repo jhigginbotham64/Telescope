@@ -4,8 +4,8 @@
 Telescope Documentation
 =======================
 
-Welcome to the documentation for `Telescope <https://github.com/jhigginbotham64/Telescope>`_, a game engine aiming to
-abstract rendering and physics into an easy-to-use yet powerful toolset.
+Welcome to the documentation for `Telescope <https://github.com/jhigginbotham64/Telescope>`_, a game engine
+that abstracts rendering and physics into an easy-to-use yet powerful toolset.
 
 Telescope was created `Joshua Higginbotham <https://github.com/jhigginbotham64>`_ & `Clem Cords <https://github.com/clemapfel>`_.
 

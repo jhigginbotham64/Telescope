@@ -50,13 +50,19 @@ namespace ts
         /*
         if (_fixture != nullptr)
         {
-            delete ((CollisionData*) _fixture->GetUserData().pointer);
-            _body->DestroyFixture(_fixture);
+            auto* next = _fixture;
+
+            while (next != nullptr)
+            {
+                auto* to_destroy = next;
+                next = next->GetNext();
+                delete to_destroy;
+            }
         }
 
         if (_world != nullptr)
             _world->get_native()->DestroyBody(_body);
-        */
+            */
     }
 
     /*
@@ -141,7 +147,6 @@ namespace ts
     Angle CollisionShape::get_rotation() const
     {
         assert_hidden();
-
         return ts::radians(-1 * _body->GetAngle());
     }
 

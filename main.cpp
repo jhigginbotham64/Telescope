@@ -47,40 +47,19 @@ float rng()
     return rand() / float(RAND_MAX);
 }
 
-struct Poly
+std::vector<Vector2f> generate_polygon(Vector2f center, float radius, size_t n = 8)
 {
-    PolygonShape _shape;
-    CollisionPolygon _hitbox;
-
-    static std::vector<Vector2f> create_polygon(Vector2f center, float radius)
+    std::vector<Vector2f> out;
+    for (size_t i = 0; i < n; ++i)
     {
-        std::vector<Vector2f> out;
-        out.push_back(center);
-
-        for (size_t i = 0; i < 8; ++i)
-            out.push_back(Vector2f(
-                center.x + cos(ts::degrees(i / 8.f * 360).as_radians() * radius),
-                center.y + sin(ts::degrees(i / 8.f * 360).as_radians() * radius)
+        out.push_back(Vector2f(
+            center.x + cos(ts::degrees(i / 8.f * 360).as_radians()) * radius * std::max<float>(0.25, rng()),
+            center.y + sin(ts::degrees(i / 8.f * 360).as_radians()) * radius * std::max<float>(0.25, rng())
         ));
-
-        return out;
     }
 
-    Poly(PhysicsWorld* world, Vector2f center, float radius)
-        : _shape(create_polygon(center, radius)), _hitbox(world, ts::DYNAMIC, create_polygon(center, radius))
-    {
-        _shape.set_color(HSVA(rng(), rng(), 1, 1));
-    }
-
-    void update()
-    {
-        auto pos = _hitbox.get_native_body()->GetPosition();
-        auto rotation = _hitbox.get_native_body()->GetAngle();
-        _shape.set_centroid(Vector2f(pos.x, pos.y));
-        _shape.rotate(ts::radians(-rotation));
-
-    }
-};
+    return out;
+}
 
 int main()
 {
@@ -118,7 +97,8 @@ int main()
     std::vector<CollisionTriangleShape> triangles;
     std::vector<CollisionRectangleShape> rectangles;
     std::vector<CollisionLineShape> lines;
-    //std::vector<CollisionWireframeShape> wireframes;
+    std::vector<CollisionPolygonShape> polys;
+    std::vector<CollisionLineSequenceShape> line_seqs;
 
     auto spawn = [&](){
 
@@ -126,7 +106,7 @@ int main()
         auto radius = std::max<float>(10, rng() * 40);
         auto color = HSVA(rng(), rng(), 1, 1);
 
-        auto val = rng() * 4;
+        auto val = rng() * 6;
 
         if (val > 0 and val < 1)
         {
@@ -154,33 +134,46 @@ int main()
         }
         else if (val > 3 and val < 4)
         {
-            lines.emplace_back(&world, ts::DYNAMIC, center - Vector2f(radius, 0), center + Vector2f(radius, 0));
+            /*
+            lines.emplace_back(&world, ts::DYNAMIC, center - Vector2f(4 * radius, 0), center + Vector2f(4 * radius, 0));
             lines.back().set_color(color);
             lines.back().set_density(1);
+             */
+        }
+        else if (val > 4 and val < 5)
+        {
+            auto vertices = generate_polygon(center, radius);
+            vertices.push_back(vertices.front());
+            line_seqs.emplace_back(&world, ts::DYNAMIC, vertices, false);
+
+            for (auto& e : line_seqs.back().get_shapes())
+                e.set_color(color);
+        }
+        else if (val > 5)
+        {
+            /*
+            auto vertices = generate_polygon(center, radius);
+            polys.emplace_back(&world, ts::DYNAMIC, vertices);
+            polys.back().set_color(color);
+            polys.back().set_density(1);
+             */
         }
     };
 
-    for (size_t i = 0; i < 5; ++i)
-        spawn();
+    for (size_t i = 0; i < 50; ++i)
+    {
+        //spawn();
+    }
+
+    auto test = ts::CollisionLineSequenceShape(&world, ts::DYNAMIC, {
+       Vector2f(250, 250),
+       Vector2f(250 + 100, 250),
+       Vector2f(250 + 100, 250 + 100),
+       Vector2f(250, 250 + 100)
+    }, true);
 
     auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
     player.set_density(1);
-
-    auto create_polygon = [](Vector2f center, float radius) -> std::vector<Vector2f>
-    {
-        std::vector<Vector2f> out;
-        for (size_t i = 0; i < 8; ++i)
-            out.push_back(Vector2f(
-                    center.x + cos(ts::degrees(i / 8.f * 360).as_radians()) * radius,
-                    center.y + sin(ts::degrees(i / 8.f * 360).as_radians()) * radius
-            ));
-
-        return out;
-    };
-
-    auto poly = PolygonShape({Vector2f(0, 0), Vector2f(0, 1), Vector2f(1, 0), Vector2f(1, 1)});
-
-            //PolygonShape(create_polygon(Vector2f(300, 300), 100));
 
     while (window.is_open())
     {
@@ -189,25 +182,15 @@ int main()
 
         world.step(ts::seconds(time.as_seconds() * 2));
 
-        window.render(&poly);
-
-        if (InputHandler::was_pressed(SPACE))
-        {
-            std::cout << poly.get_centroid().x << " " << poly.get_centroid().y << std::endl;
-            poly.move(10, 10);
-            std::cout << poly.get_centroid().x << " " << poly.get_centroid().y << std::endl;
-        }
-
-        /*
         window.render(&left_shape);
         window.render(&right_shape);
         window.render(&down_shape);
         window.render(&top_shape);
 
         window.render(&player);
-         */
 
-        bool pressed = false;
+        //TODO
+        window.render(&test);
 
         const float v = 100;
         Vector2f velocity = {0, 0};
@@ -236,11 +219,6 @@ int main()
         for (auto& line : lines)
             line.ts::CollisionLine::set_angular_velocity(rng());
 
-        if (InputHandler::was_pressed(SPACE))
-        {
-        }
-
-        /*
         for (auto& ball : circles)
         {
             ball.update();
@@ -264,7 +242,18 @@ int main()
             line.update();
             window.render(&line);
         }
-         */
+
+        for (auto& poly : polys)
+        {
+            poly.update();
+            window.render(&poly);
+        }
+
+        for (auto& seq : line_seqs)
+        {
+            seq.update();
+            window.render(&seq);
+        }
 
         player.update();
         ts::end_frame(&window);

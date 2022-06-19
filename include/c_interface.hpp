@@ -327,10 +327,10 @@ void *ts_collision_triangle_create(size_t world_id, size_t type, float a_x, floa
 
 void *ts_collision_polygon_create(size_t world_id, size_t type, float *xs, float *ys, size_t n_vertices);
 
-void *ts_collision_wire_frame_create(size_t world_id, size_t type, float *xs, float *ys, size_t n_vertices);
-
 void *
 ts_collision_line_create(size_t world_id, size_t type, float a_x, float a_y, float b_x, float b_y, bool two_sided);
+
+void *ts_collision_line_sequence_create(size_t world_id, size_t type, float *xs, float *ys, size_t n_vertices);
 
 void ts_collision_shape_destroy(void *shape);
 

@@ -113,12 +113,12 @@ namespace ts
             /// \param factor: 1.0 is no change, 1.5 is 50% bigger, 0.5 is 50% smaller
             void scale(float);
 
+            /// \copydoc Renderable::render
+            void render(RenderTarget*, Transform) const final override;
+
         protected:
             /// \brief default constructor
             Shape() = default;
-
-            /// \copydoc Renderable::render
-            void render(RenderTarget*, Transform) const final override;
 
             /// \brief pairwise different vertices of shapes tris
             std::vector<SDL_Vertex> _vertices;
