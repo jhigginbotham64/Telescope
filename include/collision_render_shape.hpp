@@ -118,6 +118,8 @@ namespace ts
             /// \brief synchronize the position of the shape with that of the hitbox
             void update() override;
 
+            /// \brief expose render shapes
+            /// \returns shapes
             std::vector<RectangleShape>& get_shapes();
 
         protected:

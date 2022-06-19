@@ -194,7 +194,7 @@ add_library(telescope SHARED
 
     include/collision_line_sequence.hpp
     src/collision_line_sequence.cpp
-        src/collision_line_sequence.cpp)
+)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
