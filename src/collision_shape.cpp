@@ -132,7 +132,7 @@ namespace ts
         auto size = aabb.upperBound - aabb.lowerBound;
         return Rectangle{
             _world->native_to_world(Vector2f(aabb.lowerBound.x, aabb.lowerBound.y)),
-            _world->native_to_world(Vector2f(size.x, size.y) * _world->pixel_ratio)
+            _world->native_to_world(Vector2f(size.x, size.y))
         };
     }
 
@@ -173,7 +173,7 @@ namespace ts
 
     void CollisionShape::set_is_hidden(bool b)
     {
-        _body->SetEnabled(b);
+        _body->SetEnabled(not b);
     }
 
     bool CollisionShape::get_is_hidden() const

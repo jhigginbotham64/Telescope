@@ -3152,113 +3152,21 @@ module ts
         import Main.ts; using Main.ts
         import Test; using Test
 
+        function compare(a::Vector2f, b::Vector2f) ::Bool
+            return abs(a.x - b.x) < 0.1 && abs(a.y - b.y) < 0.1
+        end
+
+        function compare(a::RGBA, b::RGBA) ::Bool
+            return abs(a.red - b.red) < 0.01 &&
+                   abs(a.green - b.green) < 0.01 &&
+                   abs(a.blue - b.blue) < 0.01 &&
+                   abs(a.alpha - b.alpha) < 0.01
+        end
+
         function run()
 
             test_icon = "docs/_static/favicon.png"
             @test ts.initialize()
-
-             @testset "Physics" begin
-
-                world = PhysicsWorld()
-                @test world._native_id != 0
-
-                set_gravity!(world, Vector2f(-1, 1))
-                @test get_gravity(world) == Vector2f(-1, 1)
-
-                clear_forces!(world)
-                step!(world, seconds(1))
-
-                rect_geometry = Rectangle(Vector2f(0, 0,), Vector2f(100, 100))
-                rect_shape = RectangleShape(rect_geometry)
-                rect = CollisionRectangle(world, ts.DYNAMIC, rect_geometry)
-                @test rect._native != Ptr{Cvoid}()
-                rect = CollisionRectangle(world, ts.DYNAMIC, rect_shape)
-                @test rect._native != Ptr{Cvoid}()
-
-                tri_geometry = Triangle(Vector2f(50, 50), Vector2f(150, 150), Vector2f(0, 75))
-                tri_shape = TriangleShape(tri_geometry)
-
-                tri = CollisionTriangle(world, ts.DYNAMIC, tri_geometry)
-                @test tri._native != Ptr{Cvoid}()
-                tri = CollisionTriangle(world, ts.DYNAMIC, tri_shape)
-                @test tri._native != Ptr{Cvoid}()
-
-                circ_geometry = Circle(Vector2f(50, 50), 100)
-                circ_shape = CircleShape(circ_geometry)
-                circ = CollisionCircle(world, ts.DYNAMIC, circ_geometry)
-                @test circ._native != Ptr{Cvoid}()
-                circ = CollisionCircle(world, ts.DYNAMIC, circ_shape)
-                @test circ._native != Ptr{Cvoid}()
-
-                line = CollisionLine(world, ts.DYNAMIC, Vector2f(50, 50), Vector2f(10, 10))
-                @test line._native != Ptr{Cvoid}()
-
-                #polygon = CollisionPolygon(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
-                #@test polygon._native != Ptr{Cvoid}()
-
-                linesequence = CollisionLineSequence(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
-                @test linesequence._native != Ptr{Cvoid}()
-
-                shapes = [rect, tri, circ, linesequence]#, polygon]
-
-                for shape in shapes
-
-                    set_density!(shape, 12)
-                    @test get_density(shape) == 12
-
-                    set_friction!(shape, 12)
-                    @test get_friction(shape) == 12
-
-                    set_restitution!(shape, 12)
-                    @test get_restitution(shape) == 12
-
-                    @test get_centroid(shape) != Vector2f(0, 0)
-                    aabb = get_bounding_box(shape)
-                    @test get_centroid(shape) == Vector2f(aabb.top_left.x + aabb.size.x * 0.5, aabb.top_left.y + aabb.size.y * 0.5)
-
-                    @test get_rotation(shape) == degrees(0)
-
-                    set_type!(shape, ts.STATIC)
-                    @test get_type(shape) == ts.STATIC
-
-                    set_is_hidden(shape, true)
-                    @test get_is_hidden(shape) == true
-                    set_is_hidden(shape, false)
-
-                    @test get_origin(shape) == Vector2f(0, 0)
-                    get_center_of_mass_local(shape)
-                    get_center_of_mass_global(shape)
-
-                    set_linear_velocity!(shape, Vector2f(12, 13))
-                    @test get_linear_velocity(shape) == Vector2f(12, 13)
-                    set_linear_velocity!(shape, Vector2f(0, 0))
-
-                    set_angular_velocity!(shape, 12)
-                    @test get_angular_velocity(shape) == 12
-                    set_angular_velocity!(shape, 0)
-
-                    apply_force_to!(shape, Vector2f(12, 12), Vector2f(0, 0))
-                    apply_force_to_center!(shape, Vector2f(12, 12))
-
-                    apply_torque!(shape, 12)
-                    apply_linear_impulse_to!(shape, Vector2f(12, 13), Vector2f(0, 0));
-                    apply_linear_impulse_to_center!(shape, Vector2f(12, 13))
-
-                    @test get_mass(shape) > 0
-                    @test get_inertia(shape) > 0
-
-                    set_is_bullet!(shape, true)
-                    @test get_is_bullet(shape)
-                    set_is_bullet!(shape, false)
-
-                    set_is_rotation_fixed!(shape, true)
-                    @test get_is_rotation_fixed(shape) == true
-
-                    @test get_id(shape) > 0
-                end
-            end
-
-            return
 
             @testset "Colors" begin
 
@@ -3529,17 +3437,6 @@ module ts
 
                 shapes = Shape[triangle, rectangle, triangle, polygon]
 
-                function compare(a::Vector2f, b::Vector2f) ::Bool
-                    return abs(a.x - b.x) < 0.01 && abs(a.y - b.y) < 0.01
-                end
-
-                function compare(a::RGBA, b::RGBA) ::Bool
-                    return abs(a.red - b.red) < 0.01 &&
-                           abs(a.green - b.green) < 0.01 &&
-                           abs(a.blue - b.blue) < 0.01 &&
-                           abs(a.alpha - b.alpha) < 0.01
-                end
-
                 for shape in shapes
 
                     set_centroid!(shape, Vector2f(12, 15))
@@ -3627,6 +3524,113 @@ module ts
                 point = apply_to(transform, point)
                 @test point.x == -1 && point.y == -1
                 reset!(transform)
+            end
+
+            @testset "Physics" begin
+
+                world = PhysicsWorld()
+                @test world._native_id != 0
+
+                set_gravity!(world, Vector2f(-1, 1))
+                @test compare(get_gravity(world), Vector2f(-1, 1))
+
+                clear_forces!(world)
+                step!(world, seconds(1))
+
+                rect_geometry = Rectangle(Vector2f(0, 0,), Vector2f(100, 100))
+                rect_shape = RectangleShape(rect_geometry)
+                rect = CollisionRectangle(world, ts.DYNAMIC, rect_geometry)
+                @test rect._native != Ptr{Cvoid}()
+                rect = CollisionRectangle(world, ts.DYNAMIC, rect_shape)
+                @test rect._native != Ptr{Cvoid}()
+
+                tri_geometry = Triangle(Vector2f(50, 50), Vector2f(150, 150), Vector2f(0, 75))
+                tri_shape = TriangleShape(tri_geometry)
+
+                tri = CollisionTriangle(world, ts.DYNAMIC, tri_geometry)
+                @test tri._native != Ptr{Cvoid}()
+                tri = CollisionTriangle(world, ts.DYNAMIC, tri_shape)
+                @test tri._native != Ptr{Cvoid}()
+
+                circ_geometry = Circle(Vector2f(50, 50), 100)
+                circ_shape = CircleShape(circ_geometry)
+                circ = CollisionCircle(world, ts.DYNAMIC, circ_geometry)
+                @test circ._native != Ptr{Cvoid}()
+                circ = CollisionCircle(world, ts.DYNAMIC, circ_shape)
+                @test circ._native != Ptr{Cvoid}()
+
+                line = CollisionLine(world, ts.DYNAMIC, Vector2f(50, 50), Vector2f(10, 10))
+                @test line._native != Ptr{Cvoid}()
+
+                polygon = CollisionPolygon(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                @test polygon._native != Ptr{Cvoid}()
+
+                linesequence = CollisionLineSequence(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                @test linesequence._native != Ptr{Cvoid}()
+
+                shapes = [rect, tri, circ, line, linesequence, polygon]
+
+                for shape in shapes
+
+                    set_density!(shape, 12)
+                    @test get_density(shape) == 12
+
+                    set_friction!(shape, 12)
+                    @test get_friction(shape) == 12
+
+                    set_restitution!(shape, 12)
+                    @test get_restitution(shape) == 12
+
+                    @test get_centroid(shape) != Vector2f(0, 0)
+                    aabb = get_bounding_box(shape)
+                    @test compare(get_centroid(shape), Vector2f(aabb.top_left.x + aabb.size.x * 0.5, aabb.top_left.y + aabb.size.y * 0.5))
+
+                    get_rotation(shape)._degrees
+
+                    set_type!(shape, ts.DYNAMIC)
+                    @test get_type(shape) == ts.DYNAMIC
+
+                    get_origin(shape)
+                    get_center_of_mass_local(shape)
+                    get_center_of_mass_global(shape)
+
+                    set_linear_velocity!(shape, Vector2f(12, 13))
+                    step!(world, seconds(0.01));
+                    get_linear_velocity(shape).x > 0 && get_linear_velocity(shape).y > 0
+                    set_linear_velocity!(shape, Vector2f(0, 0))
+
+                    set_angular_velocity!(shape, 12)
+                    @test get_angular_velocity(shape) == 12
+                    set_angular_velocity!(shape, 0)
+
+                    apply_force_to!(shape, Vector2f(12, 12), Vector2f(0, 0))
+                    apply_force_to_center!(shape, Vector2f(12, 12))
+
+                    apply_torque!(shape, 12)
+                    apply_linear_impulse_to!(shape, Vector2f(12, 13), Vector2f(0, 0));
+                    apply_linear_impulse_to_center!(shape, Vector2f(12, 13))
+
+                    if shape isa CollisionLine || shape isa CollisionLineSequence
+                        @test get_mass(shape) == 0
+                        @test get_inertia(shape) == 0
+                    else
+                        @test get_mass(shape) > 0
+                        @test get_inertia(shape) > 0
+                    end
+
+                    set_is_bullet!(shape, true)
+                    @test get_is_bullet(shape)
+                    set_is_bullet!(shape, false)
+
+                    set_is_rotation_fixed!(shape, true)
+                    @test get_is_rotation_fixed(shape) == true
+
+                    @test get_id(shape) > 0
+
+                    set_is_hidden(shape, true)
+                    @test get_is_hidden(shape) == true
+                    set_is_hidden(shape, false)
+                end
             end
         end
         # no export
