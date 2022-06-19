@@ -92,12 +92,12 @@ namespace ts
             Vector2ui get_size() const;
 
         protected:
+            Window* _window;
+
             Texture(Window*);
             SDL_Texture* _texture;
             void update();
 
-        private:
-            Window* _window;
             RGBA _color = RGBA(1, 1, 1, 1);
             TextureBlendMode _blend_mode = ALPHA;
             TextureFilteringMode _filtering_mode = LINEAR;

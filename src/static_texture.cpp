@@ -41,7 +41,7 @@ namespace ts
 
         Texture::update();
         SDL_ClearHints();
-        return true
+        return true;
     }
 
     void StaticTexture::unload()

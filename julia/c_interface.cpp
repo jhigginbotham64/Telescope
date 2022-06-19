@@ -246,7 +246,7 @@ void ts_window_minimize(size_t id)
 bool ts_window_is_minimized(size_t id)
 {
     if (detail::assert_window_id(id, "ts_window_is_minimized"))
-        return;
+        return false;
 
     return detail::_windows.at(id).is_minimized();
 }

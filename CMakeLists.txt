@@ -58,16 +58,17 @@ include(CTest)
 
 ### FIND DEPENDENCIES ###
 
-find_library(box2d REQUIRED NAMES box2d)
 
 find_library(SDL2 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
-find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf) # unused
-find_library(SDL2_net REQUIRED NAMES SDL2_net) # unused
+#find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf) # unused
+#find_library(SDL2_net REQUIRED NAMES SDL2_net) # unused
 
 find_library(vulkan REQUIRED NAMES vulkan)
-# find_package(shaderc_shared REQUIRED)      # unused
+#find_package(shaderc_shared REQUIRED)      # unused
+
+find_library(box2d REQUIRED NAMES box2d)
 
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX("glm/glm.hpp" GLM_FOUND)
@@ -82,7 +83,9 @@ endif()
 
 ### TELESCOPE ###
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+
+set(CMAKE_CXX_STANDARD 20)
 add_library(telescope SHARED
 
     telescope.hpp
@@ -213,12 +216,13 @@ target_link_libraries(telescope PUBLIC
     ${SDL2_mixer}
     # ${SDL2_net} # unused
     # ${SDL2_ttf} # unused
-    # ${vulkan}   # unused
+    ${vulkan}
     ${box2d}
 )
 
 ### TESTS ####
 
+# currently unused, use /test/run_tests.sh instead
 option(BUILD_TESTS "build telescope unit tests" ON)
 if (BUILD_TESTS)
 

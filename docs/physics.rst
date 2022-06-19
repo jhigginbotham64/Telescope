@@ -110,7 +110,7 @@ inherit from :code:`ts::CollisionShape`.
 This class is pure virtual, making it impossible to instance. Instead, we will need to instance one of its
 implementations.
 
-Collision shapes come in four types: lines, circles, polygons and wireframes.
+Collision shapes come in 3 types: lines, circles and polygons.
 
 Collision Shapes: Circles
 *************************
@@ -175,16 +175,15 @@ around its centroid.
 
 ------------------------------------
 
-Collision Shapes: Wireframes
+Collision Shapes: LineSequence
 ****************************
 
-Like polygons, wireframes are initialized with an arbitrary number of points. They then compute the convex hull of this
-set, which becomes the shape of the wireframe. Unlike polygons, however, **wireframes are not filled**. An object can
-be inside or outside the bounds of the wireframe. Wireframes can be thought of as a "loop" of a series :code:`ts::CollisionLine`.
-If the vertices provided do not loop back to each other,     such that the second coordinate of the last line-segment is identical
-with the first coordinate of the first line-segment, a line is inserted automatically to complete the loop.
+A common application of lines is to chain them together to create level geometry. When two lines overlap, a "phantom"
+collision may appear when a vertex of one line is inside another. A way to avoid this and to make chaining many lines
+less cumbersom, telescope provides `CollisionLineSequence`, which automatically removes the problematic vertices and
+makes the line sequence be able to be manipulated as a single object:
 
-.. doxygenclass:: ts::CollisionWireframe
+.. doxygenclass:: ts::CollisionLineSequence
     :members:
 
 ------------------------------------
@@ -443,7 +442,7 @@ synchronize the position and state of the visible shape with that of its physics
 .. doxygenclass:: ts::CollisionLineShape
     :members:
 
-.. doxygenclass:: ts::CollisionWireframeShape
+.. doxygenclass:: ts::CollisionLineSequence
     :members:
 
 ---------------------------------

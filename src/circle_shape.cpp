@@ -23,7 +23,6 @@ namespace ts
     {
         // triangle fan decomposition
 
-        size_t n = _n_vertices + 1;
         size_t step = 360 / _n_vertices;
 
         std::vector<RGBA> colors;

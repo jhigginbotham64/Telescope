@@ -13,7 +13,7 @@ namespace ts
         CollisionType type,
         Vector2f top_left,
         Vector2f size)
-        : CollisionPolygon(world, type, Rectangle{top_left, size}), RectangleShape(top_left, size)
+        : RectangleShape(top_left, size), CollisionPolygon(world, type, Rectangle{top_left, size})
     {}
 
     void CollisionRectangleShape::update()
@@ -28,7 +28,7 @@ namespace ts
         Vector2f a,
         Vector2f b,
         Vector2f c)
-        : CollisionPolygon(world, type, Triangle{a, b, c}), TriangleShape(a, b, c)
+        : TriangleShape(a, b, c), CollisionPolygon(world, type, Triangle{a, b, c})
     {}
 
     void CollisionTriangleShape::update()
@@ -42,7 +42,7 @@ namespace ts
         CollisionType type,
         Vector2f center,
         float radius)
-        : CollisionCircle(world, type, Circle{center, radius}), CircleShape(center, radius, 32)
+        : CircleShape(center, radius, 32), CollisionCircle(world, type, Circle{center, radius})
     {}
 
     void CollisionCircleShape::update()

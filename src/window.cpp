@@ -12,10 +12,10 @@ namespace ts
 {
     Window::Window()
         : _is_borderless(false),
-          _is_fullscreen(false),
           _is_resizable(false),
           _is_minimized(false),
           _is_maximized(false),
+          _is_fullscreen(false),
           _is_hidden(false),
           _has_focus(false),
           _has_mouse_focus(false)

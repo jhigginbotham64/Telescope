@@ -114,7 +114,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->close();
                     }
                 }
@@ -134,7 +134,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->minimize();
                     }
                 }
@@ -142,7 +142,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->maximize();
                     }
                 }
@@ -150,7 +150,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->_has_mouse_focus = true;
                     }
                 }
@@ -158,7 +158,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->_has_mouse_focus = false;
                     }
                 }
@@ -166,7 +166,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->_has_focus = true;
                     }
                 }
@@ -174,7 +174,7 @@ namespace ts
                 {
                     for (auto* w : windows)
                     {
-                        if (w->get_id() == event.window.windowID)
+                        if (uint32_t(w->get_id()) == event.window.windowID)
                             w->_has_focus = false;
                     }
                 }
