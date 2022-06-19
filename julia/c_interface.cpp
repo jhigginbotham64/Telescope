@@ -26,6 +26,7 @@
 #include <include/camera.hpp>
 #include <include/angle.hpp>
 #include <include/physics.hpp>
+#include <include/logging.hpp>
 
 extern "C" {
 
@@ -106,12 +107,24 @@ void ts_clock_destroy(size_t id)
 
 size_t ts_clock_elapsed(size_t id)
 {
-    return detail::_clocks.at(id).elapsed().as_nanoseconds();
+    auto clock = detail::_clocks.find(id);
+    if (clock == detail::_clocks.end())
+    {
+        ts::Log::warning("In ts_clock_elapsed: unknown clock id, returning 0...");
+        return 0;
+    }
+    return clock->second.elapsed().as_nanoseconds();
 }
 
 size_t ts_clock_restart(size_t id)
 {
-    return detail::_clocks.at(id).restart().as_nanoseconds();
+    auto clock = detail::_clocks.find(id);
+    if (clock == detail::_clocks.end())
+    {
+        ts::Log::warning("In ts_clock_elapsed: unknown clock id, returning 0...");
+        return 0;
+    }
+    return clock->second.restart().as_nanoseconds();
 }
 
 // ### ANGLE ###################################################
@@ -133,6 +146,16 @@ namespace detail
     static inline size_t _window_id = 0;
     static inline std::unordered_map<size_t, ts::Window> _windows = {};
     static inline std::unordered_map<size_t, ts::Camera> _cameras = {};
+
+    bool assert_window_id(size_t id, const std::string& function)
+    {
+        if (detail::_windows.find(id) == _windows.end())
+        {
+            ts::Log::warning("In ", function, ": no window with id ", id, ".");
+            return true;
+        }
+        return false;
+    }
 }
 
 size_t ts_window_create(
@@ -152,6 +175,9 @@ size_t ts_window_create(
 
 void ts_window_destroy(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_destroy"))
+        return;
+
     detail::_windows.at(id).close();
     detail::_windows.erase(id);
     detail::_cameras.erase(id);
@@ -159,16 +185,25 @@ void ts_window_destroy(size_t id)
 
 void ts_window_close(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_close"))
+        return;
+
     detail::_windows.at(id).close();
 }
 
 bool ts_window_is_open(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_is_open"))
+        return false;
+
     return detail::_windows.at(id).is_open();
 }
 
 void ts_window_get_size(size_t window_id, size_t* out_x, size_t* out_y)
 {
+    if (detail::assert_window_id(window_id, "ts_window_get_size"))
+        return;
+
     auto out = detail::_windows.at(window_id).get_size();
     *out_x = out.x;
     *out_y = out.y;
@@ -176,6 +211,9 @@ void ts_window_get_size(size_t window_id, size_t* out_x, size_t* out_y)
 
 void ts_window_get_position(size_t window_id, size_t* out_x, size_t* out_y)
 {
+    if (detail::assert_window_id(window_id, "ts_window_get_position"))
+        return;
+
     auto out = detail::_windows.at(window_id).get_position();
     *out_x = out.x;
     *out_y = out.y;
@@ -183,61 +221,99 @@ void ts_window_get_position(size_t window_id, size_t* out_x, size_t* out_y)
 
 void ts_window_set_hidden(size_t id, bool hidden)
 {
+    if (detail::assert_window_id(id, "ts_window_set_hidden"))
+        return;
+
     detail::_windows.at(id).set_hidden(hidden);
 }
 
 bool ts_window_is_hidden(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_is_hidden"))
+        return false;
+
     return detail::_windows.at(id).is_hidden();
 }
 
 void ts_window_minimize(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_minimize"))
+        return;
+
     detail::_windows.at(id).minimize();
 }
 
 bool ts_window_is_minimized(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_is_minimized"))
+        return;
+
     return detail::_windows.at(id).is_minimized();
 }
 
 void ts_window_maximize(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_maximize"))
+        return;
+
     detail::_windows.at(id).maximize();
 }
 
 bool ts_window_is_maximized(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_is_maximized"))
+        return false;
+
     return detail::_windows.at(id).is_maximized();
 }
 
 bool ts_window_has_focus(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_has_focus"))
+        return false;
+
     return detail::_windows.at(id).has_focus();
 }
 
 bool ts_window_has_mouse_focus(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_has_mouse_focus"))
+        return false;
+
     return detail::_windows.at(id).has_mouse_focus();
 }
 
 void ts_window_clear(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_clear"))
+        return;
+
     detail::_windows.at(id).clear();
 }
 
 void ts_window_flush(size_t id)
 {
+    if (detail::assert_window_id(id, "ts_window_flush"))
+        return;
+
     detail::_windows.at(id).flush();
 }
 
 void ts_window_render(size_t id, void* renderable_ptr, void* transform_ptr)
 {
+    if (detail::assert_window_id(id, "ts_window_render"))
+        return;
+
     detail::_windows.at(id).render((ts::Renderable*) renderable_ptr, *((ts::Transform*) transform_ptr));
 }
 
 void ts_window_set_icon(size_t id, const char* path)
 {
+    if (detail::assert_window_id(id, "ts_window_set_icon"))
+        return;
+
+    std::cout << path << std::endl;
+
     detail::_windows.at(id).set_icon(path);
 }
 
@@ -245,56 +321,89 @@ void ts_window_set_icon(size_t id, const char* path)
 
 void ts_window_camera_center_on(size_t window_id, float x, float y)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_center_on"))
+        return;
+    
     detail::_cameras.at(window_id).center_on(ts::Vector2f{x, y});
 }
 
 void ts_window_camera_move(size_t window_id, float x, float y)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_move"))
+        return;
+    
     detail::_cameras.at(window_id).move(x, y);
 }
 
 void ts_window_camera_zoom_in(size_t window_id, float factor)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_zoom_in"))
+        return;
+    
     detail::_cameras.at(window_id).zoom_in(factor);
 }
 
 void ts_window_camera_zoom_out(size_t window_id, float factor)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_zoom_out"))
+        return;
+    
     detail::_cameras.at(window_id).zoom_out(factor);
 }
 
 void ts_window_camera_set_zoom(size_t window_id, float factor)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_set_zoom"))
+        return;
+    
     detail::_cameras.at(window_id).set_zoom(factor);
 }
 
 void ts_window_camera_rotate(size_t window_id, float degrees)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_rotate"))
+        return;
+    
     detail::_cameras.at(window_id).rotate(ts::degrees(degrees));
 }
 
 void* ts_window_camera_get_transform(size_t window_id)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_get_transform"))
+        return new ts::Transform(); // will not leak memory
+    
     return (void*) &detail::_cameras.at(window_id).get_transform();
 }
 
 void ts_window_camera_reset(size_t window_id)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_reset"))
+        return;
+    
     detail::_cameras.at(window_id).reset();
 }
 
 void ts_window_camera_set_transform(size_t window_id, void* transform)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_set_transform"))
+        return;
+    
     detail::_cameras.at(window_id).set_transform(*((ts::Transform*) transform));
 }
 
 void ts_window_camera_set_rotation(size_t window_id, float degrees)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_set_rotation"))
+        return;
+    
     detail::_cameras.at(window_id).set_rotation(ts::degrees(degrees));
 }
 
 void ts_window_camera_get_center(size_t window_id, float* out_x, float* out_y)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_get_center"))
+        return;
+    
     auto center = detail::_cameras.at(window_id).get_center();
     *out_x = center.x;
     *out_y = center.y;
@@ -306,6 +415,9 @@ void ts_window_camera_get_view_area(size_t window_id,
                                     float* out_bottom_left_x, float* out_bottom_left_y,
                                     float* out_bottom_right_x, float* out_bottom_right_y)
 {
+    if (detail::assert_window_id(window_id, "ts_window_camera_get_view_area"))
+        return;
+    
     auto rect = detail::_cameras.at(window_id).get_view_area();
     *out_top_left_x = rect.top_left.x;
     *out_top_left_y = rect.top_left.y;
@@ -336,11 +448,17 @@ size_t ts_get_framerate_limit()
 
 double ts_start_frame(size_t window_id)
 {
+    if (detail::assert_window_id(window_id, "ts_start_frame"))
+        return 0;
+    
     return ts::start_frame(&detail::_windows.at(window_id)).as_milliseconds();
 }
 
 void ts_end_frame(size_t window_id)
 {
+    if (detail::assert_window_id(window_id, "ts_end_frame"))
+        return;
+    
     ts::end_frame(&detail::_windows.at(window_id));
 }
 
@@ -405,6 +523,10 @@ void* ts_texture_create_static_texture(size_t window_id,
                                         size_t width, size_t height,
                                         float r, float g, float b, float a)
 {
+
+    if (detail::assert_window_id(window_id, "ts_texture_create_static_texture"))
+        return nullptr;
+    
     auto* out = new ts::StaticTexture(&detail::_windows.at(window_id));
     out->create(width, height, ts::RGBA(r, g, b, a));
     return out;
@@ -412,8 +534,17 @@ void* ts_texture_create_static_texture(size_t window_id,
 
 void* ts_texture_load_static_texture(size_t window_id, const char* path)
 {
+    if (detail::assert_window_id(window_id, "ts_texture_load_static_texture"))
+        return nullptr;
+    
     auto* out = new ts::StaticTexture(&detail::_windows.at(window_id));
-    out->load(path);
+    
+    if (not out->load(path))
+    {
+        delete out;
+        return nullptr;
+    }
+        
     return out;
 }
 
@@ -430,6 +561,9 @@ void ts_texture_destroy_texture(void* texture)
 
 void* ts_texture_create_render_texture(size_t window_id, size_t width, size_t height)
 {
+    if (detail::assert_window_id(window_id, "ts_texture_create_render_texture"))
+        return nullptr;
+    
     auto* out = new ts::RenderTexture(&detail::_windows.at(window_id));
     out->create(width, height);
     return out;
@@ -437,11 +571,17 @@ void* ts_texture_create_render_texture(size_t window_id, size_t width, size_t he
 
 void ts_texture_set_color(void* texture, float r, float g, float b, float a)
 {
+    if (texture == nullptr)
+        return;
+    
     ((ts::Texture*) texture)->set_color(ts::RGBA(r, g, b, a));
 }
 
 void ts_texture_get_color(void* texture, float* out_r, float* out_g, float* out_b, float* out_a)
 {
+    if (texture == nullptr)
+        return;
+    
     auto color = ((ts::Texture*) texture)->get_color();
     *out_r = color.red;
     *out_g = color.green;
@@ -452,26 +592,52 @@ void ts_texture_get_color(void* texture, float* out_r, float* out_g, float* out_
 
 void ts_texture_set_blend_mode(void* texture, int32_t blend_mode)
 {
+    if (texture == nullptr)
+        return;
+    
     ((ts::Texture*) texture)->set_blend_mode(ts::TextureBlendMode(blend_mode));
 }
 
 int32_t ts_texture_get_blend_mode(void* texture)
 {
+    if (texture == nullptr)
+        return (int32_t) ts::TextureBlendMode::NONE;
+    
     return (int32_t) ((ts::Texture*) texture)->get_blend_mode();
 }
 
 void ts_texture_set_filtering_mode(void* texture, int32_t filtering_mode)
 {
+    if (texture == nullptr)
+        return;
+    
     ((ts::Texture*) texture)->set_filtering_mode(ts::TextureFilteringMode(filtering_mode));
 }
 
 int32_t ts_texture_get_filtering_mode(void* texture)
 {
+    if (texture == nullptr)
+        return (int32_t) ts::TextureFilteringMode::NEAREST_NEIGHBOUR;
+    
     return (int32_t) ((ts::Texture*) texture)->get_filtering_mode();
 }
 
 
 // ### TRANSFORMS ##################################################
+
+namespace detail
+{
+    bool assert_transform_ptr(void* shape_ptr, const std::string& function)
+    {
+        if (shape_ptr == nullptr)
+        {
+            ts::Log::warning("In ", function, ": trying to modify nullptr instead of transform");
+            return false;
+        }
+
+        return true;
+    }
+}
 
 void* ts_transform_create()
 {
@@ -486,16 +652,30 @@ void ts_transform_destroy(void* transform_ptr)
 
 void ts_transform_set(void* transform_ptr, size_t x, size_t y, float value)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_set"))
+        return;
+    
     ((ts::Transform*) transform_ptr)->get_native()[x][y] = value;
 }
 
 float ts_transform_get(void* transform_ptr, size_t x, size_t y)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_get"))
+        return 0;
+    
+    if (x > 2 or y > 2)
+    {
+        ts::Log::warning("In ts_transform_get: indices out of bounds. Returning 0...");
+        return 0;
+    }
+    
     return ((ts::Transform*) transform_ptr)->get_native()[x][y];
 }
 
 void ts_transform_apply_to(void* transform_ptr, float x, float y, float* out_x, float* out_y)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_apply_to")) return;
+    
     auto out = ((ts::Transform*) transform_ptr)->apply_to(ts::Vector2f{x, y});
     *out_x = out.x;
     *out_y = out.y;
@@ -503,58 +683,105 @@ void ts_transform_apply_to(void* transform_ptr, float x, float y, float* out_x, 
 
 void ts_transform_reset(void* transform_ptr)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_reset"))
+        return;
+    
     ((ts::Transform*) transform_ptr)->reset();
 }
 
 void ts_transform_combine(void* left, void* right)
 {
+    if (left == nullptr or right == nullptr) 
+        return;
+    
     ((ts::Transform*) left)->combine(*((ts::Transform*) right));
 }
 
 void ts_transform_translate(void* transform_ptr, float x, float y)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_translate"))
+        return;
+
     ((ts::Transform*) transform_ptr)->translate(x, y);
 }
 
 void ts_transform_rotate(void* transform_ptr, float degrees, float origin_x, float origin_y)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_rotate"))
+        return;
+    
     ((ts::Transform*) transform_ptr)->rotate(ts::degrees(degrees), ts::Vector2f{origin_x, origin_y});
 }
 
 void ts_transform_scale(void* transform_ptr, float x_scale, float y_scale)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_scale"))
+        return;
+    
     ((ts::Transform*) transform_ptr)->scale(x_scale, y_scale);
 }
 
 void ts_transform_shear(void* transform_ptr, float x_scale, float y_scale)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_shear"))
+        return;
+    
     ((ts::Transform*) transform_ptr)->shear(x_scale, y_scale);
 }
 
 void ts_transform_reflect(void* transform_ptr, bool about_x_axis, bool about_y_axis, float origin_x, float origin_y)
 {
+    if (detail::assert_transform_ptr(transform_ptr, "ts_transform_reflect"))
+        return;
+    
     ((ts::Transform*) transform_ptr)->reflect(about_x_axis, about_y_axis, ts::Vector2f{origin_x, origin_y});
 }
 
 // ### SHAPES ##################################################
 
+namespace detail
+{
+    bool assert_shape_ptr(void* shape_ptr, const std::string& function)
+    {
+        if (shape_ptr == nullptr)
+        {
+            ts::Log::warning("In ", function, ": trying to modify nullptr instead of shape");
+            return true;
+        }
+        
+        return false;
+    }
+}
+
 void ts_shape_render_to_window(void* shape_ptr, size_t window_id, void* transform_ptr)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_render_to_window"))
+        return;
+    
     detail::_windows.at(window_id).render(((ts::Shape*) shape_ptr), *((ts::Transform*) transform_ptr));
 }
 
 void ts_shape_render_to_texture(void* shape_ptr, void* render_texture_ptr, void* transform_ptr)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_render_to_texture"))
+        return;
+    
     ((ts::RenderTexture*) render_texture_ptr)->render((ts::Shape*) shape_ptr, *((ts::Transform*) transform_ptr));
 }
 
 void ts_shape_move(void* shape_ptr, float x, float y)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_move"))
+        return;
+
     ((ts::Shape*) shape_ptr)->move(x, y);
 }
 
 void ts_shape_get_centroid(void* shape_ptr, float* out_x, float* out_y)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_centroid"))
+        return;
+
     auto centroid = ((ts::Shape*) shape_ptr)->get_centroid();
     *out_x = centroid.x;
     *out_y = centroid.y;
@@ -562,26 +789,53 @@ void ts_shape_get_centroid(void* shape_ptr, float* out_x, float* out_y)
 
 void ts_shape_set_centroid(void* shape_ptr, float x, float y)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_centroid"))
+        return;
+
     ((ts::Shape*) shape_ptr)->set_centroid(ts::Vector2f{x, y});
 }
 
 size_t ts_shape_get_n_vertices(void* shape_ptr)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_n_vertices"))
+        return 0;
+
     return ((ts::Shape*) shape_ptr)->get_n_vertices();
 }
 
 void ts_shape_set_color(void* shape_ptr, float r, float g, float b, float a)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_color"))
+        return;
+
     ((ts::Shape*) shape_ptr)->set_color(ts::RGBA(r, g, b, a));
 }
 
 void ts_shape_set_vertex_color(void* shape_ptr, size_t vertex_index, float r, float g, float b, float a)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_vertex_color"))
+        return;
+
+    if (vertex_index > ((ts::Shape*) shape_ptr)->get_n_vertices())
+    {
+        ts::Log::warning("In ts_shape_set_vertex_color: vertex index ", vertex_index, " out of bounds.");
+        return;
+    }
+
     ((ts::Shape*) shape_ptr)->set_vertex_color(vertex_index, ts::RGBA(r, g, b, a));
 }
 
 void ts_shape_get_vertex_color(void* shape_ptr, size_t vertex_index, float* out_r, float* out_g, float* out_b, float* out_a)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_vertex_color"))
+        return;
+
+    if (vertex_index > ((ts::Shape*) shape_ptr)->get_n_vertices())
+    {
+        ts::Log::warning("In ts_shape_get_vertex_color: vertex index ", vertex_index, " out of bounds.");
+        return;
+    }
+
     auto color = ((ts::Shape*) shape_ptr)->get_color(vertex_index);
     *out_r = color.red;
     *out_g = color.green;
@@ -591,11 +845,29 @@ void ts_shape_get_vertex_color(void* shape_ptr, size_t vertex_index, float* out_
 
 void ts_shape_set_vertex_texture_coordinates(void* shape_ptr, size_t vertex_index, float u, float v)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_vertex_texture_coordinates"))
+        return;
+
+    if (vertex_index > ((ts::Shape*) shape_ptr)->get_n_vertices())
+    {
+        ts::Log::warning("In ts_shape_set_vertex_texture_coordinates: vertex index ", vertex_index, " out of bounds.");
+        return;
+    }
+
     ((ts::Shape*) shape_ptr)->set_vertex_texture_coordinates(vertex_index, ts::Vector2f{u, v});
 }
 
 void ts_shape_get_vertex_texture_coordinates(void* shape_ptr, size_t vertex_index, float* out_u, float* out_v)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_vertex_texture_coordinates"))
+        return;
+
+    if (vertex_index > ((ts::Shape*) shape_ptr)->get_n_vertices())
+    {
+        ts::Log::warning("In ts_shape_get_vertex_texture_coordinates: vertex index ", vertex_index, " out of bounds.");
+        return;
+    }
+
     auto uv = ((ts::Shape*) shape_ptr)->get_vertex_texture_coordinates(vertex_index);
     *out_u = uv.x;
     *out_v = uv.y;
@@ -603,11 +875,29 @@ void ts_shape_get_vertex_texture_coordinates(void* shape_ptr, size_t vertex_inde
 
 void ts_shape_set_vertex_position(void* shape_ptr, size_t vertex_index, float x, float y)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_vertex_position"))
+        return;
+
+    if (vertex_index > ((ts::Shape*) shape_ptr)->get_n_vertices())
+    {
+        ts::Log::warning("In ts_shape_set_vertex_position: vertex index ", vertex_index, " out of bounds.");
+        return;
+    }
+
     ((ts::Shape*) shape_ptr)->set_vertex_position(vertex_index, ts::Vector2f{x, y});
 }
 
 void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* out_x, float* out_y)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_vertex_position"))
+        return;
+
+    if (vertex_index > ((ts::Shape*) shape_ptr)->get_n_vertices())
+    {
+        ts::Log::warning("In ts_shape_get_vertex_position: vertex index ", vertex_index, " out of bounds.");
+        return;
+    }
+
     auto pos = ((ts::Shape*) shape_ptr)->get_vertex_position(vertex_index);
     *out_x = pos.x;
     *out_y = pos.y;
@@ -615,11 +905,17 @@ void ts_shape_get_vertex_position(void* shape_ptr, size_t vertex_index, float* o
 
 void ts_shape_set_texture_rectangle(void* shape_ptr, float top_left_x, float top_left_y, float width, float height)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_texture_rectangle"))
+        return;
+
     ((ts::Shape*) shape_ptr)->set_texture_rectangle(ts::Rectangle{{top_left_x, top_left_y}, {width, height}});
 }
 
 void ts_shape_get_texture_rectangle(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_texture_rectangle"))
+        return;
+
     auto out = ((ts::Shape*) shape_ptr)->get_texture_rectangle();
     *out_top_left_x = out.top_left.x;
     *out_top_left_y = out.top_left.y;
@@ -629,6 +925,9 @@ void ts_shape_get_texture_rectangle(void* shape_ptr, float* out_top_left_x, floa
 
 void ts_shape_get_bounding_box(void* shape_ptr, float* out_top_left_x, float* out_top_left_y, float* out_width, float* out_height)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_bounding_box"))
+        return;
+
     auto out = ((ts::Shape*) shape_ptr)->get_bounding_box();
     *out_top_left_x = out.top_left.x;
     *out_top_left_y = out.top_left.y;
@@ -638,11 +937,17 @@ void ts_shape_get_bounding_box(void* shape_ptr, float* out_top_left_x, float* ou
 
 void ts_shape_set_texture(void* shape_ptr, void* texture)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_set_texture"))
+        return;
+
     ((ts::Shape*) shape_ptr)->set_texture((ts::Texture*) texture);
 }
 
 void* ts_shape_get_texture(void* shape_ptr)
 {
+    if (detail::assert_shape_ptr(shape_ptr, "ts_shape_get_texture"))
+        return nullptr;
+
     return ((ts::Shape*) shape_ptr)->get_texture();
 }
 
@@ -656,6 +961,9 @@ void ts_shape_triangle_get_vertices(void* triangle_ptr,
                                     float* out_b_x, float* out_b_y,
                                     float* out_c_x, float* out_c_y)
 {
+    if (detail::assert_shape_ptr(triangle_ptr, "ts_shape_triangle_get_vertices"))
+        return;
+
     auto* tri = ((ts::Triangle*) triangle_ptr);
     *out_a_x = tri->a.x;
     *out_a_y = tri->a.y;
@@ -684,11 +992,17 @@ void ts_shape_destroy_rectangle(void* rectangle_ptr)
 
 void ts_shape_rectangle_set_top_left(void* rectangle_ptr, float top_left_x, float top_left_y)
 {
+    if (detail::assert_shape_ptr(rectangle_ptr, "ts_shape_rectangle_set_top_left"))
+        return;
+
     ((ts::RectangleShape*) rectangle_ptr)->set_top_left(ts::Vector2f{top_left_x, top_left_y});
 }
 
 void ts_shape_rectangle_get_top_left(void* rectangle_ptr, float* out_top_left_x, float* out_top_left_y)
 {
+    if (detail::assert_shape_ptr(rectangle_ptr, "ts_shape_rectangle_get_top_left"))
+        return;
+
     auto out = ((ts::RectangleShape*) rectangle_ptr)->get_top_left();
     *out_top_left_x = out.x;
     *out_top_left_y = out.y;
@@ -696,11 +1010,17 @@ void ts_shape_rectangle_get_top_left(void* rectangle_ptr, float* out_top_left_x,
 
 void ts_shape_rectangle_set_size(void* rectangle_ptr, float width, float height)
 {
+    if (detail::assert_shape_ptr(rectangle_ptr, "ts_shape_rectangle_set_size"))
+        return;
+
     ((ts::RectangleShape*) rectangle_ptr)->set_size(ts::Vector2f{width, height});
 }
 
 void ts_shape_rectangle_get_size(void* rectangle_ptr, float* out_width, float* out_height)
 {
+    if (detail::assert_shape_ptr(rectangle_ptr, "ts_shape_rectangle_get_size"))
+        return;
+
     auto out = ((ts::RectangleShape*) rectangle_ptr)->get_size();
     *out_width = out.x;
     *out_height = out.y;
@@ -713,11 +1033,17 @@ void* ts_shape_create_circle(float center_x, float center_y, float radius, size_
 
 float ts_shape_circle_get_radius(void* circle_ptr)
 {
+    if (detail::assert_shape_ptr(circle_ptr, "ts_shape_circle_get_radius"))
+        return 0;
+
     return ((ts::CircleShape*) circle_ptr)->get_radius();
 }
 
 void ts_shape_circle_set_radius(void* circle_ptr, float radius)
 {
+    if (detail::assert_shape_ptr(circle_ptr, "ts_shape_circle_set_radius"))
+        return;
+
     ((ts::CircleShape*) circle_ptr)->set_radius(radius);
 }
 
@@ -748,6 +1074,17 @@ namespace detail
 {
     size_t _id = 1;
     std::unordered_map<size_t, ts::PhysicsWorld> _worlds;
+
+    bool assert_world_id(size_t id, const std::string& function)
+    {
+        auto it = _worlds.find(id);
+        if (it == _worlds.end())
+        {
+            ts::Log::warning("In ", function, ": No world with id ", id);
+            return true;
+        }
+        return false;
+    }
 }
 
 size_t ts_physics_world_create()
@@ -762,26 +1099,41 @@ size_t ts_physics_world_create()
 
 void ts_physics_world_destroy(size_t id)
 {
+    if (detail::assert_world_id(id, "ts_physics_world_destroy"))
+        return;
+
     detail::_worlds.erase(id);
 }
 
 void ts_physics_world_step(size_t id, float time_ms, int32_t velocity_iterations, int32_t position_iterations)
 {
+    if (detail::assert_world_id(id, "ts_physics_world_step"))
+        return;
+
     detail::_worlds.at(id).step(ts::milliseconds(time_ms), velocity_iterations, position_iterations);
 }
 
 void ts_physics_world_clear_forces(size_t world)
 {
+    if (detail::assert_world_id(world, "ts_physics_world_clear_forces"))
+        return;
+
     detail::_worlds.at(world).clear_forces();
 }
 
 void ts_physics_world_set_gravity(size_t id, float x, float y)
 {
+    if (detail::assert_world_id(id, "ts_physics_world_set_gravity"))
+        return;
+
     detail::_worlds.at(id).set_gravity(ts::Vector2f(x, y));
 }
 
 void ts_physics_world_get_gravity(size_t id, float* out_x, float* out_y)
 {
+    if (detail::assert_world_id(id, "ts_physics_world_get_gravity"))
+        return;
+
     auto out = detail::_worlds.at(id).get_gravity();
     *out_x = out.x;
     *out_y = out.y;
@@ -828,6 +1180,9 @@ void* ts_collision_triangle_create(size_t world_id, size_t type, float a_x, floa
 
 void* ts_collision_polygon_create(size_t world_id, size_t type, float* xs, float* ys, size_t n_vertices)
 {
+    if (detail::assert_world_id(world_id, "ts_collision_polygon_create"))
+        return nullptr;
+
     std::vector<ts::Vector2f> vertices;
     vertices.reserve(n_vertices);
 
@@ -864,36 +1219,57 @@ void ts_collision_shape_destroy(void* shape)
 
 void ts_collision_shape_set_density(void* shape, float v)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_density"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_density(v);
 }
 
 float ts_collision_shape_get_density(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_density"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_density();
 }
 
 void ts_collision_shape_set_friction(void* shape, float v)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_friction"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_friction(v);
 }
 
 float ts_collision_shape_get_friction(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_friction"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_friction();
 }
 
 void ts_collision_shape_set_restitution(void* shape, float v)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_restitution"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_restitution(v);
 }
 
 float ts_collision_shape_get_restitution(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_restitution"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_restitution();
 }
 
 void ts_collision_shape_get_centroid(void* shape, float* out_x, float* out_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_centroid"))
+        return;
+
     auto centroid = ((ts::CollisionShape*) shape)->get_centroid();
     *out_x = centroid.x;
     *out_y = centroid.y;
@@ -901,6 +1277,9 @@ void ts_collision_shape_get_centroid(void* shape, float* out_x, float* out_y)
 
 void ts_collision_shape_get_bounding_box(void* shape, float* out_x, float* out_y, float* out_width, float* out_height)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_bounding_box"))
+        return;
+
     auto aabb = ((ts::CollisionShape*) shape)->get_bounding_box();
     *out_x = aabb.top_left.x;
     *out_y = aabb.top_left.y;
@@ -910,30 +1289,48 @@ void ts_collision_shape_get_bounding_box(void* shape, float* out_x, float* out_y
 
 float ts_collision_shape_get_rotation(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_rotation"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_rotation().as_degrees();
 }
 
 void ts_collision_shape_set_type(void* shape, size_t type)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_type"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_type((ts::CollisionType) type);
 }
 
 size_t ts_collision_shape_get_type(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_type"))
+        return ts::CollisionType::STATIC;
+
     return (size_t) ((ts::CollisionShape*) shape)->get_type();
 }
 
 void ts_collision_shape_set_is_hidden(void* shape, bool b)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_is_hidden"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_is_hidden(b);
 }
 bool ts_collision_shape_get_is_hidden(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_is_hidden"))
+        return false;
+
     return ((ts::CollisionShape*) shape)->get_is_hidden();
 }
 
 void ts_collision_shape_get_origin(void* shape, float* out_x, float* out_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_origin"))
+        return;
+
     auto out = ((ts::CollisionShape*) shape)->get_origin();
     *out_x = out.x;
     *out_y = out.y;
@@ -941,6 +1338,9 @@ void ts_collision_shape_get_origin(void* shape, float* out_x, float* out_y)
 
 void ts_collision_shape_get_center_of_mass_global(void* shape, float* out_x, float* out_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_center_of_mass_global"))
+        return;
+
     auto out = ((ts::CollisionShape*) shape)->get_center_of_mass_global();
     *out_x = out.x;
     *out_y = out.y;
@@ -948,6 +1348,9 @@ void ts_collision_shape_get_center_of_mass_global(void* shape, float* out_x, flo
 
 void ts_collision_shape_get_center_of_mass_local(void* shape, float* out_x, float* out_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_center_of_mass_local"))
+        return;
+
     auto out = ((ts::CollisionShape*) shape)->get_center_of_mass_local();
     *out_x = out.x;
     *out_y = out.y;
@@ -955,6 +1358,9 @@ void ts_collision_shape_get_center_of_mass_local(void* shape, float* out_x, floa
 
 void ts_collision_shape_set_linear_velocity(void* shape, float x, float y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_linear_velocity"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_linear_velocity(ts::Vector2f(x, y));
 }
 
@@ -967,71 +1373,113 @@ void ts_collision_shape_get_linear_velocity(void* shape, float* out_x, float* ou
 
 void ts_collision_shape_set_angular_velocity(void* shape, float v)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_angular_velocity"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_angular_velocity(v);
 }
 
 float ts_collision_shape_get_angular_velocity(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_angular_velocity"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_angular_velocity();
 }
 
 void ts_collision_shape_apply_force_to(void* shape, float force_x, float force_y, float point_x, float point_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_apply_force_to"))
+        return;
+
     ((ts::CollisionShape*) shape)->apply_force_to(ts::Vector2f(force_x, force_y), ts::Vector2f(point_x, point_y));
 }
 
 void ts_collision_shape_apply_force_to_center(void* shape, float force_x, float force_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_apply_force_to_center"))
+        return;
+
     ((ts::CollisionShape*) shape)->apply_force_to_center(ts::Vector2f(force_x, force_y));
 }
 
 void ts_collision_shape_apply_torque(void* shape, float torque)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_apply_torque"))
+        return;
+
     ((ts::CollisionShape*) shape)->apply_torque(torque);
 }
 
 void ts_collision_shape_apply_linear_impulse_to(void* shape, float impulse_x, float impulse_y, float point_x, float point_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_apply_linear_impulse_to"))
+        return;
+
     ((ts::CollisionShape*) shape)->apply_linear_impulse_to(ts::Vector2f(impulse_x, impulse_y), ts::Vector2f(point_x, point_y));
 }
 
 void ts_collision_shape_apply_linear_impulse_to_center(void* shape, float force_x, float force_y)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_apply_linear_impulse_to_center"))
+        return;
+
     ((ts::CollisionShape*) shape)->apply_linear_impulse_to_center(ts::Vector2f(force_x, force_y));
 }
 
 float ts_collision_shape_get_mass(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_mass"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_mass();
 }
 
 float ts_collision_shape_get_inertia(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_inertia"))
+        return 0;
+
     return ((ts::CollisionShape*) shape)->get_inertia();
 }
 
 void ts_collision_shape_set_is_bullet(void* shape, bool b)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_is_bullet"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_is_bullet(b);
 }
 
 bool ts_collision_shape_get_is_bullet(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_is_bullet"))
+        return false;
+
     return ((ts::CollisionShape*) shape)->get_is_bullet();
 }
 
 bool ts_collision_shape_get_is_rotation_fixed(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_is_rotation_fixed"))
+        return false;
+
     return ((ts::CollisionShape*) shape)->get_is_rotation_fixed();
 }
 
 void ts_collision_shape_set_is_rotation_fixed(void* shape, bool b)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_set_is_rotation_fixed"))
+        return;
+
     ((ts::CollisionShape*) shape)->set_is_rotation_fixed(b);
 }
 
 size_t ts_collision_shape_get_id(void* shape)
 {
+    if (detail::assert_shape_ptr(shape, "ts_collision_shape_get_id"))
+        return -1;
+
     return ((ts::CollisionShape*) shape)->get_id();
 }
 
@@ -1042,6 +1490,9 @@ void ts_physics_world_distance_between(
     float* out_point_a_x, float* out_point_a_y,
     float* out_point_b_x, float* out_point_b_y)
 {
+    if (detail::assert_shape_ptr(shape_a, "ts_physics_world_distance_between") or detail::assert_shape_ptr(shape_b, "ts_physics_world_distance_between"))
+        return;
+
     auto out = detail::_worlds.at(id).distance_between(((ts::CollisionShape*) shape_a), ((ts::CollisionShape*) shape_b));
     *out_point_a_x = out.closest_points.first.x;
     *out_point_a_y = out.closest_points.first.y;
@@ -1052,6 +1503,9 @@ void ts_physics_world_distance_between(
 
 bool ts_physics_world_is_point_in_shape(size_t id, void* shape, float point_x, float point_y)
 {
+    if (detail::assert_world_id(id, "ts_physics_world_is_point_in_shape") && detail::assert_shape_ptr(shape, "ts_physics_world_is_point_in_shape"))
+        return false;
+
     return detail::_worlds.at(id).is_point_in_shape((ts::CollisionShape*) shape, ts::Vector2f(point_x, point_y));
 }
 
@@ -1061,6 +1515,9 @@ bool ts_physics_world_ray_cast(
         float* out_normal_x, float* out_normal_y,
         float* out_hit_x, float* out_hit_y)
 {
+    if (detail::assert_world_id(id, "ts_physics_world_ray_cast") && detail::assert_shape_ptr(shape, "ts_physics_world_ray_cast"))
+        return false;
+
     auto out = detail::_worlds.at(id).ray_cast(
         (ts::CollisionShape*) shape,
         ts::Vector2f(ray_start_x, ray_start_y),
@@ -1081,6 +1538,9 @@ bool ts_physics_world_next_event(
     size_t* out_shape_a_id,
     size_t* out_shape_b_id)
 {
+    if (detail::assert_world_id(world_id, "ts_physics_world_next_event"))
+        return false;
+
     auto event = ts::CollisionEvent();
     auto out = detail::_worlds.at(world_id).next_event(&event);
 
@@ -1236,6 +1696,16 @@ float ts_controller_trigger_right(size_t controller_id)
 namespace detail
 {
     static inline std::unordered_map<size_t, ts::Music> _music_library = {};
+    bool assert_music_id(size_t id, const std::string& function)
+    {
+        auto it = _music_library.find(id);
+        if (it == _music_library.end())
+        {
+            ts::Log::warning("In ", function, ": Trying to queue nullptr instead of music.");
+            return true;
+        }
+        return false;
+    }
 }
 
 size_t ts_music_sample_rate()
@@ -1261,11 +1731,17 @@ void ts_music_unload(size_t id)
 
 void ts_music_play(size_t id, bool should_loop, double fade_in_ms)
 {
+    if (detail::assert_music_id(id, "ts_music_play"))
+        return;
+
     ts::MusicHandler::play(detail::_music_library.at(id), should_loop, ts::milliseconds(fade_in_ms));
 }
 
 void ts_music_play_next(size_t id, bool should_loop, double fade_in_ms)
 {
+    if (detail::assert_music_id(id, "ts_music_play_next"))
+        return;
+
     ts::MusicHandler::play_next(detail::_music_library.at(id), should_loop, ts::milliseconds(fade_in_ms));
 }
 
@@ -1286,7 +1762,11 @@ void ts_music_clear_next()
 
 size_t ts_music_get_next()
 {
-    return ts::MusicHandler::get_next()->get_id();
+    auto* next = ts::MusicHandler::get_next();
+    if (next)
+        return next->get_id();
+    else
+        return 0;
 }
 
 void ts_music_force_stop()
@@ -1339,6 +1819,17 @@ float ts_music_get_volume()
 namespace detail
 {
     std::unordered_map<size_t, ts::Sound> _sound_library;
+
+    bool assert_sound_id(size_t id, const std::string& function)
+    {
+        auto it = _sound_library.find(id);
+        if (it == _sound_library.end())
+        {
+            ts::Log::warning("In ", function, ": Trying to queue nullptr instead of sound.");
+            return true;
+        }
+        return false;
+    }
 }
 
 size_t ts_sound_get_max_n_channels()
@@ -1357,6 +1848,9 @@ size_t ts_sound_load(const char* path, float volume)
 
 void ts_sound_unload(size_t id)
 {
+    if (detail::assert_sound_id(id, "ts_sound_unload"))
+        return;
+
     detail::_sound_library.erase(id);
 }
 
@@ -1367,6 +1861,9 @@ size_t ts_sound_n_channels()
 
 void ts_sound_play(size_t id, size_t channel, size_t n_loops, double fade_in_ms)
 {
+    if (detail::assert_sound_id(id, "ts_sound_play"))
+        return;
+
     ts::SoundHandler::play(channel, detail::_sound_library.at(id), n_loops, ts::milliseconds(fade_in_ms));
 }
 
