@@ -199,23 +199,25 @@ namespace ts
     Vector2f CollisionShape::get_center_of_mass() const
     {
         assert_hidden();
-
-        return get_center_of_mass_local();
+        return get_center_of_mass_global();
     }
 
     Vector2f CollisionShape::get_center_of_mass_local() const
     {
         assert_hidden();
 
-        auto pos = _body->GetLocalCenter();
-        return Vector2f(pos.x, pos.y);
+        auto mass_data = b2MassData();
+        _body->GetMassData(&mass_data);
+        return Vector2f(mass_data.center.x, mass_data.center.y);
     }
 
     Vector2f CollisionShape::get_center_of_mass_global() const
     {
         assert_hidden();
 
-        auto pos = _body->GetWorldCenter();
+        auto mass_data = b2MassData();
+        _body->GetMassData(&mass_data);
+        auto pos = _body->GetWorldCenter() + mass_data.center;
         return _world->native_to_world(Vector2f(pos.x, pos.y));
     }
 
@@ -290,14 +292,18 @@ namespace ts
     {
         assert_hidden();
 
-        return _body->GetMass();
+        auto data = b2MassData();
+        _body->GetMassData(&data);
+        return data.mass;
     }
 
     float CollisionShape::get_inertia() const
     {
         assert_hidden();
 
-        return _body->GetInertia();
+        auto data = b2MassData();
+        _body->GetMassData(&data);
+        return data.I;
     }
 
     void CollisionShape::set_is_bullet(bool b)

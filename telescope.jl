@@ -3028,7 +3028,7 @@ module ts
         b_x = Ref{Cfloat}(-1)
         b_y = Ref{Cfloat}(-1)
 
-        ccall((:ts_collision_handler_distance_between, _lib), Cvoid,
+        ccall((:ts_physics_world_distance_between, _lib), Cvoid,
             (Csize_t, Ptr{Cvoid}, Ptr{Cvoid}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
             world._native_id, shape_a._native, shape_b._native, distance, a_x, a_y, b_x, b_y)
 
@@ -3058,16 +3058,16 @@ module ts
     """
     `ray_cast(::PhysicsWorld, ::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) -> RayCastInformation`
     """
-    function ray_cast(world::PhysicsWorld, shape::CollisionShape, ray_start::Vector2f, ray_end::Vector2f) ::RayCastInformation
+    function ray_cast(world::PhysicsWorld, shape::CollisionShape, ray_start::Vector2f, ray_end::Vector2f, multiplier::Number = 1) ::RayCastInformation
 
         normal_x = Ref{Cfloat}(-1)
         normal_y = Ref{Cfloat}(-1)
         hit_x = Ref{Cfloat}(-1)
         hit_y = Ref{Cfloat}(-1)
 
-        colliding = ccall((:ts_collision_handler_ray_cast, _lib), Bool,
-            (Csize_t, Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
-            world._native_id, shape._native, ray_start.x, ray_start.y, ray_end.x, ray_end.y, normal_x, normal_y, hit_x, hit_y)
+        colliding = ccall((:ts_physics_world_ray_cast, _lib), Bool,
+            (Csize_t, Ptr{Cvoid}, Cfloat, Cfloat, Cfloat, Cfloat, Cfloat, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}, Ref{Cfloat}),
+            world._native_id, shape._native, ray_start.x, ray_start.y, ray_end.x, ray_end.y, multiplier, normal_x, normal_y, hit_x, hit_y)
 
         return RayCastInformation(colliding, Vector2f(normal_x[], normal_y[]), Vector2f(hit_x[], hit_y[]))
     end
@@ -3077,7 +3077,7 @@ module ts
     `is_point_in_shape(::CollisionShape, ::Vector2f) -> Bool`
     """
     function is_point_in_shape(world::PhysicsWorld, shape::CollisionShape, point::Vector2f) ::Bool
-        return ccall((:ts_collision_handler_is_point_in_shape, _lib), Bool,
+        return ccall((:ts_physics_world_is_point_in_shape, _lib), Bool,
             (Csize_t, Ptr{Cvoid}, Cfloat, Cfloat),
             world._native_id, shape._native, point.x, point.y)
     end
@@ -3102,20 +3102,22 @@ module ts
     shape_b_id::Csize_t
 
     ### Constructors
-    (no public constructors)
+    CollisionEvent()
     """
-    struct CollisionEvent
+    mutable struct CollisionEvent
 
         type::CollisionEventType
         shape_a_id::Union{Csize_t, Nothing}
         shape_b_id::Union{Csize_t, Nothing}
+
+        CollisionEvent() = new(CollisionEventType(false), nothing, nothing)
     end
     export CollisionEvent
 
     """
     `next_event!(::PhysicsWorld, ::Ref{CollisionEvent}) -> Bool`
     """
-    function next_event!(world::PhysicsWorld, event_ref::Ref{CollisionEvent}) ::Bool
+    function next_event!(world::PhysicsWorld, event::CollisionEvent) ::Bool
 
         a_id = Ref{Csize_t}()
         b_id = Ref{Csize_t}()
@@ -3123,29 +3125,29 @@ module ts
 
         new_event = ccall((:ts_physics_world_next_event, _lib), Bool,
             (Csize_t, Ref{Bool}, Ref{Csize_t}, Ref{Csize_t}),
-            world._native_id, type, shape_a_native, shape_b_native)
+            world._native_id, type, a_id, b_id)
 
         if !new_event
-            event_ref[].type = CollisionEventType::CONTACT_END
-            event_ref[].shape_a_id = nothing
-            event_ref[].shape_b_id = nothing
+            event.type = CONTACT_END
+            event.shape_a_id = nothing
+            event.shape_b_id = nothing
             return false
         end
 
         if type[]
-            event_ref[].type = CollisionEventType::CONTACT_START
+            event.type = CONTACT_START
         else
-            event_ref[].type = CollisionEventType::CONTACT_END
+            event.type = CONTACT_END
         end
 
-        event_ref[].shape_a_id = a_id[]
-        event_ref[].shape_b_id = b_id[]
+        event.shape_a_id = a_id[]
+        event.shape_b_id = b_id[]
 
         return true
     end
     export next_event!; next_event = next_event!
 
-    ### TODO #############################################################################
+    ### TEST #############################################################################
 
     module test
 
@@ -3272,7 +3274,6 @@ module ts
                 reset!(camera)
                 area = get_view_area(camera)
             end
-
 
             @testset "Textures" begin
 
@@ -3559,16 +3560,16 @@ module ts
                 circ = CollisionCircle(world, ts.DYNAMIC, circ_shape)
                 @test circ._native != Ptr{Cvoid}()
 
-                line = CollisionLine(world, ts.DYNAMIC, Vector2f(50, 50), Vector2f(10, 10))
+                line = CollisionLine(world, ts.KINEMATIC, Vector2f(50, 50), Vector2f(10, 10))
                 @test line._native != Ptr{Cvoid}()
 
                 polygon = CollisionPolygon(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
                 @test polygon._native != Ptr{Cvoid}()
 
-                linesequence = CollisionLineSequence(world, ts.DYNAMIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
+                linesequence = CollisionLineSequence(world, ts.KINEMATIC, [Vector2f(50, 50), Vector2f(12, 15), Vector2f(1322, 12), Vector2f(1415, 22)])
                 @test linesequence._native != Ptr{Cvoid}()
 
-                shapes = [rect, tri, circ, line, linesequence, polygon]
+                shapes = [rect, tri, circ, polygon] #line, linesequence, ]
 
                 for shape in shapes
 
@@ -3587,8 +3588,8 @@ module ts
 
                     get_rotation(shape)._degrees
 
-                    set_type!(shape, ts.DYNAMIC)
-                    @test get_type(shape) == ts.DYNAMIC
+                    set_type!(shape, ts.KINEMATIC)
+                    @test get_type(shape) == ts.KINEMATIC
 
                     get_origin(shape)
                     get_center_of_mass_local(shape)
@@ -3610,13 +3611,8 @@ module ts
                     apply_linear_impulse_to!(shape, Vector2f(12, 13), Vector2f(0, 0));
                     apply_linear_impulse_to_center!(shape, Vector2f(12, 13))
 
-                    if shape isa CollisionLine || shape isa CollisionLineSequence
-                        @test get_mass(shape) == 0
-                        @test get_inertia(shape) == 0
-                    else
-                        @test get_mass(shape) > 0
-                        @test get_inertia(shape) > 0
-                    end
+                    @test get_mass(shape) >= 0
+                    @test get_inertia(shape) >= 0
 
                     set_is_bullet!(shape, true)
                     @test get_is_bullet(shape)
@@ -3630,7 +3626,19 @@ module ts
                     set_is_hidden(shape, true)
                     @test get_is_hidden(shape) == true
                     set_is_hidden(shape, false)
+
+                    @test is_point_in_shape(world, shape, get_centroid(shape))
+
+                    raycast = ray_cast(world, shape, Vector2f(0, 0), get_centroid(shape), 100000)
+                    #@test raycast.are_colliding == true #TODO
+
+                    distance = distance_between(world, shape, rect)
+                    @test distance.distance >= 0
                 end
+
+                event = CollisionEvent()
+                @test next_event!(world, event)
+                @test event.shape_a_id != nothing && event.shape_b_id != nothing
             end
         end
         # no export

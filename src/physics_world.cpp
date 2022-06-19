@@ -6,6 +6,8 @@
 #include <box2d/b2_contact.h>
 #include <box2d/b2_distance.h>
 
+#include <iostream> //TODO
+
 #include <include/physics_world.hpp>
 #include <include/window.hpp>
 #include <include/collision_shape.hpp>
@@ -31,6 +33,8 @@ namespace ts
         return &_world;
     }
 
+    // native: physics world
+    // world: render space
     Vector2f PhysicsWorld::native_to_world(Vector2f in) const
     {
         return Vector2f(in.x * pixel_ratio, in.y * pixel_ratio);
@@ -72,39 +76,41 @@ namespace ts
     DistanceInformation PhysicsWorld::distance_between(CollisionShape *a, CollisionShape *b)
     {
         auto in = b2DistanceInput();
-        in.proxyA.Set(a->get_native_shape(), 0);
-        in.proxyB.Set(b->get_native_shape(), 0);
-        in.transformA = b2Transform();
-        in.transformB = b2Transform();
+        in.proxyA.Set(a->get_native_fixture()->GetShape(), 0);
+        in.proxyB.Set(b->get_native_fixture()->GetShape(), 0);
+        in.transformA = a->get_native_body()->GetTransform();
+        in.transformB = b->get_native_body()->GetTransform();
 
         auto out = b2DistanceOutput();
         auto cache = b2SimplexCache();
 
         b2Distance(&out, &cache, &in);
-
         return ts::DistanceInformation{
-                out.distance,
-                {Vector2f(out.pointA.x, out.pointA.y),{Vector2f(out.pointB.x, out.pointB.y)}}
+                out.distance * pixel_ratio,
+                {native_to_world(Vector2f(out.pointA.x, out.pointA.y)), native_to_world(Vector2f(out.pointB.x, out.pointB.y))}
         };
     }
 
     bool PhysicsWorld::is_point_in_shape(CollisionShape *a, Vector2f point)
     {
-        static auto transform = b2Transform();
-        return a->get_native_shape()->TestPoint(transform, b2Vec2(point.x, point.y));
+        point = world_to_native(point);
+        return a->get_native_shape()->TestPoint(a->get_native_body()->GetTransform(), b2Vec2(point.x, point.y));
     }
 
-    RayCastInformation PhysicsWorld::ray_cast(CollisionShape *a, Vector2f ray_start, Vector2f ray_end)
+    RayCastInformation PhysicsWorld::ray_cast(CollisionShape *a, Vector2f ray_start, Vector2f ray_end, float multiplier)
     {
-        static auto transform = b2Transform();
+        static auto transform = a->get_native_body()->GetTransform();
         auto* shape = a->get_native_shape();
+
+        ray_start = world_to_native(ray_start);
+        ray_end = world_to_native(ray_end);
 
         auto in = b2RayCastInput();
         in.p1.x = ray_start.x;
         in.p1.y = ray_start.y;
         in.p2.x = ray_end.x;
         in.p2.y = ray_end.y;
-        in.maxFraction = 1; // multiplier of length
+        in.maxFraction = multiplier; // multiplier of length
 
         auto out = b2RayCastOutput();
 

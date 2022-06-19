@@ -101,8 +101,9 @@ namespace ts
             /// \param a: shape to be cast at
             /// \param ray_start: starting point of the ray
             /// \param ray_end: ending point of the ray
+            /// \param length_multiplier: will extend the ray past `ray_end`
             /// \returns object of type ts::RayCastInformation
-            RayCastInformation ray_cast(CollisionShape* a, Vector2f ray_start, Vector2f ray_end);
+            RayCastInformation ray_cast(CollisionShape* a, Vector2f ray_start, Vector2f ray_end, float length_multiplier = 1.f);
 
             /// \brief pop an event from the event queue, thread-safe. The event queue is automatically cleared every ts::PhysicsWorld::step
             /// \param event: [out] event, will be modified if event queue is not empty

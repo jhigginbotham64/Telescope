@@ -307,7 +307,7 @@ bool ts_physics_world_is_point_in_shape(size_t world_id, void *shape, float poin
 
 bool ts_physics_world_ray_cast(
         size_t world_id, void *shape,
-        float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
+        float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y, float multiplier,
         float *out_normal_x, float *out_normal_y,
         float *out_hit_x, float *out_hit_y);
 

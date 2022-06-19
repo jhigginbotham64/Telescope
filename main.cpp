@@ -134,11 +134,9 @@ int main()
         }
         else if (val > 3 and val < 4)
         {
-            /*
             lines.emplace_back(&world, ts::DYNAMIC, center - Vector2f(4 * radius, 0), center + Vector2f(4 * radius, 0));
             lines.back().set_color(color);
             lines.back().set_density(1);
-             */
         }
         else if (val > 4 and val < 5)
         {
@@ -172,8 +170,7 @@ int main()
 
     auto player = ts::CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(400, 300), 25);
     player.set_density(1);
-
-    auto poly_test = CollisionPolygonShape(&world, ts::STATIC, generate_polygon(Vector2f(300, 300), 100));
+    //auto poly_test = CollisionPolygonShape(&world, ts::STATIC, generate_polygon(Vector2f(300, 300), 100));
 
     while (window.is_open())
     {

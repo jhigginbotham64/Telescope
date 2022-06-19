@@ -1057,19 +1057,21 @@ bool ts_physics_world_is_point_in_shape(size_t id, void* shape, float point_x, f
 
 bool ts_physics_world_ray_cast(
         size_t id, void* shape,
-        float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y,
+        float ray_start_x, float ray_start_y, float ray_end_x, float ray_end_y, float multiplier,
         float* out_normal_x, float* out_normal_y,
         float* out_hit_x, float* out_hit_y)
 {
     auto out = detail::_worlds.at(id).ray_cast(
         (ts::CollisionShape*) shape,
         ts::Vector2f(ray_start_x, ray_start_y),
-        ts::Vector2f(ray_end_x, ray_end_y));
+        ts::Vector2f(ray_end_x, ray_end_y),
+        multiplier);
 
     *out_normal_x = out.normal_vector.x;
     *out_normal_y = out.normal_vector.y;
     *out_hit_x = out.contact_point.x;
     *out_hit_y = out.contact_point.y;
+
     return out.are_colliding;
 }
 
