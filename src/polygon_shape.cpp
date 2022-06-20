@@ -16,6 +16,17 @@ namespace ts
         // compute convex hull
         // sort by angle around centroid, then decompose into tris
 
+        if (positions.size() < 3)
+            throw std::invalid_argument("In PolygonShape::PolygonShape: polygons have to have to have at least 3 vertices.");
+
+
+
+
+
+        /*
+        if (positions.size() < 3)
+            throw std::invalid_argument("In PolygonShape::PolygonShape: polygons have to have to have at least 3 vertices.");
+
         Vector2f centroid = {0, 0};
         Vector2f top_left = Vector2f(std::numeric_limits<float>::max());
 
@@ -40,11 +51,17 @@ namespace ts
             return a.second.as_degrees() < b.second.as_degrees();
         });
 
-        _vertices.reserve(per_angle.size());
-        static auto push_vertex = [&](Vector2f position) -> void
+        _vertices.clear();
+        _vertices.reserve(per_angle.size() + 1);
+        for (int i = -1; i < per_angle.size(); ++i)
         {
-            _vertices.emplace_back();
+            Vector2f position;
+            if (i == -1)
+                position = centroid;
+            else
+                position = per_angle.at(i).first;
 
+            _vertices.push_back(SDL_Vertex());
             _vertices.back().position.x = position.x;
             _vertices.back().position.y = position.y;
 
@@ -55,14 +72,9 @@ namespace ts
 
             _vertices.back().tex_coord.x = position.x - top_left.x;
             _vertices.back().tex_coord.y = position.y - top_left.y;
-        };
-
-        push_vertex(centroid);
-        for (size_t i = 0; i < per_angle.size(); ++i)
-            push_vertex(per_angle.at(i).first);
+        }
 
         _vertex_indices.clear();
-
         for (size_t i = 2; i < _vertices.size(); ++i)
         {
             _vertex_indices.push_back(0);
@@ -75,6 +87,7 @@ namespace ts
         _vertex_indices.push_back(1);
 
         Shape::signal_vertices_updated();
+         */
     }
 
     void PolygonShape::set_centroid(Vector2f new_centroid)

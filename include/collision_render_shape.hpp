@@ -61,7 +61,7 @@ namespace ts
     };
 
     /// \brief renderable polygon
-    class CollisionPolygonShape : public CollisionRenderShape, public CollisionPolygon, public PolygonShape
+    class CollisionPolygonShape : public CollisionRenderShape, public PolygonShape//, public CollisionPolygon
     {
         public:
             // no docs

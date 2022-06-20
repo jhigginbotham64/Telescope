@@ -16,6 +16,9 @@ namespace ts
 {
     void Shape::render(RenderTarget* target, Transform transform) const
     {
+        if (_xy.size() == 0)
+            return;
+
         if (_texture == nullptr)
             SDL_SetRenderDrawBlendMode(target->get_renderer(), SDL_BLENDMODE_BLEND);
         else
@@ -38,6 +41,8 @@ namespace ts
                 _vertices.size(),
                 _vertex_indices.data(), _vertex_indices.size(), sizeof(int)
         );
+
+        SDL_SetRenderDrawBlendMode(target->get_renderer(), SDL_BLENDMODE_NONE);
     }
 
     void Shape::signal_vertices_updated()

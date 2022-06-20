@@ -79,16 +79,13 @@ int main()
     );
 
     // fully dynamic entities
-    std::vector<CollisionCircleShape> circles;
-    std::vector<CollisionRectangleShape> squares;
-    std::vector<CollisionPolygonShape> polygons;
-    std::vector<CollisionTriangleShape> triangles;
+    std::vector<PolygonShape> polygons;
 
     // function to randomly spawn an entity inside the level arena
     auto spawn = [&](){
 
-        // decide which shape to spawn
-        size_t which = round(rng() * 5);
+        // decide number of vertices
+        size_t n_vertices = std::max<size_t>(3, round(rng() * 6));
 
         // decide the shapes radius
         float radius = std::max<float>(rng(), 0.5) * 20;
@@ -114,41 +111,12 @@ int main()
             0.9     // transparency
         );
 
-        // spawn circle
-        if (which == 0)
-        {
-            circles.emplace_back(
-                &world,         // physics world
-                ts::DYNAMIC,    // collision type
-                center,         // circle center
-                radius          // circle radius
-            );
-            circles.back().set_color(color);
-        }
-        // spawn square
-        else if (which == 1)
-        {
-            squares.emplace_back(&world, ts::DYNAMIC,
-                center - Vector2f(radius, radius),  // top left
-                Vector2f(2 * radius, 2 * radius)    // size
-            );
-            squares.back().set_color(color);
-        }
-        // spawn pentagon
-        else if (which == 2)
-        {
-            polygons.emplace_back(&world, ts::DYNAMIC,
-                generate_polygon_vertices(center, radius, 5)  // vertices
-            );
-            polygons.back().set_color(color);
-        }
-        // spawn triangle
-        else if (which == 3)
-        {
-            auto vertices = generate_polygon_vertices(center, radius, 3);
-            triangles.emplace_back(&world, ts::DYNAMIC, vertices.at(0), vertices.at(1), vertices.at(2));
-            triangles.back().set_color(color);
-        }
+        std::cout << n_vertices << std::endl;
+
+        // create n-vertex polygon
+        auto vertices = generate_polygon_vertices(center, radius, n_vertices);
+        polygons.emplace_back(vertices);
+        polygons.back().set_color(color);
     };
 
     // start out with a few entities already in the wheel
@@ -175,7 +143,7 @@ int main()
     bool escape_pressed = false;
 
     // TODO
-    auto player = CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(50, 50), 15);
+    auto player = CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(100, 100), 20);
     auto update_player = [&](){
 
         auto velocity = Vector2f(0, 0);
@@ -193,6 +161,7 @@ int main()
             velocity.x += delta;
 
         player.set_linear_velocity(velocity);
+        player.set_color(RGBA(1, 1, 1, 1));
         player.update();
     };
 
@@ -256,28 +225,10 @@ int main()
 
         // update & render all dynamic entities
         // the physics simulation will move these, we only need to update their shape
-        for (auto& circle : circles)
-        {
-            circle.update();
-            window.render(&circle);
-        }
-
-        for (auto& square : squares)
-        {
-            square.update();
-            window.render(&square);
-        }
-
         for (auto& polygon : polygons)
         {
-            polygon.update();
+            //polygon.update();
             window.render(&polygon);
-        }
-
-        for (auto& triangle : triangles)
-        {
-            triangle.update();
-            window.render(&triangle);
         }
 
         // push the render state and wait for vsync
