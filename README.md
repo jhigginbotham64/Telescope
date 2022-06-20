@@ -1,7 +1,10 @@
 # Telescope (v0.3.0)
 
-An Open-Source Toolkit for Interactive Multimedia Applications
+![](./docs/_static/favicon.png)
 
+An Open-Source Toolkit for Interactive Multimedia Applications.
+
+Documentation is available [here](https://telescope.readthedocs.io/en/latest/).
 ---
 ### Table of Contents
   1. [Dependencies](#dependencies) <br>
@@ -9,24 +12,23 @@ An Open-Source Toolkit for Interactive Multimedia Applications
   1.2 [Box2D](#dependencies) <br>
   1.3 [glm](#dependencies) <br>
   1.4 [vulkan](#dependencies)<br>
-  3. [Installation](#installation)<br>
-  4. [Troubleshooting](#troubleshooting)<br>
-  5. [Documentation](#documentation)<br>
-  6. [License](#license)<br>
-  7. [Authors](#authors)
+  2. [Installation](#installation)<br>
+  3. [Troubleshooting](#troubleshooting)<br>
+  5. [License](#license)<br>
+  6. [Authors](#authors)
   
 ---
 ### Dependencies
 
 The following dependencies need to be met: 
-+ SDL2, 2.0.18+
-+ SDL2_image, SDL2_ttf, SDL2_mixer, SDL2_net
-+ Vulkan, 1.2+
-+ glm
-+ box2D, 2.0+
++ `SDL2`, 2.0.18+
++ `SDL2_image`, `SDL2_ttf`, `SDL2_mixer`, `SDL2_net`
++ `Vulkan`, 1.2+
++ `glm`
++ `box2D`, 2.0+
 
 
-They can be installed on unix-based using a package manager, for example, using `apt`:
+They can be installed on unix-based OS using a package manager, for example, `apt`:
 
 ```bash
 # build the newest stable SDL2 from source
@@ -55,7 +57,7 @@ sudo apt-get install libglm-dev
 
 ### Installation
 
-Make sure all dependencies are installed. Then, you can install Telescope like so:
+Make sure all dependencies are met. Then, you can install Telescope like so:
 
 ```bash
 git clone https://github.com/jhigginbotham64/Telescope
@@ -85,13 +87,13 @@ Where
 
 To include all of telescopes functionality, simply include this header:
 ```cpp
-#include <telescope.h>
+#include <telescope.hpp>
 ```
 
 ---
 ### Troubleshooting
 
-#### `telescope.h`: No such file or directory
+#### `telescope.hpp`: No such file or directory
 
 When compiling your own C / C++ target that uses telescope, the following compiler error may occur:
 
@@ -116,13 +118,6 @@ Where
   + `<install loaction>` is the directory specified as `CMAKE_INSTALL_PREFIX` during [CMake configuration](#installation)
 
 Now, your compiler should be able to locate `telescope.h` properly.
-
----
-
-### Documentation
-
-Documentation is available online [here](https://telescope.readthedocs.io/en/latest/).
-
 
 ---
 

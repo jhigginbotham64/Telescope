@@ -34,7 +34,7 @@ namespace ts
             min_x = std::min(min_x, pos.x);
             min_y = std::min(min_y, pos.y);
             max_x = std::max(max_x, pos.x);
-            max_y = std::max(max_x, pos.y);
+            max_y = std::max(max_y, pos.y);
 
             by_angle.emplace_back(pos, radians(std::atan2(pos.x - center.x, pos.y - center.y)));
         }
