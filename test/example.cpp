@@ -48,42 +48,47 @@ int main()
     // create the window
     auto window = Window();
     const auto window_size = Vector2ui(800, 600);
-    window.create("Hello Telescope", window_size.x, window_size.y);
+    window.create("GOAL: Get all Polygons on one Side of the line", window_size.x, window_size.y);
 
     // create the physics world
     auto world = PhysicsWorld();
+    world.set_gravity(Vector2f(0, 100)); // gravity pulls screen-down
 
     // level geometry:;
-    std::vector<CollisionLineSequenceShape> level_geometry;
+    std::vector<CollisionLineSequenceShape> boundaries;
 
-    level_geometry.emplace_back(&world, ts::STATIC, std::vector<Vector2f>{
-        Vector2f(0, 0),
+    // outer boundaries of the screen
+    boundaries.emplace_back(&world, ts::STATIC, std::vector<Vector2f>{
+        Vector2f(0+1, 0),
         Vector2f(window_size.x, 0),
         Vector2f(window_size.x, window_size.y-1),
-        Vector2f(0, window_size.y-1),
-        Vector2f(0, 0)
+        Vector2f(0+1, window_size.y-1),
+        Vector2f(0+1, 0)
     });
 
-    const auto frame = 50;
+    const auto frame = 100;
     const auto outer_radius = (std::min(window_size.x, window_size.y) / 2.f) - frame;
     const auto screen_center = Vector2f(window_size.x / 2.f, window_size.y / 2.f);
 
-    // movable lines
-    std::vector<CollisionLineShape> lines;
-
     // horizontal line, -x: left, +y : right
-    lines.emplace_back(
+    auto line = CollisionLineShape(
         &world,         // world
         ts::KINEMATIC,  // kinematic: can be moved and rotated but does not repond forces
-        Vector2f(screen_center.x - outer_radius, screen_center.y), // left vertex
-        Vector2f(screen_center.x + outer_radius, screen_center.y)  // right vertex
+        Vector2f(0, screen_center.y), // left vertex
+        Vector2f(window_size.x, screen_center.y)  // right vertex
     );
 
-    // vertical line, -y: up, +y :down
-    lines.emplace_back(
-        &world, ts::KINEMATIC,
-        Vector2f(screen_center.x, screen_center.y - outer_radius), // upper vertex
-        Vector2f(screen_center.x, screen_center.y + outer_radius)  // lower vertex
+    auto spike_vertices = {
+        Vector2f(screen_center + Vector2f(-frame, 0)),
+        Vector2f(screen_center + Vector2f(0, -2 * frame)),
+        Vector2f(screen_center + Vector2f(+frame, 0)),
+        Vector2f(screen_center + Vector2f(0, +2 * frame)),
+        Vector2f(screen_center + Vector2f(-frame, 0))   // duplicate first to close the loop
+    };
+    auto spike = CollisionLineSequenceShape(
+        &world,
+        ts::KINEMATIC,
+        spike_vertices
     );
 
     // fully dynamic entities
@@ -98,18 +103,14 @@ int main()
         // decide the shapes radius
         float radius = std::max<float>(rng(), 0.5) * 20;
 
-        // decide the shapes position
-        const static auto center_of_screen = Vector2f(
-            window_size.x / 2,
-            window_size.y / 2
-        );
+        // decide the shapes initial position
+        auto center = Vector2f(0, 0);
+        if (rng() > 0.5)
+            center.y = 0 + rng() * frame;
+        else
+            center.y = window_size.y - frame + rng() * frame;
 
-        Vector2f center = center_of_screen;
-        float distance_from_center = rng() * (window_size.x / 2) * 0.75;
-        auto angle = ts::degrees(rng() * 360);
-
-        center.x += cos(angle.as_radians()) * distance_from_center;
-        center.y += sin(angle.as_radians()) * distance_from_center;
+        center.x = rng() * window_size.x;
 
         // decide the shapes color
         auto color = HSVA(
@@ -123,32 +124,15 @@ int main()
         auto vertices = generate_polygon_vertices(center, radius, n_vertices);
         polygons.emplace_back(&world, ts::DYNAMIC, vertices);
         polygons.back().set_color(color);
+        polygons.back().set_density(10);
     };
 
     // start out with a few entities already in the wheel
-    const size_t n_entities = 10;
+    const size_t n_entities = 200;
     for (size_t i = 0; i < n_entities; ++i)
         spawn();
 
-    // play music
-    auto music = Music();
-    system("echo $(pwd)");
-    music.load("./test/otherworldly_foe.mp3");
-    MusicHandler::play(
-        music,          // music
-        true,           // should music loop
-        seconds(0.25)   // fade in duration
-    );
-
-    // print controls
-    std::cout << "Controls: \n" \
-              << "\t" << "LEFT ARROW: rotate wheel left" << "\n" \
-              << "\t" << "RIGHT ARROW: rotate wheel right" << "\n" \
-              << "\t" << "SPACE: spawn a new object" << "\n" \
-              << "\t" << "ESCAPE: press twice to quit" << std::endl;
-    bool escape_pressed = false;
-
-    // TODO
+    // player character: a perfect circle
     auto player = CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(100, 100), 20);
     auto update_player = [&](){
 
@@ -170,6 +154,32 @@ int main()
         player.set_color(RGBA(1, 1, 1, 1));
         player.update();
     };
+    auto player_texture = StaticTexture(&window);
+    player_texture.load("./docs/_static/favicon.png");
+    player.set_texture(&player_texture);
+
+    // play music
+    auto music = Music();
+    system("echo $(pwd)");
+    music.load("./test/otherworldly_foe.mp3");
+    MusicHandler::play(
+        music,          // music
+        true,           // should music loop
+        seconds(0.25)   // fade in duration
+    );
+
+    // print controls
+    std::cout << "Controls: \n" \
+              << "\t" << "ARROWS: move player sprite" << "\n" \
+              << "\t" << "A: rotate wheel left" << "\n" \
+              << "\t" << "D: rotate wheel right" << "\n" \
+              << "\t" << "ESCAPE: press twice to quit" << std::endl;
+
+    std::cout << "Goal: \n" \
+              << "\t" << "Try to get all polygons on the same side of the line. If you succeed, something cool may happen!" \
+              << std::endl;
+
+    bool escape_pressed = false;
 
     // render loop
     while (window.is_open())
@@ -191,17 +201,13 @@ int main()
         if (InputHandler::is_down(KeyboardKey::D))
             rotation += 1;
 
-        // SPACE: spawn new entity
-        if (InputHandler::was_pressed(KeyboardKey::SPACE))
-            spawn();
-
         // ESCAPE: quit application
         if (InputHandler::was_pressed(KeyboardKey::ESCAPE))
         {
             if (not escape_pressed)
             {
                 escape_pressed = true;
-                std::cout << "Press the escape key again to quit.x" << std::endl;
+                std::cout << "Press the escape key again to give up" << std::endl;
             }
             else
             {
@@ -210,24 +216,25 @@ int main()
             }
         }
 
-        // TODO
-        update_player();
-        window.render(&player);
-
         // step the physics simulation, synced to frame duration
         world.step(time);
 
-        // render level geometry, does not need update because it is static
-        for (auto& shape : level_geometry)
-            window.render(&shape);
+        // update and render the player sprite
+        update_player();
+        window.render(&player);
 
-        // rotate the lines, update them, then render
-        for (auto& line : lines)
-        {
-            line.set_angular_velocity(rotation); // depends on player input
-            line.update();
-            window.render(&line);
-        }
+        // render level geometry, does not need update because it is static
+        for (auto& boundary : boundaries)
+            window.render(&boundary);
+
+        // rotate the line and spike, update them, then render
+        line.set_angular_velocity(rotation); // depends on player input
+        line.update();
+        window.render(&line);
+
+        spike.set_angular_velocity(rotation);
+        spike.update();
+        window.render(&spike);
 
         // update & render all dynamic entities
         // the physics simulation will move these, we only need to update their shape

@@ -77,7 +77,7 @@ namespace ts
             auto length = glm::distance(a, b);
 
             auto out = RectangleShape(center - Vector2f(length / 2.f, 0), Vector2f(length, 1));
-            auto angle = radians(std::atan2((b - center).x, (b - center).y));
+            auto angle = radians(std::atan2((b - center).x, (b - center).y) + 0.5 * M_PI);
             out.rotate(angle);
             return out;
         }
@@ -106,22 +106,8 @@ namespace ts
         bool is_two_sided)
         : CollisionLineSequence(world, type, vertices, is_two_sided)
     {
-        auto center = Vector2f(0, 0);
-        size_t n = vertices.size() - 1;
-        for (size_t i = 0; i < n; ++i)
-            center += (vertices.at(i) + vertices.at(i+1)) / Vector2f(2, 2);
-        center /= Vector2f(n, n);
-
-        for (size_t i = 0; i < vertices.size() - 1; ++i)
-        {
-            auto a = vertices.at(i);
-            auto b = vertices.at(i+1);
-            auto middle = (a + b) / Vector2f(2, 2);
-            auto dist = glm::distance(a, b);
-            _lines.emplace_back(middle - Vector2f(dist, 0), Vector2f(dist, 1));
-            _lines.back().set_origin(middle - a);
-            _lines.back().rotate(radians(std::atan2(a.x - b.x, a.y - b.y) - 0.5 * M_PI));
-        }
+        for (size_t i = 0; i < vertices.size()-1; ++i)
+            _lines.push_back(detail::create_line_shape(vertices.at(i), vertices.at(i+1)));
     }
 
     std::vector<RectangleShape> &CollisionLineSequenceShape::get_shapes()
@@ -130,7 +116,24 @@ namespace ts
     }
 
     void CollisionLineSequenceShape::update()
-    {}
+    {
+        auto centroid = Vector2f(0, 0);
+        for (auto& line : _lines)
+            centroid += line.get_centroid();
+        centroid /= Vector2f(_lines.size(), _lines.size());
+
+        auto is = _rotation.as_degrees();
+        auto should_be = CollisionShape::get_rotation().as_degrees();
+        auto delta = should_be - is;
+
+        for (auto& line : _lines)
+        {
+            line.set_origin(centroid - line.get_centroid());
+            line.rotate(degrees(delta));
+        }
+
+        _rotation = degrees(is + delta);
+    }
 
     void CollisionLineSequenceShape::render(RenderTarget *target, Transform transform) const
     {
