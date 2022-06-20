@@ -28,12 +28,13 @@
 #include <include/physics.hpp>
 #include <include/logging.hpp>
 
-extern "C" {
+//
+// NOTE:
+// This file is not intended for end-users, it should only be used by developers of Telescope
+// to allow for interfacing with other languages
+//
 
-void ts_test(float* x)
-{
-    *x = 1234;
-}
+extern "C" {
 
 // ### TIME ####################################################
 
