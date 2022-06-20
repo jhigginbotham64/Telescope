@@ -18,6 +18,9 @@ namespace ts
     {
         /// \brief synchronize the hitbox and render shape
         virtual void update() = 0;
+
+        protected:
+            Angle _rotation = degrees(0);
     };
 
     /// \brief triangle shape with identically sized hitbox

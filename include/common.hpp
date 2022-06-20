@@ -37,10 +37,10 @@ namespace ts
     /// \brief end the frame, pushes current render state to the screen, then waits to achieve target fps
     /// \param windows
     void end_frame(std::vector<Window*> windows);
-}
 
-namespace ts::detail
-{
-    static inline size_t _target_fps = 60;
-    static inline Clock _frame_clock = ts::Clock();
+    namespace detail
+    {
+        static inline size_t _target_fps = 60;
+        static inline Clock _frame_clock = ts::Clock();
+    }
 }

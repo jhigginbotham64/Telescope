@@ -58,7 +58,6 @@ include(CTest)
 
 ### FIND DEPENDENCIES ###
 
-
 find_library(SDL2 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
@@ -255,6 +254,14 @@ if (BUILD_TESTS)
     endfunction()
 
     #declare_test(template_test)
+
+    # example
+    add_executable(cpp_example "test/example.cpp")
+    target_link_libraries(cpp_example PRIVATE telescope)
+    target_include_directories(cpp_example PRIVATE ${CMAKE_SOURCE_DIR})
+    set_target_properties(cpp_example PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    )
 endif()
 
 ### GENERATE DOCS ###

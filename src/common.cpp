@@ -20,6 +20,12 @@
 
 namespace ts
 {
+    namespace detail
+    {
+        static inline size_t _target_fps = 60;
+        static inline Clock _frame_clock = ts::Clock();
+    }
+
     bool initialize()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -73,12 +79,6 @@ namespace ts
 
         ts::Log::print("initialization successful");
         return true;
-    }
-
-    namespace detail
-    {
-        static inline size_t _target_fps = 60;
-        static inline Clock _frame_clock = ts::Clock();
     }
 
     void set_framerate_limit(size_t frames_per_second)

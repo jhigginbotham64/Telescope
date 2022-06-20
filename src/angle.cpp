@@ -8,12 +8,12 @@
 namespace ts
 {
     Angle::Angle(float dg)
-        : _degrees(fmod(dg, 360))
+        : _degrees(dg)
     {}
 
     float Angle::as_radians() const
     {
-        return _degrees * M_PI / 180;
+        return _degrees * M_PI / 180.f;
     }
 
     float Angle::as_degrees() const
@@ -23,7 +23,7 @@ namespace ts
 
     Angle radians(float value)
     {
-        return Angle(value * 180 / M_PI);
+        return Angle(value * 180.f / M_PI);
     }
 
     Angle degrees(float value)

@@ -51,16 +51,32 @@ namespace ts
         CircleShape::rotate(CollisionShape::get_rotation());
     }
 
-    CollisionLineShape::CollisionLineShape(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b)
-        : CollisionLine(world, type, a, b, true), RectangleShape((a + b) / Vector2f(2, 2), Vector2f(glm::distance(a, b), 1))
+    namespace detail
     {
-        RectangleShape::rotate(CollisionLine::get_rotation());
+        RectangleShape create_line_shape(Vector2f a, Vector2f b)
+        {
+            auto center = (a + b) / Vector2f(2, 2);
+            auto length = glm::distance(a, b);
+
+            auto out = RectangleShape(center - Vector2f(length / 2.f, 0), Vector2f(length, 1));
+            auto angle = radians(std::atan2((b - center).x, (b - center).y));
+            out.rotate(angle);
+            return out;
+        }
     }
+
+    CollisionLineShape::CollisionLineShape(PhysicsWorld* world, CollisionType type, Vector2f a, Vector2f b)
+        : CollisionLine(world, type, a, b, true), RectangleShape(detail::create_line_shape(a, b))
+    {}
 
     void CollisionLineShape::update()
     {
-        RectangleShape::set_centroid(CollisionLine::get_centroid());
-        RectangleShape::rotate(CollisionLine::get_rotation());
+        auto is = _rotation.as_degrees();
+        auto should_be = CollisionShape::get_rotation().as_degrees();
+        auto delta = should_be - is;
+
+        RectangleShape::rotate(degrees(delta));
+        _rotation = degrees(is + delta);
     }
 
     CollisionLineSequenceShape::CollisionLineSequenceShape(
