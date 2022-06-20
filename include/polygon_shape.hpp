@@ -19,9 +19,5 @@ namespace ts
             /// \brief construct from number of points, will construct the convex hull of the points
             /// \param points
             PolygonShape(const std::vector<Vector2f>& positions);
-
-            /// \brief set the centroid, moves all vertices accordingly
-            /// \param new_position: new position of the centroid
-            void set_centroid(Vector2f) override;
     };
 }

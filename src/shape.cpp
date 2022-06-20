@@ -196,11 +196,11 @@ namespace ts
 
     void Shape::set_centroid(Vector2f position)
     {
-        auto delta = get_centroid() - position;
+        auto delta = position - get_centroid();
         for (auto& v : _vertices)
         {
-            v.position.x -= delta.x;
-            v.position.y -= delta.y;
+            v.position.x += delta.x;
+            v.position.y += delta.y;
         }
 
         update_xy();

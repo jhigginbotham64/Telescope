@@ -80,17 +80,6 @@ namespace ts
         Shape::signal_vertices_updated();
     }
 
-    void CircleShape::set_centroid(Vector2f center)
-    {
-        _center = center;
-        update();
-    }
-
-    Vector2f CircleShape::get_centroid() const
-    {
-        return _center;
-    }
-
     void CircleShape::move(float x_offset, float y_offset)
     {
         _center += Vector2f(x_offset, y_offset);

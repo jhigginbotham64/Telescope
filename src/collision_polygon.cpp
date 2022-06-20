@@ -6,6 +6,7 @@
 #include <array>
 #include <exception>
 #include <sstream>
+#include <algorithm>
 
 #include <include/collision_polygon.hpp>
 #include <include/physics_world.hpp>
@@ -91,40 +92,50 @@ namespace ts
         }())
     {}
 
-    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>& vec)
+    CollisionPolygon::CollisionPolygon(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f>& positions)
         : CollisionShape(world, type, [&]() -> Vector2f {
 
            auto out = Vector2f(0, 0);
-           for (auto& v : vec)
+           for (auto& v : positions)
                out += v;
 
-           return out / Vector2f(vec.size(), vec.size());
+           return out / Vector2f(positions.size(), positions.size());
         }())
     {
-        if (vec.size() > b2_maxPolygonVertices)
+        if (positions.size() > 8)
         {
             std::stringstream str;
-            str << "In ts::CollisionPolygon CTor: Maximum number of vertices (" << b2_maxPolygonVertices << ") exceeded." \
+            str << "In ts::CollisionPolygon CTor: Maximum number of vertices (" << 8 << ") exceeded." \
                 << "To achieve the desired geometry, instead decompose the polygon into multiple smaller polygons." << std::endl;
             // TODO: implement multi-fixure physics body to make this easier
 
             throw std::invalid_argument(str.str());
         }
 
-        _shape = b2PolygonShape();
-
         auto center = Vector2f(0, 0);
+        for (auto& pos : positions)
+            center += pos;
 
-        for (auto& v : vec)
-            center += v;
+        size_t n = positions.size();
+        center /= Vector2f(n, n);
 
-        center /= Vector2f(vec.size(), vec.size());
+        std::vector<std::pair<Vector2f, Angle>> by_angle;
+        for (auto& pos : positions)
+            by_angle.emplace_back(pos, radians(std::atan2(pos.x - center.x, pos.y - center.y)));
 
-        std::vector<b2Vec2> points;
-        points.reserve(vec.size());
+        std::sort(by_angle.begin(), by_angle.end(), [](const std::pair<Vector2f, Angle>& a, const std::pair<Vector2f, Angle>& b)
+        {
+            return a.second.as_degrees() < b.second.as_degrees();
+        });
 
-        for (auto& point : vec)
-            points.emplace_back(point.x - center.x, point.y - center.y);
+        auto points = std::vector<b2Vec2>();
+        for (auto& pair : by_angle)
+        {
+            auto point = pair.first;
+            point -= center;
+            point = _world->world_to_native(point);
+            points.emplace_back(b2Vec2(point.x, point.y));
+        }
 
         _shape.Set(points.data(), points.size());
         _shape.m_radius = _world->get_skin_radius();

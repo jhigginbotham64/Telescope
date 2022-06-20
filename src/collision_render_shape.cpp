@@ -139,20 +139,18 @@ namespace ts
     }
 
     CollisionPolygonShape::CollisionPolygonShape(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f> & vertices)
-        : PolygonShape(vertices)//, CollisionPolygon(world, type, vertices)
+        : PolygonShape(vertices), CollisionPolygon(world, type, vertices)
     {}
 
     void CollisionPolygonShape::update()
     {
-        /*
-        CircleShape::set_centroid(CollisionShape::get_centroid());
+        PolygonShape::set_centroid(CollisionShape::get_centroid());
 
         auto is = _rotation.as_degrees();
-        auto should_be = CollisionShape::get_rotation().as_degrees();
+        auto should_be = CollisionPolygonShape::get_rotation().as_degrees();
         auto delta = should_be - is;
 
-        CircleShape::rotate(degrees(delta));
+        CollisionPolygonShape::rotate(degrees(delta));
         _rotation = degrees(is + delta);
-         */
     }
 }

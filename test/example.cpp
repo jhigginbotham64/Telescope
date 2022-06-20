@@ -53,8 +53,16 @@ int main()
     // create the physics world
     auto world = PhysicsWorld();
 
-    // level geometry:
+    // level geometry:;
     std::vector<CollisionLineSequenceShape> level_geometry;
+
+    level_geometry.emplace_back(&world, ts::STATIC, std::vector<Vector2f>{
+        Vector2f(0, 0),
+        Vector2f(window_size.x, 0),
+        Vector2f(window_size.x, window_size.y-1),
+        Vector2f(0, window_size.y-1),
+        Vector2f(0, 0)
+    });
 
     const auto frame = 50;
     const auto outer_radius = (std::min(window_size.x, window_size.y) / 2.f) - frame;
@@ -79,7 +87,7 @@ int main()
     );
 
     // fully dynamic entities
-    std::vector<PolygonShape> polygons;
+    std::vector<CollisionPolygonShape> polygons;
 
     // function to randomly spawn an entity inside the level arena
     auto spawn = [&](){
@@ -108,19 +116,17 @@ int main()
             rng(),  // hue
             rng(),  // saturation
             1,      // value
-            0.9     // transparency
+            1     // transparency
         );
-
-        std::cout << n_vertices << std::endl;
 
         // create n-vertex polygon
         auto vertices = generate_polygon_vertices(center, radius, n_vertices);
-        polygons.emplace_back(vertices);
+        polygons.emplace_back(&world, ts::DYNAMIC, vertices);
         polygons.back().set_color(color);
     };
 
     // start out with a few entities already in the wheel
-    const size_t n_entities = 100;
+    const size_t n_entities = 10;
     for (size_t i = 0; i < n_entities; ++i)
         spawn();
 
@@ -227,7 +233,7 @@ int main()
         // the physics simulation will move these, we only need to update their shape
         for (auto& polygon : polygons)
         {
-            //polygon.update();
+            polygon.update();
             window.render(&polygon);
         }
 

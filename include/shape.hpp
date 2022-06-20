@@ -24,11 +24,11 @@ namespace ts
 
             /// \brief set the position of the shapes centroid
             /// \param position: centroid position
-            virtual void set_centroid(Vector2f position);
+            void set_centroid(Vector2f position);
 
             /// \brief get the position of the shapes centroid
             /// \returns position, true coordinates
-            virtual Vector2f get_centroid() const;
+            Vector2f get_centroid() const;
 
             /// \brief move the shape such that its centroid will be offset by the specified amount
             /// \param x_offset: offset along the x-axis, true coordinates
