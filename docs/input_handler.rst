@@ -99,10 +99,10 @@ Controller IDs
 
 For controller buttons, each function takes an additional argument, the controllers internal ID:
 
-.. doxygenfunction:: ts::InputHandler::is_down(ControllerButton)
-.. doxygenfunction:: ts::InputHandler::has_state_changed(ControllerButton)
-.. doxygenfunction:: ts::InputHandler::was_pressed(ControllerButton)
-.. doxygenfunction:: ts::InputHandler::was_released(ControllerButton)
+.. doxygenfunction:: ts::InputHandler::is_down(ControllerButton controller_button, ControllerID id = 0)
+.. doxygenfunction:: ts::InputHandler::has_state_changed(ControllerButton controller_button, ControllerID id = 0)
+.. doxygenfunction:: ts::InputHandler::was_pressed(ControllerButton controller_button, ControllerID id = 0)
+.. doxygenfunction:: ts::InputHandler::was_released(ControllerButton controller_button, ControllerID id = 0)
 
 Usually, the first controller connected will be assigned ID 0, the second ID 1, etc.
 

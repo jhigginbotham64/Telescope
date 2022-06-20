@@ -165,7 +165,7 @@ namespace ts
             max_x = std::max(max_x, v.position.x);
             max_y = std::max(max_y, v.position.y);
             min_x = std::min(min_x, v.position.x);
-            min_y = std::min(min_x, v.position.y);
+            min_y = std::min(min_y, v.position.y);
         }
 
         return Rectangle{Vector2f{min_x, min_y}, Vector2f{max_x - min_x, max_y - min_y}};

@@ -271,6 +271,9 @@ namespace ts
                 const std::vector<CollisionFilterGroup>& does_not_collide_with_group,
                 const std::vector<CollisionFilterGroup>& is_in_group);
 
+            /// \brief deallocate the hitbox, this permanently removes it from the simulation
+            void destroy();
+
         private:
             friend class CollisionCircle;
             friend class CollisionPolygon;
@@ -290,6 +293,7 @@ namespace ts
             uint16_t _will_collide_with_group_bits = (uint16_t) CollisionFilterGroup::ALL;
 
             PhysicsWorld* _world;
+            bool _was_destroyed = false;
 
             b2Body* _body;
             b2Fixture* _fixture;

@@ -312,8 +312,6 @@ void ts_window_set_icon(size_t id, const char* path)
     if (detail::assert_window_id(id, "ts_window_set_icon"))
         return;
 
-    std::cout << path << std::endl;
-
     detail::_windows.at(id).set_icon(path);
 }
 
@@ -632,10 +630,10 @@ namespace detail
         if (shape_ptr == nullptr)
         {
             ts::Log::warning("In ", function, ": trying to modify nullptr instead of transform");
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
 
@@ -654,7 +652,7 @@ void ts_transform_set(void* transform_ptr, size_t x, size_t y, float value)
 {
     if (detail::assert_transform_ptr(transform_ptr, "ts_transform_set"))
         return;
-    
+
     ((ts::Transform*) transform_ptr)->get_native()[x][y] = value;
 }
 

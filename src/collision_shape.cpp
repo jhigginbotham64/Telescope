@@ -46,39 +46,7 @@ namespace ts
     }
 
     CollisionShape::~CollisionShape()
-    {
-        /*
-        if (_fixture != nullptr)
-        {
-            auto* next = _fixture;
-
-            while (next != nullptr)
-            {
-                auto* to_destroy = next;
-                next = next->GetNext();
-                delete to_destroy;
-            }
-        }
-
-        if (_world != nullptr)
-            _world->get_native()->DestroyBody(_body);
-            */
-    }
-
-    /*
-    void CollisionGroup::set_filter(CollisionFilterConfig)
-    {
-        // shape collides with:
-        _will_collide_with_group_bits = (uint16_t) CollisionGroup::ALL;
-        for (auto b : will_not_collide_with_group)
-        _will_collide_with_group_bits ^= b;
-
-        // shape is in group:
-        _is_in_collision_group_bits = (uint16_t) (is_in_group.empty() ?  CollisionGroup::ALL : CollisionGroup::NONE);
-        for (auto b : is_in_group)
-        _is_in_collision_group_bits |= b;
-    }
-     */
+    {}
 
     void CollisionShape::set_density(float density)
     {
@@ -367,5 +335,13 @@ namespace ts
         filter.maskBits = _will_collide_with_group_bits;
         filter.categoryBits = _is_in_collision_group_bits;
         _fixture->SetFilterData(filter);
+    }
+
+    void CollisionShape::destroy()
+    {
+        if (_world != nullptr && _body != nullptr)
+            _world->get_native()->DestroyBody(_body);
+
+        _was_destroyed = true;
     }
 }

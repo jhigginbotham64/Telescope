@@ -188,6 +188,36 @@ makes the line sequence be able to be manipulated as a single object:
 
 ------------------------------------
 
+Freeing Collision Shapes
+************************
+
+When the :code:`ts::PhysicsWorld` s C++-side destructor is called, all bodies inside the world will be safely deallocated.
+Sometimes, we want to permanently free a physics, but keep the rest of world intact. To allow for this, telescope provides
+
+.. doxygenfunction:: ts::CollisionShape::destroy
+
+This function needs to be called before a a collision shape is deallocated. Otherwise, pointers inside the
+physics simulation may keep the body in memory. A good practice way to assures safe destruction is the following:
+
+.. code-block:: cpp
+    :caption: Safely Freeing a Number of Physics Shapes
+
+    // create 10 hitboxes
+    std::vector<CollisionCircle> hitboxes;
+    for (size_t i = 0; i < 10; ++i)
+        hitboxes.emplace_back( // ...
+
+    // run physics with hitboxes here
+
+    // free hitboxes:
+    for (auto& h : hitboxes)
+        h.destroy();
+    hitboxes.clear();
+
+    // run physics without hitboxes here
+
+------------------------------------
+
 Manipulating Collision Shapes: Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

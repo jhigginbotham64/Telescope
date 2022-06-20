@@ -48,7 +48,7 @@ int main()
     // create the window
     auto window = Window();
     const auto window_size = Vector2ui(800, 600);
-    window.create("GOAL: Get all Polygons on one Side of the line", window_size.x, window_size.y);
+    window.create("Telescope Example", window_size.x, window_size.y);
 
     // create the physics world
     auto world = PhysicsWorld();
@@ -71,12 +71,12 @@ int main()
     const auto screen_center = Vector2f(window_size.x / 2.f, window_size.y / 2.f);
 
     // horizontal line, -x: left, +y : right
-    auto line = CollisionLineShape(
+    auto line = std::vector<CollisionLineShape>{CollisionLineShape(
         &world,         // world
         ts::KINEMATIC,  // kinematic: can be moved and rotated but does not repond forces
         Vector2f(0, screen_center.y), // left vertex
         Vector2f(window_size.x, screen_center.y)  // right vertex
-    );
+    )};
 
     auto spike_vertices = {
         Vector2f(screen_center + Vector2f(-frame, 0)),
@@ -85,11 +85,11 @@ int main()
         Vector2f(screen_center + Vector2f(0, +2 * frame)),
         Vector2f(screen_center + Vector2f(-frame, 0))   // duplicate first to close the loop
     };
-    auto spike = CollisionLineSequenceShape(
+    auto spike = std::vector<CollisionLineSequenceShape>{CollisionLineSequenceShape(
         &world,
         ts::KINEMATIC,
         spike_vertices
-    );
+    )};
 
     // fully dynamic entities
     std::vector<CollisionPolygonShape> polygons;
@@ -115,7 +115,7 @@ int main()
         // decide the shapes color
         auto color = HSVA(
             rng(),  // hue
-            rng(),  // saturation
+            std::max<float>(rng(), 0.25),  // saturation
             1,      // value
             1     // transparency
         );
@@ -176,10 +176,65 @@ int main()
               << "\t" << "ESCAPE: press twice to quit" << std::endl;
 
     std::cout << "Goal: \n" \
-              << "\t" << "Try to get all polygons on the same side of the line. If you succeed, something cool may happen!" \
+              << "\t" << "Try to get all polygons below the line. If you succeed, something cool may happen!" \
               << std::endl;
 
     bool escape_pressed = false;
+
+    // win conditions: all polygons are on one side of the line
+    auto sound = Sound();
+    sound.load("./test/ok_desu_ka.mp3");
+    std::vector<CollisionCircleShape> win_condition_snow;
+
+    auto check_win_condition = [&]()
+    {
+        static bool active = false;
+
+        if (not active) // check for in condition
+        {
+            float screen_cutoff = window_size.y * 0.7; // bottom 25% of the screen
+            auto line_aabb = line.front().ts::Shape::get_bounding_box();
+            float line_cutoff = line_aabb.top_left.y  + line_aabb.size.y; // below line
+
+            for (auto &polygon: polygons)
+            {
+                auto y = polygon.ts::CollisionShape::get_centroid().y;
+                if (y < screen_cutoff or y < line_cutoff)
+                    return;
+            }
+
+            // success:
+            MusicHandler::stop(seconds(0.1));
+            SoundHandler::play(
+                    SoundHandler::next_free_channel(), // sound channel id
+                    sound,  // sound
+                    0       // number of loops
+            );
+
+            for (auto& polygon : polygons)
+                polygon.destroy();
+            polygons.clear();
+
+            line.front().destroy();
+            line.clear();
+
+            spike.front().destroy();
+            spike.clear();
+
+            active = true;
+        }
+
+        if (win_condition_snow.size() > 200)
+            return;
+
+        win_condition_snow.emplace_back(
+                &world,
+                ts::DYNAMIC,
+                Vector2f(rng() * window_size.x, 25),
+                2);
+
+        win_condition_snow.back().set_restitution(1);
+    };
 
     // render loop
     while (window.is_open())
@@ -228,26 +283,47 @@ int main()
             window.render(&boundary);
 
         // rotate the line and spike, update them, then render
-        line.set_angular_velocity(rotation); // depends on player input
-        line.update();
-        window.render(&line);
+        for (auto& l : line)
+        {
+            l.set_angular_velocity(rotation); // depends on player input
+            l.update();
+            window.render(&l);
+        }
 
-        spike.set_angular_velocity(rotation);
-        spike.update();
-        window.render(&spike);
+        for (auto& s : spike)
+        {
+            s.set_angular_velocity(rotation);
+            s.update();
+            window.render(&s);
+        }
 
         // update & render all dynamic entities
-        // the physics simulation will move these, we only need to update their shape
         for (auto& polygon : polygons)
         {
+            // sync position with that of the hitbox
             polygon.update();
+
+            // cycle through colors for flair
+            auto color = polygon.get_vertex_color(0).as_hsv();
+            auto new_color = HSVA(std::fmod(time.as_seconds() / 2.f, 1), 1, 1, 0.9);
+            polygon.set_color(HSVA(fmod(color.hue + new_color.hue, 1), color.saturation, 1, color.value));
+
+            // render
             window.render(&polygon);
+        }
+
+        // test whether the player has won
+        check_win_condition();
+
+        for (auto& snow : win_condition_snow)
+        {
+            snow.update();
+            window.render(&snow);
         }
 
         // push the render state and wait for vsync
         end_frame(&window);
     }
-
     return 0; // everything is shut down safely automatically
 }
 
