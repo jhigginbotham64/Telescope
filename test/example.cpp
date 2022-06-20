@@ -27,7 +27,7 @@ std::vector<Vector2f> generate_polygon_vertices(Vector2f center, float radius, s
     for (size_t i = 0; i < n_vertices; ++i)
     {
         Vector2f to_push;
-        auto angle = ts::degrees(i * (n_vertices / 360.f));
+        auto angle = ts::degrees(i * (360.f / n_vertices));
         to_push.x = center.x + cos(angle.as_radians()) * radius;
         to_push.y = center.y + sin(angle.as_radians()) * radius;
 
@@ -82,15 +82,16 @@ int main()
     std::vector<CollisionCircleShape> circles;
     std::vector<CollisionRectangleShape> squares;
     std::vector<CollisionPolygonShape> polygons;
+    std::vector<CollisionTriangleShape> triangles;
 
     // function to randomly spawn an entity inside the level arena
     auto spawn = [&](){
 
         // decide which shape to spawn
-        size_t which = round(rng() * 3);
+        size_t which = round(rng() * 5);
 
         // decide the shapes radius
-        float radius = std::max<float>(rng(), 0.25) * 50;
+        float radius = std::max<float>(rng(), 0.5) * 20;
 
         // decide the shapes position
         const static auto center_of_screen = Vector2f(
@@ -110,7 +111,7 @@ int main()
             rng(),  // hue
             rng(),  // saturation
             1,      // value
-            0.75    // transparency
+            0.9     // transparency
         );
 
         // spawn circle
@@ -139,16 +140,21 @@ int main()
             polygons.emplace_back(&world, ts::DYNAMIC,
                 generate_polygon_vertices(center, radius, 5)  // vertices
             );
-            polygons .back().set_color(color);
+            polygons.back().set_color(color);
+        }
+        // spawn triangle
+        else if (which == 3)
+        {
+            auto vertices = generate_polygon_vertices(center, radius, 3);
+            triangles.emplace_back(&world, ts::DYNAMIC, vertices.at(0), vertices.at(1), vertices.at(2));
+            triangles.back().set_color(color);
         }
     };
 
     // start out with a few entities already in the wheel
-    /*
-    const size_t n_entities = 15;
+    const size_t n_entities = 100;
     for (size_t i = 0; i < n_entities; ++i)
         spawn();
-        */
 
     // play music
     auto music = Music();
@@ -169,8 +175,6 @@ int main()
     bool escape_pressed = false;
 
     // TODO
-    auto tri =  generate_polygon_vertices(Vector2f(200, 200), 50, 3);
-    auto test = CollisionTriangleShape(&world, ts::DYNAMIC, tri.at(0), tri.at(1), tri.at(2));
     auto player = CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(50, 50), 15);
     auto update_player = [&](){
 
@@ -233,7 +237,6 @@ int main()
 
         // TODO
         update_player();
-        window.render(&test);
         window.render(&player);
 
         // step the physics simulation, synced to frame duration
@@ -269,6 +272,12 @@ int main()
         {
             polygon.update();
             window.render(&polygon);
+        }
+
+        for (auto& triangle : triangles)
+        {
+            triangle.update();
+            window.render(&triangle);
         }
 
         // push the render state and wait for vsync

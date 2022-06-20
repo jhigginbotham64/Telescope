@@ -16,6 +16,11 @@ namespace ts
 {
     void Shape::render(RenderTarget* target, Transform transform) const
     {
+        if (_texture == nullptr)
+            SDL_SetRenderDrawBlendMode(target->get_renderer(), SDL_BLENDMODE_BLEND);
+        else
+            SDL_SetRenderDrawBlendMode(target->get_renderer(), (SDL_BlendMode) _texture->get_blend_mode());
+
         auto xy = _xy;
         for (size_t i = 0; i < xy.size(); i += 2)
         {

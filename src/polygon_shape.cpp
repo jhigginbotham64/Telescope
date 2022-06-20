@@ -40,6 +40,7 @@ namespace ts
             return a.second.as_degrees() < b.second.as_degrees();
         });
 
+        _vertices.reserve(per_angle.size());
         static auto push_vertex = [&](Vector2f position) -> void
         {
             _vertices.emplace_back();
@@ -57,16 +58,8 @@ namespace ts
         };
 
         push_vertex(centroid);
-
         for (size_t i = 0; i < per_angle.size(); ++i)
             push_vertex(per_angle.at(i).first);
-
-        size_t n = _vertices.size() - 1;
-        for (size_t i = 0; i < _vertices.size(); ++i)
-        {
-            auto col = HSVA(float(i) / n, float(i) / n, 1, 1);
-            _vertices.at(i).color = col.as_rgb();
-        }
 
         _vertex_indices.clear();
 

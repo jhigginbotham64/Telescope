@@ -141,7 +141,7 @@ namespace ts
     }
 
     CollisionPolygonShape::CollisionPolygonShape(PhysicsWorld* world, CollisionType type, const std::vector<Vector2f> & vertices)
-        : CollisionPolygon(world, type, vertices), PolygonShape(vertices)
+        : PolygonShape(vertices), CollisionPolygon(world, type, vertices)
     {}
 
     void CollisionPolygonShape::update()
