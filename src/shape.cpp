@@ -184,6 +184,18 @@ namespace ts
         return out;
     }
 
+    void Shape::set_centroid(Vector2f position)
+    {
+        auto delta = get_centroid() - position;
+        for (auto& v : _vertices)
+        {
+            v.position.x -= delta.x;
+            v.position.y -= delta.y;
+        }
+
+        update_xy();
+    }
+
     void Shape::set_vertex_color(size_t index, RGBA color)
     {
         _vertices.at(index).color = color.operator SDL_Color();

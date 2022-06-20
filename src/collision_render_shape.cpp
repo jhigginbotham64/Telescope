@@ -19,7 +19,13 @@ namespace ts
     void CollisionRectangleShape::update()
     {
         RectangleShape::set_centroid(CollisionShape::get_centroid());
-        RectangleShape::rotate(CollisionShape::get_rotation());
+
+        auto is = _rotation.as_degrees();
+        auto should_be = CollisionShape::get_rotation().as_degrees();
+        auto delta = should_be - is;
+
+        RectangleShape::rotate(degrees(delta));
+        _rotation = degrees(is + delta);
     }
 
     CollisionTriangleShape::CollisionTriangleShape(
@@ -34,7 +40,13 @@ namespace ts
     void CollisionTriangleShape::update()
     {
         TriangleShape::set_centroid(CollisionShape::get_centroid());
-        TriangleShape::rotate(CollisionShape::get_rotation());
+
+        auto is = _rotation.as_degrees();
+        auto should_be = CollisionShape::get_rotation().as_degrees();
+        auto delta = should_be - is;
+
+        TriangleShape::rotate(degrees(delta));
+        _rotation = degrees(is + delta);
     }
 
     CollisionCircleShape::CollisionCircleShape(
@@ -48,7 +60,13 @@ namespace ts
     void CollisionCircleShape::update()
     {
         CircleShape::set_centroid(CollisionShape::get_centroid());
-        CircleShape::rotate(CollisionShape::get_rotation());
+
+        auto is = _rotation.as_degrees();
+        auto should_be = CollisionShape::get_rotation().as_degrees();
+        auto delta = should_be - is;
+
+        CircleShape::rotate(degrees(delta));
+        _rotation = degrees(is + delta);
     }
 
     namespace detail
@@ -71,6 +89,8 @@ namespace ts
 
     void CollisionLineShape::update()
     {
+        RectangleShape::set_centroid(CollisionShape::get_centroid());
+
         auto is = _rotation.as_degrees();
         auto should_be = CollisionShape::get_rotation().as_degrees();
         auto delta = should_be - is;
@@ -111,6 +131,7 @@ namespace ts
 
     void CollisionLineSequenceShape::update()
     {
+
     }
 
     void CollisionLineSequenceShape::render(RenderTarget *target, Transform transform) const

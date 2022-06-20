@@ -24,7 +24,7 @@ namespace ts
 
             /// \brief set the position of the shapes centroid
             /// \param position: centroid position
-            virtual void set_centroid(Vector2f position) = 0;
+            virtual void set_centroid(Vector2f position);
 
             /// \brief get the position of the shapes centroid
             /// \returns position, true coordinates
@@ -33,7 +33,7 @@ namespace ts
             /// \brief move the shape such that its centroid will be offset by the specified amount
             /// \param x_offset: offset along the x-axis, true coordinates
             /// \param y_offset: offset along the y-axis, true coordiantes
-            void move(float x_offset, float y_offset);
+            virtual void move(float x_offset, float y_offset);
 
             /// \brief set all vertices color
             /// \param color

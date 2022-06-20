@@ -29,14 +29,7 @@ namespace ts
             /// \param triangle
             TriangleShape(Triangle);
 
-            /// \brief set position of the centroid
-            /// \param position
-            void set_centroid(Vector2f) override;
-
         private:
-            void update();
-
-            Vector2f _centroid;
             std::array<Vector2f, 3> _coordinates;
     };
 }

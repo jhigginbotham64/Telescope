@@ -86,6 +86,17 @@ namespace ts
         update();
     }
 
+    Vector2f CircleShape::get_centroid() const
+    {
+        return _center;
+    }
+
+    void CircleShape::move(float x_offset, float y_offset)
+    {
+        _center += Vector2f(x_offset, y_offset);
+        update();
+    }
+
     float CircleShape::get_radius() const
     {
         return _radius;

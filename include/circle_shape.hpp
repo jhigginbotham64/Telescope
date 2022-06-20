@@ -28,9 +28,14 @@ namespace ts
             /// \param n_outer_vertices: number of vertices along the circumference of the circle
             CircleShape(float center_x, float center_y, float radius, size_t n_outer_vertices);
 
-            /// \brief set centroid
-            /// \param centroid coordinates
+            /// \copydocs ts::Shape::set_centroid
             void set_centroid(Vector2f) override;
+
+            /// \copydocs ts::Shape::get_centroid
+            Vector2f get_centroid() const override;
+
+            /// \copydoc ts::Shape::move
+            virtual void move(float x_offset, float y_offset);
 
             /// \param get radius
             /// \returns float

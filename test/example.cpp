@@ -144,9 +144,11 @@ int main()
     };
 
     // start out with a few entities already in the wheel
+    /*
     const size_t n_entities = 15;
-    //for (size_t i = 0; i < n_entities; ++i)
-      //  spawn();
+    for (size_t i = 0; i < n_entities; ++i)
+        spawn();
+        */
 
     // play music
     auto music = Music();
@@ -167,6 +169,8 @@ int main()
     bool escape_pressed = false;
 
     // TODO
+    auto tri =  generate_polygon_vertices(Vector2f(200, 200), 50, 3);
+    auto test = CollisionTriangleShape(&world, ts::DYNAMIC, tri.at(0), tri.at(1), tri.at(2));
     auto player = CollisionCircleShape(&world, ts::DYNAMIC, Vector2f(50, 50), 15);
     auto update_player = [&](){
 
@@ -229,6 +233,7 @@ int main()
 
         // TODO
         update_player();
+        window.render(&test);
         window.render(&player);
 
         // step the physics simulation, synced to frame duration

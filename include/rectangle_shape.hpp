@@ -32,10 +32,6 @@ namespace ts
             /// \param rectangle
             RectangleShape(Rectangle);
 
-            /// \brief set the centroid, moves all vertices accordingly
-            /// \param new_position: new position of the centroid
-            void set_centroid(Vector2f) override;
-
             /// \brief set top left corners' coordinate, moves all vertices accordingly
             /// \param new_position: new position of the top left corner
             void set_top_left(Vector2f);
@@ -55,7 +51,5 @@ namespace ts
         private:
             Vector2f _top_left;
             Vector2f _size;
-
-            void update();
     };
 }
