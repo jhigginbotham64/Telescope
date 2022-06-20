@@ -4,7 +4,9 @@
 
 An Open-Source Toolkit for Interactive Multimedia Applications.
 
-Documentation is available [here](https://telescope.readthedocs.io/en/latest/).
+Documentation: [avialable here](https://telescope.readthedocs.io/en/latest/)<br>
+Example: [available here](./test/example.cpp)
+
 ---
 ### Table of Contents
   1. [Dependencies](#dependencies) <br>
