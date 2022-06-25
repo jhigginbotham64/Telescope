@@ -207,6 +207,7 @@ set_target_properties(telescope PROPERTIES
 
 target_include_directories(telescope PUBLIC
   "${CMAKE_SOURCE_DIR}"
+  "${CMAKE_INSTALL_PREFIX}/Telescope"
 )
 
 target_link_libraries(telescope PUBLIC
