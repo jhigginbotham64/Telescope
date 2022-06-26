@@ -25,7 +25,7 @@ namespace ts
     bool Sound::load(const std::string& path)
     {
         _chunk = Mix_LoadWAV(path.c_str());
-         _id = std::hash<std::string>()(path);
+        _id = std::hash<std::string>()(path);
 
         if (_chunk == nullptr)
         {

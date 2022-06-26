@@ -138,7 +138,7 @@ namespace ts
                             w->minimize();
                     }
                 }
-                else if (event.window.event == SDL_WINDOWEVENT_MINIMIZED)
+                else if (event.window.event == SDL_WINDOWEVENT_MAXIMIZED)
                 {
                     for (auto* w : windows)
                     {
