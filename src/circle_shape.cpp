@@ -23,7 +23,7 @@ namespace ts
     {
         // triangle fan decomposition
 
-        size_t step = 360 / _n_vertices;
+        float step = 360.f / _n_vertices;
 
         std::vector<RGBA> colors;
         if (not _vertices.empty())
@@ -41,7 +41,7 @@ namespace ts
         // TODO: optimize this, outers are allocated twice redundantly
 
         auto outer = std::vector<SDL_Vertex>();
-        for (size_t angle = 0; angle < 360; angle += step)
+        for (float angle = 0; angle < 360; angle += step)
         {
             outer.emplace_back();
             float radians = angle * M_PI / 180;
