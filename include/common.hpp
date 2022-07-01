@@ -40,7 +40,7 @@ namespace ts
 
     namespace detail
     {
-        static inline size_t _target_fps = 60;
+        [[maybe_unused]] static inline size_t _target_fps = 60;
         static inline Clock _frame_clock = ts::Clock();
     }
 }
