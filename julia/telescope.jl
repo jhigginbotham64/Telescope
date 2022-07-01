@@ -3,10 +3,6 @@
 # Created on 6/3/22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 #
 
-if !(occursin("Telescope/test", pwd()) || (occursin("telescope/test", pwd())))
-    @error "In telescope.jl:\nThis file expects to be executed in Telescope/test, where Telescope/build is the location of the library `libtelescope.so`. \nIf this is not the case, you may need to modify `ts._lib`, the path to the shared library, accordingly.";
-end
-
 module ts
 
     ### EXPORTS ###############################################################
@@ -82,6 +78,10 @@ module ts
 
     const _lib = "../build/libtelescope.so"
     export _lib
+
+    if !isfile(_lib)
+        @warn "Unable to find shared library, it was expected to be in: " * joinpath(@__DIR__, _lib)
+    end
 
     """
     `initialize() -> Bool`

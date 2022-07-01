@@ -74,6 +74,8 @@ make install # may require sudo depending <install location>
 
 Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
 
+### Linking
+
 Then you can make Telescope available to your C++ executable or library from within your own `CMakeLists.txt`:
 ```cmake
 find_library(telescope REQUIRED 
