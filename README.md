@@ -125,7 +125,7 @@ Now, your compiler should be able to locate `telescope.h` properly.
 
 ### License
 
-Telescope v0.3.0 is available under GNU General Public License, available [here](https://www.gnu.org/licenses/gpl-3.0.en.html).
+Telescope v0.3.0 is available under MIT License, available [here](https://opensource.org/licenses/MIT).
 
 ---
 
