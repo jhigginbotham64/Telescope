@@ -19,20 +19,21 @@ jobs:
         submodules: 'true'
     - name: 🧱 Install build dependencies
       run: |        
-        wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-        sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
-        sudo apt update && sudo apt install --upgrade cmake
-        sudo apt install --upgrade 
-        sudo apt install libglm-dev libvulkan-dev
-        sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev
-        sudo apt install libbox2d-dev
+        # wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+        # sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
+        # sudo apt update && sudo apt install --upgrade cmake
+        # sudo apt install --upgrade 
+        # sudo apt install libglm-dev libvulkan-dev
+        # sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev
+        # sudo apt install libbox2d-dev
     - name: 🦏 Build
       run: |
-        mkdir build && cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=..
-        make clean && make install
+        # mkdir build && cd build
+        # cmake .. -DCMAKE_INSTALL_PREFIX=..
+        # make clean && make install
     - name: 🧪 Unit tests
-      run: echo noop #cd build && make test ARGS="-N" && make test ARGS="-V"
+      run: |
+        # cd build && make test ARGS="-N" && make test ARGS="-V"
     # Only upload the build if this is a push to _Main_ or a dispatch (PRs shouldn't need this, they only need the above test)
     - name: 🆙 Upload compiled source
       if: ${{ (github.event_name == 'push' && github.event.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch' }}
