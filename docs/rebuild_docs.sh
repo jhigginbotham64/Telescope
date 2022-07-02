@@ -4,6 +4,6 @@
 #
 # usage: cd Telescope/docs; bash rebuild_docs.sh
 #
-rm -r ./out
+#rm -r ./out
 doxygen
-sphinx-build -Ea -b html -Dbreathe_projects.telescope=.doxygen/xml . ./out
+sphinx-build -Ea -j 4 -b html -Dbreathe_projects.telescope=.doxygen/xml . ./out

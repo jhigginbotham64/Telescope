@@ -51,64 +51,178 @@ This will run all tests, printing their output to the console.
 
 cmake_minimum_required(VERSION 3.13)
 
-project(telescope VERSION 0.2.0)
+project(telescope VERSION 0.3.0 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
-
 include(CTest)
-file(GLOB INCLUDE_FILES src/*.h)
 
 ### FIND DEPENDENCIES ###
 
-find_package(Bullet REQUIRED)
-find_package(SDL2 REQUIRED)
+find_library(SDL2 REQUIRED NAMES SDL2)
 find_library(SDL2_image REQUIRED NAMES SDL2_image)
 find_library(SDL2_mixer REQUIRED NAMES SDL2_mixer)
-find_library(SDL2_net REQUIRED NAMES SDL2_net)
-find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf)
+#find_library(SDL2_ttf REQUIRED NAMES SDL2_ttf) # unused
+#find_library(SDL2_net REQUIRED NAMES SDL2_net) # unused
 
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-find_package(shaderc_shared REQUIRED)
+find_library(vulkan REQUIRED NAMES vulkan)
+#find_package(shaderc_shared REQUIRED)      # unused
+
+find_library(box2d REQUIRED NAMES box2d)
+
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX("glm/glm.hpp" GLM_FOUND)
+if(NOT GLM_FOUND)
+    message(FATAL_ERROR "Missing Dependency: glm")
+endif()
+
+CHECK_INCLUDE_FILE_CXX("box2d/box2d.h" BOX2D_FOUND)
+if(NOT BOX2D_FOUND)
+    message(FATAL_ERROR "Missing Dependency: box2d")
+endif()
 
 ### TELESCOPE ###
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+
+set(CMAKE_CXX_STANDARD 20)
 add_library(telescope SHARED
 
-    include/vulkan_interface.hpp
-    include/bullet_interface.hpp
-    include/common.hpp
-    include/physics_object.hpp
+    telescope.hpp
+
+    include/logging.hpp
+    src/logging.inl
+
+    include/exceptions.hpp
+    src/exceptions.cpp
+
+    include/input_handler.hpp
+    src/input_handler.cpp
+
+    include/vector.hpp
+
+    include/key_or_button.hpp
+    src/key_or_button.cpp
+
+    include/time.hpp
+    src/time.cpp
+
+    include/window.hpp
+    src/window.cpp
+
+    include/music.hpp
+    src/music.cpp
+
+    include/music_handler.hpp
+    src/music_handler.cpp
+    src/music.inl
+
+    include/sound.hpp
+    src/sound.cpp
+
+    include/sound_handler.hpp
+    src/sound_handler.cpp
+
+    include/color.hpp
+    src/color.cpp
+
+    include/texture.hpp
+    src/texture.cpp
+
+    include/render_texture.hpp
+    src/render_texture.cpp
+
+    include/static_texture.hpp
+    src/static_texture.cpp
+
     include/vertex.hpp
-    src/src.cpp
-        include/collision_event.hpp)
+    src/vertex.cpp
+
+    include/renderable.hpp
+    src/renderable.cpp
+
+    include/render_target.hpp
+
+    include/shape.hpp
+    src/shape.cpp
+
+    include/rectangle_shape.hpp
+    src/rectangle_shape.cpp
+
+    include/triangle_shape.hpp
+    src/triangle_shape.cpp
+
+    include/circle_shape.hpp
+    src/circle_shape.cpp
+
+    include/angle.hpp
+    src/angle.cpp
+
+    include/geometric_shapes.hpp
+
+    include/polygon_shape.hpp
+    src/polygon_shape.cpp
+
+    include/common.hpp
+    src/common.cpp
+
+    include/transform.hpp
+    src/transform.cpp
+
+    include/camera.hpp
+    src/camera.cpp
+
+    julia/c_interface.hpp
+    julia/c_interface.cpp
+
+    include/physics.hpp
+
+    include/physics_world.hpp
+    src/physics_world.cpp
+
+    include/collision_shape.hpp
+    src/collision_shape.cpp
+
+    include/collision_circle.hpp
+    src/collision_circle.cpp
+
+    include/collision_polygon.hpp
+    src/collision_polygon.cpp
+
+    include/collision_line.hpp
+    src/collision_line.cpp
+
+    include/collision_render_shape.hpp
+    src/collision_render_shape.cpp
+
+    include/collision_line_sequence.hpp
+    src/collision_line_sequence.cpp
+)
 
 set_target_properties(telescope PROPERTIES
   LINKER_LANGUAGE C
-  CXX_STANDARD 20
+  CXX_STANDARD 17
   MACOSX_RPATH 1
-  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   POSITION_INDEPENDENT_CODE ON
 )
 
 target_include_directories(telescope PUBLIC
   "${CMAKE_SOURCE_DIR}"
-  "${BULLET_INCLUDE_DIRS}"
-  "${CMAKE_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/include"
-  "${SHADERC_INCLUDE_DIRS}"
+  "${CMAKE_INSTALL_PREFIX}/Telescope"
 )
 
 target_link_libraries(telescope PUBLIC
-  SDL2
-  SDL2_image
-  SDL2_mixer
-  SDL2_net
-  SDL2_ttf
-  ${BULLET_LIBRARIES}
-  ${shader_c_shared}
+    ${SDL2}
+    ${SDL2_image}
+    ${SDL2_mixer}
+    # ${SDL2_net} # unused
+    # ${SDL2_ttf} # unused
+    ${vulkan}
+    ${box2d}
 )
 
 ### TESTS ####
 
+# currently unused, use /test/run_tests.sh instead
 option(BUILD_TESTS "build telescope unit tests" ON)
 if (BUILD_TESTS)
 
@@ -124,7 +238,6 @@ if (BUILD_TESTS)
 
         target_link_libraries(${test_name} PRIVATE
             telescope
-            ${shaderc_shared}
         )
 
         target_include_directories(${test_name} PRIVATE
@@ -143,12 +256,13 @@ if (BUILD_TESTS)
 
     #declare_test(template_test)
 
-    declare_test(test_common)
-    declare_test(test_bullet)
-    declare_test(test_ts)
-    declare_test(test_vertex)
-    declare_test(test_vma)
-    declare_test(test_vulkan)
+    # example
+    add_executable(cpp_example "test/example.cpp")
+    target_link_libraries(cpp_example PRIVATE telescope)
+    target_include_directories(cpp_example PRIVATE ${CMAKE_SOURCE_DIR})
+    set_target_properties(cpp_example PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    )
 endif()
 
 ### GENERATE DOCS ###

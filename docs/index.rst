@@ -4,23 +4,30 @@
 Telescope Documentation
 =======================
 
-Welcome to the documentation for the `Telescope <https://github.com/jhigginbotham64/Telescope>`_.
+Welcome to the documentation for `Telescope <https://github.com/jhigginbotham64/Telescope>`_, a game engine
+that abstracts rendering and physics into an easy-to-use yet powerful toolset.
 
-Telescope is a multimedia library for making games, visualizations, and other interactive applications.
+Telescope was created `Joshua Higginbotham <https://github.com/jhigginbotham64>`_ & `Clem Cords <https://github.com/clemapfel>`_.
 
-It wraps `SDL2 <https://www.libsdl.org/index.php>`_, `Vulkan <https://www.vulkan.org/>`_, and the `Bullet Physics SDK <https://pybullet.org/wordpress/>`_, providing a unified API for windowing, rendering, input, physics, and audio.
-
-It also provides a C interface that allows higher-level bindings to be written in any programming language that can call C code.
+If you are looking for instructions on how to install
+telescope, please instead visit the `GitHub page <https://github.com/jhigginbotham64/Telescope#installation>`_.
 
 Contents
 ========
 
+Please navigate to the appropriate section below:
+
 .. toctree::
 
-	installation
-	common_render
-	common_physics
-	common_sound
-	graphics_interface
-	physics_interface
-	other
+    render_loop
+    in_julia
+    common
+    window
+    shapes
+    texture
+    input_handler
+    camera
+    audio
+    physics
+    list
+    example

@@ -1,75 +1,46 @@
-//
-// Copyright 2022, Joshua Higginbotham
+// 
+// Copyright 2022 Joshua Higginbotham
+// Created on 5/31/22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
 #pragma once
 
-#include <array>
+#include <include/window.hpp>
+#include <include/time.hpp>
 
-#define CLAMP(x, lo, hi)  ((x) < (lo) ? (lo) : (x) > (hi) ? (hi) : (x))
+namespace ts
+{
+    /// \brief initialize all components of telescope
+    /// \returns true if successfull, otherwise an exception will be thrown and false is returned
+    [[nodiscard]] bool initialize();
 
-extern "C" {
+    /// \brief set the fps limit for all windows
+    /// \param frames_per_second: integer
+    void set_framerate_limit(size_t frames_per_second);
 
-/// \brief initialize the state
-/// \param ttl: title of the window
-/// \param wdth: window width, in pixels
-/// \param hght: window height, in pixels
-void TS_Init(const char * ttl, int wdth, int hght);
+    /// \brief get the fps limit for all windows
+    /// \returns number of frames per second
+    size_t get_framerate_limit();
 
-/// \brief quit the state
-void TS_Quit();
+    /// \brief start the frame, updates input component and window, nothing should happen in between this and end_frame
+    /// \param window
+    ts::Time start_frame(Window* window);
 
-/// \brief play a sound
-/// \param path: path to the sound file
-/// \param loops: [optional] number of loops, -1 for infinite
-/// \param ticks: [optional] maximum time to play a sample, in milliseconds, -1 for infinite
-void TS_PlaySound(const char* path, int loops, int ticks);
+    /// \brief start the frame, updates input component and window, nothing should happen in between this and end_frame
+    /// \param windows
+    ts::Time start_frame(std::vector<Window*> windows);
 
-/// \brief get sdl error
-/// \returns error message
-const char * TS_SDLGetError();
+    /// \brief end the frame, pushes current render state to the screen, then waits to achieve target fps
+    /// \param window
+    void end_frame(Window* window);
+
+    /// \brief end the frame, pushes current render state to the screen, then waits to achieve target fps
+    /// \param windows
+    void end_frame(std::vector<Window*> windows);
+
+    namespace detail
+    {
+        [[maybe_unused]] static inline size_t _target_fps = 60;
+        static inline Clock _frame_clock = ts::Clock();
+    }
 }
-
-/// \brief get normalized device coordinates along the x and y axes
-/// \param x: x coordinate
-/// \returns normalized y coordinate
-float TS_NDCX(float x);
-
-/// \brief get normalized device coordinates along the x and y axes
-/// \param y: y coordinate
-/// \returns normalized x coordinate
-float TS_NDCY(float y);
-
-/// \brief normalize rectangle
-/// \param x: x-coordinate of the top left corner
-/// \param y: y-coordinate of the top left corner
-/// \param w: size in x-dimension
-/// \param h: size in y-dimension
-/// \returns rectangle as 4-array of floats
-std::array<float, 4> TS_NDCRect(float x, float y, float w, float h);
-
-/// \brief normalize texture coordinates along the u axis
-/// \param x: x-coordinate
-/// \param w: width
-/// \returns normalized y-coordinate
-float TS_NTCU(int x, int w);
-
-/// \brief normalize texture coordinates along the v axis
-/// \param y: y-coordinate
-/// \param h: height
-/// \returns normalized x-coordinate
-float TS_NTCV(int y, int h);
-
-/// \brief normalize texture coordinate rectangle
-/// \param x: x-coordinate of top left corner
-/// \param y: y-coordinate of top left corner
-/// \param w: width
-/// \param h: height
-/// \param w2: new width
-/// \param h2: new height
-/// \returns rect as 4-array
-std::array<float, 4> TS_NTCRect(int x, int y, int w, int h, int w2, int h2);
-
-/// \brief add the next 4 indices to the index buffer, followed by a primitive restart (0xffffffff)
-void TS_Add4Indices();
-

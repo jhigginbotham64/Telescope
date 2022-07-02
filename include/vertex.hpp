@@ -1,44 +1,41 @@
-//
-// Copyright 2022, Joshua Higginbotham
+// 
+// Copyright 2022 Joshua Higginbotham
+// Created on 25.05.22 by clem (mail@clemens-cords.com | https://github.com/Clemapfel)
 //
 
 #pragma once
 
-#include <glm/glm.hpp>
-#include <vulkan/vulkan.hpp>
+#include <SDL2/SDL_render.h>
 
-/// \brief vertex object
-struct TS_Vertex
+#include <include/vector.hpp>
+#include <include/color.hpp>
+
+namespace ts
 {
-  /// \brief position in 2D space
-  glm::vec2 pos;
+    class Texture;
 
-  /// \brief uv coordinate
-  glm::vec2 uv;
+    /// \brief 2d vertex
+    struct Vertex
+    {
+        /// \brief position in 2d space, world coordinates
+        Vector2f position = Vector2f(0, 0);
 
-  /// \brief color, in RGBA
-  glm::vec4 col;
+        /// \brief local texture coordinate, where (0, 0) is the top-left of the texture, (1, 1) is the bottom right
+        Vector2f texture_coordinates = Vector2f(0, 0);
 
-  /// \brief texture id
-  int tex;
+        /// \brief vertex color, will be multiplied with each fragments color data
+        RGBA color = RGBA(1, 1, 1, 1);
 
-  /// \brief ctor
-  /// \param x: x position
-  /// \param y: y position
-  /// \param r: red component
-  /// \param g: green component
-  /// \param b: blue component
-  /// \param a: transparency component
-  /// \param u: u-coordinate
-  /// \param v: v-coordinate
-  /// \param t: texture id
-  TS_Vertex(float x, float y, float r, float g, float b, float a, float u = 0, float v = 0, int t = -1);
+        // no docs
+        Vertex() = default;
 
-  /// \brief get vertices vulkan binding description
-  /// \returns description
-  static vk::VertexInputBindingDescription getBindingDescription();
+        // no docs
+        Vertex(float position_x, float position_y, float tex_coord_x, float tex_coord_y, float r, float g, float b, float a);
 
-  /// \brief get vertices vulkan attribute description
-  /// \returns 4-array of descriptions
-  static std::array<vk::VertexInputAttributeDescription, 4> getAttributeDescriptions();
-};
+        // no docs
+        Vertex(Vector2f position, Vector2f tex_coords, RGBA color);
+
+        // no docs
+        operator SDL_Vertex() const;
+    };
+}

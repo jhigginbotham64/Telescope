@@ -1,50 +1,65 @@
-# Telescope (v0.2.0)
+# Telescope (v0.3.0)
 
-An Open-Source Toolkit for Interactive Multimedia Applications
+![](./docs/_static/favicon.png)
+
+An Open-Source Toolkit for Interactive Multimedia Applications.
+
+Documentation: [avialable here](https://telescope.readthedocs.io/en/latest/)<br>
+Example: [available here](./test/example.cpp)
 
 ---
 ### Table of Contents
   1. [Dependencies](#dependencies) <br>
-  1.1. [Bullet](https://github.com/bulletphysics/bullet3) <br>
-  1.2. [Vulkan](https://vulkan.lunarg.com/) <br>
-  1.3. [SDL2](https://www.libsdl.org/download-2.0.php) <br>
-  1.4. [glm](https://github.com/g-truc/glm) <br>
-  1.5. [shaderc](https://github.com/google/shaderc#downloads) <br>
+  1.1 [SDL2](#dependencies) <br>
+  1.2 [Box2D](#dependencies) <br>
+  1.3 [glm](#dependencies) <br>
+  1.4 [vulkan](#dependencies)<br>
   2. [Installation](#installation)<br>
   3. [Troubleshooting](#troubleshooting)<br>
-  4. [License](#license)<br>
-  5. [Authors](#authors)
+  5. [License](#license)<br>
+  6. [Authors](#authors)
   
 ---
 ### Dependencies
 
-To build Telescope from source, the following dependencies need to be met:
-+ [Bullet](https://github.com/bulletphysics/bullet3) 
-  - also available as `libbullet-dev`
-+ [Vulkan](https://www.vulkan.org/tools#download-these-essential-development-tools) via [LunarG](https://vulkan.lunarg.com/sdk/home)
-  - also available as [`libvulkan-dev`](https://github.com/KhronosGroup/Vulkan-Loader) recommended for non Ubuntu development.
-  - Or as the `vulkan-sdk` on e.g. Ubuntu 20.04
-    ```
-    wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-    sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-focal.list http://packages.lunarg.com/vulkan/lunarg-vulkan-focal.list
-    sudo apt update
-    sudo apt install vulkan-sdk
-    ```
-+ [SDL2](https://www.libsdl.org/download-2.0.php)
-  - also available as `libsdl2-dev`
-  - additionally, `libsdl2-image-dev`, `libsdl2-mixer-dev`, `libsdl2-ttf-dev`, `libsdl2-net-dev` may need to be installed separately
-+ [glm](https://github.com/g-truc/glm)
-  - also available as `libglm-dev`
-+ [shaderc](https://github.com/google/shaderc#downloads)
-  - also available as `shaderc` if the `vulkan-sdk` is installed
-    - `dpkg -L shaderc | grep libshaderc_shared.so` should then show the path to supply to `-DSHADERC_LIB_DIR=/path/to/shaderc/lib` discussed in the `shaderc_shared` section below.
+The following dependencies need to be met: 
++ `SDL2`, 2.0.18+
++ `SDL2_image`, `SDL2_ttf`, `SDL2_mixer`, `SDL2_net`
++ `Vulkan`, 1.2+
++ `glm`
++ `box2D`, 2.0+
 
-Clicking on the links above will lead you to the correct download pages for each dependency. Alternatively, they can be installed through your package manager, potentially under the names supplied above.
 
----
+They can be installed on unix-based OS using a package manager, for example, `apt`:
+
+```bash
+# build the newest stable SDL2 from source
+git clone https://github.com/libsdl-org/SDL
+cd SDL
+mkdir build
+cd build
+../configure
+make
+make install
+cd ../..
+rm -r SDL
+
+# install other SDL2 components
+sudo apt-get install libsdl2-image-dev libdsl2-mixer-dev libsdl2-ttf-dev libsdl2-net-dev
+
+# install vulkan
+sudo apt-get install libvulkan-dev
+
+# install box2D
+sudo apt-get install libbox2d2 libbox2d-dev
+
+# install glm
+sudo apt-get install libglm-dev
+```
+
 ### Installation
 
-To install Telescope, execute, in any public directory:
+Make sure all dependencies are met. Then, you can install Telescope like so:
 
 ```bash
 git clone https://github.com/jhigginbotham64/Telescope
@@ -59,10 +74,9 @@ make install # may require sudo depending <install location>
 
 Where `-DCMAKE_INSTALL_PREFIX=<install location>` is an optional argument that determines, what directory the Telescope shared library will be installed into.
 
-After installation, you can interface with Telescope from Julia using [Starlight.jl](https://github.com/jhigginbotham64/Starlight.jl). 
+### Linking
 
-If you wish to use telescope for your C / C++ application, in your own CMakeLists.txt, add the following lines:
-
+Then you can make Telescope available to your C++ executable or library from within your own `CMakeLists.txt`:
 ```cmake
 find_library(telescope REQUIRED 
     NAMES telescope
@@ -75,25 +89,15 @@ Where
 + `<your_target>` is the name of your CMake library or executable
 + `<install location>` is the location specified during CMake configuration [earlier](#installation)
 
-Then, you can make Telescope available to your library using 
-
+To include all of telescopes functionality, simply include this header:
 ```cpp
-#include <telescope.h>
-```
-
----
-### Unit Tests
-
-After following the steps in [Installation](#installation), you can run Telescope's unit tests from your build directory using
-
-```
-make test
+#include <telescope.hpp>
 ```
 
 ---
 ### Troubleshooting
 
-#### `telescope.h`: No such file or directory
+#### `telescope.hpp`: No such file or directory
 
 When compiling your own C / C++ target that uses telescope, the following compiler error may occur:
 
@@ -119,54 +123,14 @@ Where
 
 Now, your compiler should be able to locate `telescope.h` properly.
 
-#### Could not find `shaderc_shared`
-
-During CMake configuration, the following error may occur:
-
-```
-Unable to detect shaderc_shared library.  Make sure it is installed
-correctly.  You can manually specify the path using:
-
-   -DSHADERC_LIB_DIR=/path/to/shaderc/lib
-
- during cmake configuration.
-
-CMake Error at cmake/Findshaderc_shared.cmake:30 (find_library):
-  Could not find shaderc_shared using the following names:
-  libshaderc_shared.so
-```
-
-This means Telescope was unable to detect the `shaderc_shared` library, which is part of the shaderc package. If you are sure shaderc is already installed properly, you can manually specify the path to the shared library using the `SHADERC_LIB_DIR` CMake variable during configuration, like so:
-
-```bash
-# in Telescope/build
-cmake .. -DSHADERC_LIB_DIR=/path/to/shaderc/lib
-```
-
-Where `/path/to/shaderc/lib` should point to a directory that has the following layout:
-
-```
-shaderc/
-  bin/
-  include/ 
-  lib/
-    libshaderc_shared.so
-    (...)
-  share/ 
-```
-Where `libshaderc_shared.so` may have a different prefix and/or suffix depending on your system, for example `shaderc_shared.dll`.
-
 ---
 
 ### License
 
-The current and all previous versions of Telescope are supplied under MIT License, available [here](https://github.com/jhigginbotham64/Starlight.jl/blob/main/LICENSE).
+Telescope v0.3.0 is available under MIT License, available [here](https://opensource.org/licenses/MIT).
 
 ---
 
 ### Authors
 
-Telescope was created and implemented by [Joshua Higginbotham](https://github.com/jhigginbotham64).
-
-#### May 2022
-  + Documentation, CMake Improvements by [Clemapfel](https://github.com/clemapfel/)
+Telescope was created and implemented by [Joshua Higginbotham](https://github.com/jhigginbotham64) and [Clemapfel](https://github.com/clemapfel/) .

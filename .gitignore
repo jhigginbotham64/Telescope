@@ -22,3 +22,4 @@ docs/.doxygen/
 
 # C++ # Compiled Dynamic libraries
 *.so
+/venv/
