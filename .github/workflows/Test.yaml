@@ -24,7 +24,7 @@ jobs:
         sudo apt update && sudo apt install --upgrade cmake
         sudo apt install --upgrade libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-net-dev 
         sudo apt install libglm-dev libvulkan-dev
-        sudo apt install libbox2d
+        sudo apt install libbox2d2
     - name: 🦏 Build
       run: |
         mkdir build && cd build
